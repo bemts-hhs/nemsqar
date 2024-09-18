@@ -1,0 +1,1184 @@
+---
+title: "Resp0102Airway24Airway010520"
+author: "Alyssa Green"
+date: "2024-06-16"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gtsummary)
+library(ggplot2)
+library(haven) #to read in Stata .dta files
+library(dplyr)
+library(tidyverse)
+library(survival)
+library(table1)
+library(MASS)
+library(tidyr)
+library(pROC)
+library(flextable)
+library(car)
+library(epiDisplay)
+library(lubridate) #to format date and time variables
+```
+
+Resp-01: Load data and start cleaning for initial population
+```{r}
+#Create list of 911 response
+incident.data <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/incident.data.csv")
+
+codes.911 <- c("2205001", "2205003", "2205009")
+
+incident.911 <- incident.data %>% filter(eResponse_05 %in% codes.911)
+
+write.csv(incident.911, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/incident.911.csv")
+incident.911 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/incident.911.csv")
+
+primary.ref <- read_dta("C:/Users/alyss/OneDrive/Documents/data/STATA/ESITUATION_11REF.dta")
+secondary.ref <- read_dta("C:/Users/alyss/OneDrive/Documents/data/STATA/ESITUATION_12REF.dta")
+
+primary.ref <- primary.ref %>%
+  mutate(resp.distress = case_when(str_detect(eSituation_11, "I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9")~1, TRUE~0))
+sum(primary.ref$resp.distress)
+
+secondary.ref <- secondary.ref %>%
+  mutate(resp.distress = case_when(str_detect(eSituation_12, "I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9")~1, TRUE~0))
+sum(secondary.ref$resp.distress)
+
+primary.imp <- read_dta("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/FACTPCRPRIMARYIMPRESSION.dta")
+
+init.911 <- incident.911$PcrKey
+
+primary <- primary.imp %>%
+  filter(PcrKey %in% init.911)
+
+primary.imp <- left_join(primary.imp, primary.ref, by="eSituation_11")
+secondary.imp <- left_join(secondary.imp, secondary.ref, by="eSituation_12")
+
+secondary.imp <- read_dta("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/FACTPCRSECONDARYIMPRESSION.dta")
+
+secondary <- secondary.imp %>%
+    filter(PcrKey %in% init.911)
+
+secondary <- left_join(secondary, secondary.ref, by="eSituation_12")
+
+primary <- primary %>% filter(resp.distress==1)
+secondary <- secondary %>% filter(resp.distress==1)
+
+primary <- primary %>% dplyr::select(PcrKey)
+secondary <- secondary %>% dplyr::select(PcrKey)
+resp.distress <- rbind(primary, secondary)
+
+resp.d <- resp.distress$PcrKey
+
+init.pop <- incident.911 %>% filter(PcrKey %in% resp.d)
+
+primary <- primary.imp %>% dplyr::select(PcrKey, resp.distress)
+secondary <- secondary.imp %>% dplyr::select(PcrKey, resp.distress)
+respiratory.imp <- rbind(primary, secondary)
+respiratory.imp <- respiratory.imp %>% filter(PcrKey %in% resp.02$PcrKey) %>% group_by(PcrKey) %>% summarise(resp.distress = sum(resp.distress))
+
+table(respiratory.imp$resp.distress, useNA = "always")
+
+resp.02impression <- left_join(resp.02, respiratory.imp, by="PcrKey")
+```
+
+Resp-01: Calculate numerator/measure performance
+```{r}
+init.popKEY <- init.pop$PcrKey
+
+vitals.data <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/vitals.data.csv")
+
+#NEMSIS Code for Not Applicable and Not Recorded
+na.nr <- c("7701003", "7701001")
+
+#Filter vitals for those in initial population (911 response with respiratory distress impression) and select variables needed for this measure
+vitals <- vitals.data %>% filter(PcrKey %in% init.popKEY) %>% dplyr::select(PcrKey, eVitals_12, eVitals_14)
+
+#Create variable to note spo2 documented and RR documented
+vitals <- vitals %>% mutate(spo2 = case_when(!eVitals_12 %in% na.nr ~ 1, TRUE ~ 0)) %>%
+  mutate(RR = case_when(!eVitals_14 %in% na.nr ~ 1, TRUE~0))
+
+vitals <- vitals %>% group_by(PcrKey) %>% summarise(spo2.n = sum(spo2),
+                                                    RR.n = sum(RR))
+vitals <- vitals %>% mutate(numerator = case_when(spo2.n !=0 & RR.n != 0 ~ 1, TRUE ~ 0))
+
+#vitals.merge <- vitals %>% dplyr::select(PcrKey, numerator)
+
+init.pop <- left_join(init.pop, vitals, by="PcrKey")
+
+init.pop$numerator[is.na(init.pop$numerator)] <- 0
+```
+
+Resp-01: Separate into age groups to get denominator count for overall, adult and peds
+```{r}
+#NEMSIS Code for Not Applicable and Not Recorded
+na.nr <- c("7701003", "7701001")
+#Drop  records for missing age or age units
+init.pop <- init.pop %>%
+  filter(!ePatient_15 %in% na.nr & !ePatient_16 %in% na.nr)
+
+#Total in Denominator: 2,895,009
+
+#Total Adult Denominator: 2,697,391
+adult.pop <- init.pop %>%
+  filter(ePatient_15 >= 18 & ePatient_16 == "2516009")
+
+#Total Pediatric Denominator: 197,618
+pedsunits <- c("2516001", "2516003", "2516005", "2516007")
+peds.pop <- init.pop %>%
+  filter((ePatient_15 < 18 & ePatient_16 == "2516009") | ePatient_16 %in% pedsunits)
+
+sum(peds.pop$numerator)
+sum(adult.pop$numerator)
+sum(init.pop$numerator)
+
+write.csv(init.pop, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/resp01.initpop.csv")
+
+spo2.rr <- init.pop %>% dplyr::select(PcrKey, spo2.n, RR.n)
+```
+
+
+Resp-02: Load data and filter for initial population
+```{r}
+#incident.911 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/incident.911.csv")
+#vitals.data <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/vitals.data.csv")
+
+vitals.02 <- vitals.data %>% filter(PcrKey %in% init.911)
+
+vitals.02 <- vitals.02 %>% dplyr::select(PcrKey, eVitals_12) %>% filter(!eVitals_12 %in% na.nr) %>% filter(eVitals_12 < 90)
+
+vitals.02 <- vitals.02 %>% distinct(PcrKey)
+
+resp.02 <- left_join(vitals.02, incident.911, by="PcrKey")
+
+#NEMSIS Code for Not Applicable and Not Recorded
+na.nr <- c("7701003", "7701001")
+#Drop  records for missing age or age units
+resp.02 <- resp.02 %>%
+  filter(!ePatient_15 %in% na.nr & !ePatient_16 %in% na.nr)
+
+resp.02 <- resp.02 %>% filter((ePatient_15 < 24 & ePatient_16 == "2516003") | ePatient_15 < 120 & ePatient_16 == "2516005")
+
+```
+
+Resp-02: Merge in meds & procedures and calculate numerator
+```{r}
+proc.data <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/procedures.data.csv")
+med.data <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/med.data.csv")
+
+resp.02KEY <- resp.02$PcrKey
+proc.resp02 <- proc.data %>% filter(PcrKey %in% resp.02KEY) %>% filter(eProcedures_03=="57485005")
+
+med.resp02 <- med.data %>% filter(PcrKey %in% resp.02KEY) %>% filter(eMedications_03=="7806")
+
+proc.resp02 <- proc.resp02 %>% dplyr::select(PcrKey) %>% mutate(numerator = case_when(!is.na(PcrKey)~1, TRUE~0)) 
+
+med.resp02 <- med.resp02 %>% dplyr::select(PcrKey) %>% mutate(numerator = case_when(!is.na(PcrKey)~1, TRUE~0))
+
+resp.02num <- rbind(med.resp02, proc.resp02)
+
+resp.02num <- resp.02num %>% distinct(PcrKey, .keep_all=TRUE)
+
+resp.02 <- left_join(resp.02, resp.02num, by="PcrKey")
+resp.02$numerator[is.na(resp.02$numerator)] <- 0
+```
+
+Resp-02: Calculate measure and split into populations
+```{r}
+#Total in Denominator: 2,537,653
+
+#Total Adult Denominator: 2,458,294
+adult.pop02 <- resp.02 %>%
+  filter(ePatient_15 >= 18 & ePatient_16 == "2516009")
+
+#Total Pediatric Denominator: 79,359
+pedsunits <- c("2516001", "2516003", "2516005", "2516007")
+peds.pop02 <- resp.02 %>%
+  filter((ePatient_15 < 18 & ePatient_16 == "2516009") | ePatient_16 %in% pedsunits)
+
+sum(peds.pop02$numerator)
+sum(adult.pop02$numerator)
+sum(resp.02$numerator)
+
+write.csv(resp.02, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/resp02.initpop.csv")
+```
+
+
+Airway-24: Load and prep data for initial population
+```{r}
+vitals.24 <- vitals.data %>% filter(PcrKey %in% init.911)
+vitals.24 <- vitals.24 %>% dplyr::select(PcrKey, eVitals_01, eVitals_02, eVitals_12) %>% filter(!eVitals_12 %in% na.nr & !eVitals_01 %in% na.nr & eVitals_02 != "9923003" & !eVitals_12 %in% na.nr) 
+
+vitals.24 <- vitals.24 %>% filter(PcrKey %in% resp.d)
+
+transport.codes <- c("4212029", "4212031", "4212033", "4212035", "4212037")
+
+incident.transport <- incident.911 %>% filter(eDisposition_12 %in% transport.codes)
+transport.key <- incident.transport$PcrKey
+
+vitals.24 <- vitals.24 %>% filter(PcrKey %in% transport.key)
+
+#Correct datetime format for procedure time
+class(vitals.24$eVitals_01)
+vitals.24$eVitals_01 <- trimws(vitals.24$eVitals_01)
+substring(vitals.24$eVitals_01, 10, 10) = " "
+vitals.24$eVitals_01 <- gsub("([A-Z])([A-Z])([A-Z])", " \\1\\2\\3 ", x = vitals.24$eVitals_01)
+vitals.24$eVitals_01 <- dmy_hms(vitals.24$eVitals_01)
+class(vitals.24$eVitals_01)
+
+#Filter for patients with initial SPO2 < 90
+initial.spo2 <- vitals.24 %>%
+  group_by(PcrKey) %>%
+  mutate(first.spo2time = min(eVitals_01))
+
+initial.spo2 <- initial.spo2 %>%
+  group_by(PcrKey)%>%
+  mutate(first.spo2val = case_when(eVitals_01 == first.spo2time ~ eVitals_12))
+
+initial.spo2 <- initial.spo2 %>%
+  filter(first.spo2val < 90)
+
+initial.spo2 <- initial.spo2 %>%
+  distinct(PcrKey, .keep_all = TRUE)
+
+initial.spo2 <- dplyr::select(initial.spo2, PcrKey, first.spo2time, first.spo2val)
+
+init.spo2KEY <- initial.spo2$PcrKey
+
+colnames(incident.transport)
+
+initpop24 <- left_join(initial.spo2, incident.transport, by="PcrKey")
+
+#NEMSIS Code for Not Applicable and Not Recorded
+na.nr <- c("7701003", "7701001")
+#Drop  records for missing age or age units & drop age <24
+initpop24 <- initpop24 %>%
+  filter(!ePatient_15 %in% na.nr & !ePatient_16 %in% na.nr)
+
+initpop24 <- initpop24 %>%
+  filter(!(ePatient_15 < 24 & ePatient_16 == "2516003") & !(ePatient_15 < 120 & ePatient_16 == "2516005"))
+
+initpop24.key <- initpop24$PcrKey
+
+vitals.24 <- vitals.24 %>% filter(PcrKey %in% initpop24.key)
+vitals.count <- vitals.24 %>% group_by(PcrKey) %>% count()
+
+vitals.spo2count <- vitals.count %>% filter(n>1)
+
+vitals.24 <- vitals.24 %>% filter(PcrKey %in% vitals.spo2count$PcrKey)
+
+last.spo2 <- vitals.24 %>%
+  group_by(PcrKey) %>%
+  mutate(last.spo2time = max(eVitals_01))
+
+last.spo2 <- last.spo2 %>%
+  group_by(PcrKey)%>%
+  mutate(last.spo2val = case_when(eVitals_01 == last.spo2time ~ eVitals_12))
+
+last.spo2 <- last.spo2 %>%
+  mutate(numerator = case_when(last.spo2val > 90~1, TRUE~0))
+
+last.spo2 <- last.spo2 %>% filter(!is.na(last.spo2val))
+
+last.spo2 <- last.spo2 %>%
+  distinct(PcrKey, .keep_all = TRUE)
+
+initpop24 <- left_join(last.spo2, initpop24, by="PcrKey")
+
+```
+
+Calculate Airway-24 measure
+```{r}
+#Total in Denominator: 538,048
+
+#Total Adult Denominator: 525,655
+adult.pop <- initpop24 %>%
+  filter(ePatient_15 >= 18 & ePatient_16 == "2516009")
+
+#Total Pediatric Denominator: 
+pedsunits <- c("2516001", "2516003", "2516005", "2516007")
+peds.pop <- initpop24 %>%
+  filter((ePatient_15 < 18 & ePatient_16 == "2516009") | ePatient_16 %in% pedsunits)
+
+sum(peds.pop$numerator)
+sum(adult.pop$numerator)
+sum(initpop24$numerator)
+
+write.csv(initpop24, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway24.initpop.csv")
+```
+
+Airway-05: Load and prep initial population
+```{r}
+#incident.911 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/incident.911.csv")
+#vitals.data <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/vitals.data.csv")
+#proc.data <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/procedures.data.csv")
+colnames(proc.data)
+intubation.proc <- c("683005", "49077009", "78121007", "112798008", "16883004", "182682004", "232674004", "232677006", "232678001", "232679009", "232682004", "232680007", "241689008", "304341005", "397892004", "418613003", "429161001", "450601000124103", "1141752008", "285696003", "420311007", "421100004", "44738004", "469919007", "700640001", "701054002", "706013009", "734928009", "879788006")
+
+#Filter for intubation procedures
+proc.a05 <- proc.data %>% filter(eProcedures_03 %in% intubation.proc)
+
+#Filter procedures for patients that are 911 response
+init.911 <- incident.911$PcrKey
+proc.a05 <- proc.a05 %>% filter(PcrKey %in% init.911)
+
+#Filter out procedures performed prior to EMS arrival
+proc.a05 <- proc.a05 %>% filter(eProcedures_02 != 9923003)
+
+
+#Filter for patients not in cardiac arrest
+init.a05 <- incident.911 %>% filter(eArrest_01 != 3001003)
+na.nr <- c("7701003", "7701001")
+#Filter out patients missing information needed to calculate age in years
+init.a05 <- init.a05 %>% filter(!ePatient_15 %in% na.nr & !ePatient_16 %in% na.nr)
+init.a05KEY <- init.a05$PcrKey
+
+#Apply updated filter on patients in procedure table
+proc.a05 <- proc.a05 %>% filter(PcrKey %in% init.a05KEY)
+
+#Filter out patients missing date/time procedure performed
+proc.a05 <- proc.a05 %>% filter(!is.na(eProcedures_01))
+
+#Correct datetime format for procedure time
+class(proc.a05$eProcedures_01)
+proc.a05$eProcedures_01 <- trimws(proc.a05$eProcedures_01)
+substring(proc.a05$eProcedures_01, 10, 10) = " "
+proc.a05$eProcedures_01 <- gsub("([A-Z])([A-Z])([A-Z])", " \\1\\2\\3 ", x = proc.a05$eProcedures_01)
+proc.a05$eProcedures_01 <- dmy_hms(proc.a05$eProcedures_01)
+class(proc.a05$eProcedures_01)
+
+proc.a05KEY <- proc.a05$PcrKey
+
+colnames(vitals.data)
+#Select variables needed for this measure from vitals table
+vitals.a05 <- vitals.data %>% dplyr::select(PcrKey, eVitals_01, eVitals_02, eVitals_12) %>% filter(PcrKey %in% proc.a05KEY & !is.na(eVitals_01) & !eVitals_12 %in% na.nr)
+
+#Filter out vitals completed prior to EMS arrival
+vitals.a05 <- vitals.a05 %>% filter(eVitals_02 != "9923003")
+na.nr1 <- c("8801023", "8801019", "8801005")
+#Filter out SPO2 with Not Applicable or Not Recorded values
+vitals.a05 <- vitals.a05 %>% filter(!eVitals_12 %in% na.nr1)
+
+#Vitals to cross join
+#Correct datetime format for procedure time
+class(vitals.a05$eVitals_01)
+vitals.a05$eVitals_01 <- trimws(vitals.a05$eVitals_01)
+substring(vitals.a05$eVitals_01, 10, 10) = " "
+vitals.a05$eVitals_01 <- gsub("([A-Z])([A-Z])([A-Z])", " \\1\\2\\3 ", x = vitals.a05$eVitals_01)
+vitals.a05$eVitals_01 <- dmy_hms(vitals.a05$eVitals_01)
+class(vitals.a05$eVitals_01)
+
+gc()
+```
+
+Airway-05: Cross join function to calculate time difference
+```{r}
+# Split the data frames by 'PcrKey'  
+df1.split <- split(proc.a05, proc.a05$PcrKey)
+df2.split <- split(vitals.a05, vitals.a05$PcrKey)
+
+# Initialize an empty list to store the results  
+result.list <- list()  
+  
+# For each patient ID  
+for (id in names(df1.split)) {  
+  # Cross join the patient-specific data frames  
+  cross.join <- merge(df1.split[[id]], df2.split[[id]], by = NULL)  
+    
+  # Calculate the time difference  
+  cross.join$time.diff <- difftime(cross.join$eProcedures_01, cross.join$eVitals_01, units = "mins")  
+    
+  # Add the result to the list  
+  result.list[[id]] <- cross.join  
+}  
+
+# Combine the results  
+result.pop <- do.call(rbind, result.list)  
+colnames(result.pop)
+
+#result.check <- result.pop %>% dplyr::select(time.diff, eProcedures_01, eVitals_01)
+
+#Create variable to identify SPO2 values within the 0-5mins before procedure time and filter for only those values
+result.pop <- result.pop %>% mutate(time.num = case_when(time.diff < 0 ~ 0,
+                                             time.diff > 5 ~ 0,
+                                             is.na(time.diff)~0,
+                                             TRUE~1)) %>% 
+  filter(time.num == 1)
+
+#Create variable to calculate numerator and identify patients at varying levels of hypoxia that do not satisfy numerator criteria
+result.pop <- result.pop %>% mutate(numerator = case_when(eVitals_12 >= 94 ~ 1, TRUE~0))%>% mutate(hypoxia = case_when(eVitals_12 < 90 ~1, TRUE~0)) %>% 
+  mutate(mid.ox = case_when(eVitals_12 >= 90 & eVitals_12<94~1, TRUE~0))
+
+#Calculate if all SPO2 values during 0-5minute interval prior to procedure satisfy numerator criteria
+result.a05 <- result.pop %>% group_by(PcrKey.x, PcrProcedureKey) %>%
+  summarise(num.sum = sum(numerator),
+            n.spo2 = n(),
+            hypoxia.sum = sum(hypoxia),
+            mid.sum = sum(mid.ox))
+
+#Recalculate numerator criteria per procedure
+result.a05 <- result.a05 %>% mutate(numerator= case_when(num.sum == n.spo2 ~ 1, TRUE~0))
+colnames(result.a05)[1] <- "PcrKey"
+
+#Merge patient demographic variables with procedure data so to allow for age groupings
+init.a05 <- init.a05 %>% filter(PcrKey %in% proc.a05KEY)
+airway.05 <- left_join(init.a05, result.a05, by="PcrKey")
+
+#Recode variables to dummy coding
+airway.05$mid.sum[airway.05$mid.sum>0] <- 1
+airway.05$hypoxia.sum[airway.05$hypoxia.sum>0] <- 1
+airway.05$n.spo2[airway.05$n.spo2>0] <- 1
+airway.05$numerator[is.na(airway.05$numerator)] <- 0
+airway.05$mid.sum[is.na(airway.05$mid.sum)] <- 0
+airway.05$hypoxia.sum[is.na(airway.05$hypoxia.sum)] <- 0
+
+#Calculate values for table
+table(factor(airway.05$numerator))
+table(factor(airway.05$mid.sum))
+table(factor(airway.05$hypoxia.sum))
+table(factor(airway.05$n.spo2))
+
+#Create variable for age categories
+#Agecat == 1 ~ Adult
+#Agecat == 0 ~ Peds
+pedsunits <- c("2516001", "2516003", "2516005", "2516007")
+airway.05 <- airway.05 %>% mutate(age.cat = case_when(ePatient_15 >= 18 & ePatient_16 == "2516009"~1,
+                                                      (ePatient_15 < 18 & ePatient_16 == "2516009") | ePatient_16 %in% pedsunits~0))
+
+table(factor(airway.05$numerator[airway.05$age.cat==1]))
+table(factor(airway.05$mid.sum[airway.05$age.cat==1]))
+table(factor(airway.05$hypoxia.sum[airway.05$age.cat==1]))
+table(factor(airway.05$n.spo2[airway.05$age.cat==1]), useNA="always")
+
+table(factor(airway.05$numerator[airway.05$age.cat==0]))
+table(factor(airway.05$mid.sum[airway.05$age.cat==0]))
+table(factor(airway.05$hypoxia.sum[airway.05$age.cat==0]))
+table(factor(airway.05$n.spo2[airway.05$age.cat==0]), useNA="always")
+```
+
+Calculate Airway-05 measure
+```{r}
+#Total in Denominator: 
+
+#Total Adult Denominator: 
+adult.a05 <- airway.05 %>%
+  filter(ePatient_15 >= 18 & ePatient_16 == "2516009")
+
+#Total Pediatric Denominator: 
+pedsunits <- c("2516001", "2516003", "2516005", "2516007")
+peds.a05 <- airway.05 %>%
+  filter((ePatient_15 < 18 & ePatient_16 == "2516009") | ePatient_16 %in% pedsunits)
+
+sum(peds.a05$numerator)
+sum(adult.a05$numerator)
+sum(airway.05$numerator)
+
+14171/55601
+13455/53616
+716/1985
+
+55601-14171
+table(airway.05$hypoxia.sum[airway.05$numerator!=1])
+table(airway.05$mid.sum[airway.05$numerator!=1])
+table(airway.05$n.spo2[airway.05$numerator!=1], useNA = "always")
+26449+11700+4136
+4136-855## 855 had value in mid and hypoxia level. Counted in hypoxia category only on tables.
+42285-41430
+
+26449/41430
+11700/41430
+3281/41430
+
+table(airway.05$hypoxia.sum[airway.05$numerator!=1 & airway.05$age.cat==1])
+table(airway.05$mid.sum[airway.05$numerator!=1 & airway.05$age.cat==1])
+table(airway.05$n.spo2[airway.05$numerator!=1 & airway.05$age.cat==1], useNA = "always")
+table(airway.05$mid.sum[airway.05$numerator!=1 & airway.05$age.cat==1&airway.05$hypoxia.sum==1])
+3991-826 ## 826 adults had value in mid and hypoxia level. Counted in hypoxia category only on tables.
+53616-13455
+25633/40161
+11363/40161
+3165/40161
+
+table(airway.05$hypoxia.sum[airway.05$numerator!=1 & airway.05$age.cat==0])
+table(airway.05$mid.sum[airway.05$numerator!=1 & airway.05$age.cat==0])
+table(airway.05$n.spo2[airway.05$numerator!=1 & airway.05$age.cat==0], useNA = "always")
+table(airway.05$mid.sum[airway.05$numerator!=1 & airway.05$age.cat==0 & airway.05$hypoxia.sum==1])
+145-29 ## 116 peds had value in mid and hypoxia level. Counted in hypoxia category only on tables.
+1985-716
+816/1269
+337/1269
+116/1269
+
+write.csv(airway.05, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway05.initpop.csv")
+```
+
+
+Airway-01: Load and prep initial population
+```{r}
+colnames(proc.data)
+intubation.proc01 <- c("683005", "49077009", "78121007", "112798008", "16883004", "182682004", "232674004", "232677006", "232678001", "232679009", "232682004", "232680007", "241689008", "304341005", "397892004", "418613003", "429161001", "450601000124103", "1141752008", "285696003", "420311007", "421100004", "44738004", "469919007", "700640001", "701054002", "706013009", "734928009", "879788006")
+
+proc.a01 <- proc.data %>% filter(eProcedures_03 %in% intubation.proc01)
+proc.a01 <- proc.a01 %>% filter(PcrKey %in% init.911)
+proc.a01 <- proc.a01 %>% filter(eProcedures_02 != 9923003)
+
+colnames(incident.911)
+init.a01 <- incident.911 %>% filter(eArrest_01 != 3001003)
+init.a01 <- init.a01 %>% filter(!ePatient_15 %in% na.nr & !ePatient_16 %in% na.nr)
+init.a01 <- init.a01 %>%
+  filter(!(ePatient_15 < 24 & ePatient_16 == "2516003") & !(ePatient_15 < 120 & ePatient_16 == "2516005"))
+
+init.a01KEY <- init.a01$PcrKey
+
+proc.a01 <- proc.a01 %>% filter(PcrKey %in% init.a01KEY)
+
+proc.a01 <- proc.a01 %>% filter(!is.na(eProcedures_01))
+
+#Correct datetime format for procedure time
+class(proc.a01$eProcedures_01)
+proc.a01$eProcedures_01 <- trimws(proc.a01$eProcedures_01)
+substring(proc.a01$eProcedures_01, 10, 10) = " "
+proc.a01$eProcedures_01 <- gsub("([A-Z])([A-Z])([A-Z])", " \\1\\2\\3 ", x = proc.a01$eProcedures_01)
+proc.a01$eProcedures_01 <- dmy_hms(proc.a01$eProcedures_01)
+class(proc.a01$eProcedures_01)
+
+initial.proc <- proc.a01 %>%
+  group_by(PcrKey) %>%
+  mutate(first.proctime = min(eProcedures_01))
+
+initial.proc <- initial.proc %>%
+  filter(eProcedures_01 == first.proctime)
+proc.a01 <- initial.proc %>% distinct(PcrKey, .keep_all = TRUE)
+proc.a01 <- proc.a01 %>% mutate(numerator.proc = case_when(eProcedures_05 == 1 & eProcedures_06 == "9923003" ~ 1, TRUE~0))
+
+proc.a01KEY <- proc.a01$PcrKey
+
+init.a01 <- init.a01 %>% filter(PcrKey %in% proc.a01KEY)
+#Calculate hypotension threshold for each patient
+
+init.a01 <- init.a01 %>%
+  mutate(hypotension = case_when(ePatient_15 >= 10 & ePatient_16 == "2516009"~90,
+                                 (ePatient_15 < 10 & ePatient_15 >=1) & ePatient_16 == "2516009"~ (70+(2*ePatient_15)),
+                                 ePatient_15 >=12 & ePatient_16 == "2516007"~ (70+(2*(ePatient_15/12))),
+                                 ePatient_16 == "2516007" & ePatient_15 < 12 ~ 70,
+                                 ePatient_15 >= 28 & ePatient_16 == "2516001" ~ 70,
+                                 ePatient_15 <28 & ePatient_16 == "2516001" ~ 60,
+                                 ePatient_16 == "2516003" ~ 60
+                                 ))
+table(factor(init.a01$hypotension))
+
+na.nr <- c("8801023", "8801019", "8801005", "7701003", "7701001")
+vitals.a01 <- vitals.data %>% dplyr::select(PcrKey, eVitals_01, eVitals_02, eVitals_06, eVitals_12) %>% filter(PcrKey %in% proc.a01KEY & !is.na(eVitals_01) & eVitals_02 != "9923003")
+
+#Vitals to cross join
+#Correct datetime format for procedure time
+class(vitals.a01$eVitals_01)
+vitals.a01$eVitals_01 <- trimws(vitals.a01$eVitals_01)
+substring(vitals.a01$eVitals_01, 10, 10) = " "
+vitals.a01$eVitals_01 <- gsub("([A-Z])([A-Z])([A-Z])", " \\1\\2\\3 ", x = vitals.a01$eVitals_01)
+vitals.a01$eVitals_01 <- dmy_hms(vitals.a01$eVitals_01)
+class(vitals.a01$eVitals_01)
+
+vitals.a01 <- vitals.a01 %>% filter(!is.na(eVitals_01))
+
+sbp <- vitals.a01 %>% dplyr::select(PcrKey, eVitals_01, eVitals_06) %>% filter(!eVitals_06 %in% na.nr)
+spo2 <- vitals.a01 %>% dplyr::select(PcrKey, eVitals_01, eVitals_12) %>% filter(!eVitals_12 %in% na.nr)
+```
+
+
+Airway-01: Cross join function to calculate time diff in SPO2
+```{r}
+# Split the data frames by 'PcrKey'  
+df1.split <- split(proc.a01, proc.a01$PcrKey)
+df2.split <- split(spo2, spo2$PcrKey)
+
+# Initialize an empty list to store the results  
+result.list <- list()  
+  
+# For each patient ID  
+for (id in names(df1.split)) {  
+  # Cross join the patient-specific data frames  
+  cross.join <- merge(df1.split[[id]], df2.split[[id]], by = NULL)  
+    
+  # Calculate the time difference  
+  cross.join$time.diff <- difftime(cross.join$eProcedures_01, cross.join$eVitals_01, units = "mins")  
+  
+  # Add the result to the list  
+  result.list[[id]] <- cross.join  
+}  
+
+# Combine the results  
+spo2.a01 <- do.call(rbind, result.list)
+colnames(spo2.a01)
+
+length(is.na(spo2.a01$time.diff))
+
+spo2.a01 <- spo2.a01 %>% mutate(time.num = case_when(time.diff < (-5) ~ 0,
+                                             time.diff > 3 ~ 0,
+                                             is.na(time.diff)~0,
+                                             TRUE~1)) %>% 
+  filter(time.num == 1) %>%
+  mutate(pre.proc = case_when(time.diff >= 0 ~ 1, TRUE ~ 0)) %>%
+  mutate(post.proc = case_when(time.diff < 0 ~ 1, TRUE ~ 0))
+  
+
+spo2.a01 <- spo2.a01 %>% mutate(numerator.spo2 = case_when(eVitals_12 >= 90 ~ 1, TRUE~0)) %>%
+  mutate(pre.procspo2 = case_when(pre.proc == 1 & eVitals_12 >= 90 ~ 1, TRUE~0)) %>%
+  mutate(post.procspo2 = case_when(post.proc == 1 & eVitals_12 >= 90 ~ 1, TRUE~0))
+
+spo2.a01sum <- spo2.a01 %>% group_by(PcrKey.x, PcrProcedureKey) %>%
+  summarise(num.sum = sum(numerator.spo2),
+            n.periET = n(),
+            sum.prespo2 = sum(pre.procspo2),
+            n.prespo2 = sum(pre.proc),
+            sum.postspo2 = sum(post.procspo2),
+            n.postspo2 = sum(post.proc))
+spo2.a01sum  <- spo2.a01sum  %>% mutate(numerator.spo2= case_when(num.sum == n.periET ~ 1, TRUE~0)) %>%
+  mutate(preproc.spo2 = case_when(sum.prespo2 == n.prespo2 ~ 1, TRUE~0)) %>%
+  mutate(postproc.spo2 = case_when(sum.postspo2 == n.postspo2 ~ 1, TRUE~0))
+colnames(spo2.a01sum)[1] <- "PcrKey"
+#spo2.a01sum  <- spo2.a01sum  %>% dplyr::select(PcrKey, PcrProcedureKey, numerator.spo2)
+
+airway.01 <- left_join(init.a01, spo2.a01sum, by="PcrKey")
+table(factor(airway.01$numerator.spo2))
+```
+
+Airway-01: Cross join function to calculate time diff in SBP
+```{r}
+# Split the data frames by 'PcrKey'  
+df1.split <- split(proc.a01, proc.a01$PcrKey)
+df2.split <- split(sbp, sbp$PcrKey)
+
+# Initialize an empty list to store the results  
+result.list <- list()  
+  
+# For each patient ID  
+for (id in names(df1.split)) {  
+  # Cross join the patient-specific data frames  
+  cross.join <- merge(df1.split[[id]], df2.split[[id]], by = NULL)  
+    
+  # Calculate the time difference  
+  cross.join$time.diff <- difftime(cross.join$eProcedures_01, cross.join$eVitals_01, units = "mins")  
+    
+  # Add the result to the list  
+  result.list[[id]] <- cross.join  
+}  
+# Combine the results  
+sbp.a01 <- do.call(rbind, result.list)  
+colnames(sbp.a01)
+
+sbp.a01 <- sbp.a01 %>% mutate(time.num = case_when(time.diff < (-5) ~ 0,
+                                             time.diff > 3 ~ 0,
+                                             is.na(time.diff)~0,
+                                             TRUE~1)) %>% 
+  filter(time.num == 1) %>%
+  mutate(pre.proc = case_when(time.diff >= 0 ~ 1, TRUE ~ 0)) %>%
+  mutate(post.proc = case_when(time.diff < 0 ~ 1, TRUE ~ 0))
+  
+colnames(sbp.a01)[3] <- "PcrKey"
+
+hypotension.val <- init.a01 %>% dplyr::select(PcrKey, hypotension)
+sbp.a01 <- left_join(sbp.a01, hypotension.val, by="PcrKey")
+sbp.a01 <- sbp.a01 %>% mutate(numerator.sbp = case_when(eVitals_06 >= hypotension ~ 1, TRUE~0)) %>%
+  mutate(pre.procsbp = case_when(pre.proc == 1 & eVitals_06 >= hypotension ~ 1, TRUE~0)) %>%
+  mutate(post.procsbp = case_when(post.proc == 1 & eVitals_06 >= hypotension ~ 1, TRUE~0))
+
+sbp.a01sum <- sbp.a01 %>% group_by(PcrKey, PcrProcedureKey) %>%
+  summarise(num.sum = sum(numerator.sbp),
+            n.periET = n(),
+            sum.presbp = sum(pre.procsbp),
+            n.presbp= sum(pre.proc),
+            sum.postsbp = sum(post.procsbp),
+            n.postsbp = sum(post.proc))
+sbp.a01sum  <- sbp.a01sum  %>% mutate(numerator.sbp = case_when(num.sum == n.periET ~ 1, TRUE~0)) %>%
+  mutate(preproc.sbp = case_when(sum.presbp == n.presbp ~ 1, TRUE~0)) %>%
+  mutate(postproc.sbp = case_when(sum.postsbp == n.postsbp ~ 1, TRUE~0))
+#colnames(sbp.a01sum )[1] <- "PcrKey"
+#sbp.a01sum  <- sbp.a01sum  %>% dplyr::select(PcrKey, PcrProcedureKey, numerator.sbp)
+
+airway.01 <- left_join(airway.01, sbp.a01sum, by="PcrKey")
+table(factor(airway.01$numerator.sbp))
+colnames(airway.01)
+
+proc.num <- proc.a01 %>% dplyr::select(PcrKey, numerator.proc)
+airway.01 <- left_join(airway.01, proc.num, by="PcrKey")
+```
+
+
+Create variable for numerator
+```{r}
+airway.01 <- airway.01 %>% mutate(numerator = case_when(numerator.sbp == 1 & numerator.spo2 == 1 & numerator.proc == 1 ~ 1, TRUE~0))
+table(factor(airway.01$numerator))
+```
+
+
+Calculate Airway-01 measure
+```{r}
+#Total in Denominator: 50,879
+
+#Total Adult Denominator: 49,129
+adult.a01 <- airway.01 %>%
+  filter(ePatient_15 >= 18 & ePatient_16 == "2516009")
+
+#Total Pediatric Denominator: 1,750
+pedsunits <- c("2516001", "2516003", "2516005", "2516007")
+peds.a01 <- airway.01 %>%
+  filter((ePatient_15 < 18 & ePatient_16 == "2516009") | ePatient_16 %in% pedsunits)
+
+sum(peds.a01$numerator)
+sum(adult.a01$numerator)
+sum(airway.01$numerator)
+
+write.csv(airway.01, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway01.initpop.csv")
+```
+
+Airway-20: Load data
+```{r}
+proc.data <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/procedures.data.csv")
+
+airway.proc20 <- c("683005", "49077009", "78121007", "112798008", "16883004", "182682004", "232674004", "232677006", "232678001", "232679009", "232682004", "232680007", "241689008", "304341005", "397892004", "418613003", "429161001", "450601000124103", "1141752008", "285696003", "420311007", "421100004", "44738004", "469919007", "700640001", "701054002", "706013009", "734928009", "879788006", "429705000", "424979004", "427753009", "450611000124100")
+
+intubation.proc20 <- c("683005", "49077009", "78121007", "112798008", "16883004", "182682004", "232674004", "232677006", "232678001", "232679009", "232682004", "232680007", "241689008", "304341005", "397892004", "418613003", "429161001", "450601000124103", "1141752008", "285696003", "420311007", "421100004", "44738004", "469919007", "700640001", "701054002", "706013009", "734928009", "879788006")
+
+sga.proc20 <- c("429705000", "424979004", "427753009", "450611000124100")
+
+init.a20 <- incident.911 %>% filter(!ePatient_15 %in% na.nr & !ePatient_16 %in% na.nr)
+init.a20 <- init.a20$PcrKey
+proc.a20 <- proc.data %>% filter(eProcedures_03 %in% airway.proc20)
+proc.a20 <- proc.a20 %>% filter(PcrKey %in% init.a20)
+proc.a20 <- proc.a20 %>% filter(eProcedures_02 != 9923003)
+
+#Correct datetime format for procedure time
+class(proc.a20$eProcedures_01)
+proc.a20$eProcedures_01 <- trimws(proc.a20$eProcedures_01)
+substring(proc.a20$eProcedures_01, 10, 10) = " "
+proc.a20$eProcedures_01 <- gsub("([A-Z])([A-Z])([A-Z])", " \\1\\2\\3 ", x = proc.a20$eProcedures_01)
+proc.a20$eProcedures_01 <- dmy_hms(proc.a20$eProcedures_01)
+class(proc.a20$eProcedures_01)
+
+proc.a20 <- proc.a20 %>% filter(!is.na(eProcedures_01))
+
+initial.proc <- proc.a20 %>%
+  group_by(PcrKey) %>%
+  mutate(first.proctime = min(eProcedures_01))
+
+initial.proc <- initial.proc %>%
+  filter(eProcedures_01 == first.proctime)
+proc.a20 <- initial.proc %>% distinct(PcrKey, .keep_all = TRUE)
+
+colnames(proc.a20)
+airway.20 <- left_join(proc.a20, incident.911, by="PcrKey")
+
+airway.20 <- airway.20 %>% mutate(airway.type = case_when(eProcedures_03 %in% sga.proc20 ~ "sga",
+                                                          eProcedures_03 %in% intubation.proc20 ~ "et",
+                                                          TRUE~"check"))
+table(factor(airway.20$airway.type))
+
+pedsunits <- c("2516001", "2516003", "2516005", "2516007")
+airway.20 <- airway.20 %>% mutate(age.cat = case_when(ePatient_15 >= 18 & ePatient_16 == "2516009"~1,
+                                                      (ePatient_15 < 18 & ePatient_16 == "2516009") | ePatient_16 %in% pedsunits~0))
+table(factor(airway.20$age.cat))
+#Merge in Calculated Age
+airway.20 <- left_join(airway.20, calcage.data, by="PcrKey")
+
+#Merge in Race
+airway.20 <- left_join(airway.20, race, by="PcrKey")
+
+airway.20 <- airway.20 %>% mutate(numerator = case_when(eProcedures_05 == 1 & eProcedures_06 == 9923003 ~1, TRUE~0))
+table(factor(airway.20$numerator))
+
+
+
+write.csv(airway.20, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway20.initpop.csv")
+```
+
+
+
+```{r}
+intubation.proc <- c("683005", "49077009", "78121007", "112798008", "16883004", "182682004", "232674004", "232677006", "232678001", "232679009", "232682004", "232680007", "241689008", "304341005", "397892004", "418613003", "429161001", "450601000124103", "1141752008", "285696003", "420311007", "421100004", "44738004", "469919007", "700640001", "701054002", "706013009", "734928009", "879788006")
+
+sga.proc <- c("429705000", "424979004", "427753009", "450611000124100")
+proc.airway <- proc.data %>% filter(eProcedures_03 %in% airway.proc20)
+
+proc.airway <- proc.airway %>% mutate(advanced.airway = case_when(eProcedures_03 %in% intubation.proc~"ET",
+                                                                  eProcedures_03 %in% sga.proc ~ "SGA",
+                                                                  TRUE~"None"))
+proc.a <- proc.airway %>% dplyr::select(PcrKey, advanced.airway)
+proc.a <- proc.a %>% group_by(PcrKey, advanced.airway) %>% count()
+proc.a <- proc.a %>% distinct(PcrKey, .keep_all = TRUE)
+
+```
+
+
+```{r}
+airway.01 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway01.initpop.csv")
+airway.05 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway05.initpop.csv")
+airway.24 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway24.initpop.csv")
+resp.01 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/resp01.initpop.csv")
+resp.02 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/resp02.initpop.csv")
+
+#Load race and calculated age in years variables
+race.data <- read_dta("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/PCRPATIENTRACEGROUP.dta")
+
+calcage.data <- read_dta("C:/Users/alyss/OneDrive/Documents/data/STATA/COMPUTEDELEMENTS.dta")
+```
+
+Airway-01 add variables for tables
+```{r}
+#Add variable for Age Group
+airway.01 <- airway.01 %>% mutate(age.cat = case_when(ePatient_15 >= 18 & ePatient_16 == "2516009"~1,
+                                                      (ePatient_15 < 18 & ePatient_16 == "2516009") | ePatient_16 %in% pedsunits~0))
+table(factor(airway.01$age.cat))
+
+#Merge in Calculated Age
+colnames(calcage.data)
+calcage.data <- calcage.data %>% dplyr::select(PcrKey, ageinyear)
+airway.01 <- left_join(airway.01, calcage.data, by="PcrKey")
+
+#Merge in Race
+colnames(race.data)
+table(factor(race.data$ePatient_14))
+na.nr <- c("8801023", "8801019", "8801005", "7701003", "7701001")
+race <- race.data %>% filter(!ePatient_14 %in% na.nr)
+
+race <- race %>% mutate(Race = if_else(duplicated(PcrKey)|duplicated(PcrKey, fromLast=TRUE), "2514013", ePatient_14))
+
+race <- race %>% distinct(PcrKey, .keep_all=TRUE)
+
+
+airway.01 <- left_join(airway.01, race, by="PcrKey")
+
+#Check all variables need for table are included
+colnames(airway.01)
+
+write.csv(airway.01, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway01.initpop.csv")
+```
+
+Airway-05 add variables for tables
+```{r}
+#Add variable for Age Group
+airway.05 <- airway.05 %>% mutate(age.cat = case_when(ePatient_15 >= 18 & ePatient_16 == "2516009"~1,
+                                                      (ePatient_15 < 18 & ePatient_16 == "2516009") | ePatient_16 %in% pedsunits~0))
+table(factor(airway.05$age.cat))
+
+#Merge in Calculated Age
+airway.05 <- left_join(airway.05, calcage.data, by="PcrKey")
+
+#Merge in Race
+airway.05 <- left_join(airway.05, race, by="PcrKey")
+
+#Check all variables need for table are included
+colnames(airway.05)
+
+write.csv(airway.05, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway05.initpop.csv")
+
+airway.05 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway05.initpop.csv")
+```
+
+Airway-24 add variables for tables
+```{r}
+#Add variable for Age Group
+airway.24 <- airway.24 %>% mutate(age.cat = case_when(ePatient_15 >= 18 & ePatient_16 == "2516009"~1,
+                                                      (ePatient_15 < 18 & ePatient_16 == "2516009") | ePatient_16 %in% pedsunits~0))
+table(factor(airway.24$age.cat))
+
+#Merge in Calculated Age
+airway.24 <- left_join(airway.24, calcage.data, by="PcrKey")
+
+#Merge in Race
+airway.24 <- left_join(airway.24, race, by="PcrKey")
+
+#Check all variables need for table are included
+colnames(airway.24)
+
+#Merge in advanced airway
+airway.24 <- left_join(airway.24, proc.a, by="PcrKey")
+
+write.csv(airway.24, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway24.initpop.csv")
+```
+
+Respiratory-01 add variables for tables
+```{r}
+#Add variable for Age Group
+resp.01 <- resp.01 %>% mutate(age.cat = case_when(ePatient_15 >= 18 & ePatient_16 == "2516009"~1,
+                                                      (ePatient_15 < 18 & ePatient_16 == "2516009") | ePatient_16 %in% pedsunits~0))
+table(factor(resp.01$age.cat))
+
+#Merge in Calculated Age
+resp.01 <- left_join(resp.01, calcage.data, by="PcrKey")
+
+#Merge in Race
+resp.01 <- left_join(resp.01, race, by="PcrKey")
+
+#Check all variables need for table are included
+colnames(resp.01)
+
+#Merge in advanced airway
+resp.01 <- left_join(resp.01, proc.a, by="PcrKey")
+
+write.csv(resp.01, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/resp.01.initpop.csv")
+```
+
+Respiratory-02 add variables for tables
+```{r}
+#Add variable for Age Group
+resp.02 <- resp.02 %>% mutate(age.cat = case_when(ePatient_15 >= 18 & ePatient_16 == "2516009"~1,
+                                                      (ePatient_15 < 18 & ePatient_16 == "2516009") | ePatient_16 %in% pedsunits~0))
+table(factor(resp.02$age.cat))
+
+#Merge in Calculated Age
+resp.02 <- left_join(resp.02, calcage.data, by="PcrKey")
+
+#Merge in Race
+resp.02 <- left_join(resp.02, race, by="PcrKey")
+
+#Check all variables need for table are included
+colnames(resp.02)
+
+#Merge in advanced airway
+resp.02 <- left_join(resp.02, proc.a, by="PcrKey")
+
+write.csv(resp.02, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/resp.02.initpop.csv")
+```
+
+```{r}
+success <- proc.a20 %>% filter(eProcedures_06 == "9923003" & eProcedures_05 == 1)
+
+a.18 <- proc.a20 %>% group_by(PcrKey, eProcedures_03) %>% count()
+a.g1 <- a.18 %>% filter(n>1) %>% group_by(PcrKey) %>% count()
+ag2 <- success %>% group_by(PcrKey) %>% count()
+ag21 <- ag2 %>% filter(n>1)
+a.code <- proc.a20 %>% group_by(eProcedures_03) %>% count()
+28741/181267
+
+check <- success %>% mutate(et = case_when(eProcedures_03 %in% intubation.proc20~1, TRUE~0)) %>%
+  mutate(sga = case_when(eProcedures_03 %in% sga.proc20 ~1, TRUE ~0))
+
+et <- check %>% group_by(PcrKey) %>% summarise(n.et = sum(et),
+                                               n.sga = sum(sga),
+                                               n.attempts = length(PcrKey))
+et <- et %>% filter(n.attempts > 1)
+install.packages("writexl")
+library(writexl)
+writexl::write_xlsx(et, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airwayattempts.xlsx")
+
+8693/150958
+```
+
+Add respiratory impression codes to Resp-02
+```{r}
+primary.bind <- primary %>% dplyr::select(PcrKey, resp.distress)
+secondary.bind <- secondary%>% dplyr::select(PcrKey, resp.distress)
+secondary.bind$resp.distress[is.na(secondary.bind$resp.distress)]<-0
+secondary.bind <- secondary.bind %>% group_by(PcrKey) %>% summarise(resp.dist = sum(resp.distress))
+
+secondary.bind <- secondary.bind %>% mutate(resp.distress = case_when(resp.dist == 0 ~ 0, TRUE~1)) %>% dplyr::select(PcrKey, resp.distress)
+
+primary.bind$resp.distress[is.na(primary.bind$resp.distress)]<-0
+
+impression <- rbind(primary.bind, secondary.bind)
+
+impression <- impression %>% group_by(PcrKey) %>% summarise(resp.imp = sum(resp.distress))
+
+impression$resp.imp[impression$resp.imp > 0] <- 1
+
+resp.02 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/resp.02.initpop.csv")
+colnames(resp.02)
+
+resp.02 <- left_join(resp.02, impression, by="PcrKey")
+resp.02 <- resp.02 %>% distinct(PcrKey, .keep_all = TRUE)
+
+table(factor(resp.02$resp.impression))
+
+resp01.num <- resp.01 %>% dplyr::select(PcrKey, numerator) %>% distinct(PcrKey, .keep_all = TRUE)
+colnames(resp01.num)[2] <- "Resp01Numerator"
+resp.02 <- left_join(resp.02, resp01.num, by="PcrKey")
+write.csv(resp.02, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/resp.02.initpop.csv")
+
+resp.01check <- resp.01 %>% distinct(PcrKey, .keep_all = TRUE)
+```
+
+Add breakdown of RR and spo2 counts to resp-01
+```{r}
+resp.01 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/resp.01.initpop.csv")
+
+colnames(resp.01)
+resp.01 <- left_join(resp.01, spo2.rr, by="PcrKey")
+
+resp.01 <- resp.01 %>% mutate(spo2 = case_when(spo2.n >0 ~ 1, TRUE~0)) %>% mutate(rr = case_when(RR.n > 0 ~1, TRUE~0)) %>% mutate(num.check = case_when(rr == 1 & spo2==1 ~1, TRUE~0))
+table(factor(resp.01$spo2))
+table(factor(resp.01$rr))
+table(factor(resp.01$numerator))
+table(factor(resp.01$num.check))
+write.csv(resp.01, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/resp.01.initpop.csv")
+```
+
+Add resp01 numerator and resp 02 numerator 
+```{r}
+airway.24 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway24.initpop.csv")
+
+airway.24 <- left_join(airway.24, resp01.num, by="PcrKey")
+table(factor(airway.24$Resp01Numerator))
+
+resp02.num <- resp.02 %>% dplyr::select(PcrKey, numerator)
+colnames(resp02.num)[2] <- "Resp02Numerator"
+airway.24 <- left_join(airway.24, resp02.num, by="PcrKey")
+write.csv(airway.24, "C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/airway24.initpop.csv")
+```
+
+
+```{r}
+#arrest.time <- read.csv("C:/Users/alyss/OneDrive/Documents/data/Annual Measure Report Data/arrest.time.csv")
+
+class(arrest.time$eArrest_14)
+arrest.time$eArrest_14 <- trimws(arrest.time$eArrest_14)
+substring(arrest.time$eArrest_14, 10, 10) = " "
+arrest.time$eArrest_14 <- gsub("([A-Z])([A-Z])([A-Z])", " \\1\\2\\3 ", x = arrest.time$eArrest_14)
+arrest.time$eArrest_14 <- dmy_hms(arrest.time$eArrest_14)
+class(arrest.time$eArrest_14)
+
+arrest.time<- arrest.time %>% filter(!is.na(eArrest_14))
+
+# Split the data frames by 'PcrKey'  
+df1.split <- split(proc.a01, proc.a01$PcrKey)
+df2.split <- split(arrest.time, arrest.time$PcrKey)
+
+# Initialize an empty list to store the results  
+result.list <- list()  
+  
+# For each patient ID  
+for (id in names(df1.split)) {  
+  # Cross join the patient-specific data frames  
+  cross.join <- merge(df1.split[[id]], df2.split[[id]], by = NULL)  
+    
+  # Calculate the time difference  
+  cross.join$time.diff <- difftime(cross.join$eProcedures_01, cross.join$eArrest_14, units = "mins")  
+    
+  # Add the result to the list  
+  result.list[[id]] <- cross.join  
+}  
+# Combine the results  
+arrest.a01 <- do.call(rbind, result.list)  
+colnames(arrest.a01)
+
+arrest.a01 <- arrest.a01 %>% mutate(cardiacarrest.postET = case_when(time.diff < 0 ~ 1, TRUE~0))
+table(arrest.a01$cardiacarrest.postET)
+```
+
+```{r}
+vitals.r02test <- vitals.data %>% filter(PcrKey %in% resp.01$PcrKey) 
+
+vitals.r02test <- vitals.r02test %>% filter(eVitals_12 < 90)
+
+vitals.r02dist <- vitals.r02test %>% distinct(PcrKey)
+```
+
+Airway-01 subanalysis
+```{r}
+sum(airway.01$numerator[airway.01$age.cat==0])
+
+sum(airway.01$numerator.proc[airway.01$numerator==0 & airway.01$age.cat==0])
+
+sum(airway.01$numerator.proc[airway.01$numerator==0 & airway.01$age.cat==0])
+
+a01.fail = airway.01 %>%
+  filter(numerator == 0 & numerator.proc == 1) %>%
+  mutate(no.prespo2 = case_when(preproc.spo2==0|is.na(preproc.spo2)~1, TRUE~0))
+
+table(a01.fail$n.prespo2, useNA="always")
+4500+13636
+table(a01.fail$n.postspo2, useNA="always")
+2236+13636
+table(a01.fail$n.presbp, useNA="always")
+4520+15639
+table(a01.fail$n.postsbp, useNA="always")
+2246+15639
+
+table(a01.fail$n.prespo2[a01.fail$age.cat==1], useNA="always")
+4377+13289
+table(a01.fail$n.postspo2[a01.fail$age.cat==1], useNA="always")
+2183+13289
+table(a01.fail$n.presbp[a01.fail$age.cat==1], useNA="always")
+4401+15242
+table(a01.fail$n.postsbp[a01.fail$age.cat==1], useNA="always")
+2194+15242
+
+table(a01.fail$n.prespo2[a01.fail$age.cat==0], useNA="always")
+347+123
+table(a01.fail$n.postspo2[a01.fail$age.cat==0], useNA="always")
+53+347
+table(a01.fail$n.presbp[a01.fail$age.cat==0], useNA="always")
+119+397
+table(a01.fail$n.postsbp[a01.fail$age.cat==0], useNA="always")
+397+52
+
+
+
+table(a01.fail$preproc.spo2[a01.fail$n.prespo2 > 0], useNA="always")
+table(a01.fail$postproc.spo2[a01.fail$n.postspo2 > 0], useNA="always")
+table(a01.fail$preproc.sbp[a01.fail$n.presbp > 0], useNA="always")
+table(a01.fail$postproc.sbp[a01.fail$n.postsbp > 0], useNA="always")
+
+table(a01.fail$preproc.spo2[a01.fail$n.prespo2 > 0 & a01.fail$age.cat==1], useNA="always")
+table(a01.fail$postproc.spo2[a01.fail$n.postspo2 > 0 & a01.fail$age.cat==1], useNA="always")
+table(a01.fail$preproc.sbp[a01.fail$n.presbp > 0 & a01.fail$age.cat==1], useNA="always")
+table(a01.fail$postproc.sbp[a01.fail$n.postsbp > 0 & a01.fail$age.cat==1], useNA="always")
+
+table(a01.fail$preproc.spo2[a01.fail$n.prespo2 > 0 & a01.fail$age.cat==0], useNA="always")
+table(a01.fail$postproc.spo2[a01.fail$n.postspo2 > 0 & a01.fail$age.cat==0], useNA="always")
+table(a01.fail$preproc.sbp[a01.fail$n.presbp > 0 & a01.fail$age.cat==0], useNA="always")
+table(a01.fail$postproc.sbp[a01.fail$n.postsbp > 0 & a01.fail$age.cat==0], useNA="always")
+
+table(a01.fail$preproc.spo2[a01.fail$postproc.spo2 == 1])
+table(a01.fail$n.prespo2[a01.fail$n.postspo2 > 0])
+3502+1077+346+132+39+18+7
+table(a01.fail$preproc.sbp[a01.fail$postproc.sbp==1])
+
+table(a01.fail$n.presbp[a01.fail$n.postsbp>0], useNA="always") #3088
+table(a01.fail$sum.presbp[a01.fail$sum.postsbp>0], useNA="always") #1635
+table(a01.fail$n.prespo2[a01.fail$n.postspo2>0], useNA="always") #5121
+table(a01.fail$sum.prespo2[a01.fail$sum.postspo2>0], useNA="always") #1744
+
+table(a01.fail$n.presbp[a01.fail$n.postsbp>0 & a01.fail$age.cat==1], useNA="always") #2993
+2642+303+33+14+1
+table(a01.fail$sum.presbp[a01.fail$sum.postsbp>0 & a01.fail$age.cat==1], useNA="always") #1575
+1444+120+7+4
+table(a01.fail$n.prespo2[a01.fail$n.postspo2>0 & a01.fail$age.cat==1], useNA="always") #4981
+table(a01.fail$sum.prespo2[a01.fail$sum.postspo2>0 & a01.fail$age.cat==1], useNA="always") #1692
+
+table(a01.fail$n.presbp[a01.fail$n.postsbp>0 & a01.fail$age.cat==0], useNA="always") #95
+88+5+1+1
+table(a01.fail$sum.presbp[a01.fail$sum.postsbp>0 & a01.fail$age.cat==0], useNA="always") #60
+54+5+1
+table(a01.fail$n.prespo2[a01.fail$n.postspo2>0 & a01.fail$age.cat==0], useNA="always") #140
+96+28+9+4+3
+table(a01.fail$sum.prespo2[a01.fail$sum.postspo2>0 & a01.fail$age.cat==0], useNA="always") #52
+35+11+5+1
+
+table(a01.fail$preproc.spo2[a01.fail$age.cat==1], useNA="always")
+4762+13289
+table(a01.fail$postproc.spo2[a01.fail$age.cat==1], useNA="always")
+5533+13289
+table(a01.fail$preproc.sbp[a01.fail$age.cat==1], useNA="always")
+1970+15242
+table(a01.fail$postproc.sbp[a01.fail$age.cat==1], useNA="always")
+2981+15242
+
+table(a01.fail$preproc.spo2[a01.fail$age.cat==0], useNA="always")
+124+347
+table(a01.fail$postproc.spo2[a01.fail$age.cat==0], useNA="always")
+152+347
+table(a01.fail$preproc.sbp[a01.fail$age.cat==0], useNA="always")
+51+397
+table(a01.fail$postproc.sbp[a01.fail$age.cat==0], useNA="always")
+71+397
+```
+
+```{r}
+a20.arrest <- airway.20 %>% filter(eArrest_01 == "3001003")
+
+table(a20.arrest$numerator, a20.arrest$airway.type)
+```
+
