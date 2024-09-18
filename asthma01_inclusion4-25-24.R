@@ -80,12 +80,24 @@
 
 asthma01_inclusion <- function(df) {
   
+  if(!"tidyverse" %in% installed.packages()) {
+    
+    install.packages("tidyverse")
+    
+  }
+  
+  if(!"package:tidyverse" %in% search()) {
+    
+    library(tidyverse)
+    
+  }
+  
   beta_agonist <- c("ALBUTEROL", "IPRATROPIUM", "DUONEB", "LEVALBUTEROL", "METAPROTERENOL")
  
   asthma_codes <- c("J45", "J98.01")
   
   df %>%
-    select(key, # do not need reference to the dataframe here via '.' notation, select picks it up by default
+    dplyr::select(key, # do not need reference to the dataframe here via '.' notation, select picks it up by default
            ePatient.15,
            eSituation.11,
            eSituation.12,
@@ -100,14 +112,14 @@ asthma01_inclusion <- function(df) {
     ## NEMSQA Asthma-01 Denominator
     mutate(ped_ind = case_when((ped_ind == 1 & ePatient.15 >= 2) ~ 1, # do not need reference to the dataframe here via '.' notation
                                   TRUE ~ 0)) %>% 
-    filter(grepl(orify(asthma_codes), eSituation.11)| # do not need reference to the dataframe here via '.' notation
+    dplyr::filter(grepl(orify(asthma_codes), eSituation.11)| # do not need reference to the dataframe here via '.' notation
              grepl(orify(asthma_codes), eSituation.12)) %>%
     
     ## NEMSQA Asthma-01 Numerator
     left_join(nemsqa_meds %>% # do not need reference to the dataframe here via '.' notation
-                filter(., grepl(orify(beta_agonist), toupper(eMedications.03))) %>%
-                distinct(., key) %>%
-                mutate(., num_ind = 1), 
+                dplyr::filter(grepl(orify(beta_agonist), toupper(eMedications.03))) %>%
+                distinct(key) %>%
+                mutate(num_ind = 1), 
               by = c("key" = "key")) %>%
     mutate(num_ind = case_when(is.na(num_ind) ~ 0, # do not need reference to the dataframe here via '.' notation
                                   TRUE ~ num_ind))
