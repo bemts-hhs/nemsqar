@@ -21,7 +21,7 @@ The National EMS Quality Alliance (NEMSQA) Measure Set includes a comprehensive 
 ### Key for **`Developed in Package?`** Column
 * Developed and in package: ✔️
 * Developed but not in package yet: ⏱️
-* Slated for futur development: 🔧
+* Slated for future development: 🔧
 
 | **Measure ID**     | **Description**                                                                                                                  | **Type** | **National Quality Strategy Domain** | **Developed in Package?** |
 |--------------------|----------------------------------------------------------------------------------------------------------------------------------|----------|--------------------------------------|----------------------------|
