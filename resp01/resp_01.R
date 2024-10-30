@@ -1,5 +1,5 @@
 ################################################################################
-### Resp-01 Function  ##########################################################
+### Respiratory_01 Function  ##########################################################
 ################################################################################
 
 ###_____________________________________________________________________________
@@ -21,7 +21,7 @@
 ###_____________________________________________________________________________
 
 
-resp_01 <- function(df, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, epatient_15_col) {
+respiratory_01 <- function(df, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, epatient_15_col) {
   
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
   
@@ -94,9 +94,9 @@ resp_01 <- function(df, eresponse_05_col, esituation_11_col, esituation_12_col, 
     )
   
   # summary
-  respiratory_01 <- bind_rows(adult_population, peds_population, total_population)
+  resp_01 <- bind_rows(adult_population, peds_population, total_population)
   
-  respiratory_01
+  resp_01
   
   
 }
