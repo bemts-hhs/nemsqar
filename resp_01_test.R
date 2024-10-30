@@ -105,7 +105,7 @@ library(scales)
   
 # load data
   
-  set.seed(123)
+  set.seed(50319)
 
   respiratory_01_test <- tibble(
     `Patient Age In Years (ePatient.15)` = sample(0:120, size = 1000, replace = T),
@@ -345,13 +345,15 @@ respiratory_01_test_clean %>%
 # by region
 
 respiratory_01_test_clean %>% 
+  group_by(region) %>% 
   resp_01(eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
           esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_E_SITUATION_11,
           esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_CODE_LIST_E_SITUATION_12,
           evitals_12_col = PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12,
           evitals_14_col = PATIENT_INITIAL_RESPIRATORY_RATE_E_VITALS_14,
           epatient_15_col = PATIENT_AGE_IN_YEARS_E_PATIENT_15
-          ) 
+          ) %>% 
+  print(n = Inf)
   
 
 }, venue = "gh", advertise = T)
