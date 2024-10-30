@@ -1,6 +1,6 @@
 reprex::reprex({
 
-########################################### <- <- <- <- <- <- <- <- <- %>% <- <- %>% #####################################
+################################################################################
 ### Respiratory-01 Test  #######################################################
 ################################################################################
 
@@ -12,6 +12,20 @@ library(scales)
   
 # functions
   
+  pretty_percent <- function(variable, n_decimal = 0.1) {
+    
+    formatted_percent <- percent(variable, accuracy = n_decimal)
+    
+    # If there are trailing zeros after decimal point, remove them
+    formatted_percent <- sub("(\\.\\d*?)0+%$", "\\1%", formatted_percent)
+    
+    # If it ends with ".%", replace it with "%"
+    formatted_percent <- sub("\\.%$", "%", formatted_percent)
+    
+    formatted_percent
+    
+  }
+
   resp_01 <- function(df, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, epatient_15_col) {
     
     # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
@@ -89,31 +103,157 @@ library(scales)
     
   }
   
-  pretty_percent <- function(variable, n_decimal = 0.1) {
-    
-    formatted_percent <- percent(variable, accuracy = n_decimal)
-    
-    # If there are trailing zeros after decimal point, remove them
-    formatted_percent <- sub("(\\.\\d*?)0+%$", "\\1%", formatted_percent)
-    
-    # If it ends with ".%", replace it with "%"
-    formatted_percent <- sub("\\.%$", "%", formatted_percent)
-    
-    formatted_percent
-    
-  }
-  
 # load data
+  
+  set.seed(123)
 
-resp_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/respiratory01_Export.csv")
-
+  respiratory_01_test <- tibble(
+    `Patient Age In Years (ePatient.15)` = sample(0:120, size = 1000, replace = T),
+    `Situation Provider Primary Impression Code (eSituation.11)` = sample(
+      c(
+        "I50.9",
+        "J00",
+        "J05",
+        "J18.9",
+        "J20.9",
+        "J44.1",
+        "J45.901",
+        "J80",
+        "J81",
+        "J93.9",
+        "J96",
+        "J98.01",
+        "J98.9",
+        "R05",
+        "R06",
+        "R09.2",
+        "T17.9",
+        "A08.4",
+        "A09",
+        "A37.90",
+        "A41",
+        "A41.9",
+        "A48.8",
+        "B30.9",
+        "B34.2",
+        "B95.62",
+        "B96.7",
+        "B96.89",
+        "B97.2",
+        "B97.21",
+        "B97.29",
+        "B97.4",
+        "B99.9",
+        "C18.9",
+        "C25.9",
+        "C34.90",
+        "C71.9"
+      ),
+      size = 1000,
+      replace = T
+    ),
+    `Situation Provider Secondary Impression Code List (eSituation.12)` = sample(
+      c(
+        "I50.9",
+        "J00",
+        "J05",
+        "J18.9",
+        "J20.9",
+        "J44.1",
+        "J45.901",
+        "J80",
+        "J81",
+        "J93.9",
+        "J96",
+        "J98.01",
+        "J98.9",
+        "R05",
+        "R06",
+        "R09.2",
+        "T17.9",
+        "A08.4",
+        "A09",
+        "A37.90",
+        "A41",
+        "A41.9",
+        "A48.8",
+        "B30.9",
+        "B34.2",
+        "B95.62",
+        "B96.7",
+        "B96.89",
+        "B97.2",
+        "B97.21",
+        "B97.29",
+        "B97.4",
+        "B99.9",
+        "C18.9",
+        "C25.9",
+        "C34.90",
+        "C71.9"
+      ),
+      size = 1000,
+      replace = T
+    ),
+    `Response Type Of Service Requested With Code (eResponse.05)` = sample(
+      c(
+        "911 Response (Scene) (2205001)",
+        "Interfacility Transport (2205005)",
+        "Emergency Response (Primary Response Area) (2205001)",
+        "Medical Transport (2205007)",
+        "Public Assistance (2205011)",
+        "Standby (2205013)",
+        "Public Assistance/Other Not Listed (2205011)",
+        "Emergency Response (Intercept) (2205003)",
+        "Intercept (2205003)",
+        "Hospital-to-Hospital Transfer (2205005)",
+        "Other Routine Medical Transport (2205007)",
+        "Hospital to Non-Hospital Facility Transfer (2205015)",
+        "Support Services (2205021)",
+        "Mutual Aid (2205009)",
+        "Emergency Response (Mutual Aid) (2205009)",
+        "Assist Unit (it2205.145)",
+        "Mortuary Services (2205029)",
+        "Non-Hospital Facility to Non-Hospital Facility Transfer (2205017)",
+        NA,
+        "Non-Patient Care Rescue/Extrication (2205023)",
+        "Non-Hospital Facility to Hospital Transfer (2205019)",
+        "Administrative Operations (2205035)",
+        "Community Paramedicine (it2205.121)",
+        "Crew Transport Only (2205025)",
+        "MIHC/Community Paramedicine (2205031)",
+        "Organ Transport (2205027)",
+        "Evaluation for Special Referral/Intake Programs (2205033)"
+      ),
+      size = 1000,
+      replace = T
+    ),
+    `Patient Initial Pulse Oximetry (eVitals.12)` = sample(0:100, size = 1000, replace = T),
+    sp02 = sample(0:100, size = 1000, replace = T),
+    `Patient Initial Respiratory Rate (eVitals.14)` = sample(0:272, size = 1000, replace = T),
+    RR = sample(0:272, size = 1000, replace = T)
+  ) %>%
+    mutate(
+      `Patient Initial Pulse Oximetry (eVitals.12)` = if_else(
+        `Patient Initial Pulse Oximetry (eVitals.12)` == sp02,
+        NA_real_,
+        `Patient Initial Pulse Oximetry (eVitals.12)`
+      ),
+      `Patient Initial Respiratory Rate (eVitals.14)` = if_else(
+        `Patient Initial Respiratory Rate (eVitals.14)` == RR,
+        NA_real_,
+        `Patient Initial Respiratory Rate (eVitals.14)`
+      )
+    ) %>%
+    dplyr::select(-sp02, -RR)
+  
 # clean up names
 
-resp_01_clean <- resp_01_data %>% 
+respiratory_01_test_clean <- respiratory_01_test %>% 
   clean_names(case = "screaming_snake", sep_out = "_") %>% 
-  mutate(region = sample(c("1A", "1C", "2", "3", "4", "5", "6", "7"), size = nrow(resp_01_data), replace = T))
+  mutate(region = sample(c("1A", "1C", "2", "3", "4", "5", "6", "7"), size = nrow(respiratory_01_test), replace = T))
 
-# test the function process to debug
+# test the function process
 
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
   
@@ -128,7 +268,7 @@ resp_01_clean <- resp_01_data %>%
   missing_codes <- "7701003|7701001"
   
   # filter the table to get the initial population regardless of age
-  initial_population <- resp_01_clean %>% 
+  initial_population <- respiratory_01_test_clean %>% 
     
     # filter down to 911 calls
     
@@ -163,7 +303,8 @@ resp_01_clean <- resp_01_data %>%
     summarize(pop = "All",
               numerator = sum(vitals_check, na.rm = T),
               denominator = n(),
-              prop = pretty_percent(numerator / denominator, n_decimal = 0.01)
+              prop = numerator / denominator,
+              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
     )
   
   # adults
@@ -171,7 +312,8 @@ resp_01_clean <- resp_01_data %>%
     summarize(pop = "Adults",
               numerator = sum(vitals_check, na.rm = T),
               denominator = n(),
-              prop = pretty_percent(numerator / denominator, n_decimal = 0.01)
+              prop = numerator / denominator,
+              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
     )
   
   # peds
@@ -179,7 +321,8 @@ resp_01_clean <- resp_01_data %>%
     summarize(pop = "Peds",
               numerator = sum(vitals_check, na.rm = T),
               denominator = n(),
-              prop = pretty_percent(numerator / denominator, n_decimal = 0.01)
+              prop = numerator / denominator,
+              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
     )
   
   # summary
@@ -190,8 +333,7 @@ resp_01_clean <- resp_01_data %>%
 
 # test the function
 
-resp_01_clean %>% 
-  group_by(region) %>% 
+respiratory_01_test_clean %>% 
   resp_01(eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
           esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_E_SITUATION_11,
           esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_CODE_LIST_E_SITUATION_12,
@@ -200,29 +342,21 @@ resp_01_clean %>%
           epatient_15_col = PATIENT_AGE_IN_YEARS_E_PATIENT_15
           )
 
+# by region
+
+respiratory_01_test_clean %>% 
+  resp_01(eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+          esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_E_SITUATION_11,
+          esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_CODE_LIST_E_SITUATION_12,
+          evitals_12_col = PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12,
+          evitals_14_col = PATIENT_INITIAL_RESPIRATORY_RATE_E_VITALS_14,
+          epatient_15_col = PATIENT_AGE_IN_YEARS_E_PATIENT_15
+          ) 
+  
+
 }, venue = "gh", advertise = T)
 
 
-epatient.15 <- unique(resp_01_data["Patient Age In Years (ePatient.15)"])
-esituation.11 <- unique(resp_01_data["Situation Provider Primary Impression Code (eSituation.11)"])
-esituation.12 <- unique(resp_01_data["Situation Provider Secondary Impression Code List (eSituation.12)"])
-eresponse.05 <- unique(resp_01_data["Response Type Of Service Requested With Code (eResponse.05)"])
-evitals.12 <- unique(resp_01_data["Patient Initial Pulse Oximetry (eVitals.12)"])
-evitals.14 <- unique(resp_01_data["Patient Initial Respiratory Rate (eVitals.14)"])
 
 
-write_csv(x = epatient.15, file = "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Desktop/Analytics/Analytics Builds/GitHub/nemsqar-package/ems_patient_ages.csv")
 
-write_csv(x = esituation.11, file = "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Desktop/Analytics/Analytics Builds/GitHub/nemsqar-package/ems_first_impressions.csv")
-
-write_csv(x = esituation.12, file = "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Desktop/Analytics/Analytics Builds/GitHub/nemsqar-package/ems_second_impressions.csv")
-
-write_csv(x = eresponse.05, file = "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Desktop/Analytics/Analytics Builds/GitHub/nemsqar-package/ems_response_types.csv")
-
-write_csv(x = evitals.12, file = "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Desktop/Analytics/Analytics Builds/GitHub/nemsqar-package/ems_sp02.csv")
-
-write_csv(x = evitals.14, file = "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Desktop/Analytics/Analytics Builds/GitHub/nemsqar-package/ems_respiratory_rate.csv")
-
-respiratory_01_test <- data.frame(`Patient Age In Years (ePatient.15)` = sample(0:120, size = 1000, replace = T),
-                                  `Situation Provider Primary Impression Code (eSituation.11)` = 
-                                  )

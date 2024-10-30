@@ -71,24 +71,27 @@ resp_01 <- function(df, eresponse_05_col, esituation_11_col, esituation_12_col, 
     summarize(pop = "All",
               numerator = sum(vitals_check, na.rm = T),
               denominator = n(),
-              prop = pretty_percent(numerator / denominator, n_decimal = 0.01)
-              )
+              prop = numerator / denominator,
+              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
+    )
   
   # adults
   adult_population <- adult_pop %>% 
     summarize(pop = "Adults",
               numerator = sum(vitals_check, na.rm = T),
               denominator = n(),
-              prop = pretty_percent(numerator / denominator, n_decimal = 0.01)
-              )
+              prop = numerator / denominator,
+              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
+    )
   
   # peds
   peds_population <- peds_pop %>% 
     summarize(pop = "Peds",
               numerator = sum(vitals_check, na.rm = T),
               denominator = n(),
-              prop = pretty_percent(numerator / denominator, n_decimal = 0.01)
-              )
+              prop = numerator / denominator,
+              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
+    )
   
   # summary
   respiratory_01 <- bind_rows(adult_population, peds_population, total_population)
