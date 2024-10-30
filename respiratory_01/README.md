@@ -375,9 +375,9 @@ respiratory_01_test_clean <- respiratory_01_test %>%
     )
   
   # summary
-  respiratory_01 <- bind_rows(adult_population, peds_population, total_population)
+  resp_01 <- bind_rows(adult_population, peds_population, total_population)
   
-  respiratory_01
+  resp_01
 #> # A tibble: 3 × 5
 #>   pop    numerator denominator  prop prop_label
 #>   <chr>      <dbl>       <int> <dbl> <chr>     
