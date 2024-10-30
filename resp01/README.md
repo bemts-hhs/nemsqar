@@ -1,11 +1,11 @@
-# `resp_01`
+# `respiratory_01`
 
 ## Description
-The `resp_01` function filters and analyzes data related to emergency 911 respiratory distress incidents, providing summary statistics for adult and pediatric populations. This function uses specific data columns for 911 response codes, primary and secondary impressions, and vital signs to calculate the proportion of cases with complete vital signs recorded, stratified by age.
+The `respiratory_01` function filters and analyzes data related to emergency 911 respiratory distress incidents, providing summary statistics for adult and pediatric populations. This function uses specific data columns for 911 response codes, primary and secondary impressions, and vital signs to calculate the proportion of cases with complete vital signs recorded, stratified by age.
 
 ## Usage
 ```R
-resp_01(df, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, epatient_15_col)
+respiratory_01(df, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, epatient_15_col)
 ```
 
 # Arguments
@@ -75,7 +75,7 @@ library(scales)
     
   }
 
-  resp_01 <- function(df, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, epatient_15_col) {
+  respiratory_01 <- function(df, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, epatient_15_col) {
     
     # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
     
@@ -389,7 +389,7 @@ respiratory_01_test_clean <- respiratory_01_test %>%
 # test the function
 
 respiratory_01_test_clean %>% 
-  resp_01(eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  respiratory_01(eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
           esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_E_SITUATION_11,
           esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_CODE_LIST_E_SITUATION_12,
           evitals_12_col = PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12,
@@ -407,7 +407,7 @@ respiratory_01_test_clean %>%
 
 respiratory_01_test_clean %>% 
   group_by(region) %>% 
-  resp_01(eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  respiratory_01(eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
           esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_E_SITUATION_11,
           esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_CODE_LIST_E_SITUATION_12,
           evitals_12_col = PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12,
