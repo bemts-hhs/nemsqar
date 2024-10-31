@@ -58,3 +58,29 @@ Interested persons may reference the following links and resources via NEMSQA's 
 * [Frequently Asked Questions](https://www.nemsqa.org/nemsqa-measure-faq): Answers to commonly asked questions.
 * [NEMSQA Measure Technical Release Notes_2021](https://www.nemsqa.org/assets/docs/NEMSQA-Measure-Technical-Release-Notes_2021.pdf): A reference table that documents changes made to the NEMSQA measures during the 2021 annual review.
 * [Fact Sheet](https://www.nemsqa.org/assets/docs/Fact-Sheet-NEMSQA.pdf): An info page explaining why agencies and systems should migrate from EMS Compass legacy/candidate measures to the National EMS Quality Alliance Measure Set.
+
+# Contributors
+
+* [Nicolas Foss, Ed.D., MS](https://github.com/nicolasfoss);
+  * contributions: maintainer, code
+  * contact: nicolas.foss at hhs.iowa.gov
+  * work: Epidemiologist at Bureau of Emergency Medical and Trauma Services > Iowa HHS
+
+* [Peter Geissert, MPH, MS](https://www.linkedin.com/in/peter-geissert-ba7607ba)
+  * contributions: nemsqar project conceptualization, code
+  * contact: PETER.GEISSERT at oha.oregon.gov
+  * work: EMS & Trauma Informatics Research Analyst at Oregon EMS & Trauma Systems, Public Health Division
+
+* [Alyssa Green, MS, NREMT-P](https://www.linkedin.com/in/alyssa-green-1a7aa4218)
+  * contributions: code
+  * contact: awhim at nemsqa.org
+  * work: Project Coordinator National EMS Quality Alliance (NEMSQA)
+
+* [Samuel Kordik, BBA, BS, NREMT](https://www.linkedin.com/in/samuelkordik)
+  * contributions: code
+  * contact: samuel.kordik at utsouthwestern.edu
+  * work: Quality Manager Dallas Fire-Rescue Office of the Medical Director
+ 
+# Thanks!
+
+A big loud thanks to Sheree Murphy from NEMSQA and Jeffrey Jarvis, MD, MS, EMT-P, FACEP, FAEMS, medical director for the Metropolitan Area EMS Authority (Fort Worth, Texas) and Marshall Washick (Washington D.C. Fire) for all their input and consultation!
