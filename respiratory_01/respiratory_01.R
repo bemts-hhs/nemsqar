@@ -21,7 +21,7 @@
 ###_____________________________________________________________________________
 
 
-respiratory_01 <- function(df, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, epatient_15_col) {
+respiratory_01 <- function(df, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, patient_age_in_years_col) {
   
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
   
@@ -58,11 +58,11 @@ respiratory_01 <- function(df, eresponse_05_col, esituation_11_col, esituation_1
   
   # filter adult
   adult_pop <- initial_population %>% 
-    dplyr::filter({{epatient_15_col}} >= 18)
+    dplyr::filter({{patient_age_in_years_col}} >= 18)
   
   # filter peds
   peds_pop <- initial_population %>% 
-    dplyr::filter({{epatient_15_col}} < 18)
+    dplyr::filter({{patient_age_in_years_col}} < 18)
   
   # get the summary of results
   
