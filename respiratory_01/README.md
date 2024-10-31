@@ -330,7 +330,7 @@ respiratory_01_test_clean <- respiratory_01_test %>%
                   )
     ) %>% 
     
-    # make sure that 
+    # classify records as having both vitals or not
     mutate(vitals_check = if_else(!is.na(PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12) & !is.na(PATIENT_INITIAL_RESPIRATORY_RATE_E_VITALS_14), 1, 0
     )
     )
