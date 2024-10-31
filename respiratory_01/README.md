@@ -37,6 +37,18 @@ A summary data frame containing the following columns:
 * `prop`: Proportion of cases with complete vital signs formatted as a decimal number.
 * `prop_label`: Proportion of cases with complete vital signs, formatted as a percentage.
 
+# Notes
+* The function assumes data are already loaded and in the format specified below.
+* Must supply: epatient.15, esituation.11, esituation.12 (as a column where each entry is in one cell), eresponse.05, initial evitals.12 value, initial evitals.14 value.
+* The datasource supplied to the function should be a `tibble` or `dataframe` where each row is 1 observation and each column is a feature.
+* This function assumes that there is an age in years calculated for epatient_15
+* This function also assumes that rows that are missing any value are blank and will be coerced to NA, not the not known / not recorded values common to NEMSIS or the value codes that correspond to "not values".
+* The function assumes that vitals in the vital signs columns are likely the first vital signs, or are a list column.  This will give an indication of whether or not any vitals were taken.
+* The esituation.12 is best as concatenation of all secondary impressions entered
+* The first argument is a dataframe, no joining is done by the function.
+* Any joins to get vitals etc. will need to be done outside the function
+* Grouping via `dplyr::group_by()` can be done before the function to get the calculations by region or other grouping
+
 # Example
 
 ``` r
