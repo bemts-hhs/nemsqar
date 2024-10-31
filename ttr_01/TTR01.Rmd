@@ -1,0 +1,739 @@
+---
+title: "TTR-01 Research"
+author: "Alyssa Green"
+date: "2024-10-28"
+output: word_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(gtsummary)
+library(ggplot2)
+library(haven) #to read in Stata .dta files
+library(dplyr)
+library(tidyverse)
+library(survival)
+library(table1)
+library(MASS)
+library(tidyr)
+library(pROC)
+library(flextable)
+library(car)
+library(epiDisplay)
+library(lubridate) #to format date and time variables
+```
+
+Load cleaned data
+```{r}
+ttr01.measurevariables <- read.csv("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/ttr01.measurevariables.csv")
+
+vitals.ttr01 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/vitals.ttr01.csv")
+
+#Variables not needed to calculate measure
+comp.data<- read.csv("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/computed.ttr01.csv")
+
+ttr01.addlvar <- read.csv("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/ttr01.addlvar.csv")
+```
+
+Filter for initial population
+1. Filter for 9-1-1 response
+2. Filter for disposition of refusal/no transport
+```{r}
+response.911 <- c("2205001", "2205003", "2205009")
+ttr01.911 <- ttr01.measurevariables %>% filter(eResponse_05 %in% response.911)
+
+disposition.codes <- c("4212003", "4212021", "4212025", "4212027", "4212029", "4212035", "4212037")
+
+ttr01.ipp <- ttr01.911 %>% filter(eDisposition_12 %in% disposition.codes)
+dispo.group <- ttr01.ipp %>% group_by(eDisposition_12) %>% count()
+```
+
+Denominator exclusions
+```{r}
+ttr01.denom <- ttr01.ipp %>% filter(eArrest_01 != "3001003")
+7388269-7345838
+```
+Group by age
+```{r}
+peds.codes <- c("2516001", "2516003", "2516005", "2516007")
+na.nr <- c("7701001", "7701003", "8801005", "8801019", "8801023")
+
+table(ttr01.denom$ePatient_16)
+
+ttr01.denom <- ttr01.denom %>%
+  mutate(age.cat = case_when(ePatient_15 < 18 & ePatient_16 == "2516009"~1,
+                             ePatient_15 < 120 & ePatient_16 %in% peds.codes ~ 1,
+                             ePatient_15 >= 18 & !ePatient_15 %in% na.nr & ePatient_16 == "2516009" ~ 2,
+                             TRUE~3))
+table(ttr01.denom$age.cat)
+
+write.csv(ttr01.denom, "C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/ttr01.denom.csv")
+```
+
+Clean vitals data
+```{r}
+ttr01.denom <- read.csv("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/ttr01.denom.csv")
+
+vitals.filtered <- vitals.ttr01 %>% filter(PcrKey %in% ttr01.denom$PcrKey)
+
+write.csv(vitals.filtered, "C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/vitals.ttr01ipp.csv")
+
+vitals.filtered <- read.csv("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/vitals.ttr01ipp.csv")
+```
+
+Separate vitals variables for cleaning
+```{r}
+ttr01.sbp <- vitals.filtered %>% dplyr::select(PcrKey, eVitals_06)
+ttr01.hr <- vitals.filtered %>% dplyr::select(PcrKey, eVitals_10)
+ttr01.spo2 <- vitals.filtered %>% dplyr::select(PcrKey, eVitals_12)
+ttr01.rr <- vitals.filtered %>% dplyr::select(PcrKey, eVitals_14)
+ttr01.gcs <- vitals.filtered %>% dplyr::select(PcrKey, eVitals_19, eVitals_20, eVitals_21)
+ttr01.avpu <- vitals.filtered %>% dplyr::select(PcrKey, eVitals_26)
+```
+
+Remove NA/NR values
+```{r}
+na.nr <- c("7701001", "7701003", "8801005", "8801019", "8801023")
+
+ttr01.sbp <- ttr01.sbp %>% filter(!eVitals_06 %in% na.nr)
+ttr01.hr <- ttr01.hr %>% filter(!eVitals_10 %in% na.nr)
+ttr01.spo2 <- ttr01.spo2 %>% filter(!eVitals_12 %in% na.nr)
+ttr01.rr <- ttr01.rr %>% filter(!eVitals_14 %in% na.nr)
+ttr01.gcs <- ttr01.gcs %>% filter(!eVitals_19 %in% na.nr & !eVitals_20 %in% na.nr & !eVitals_21 %in% na.nr)
+ttr01.avpu <- ttr01.avpu %>% filter(!eVitals_26 %in% na.nr)
+```
+
+Group by PcrKey and note count of assessments 
+```{r}
+ttr01.sbpn <- ttr01.sbp %>% group_by(PcrKey) %>% count()
+ttr01.hrn <- ttr01.hr %>% group_by(PcrKey) %>% count()
+ttr01.spo2n <- ttr01.spo2 %>% group_by(PcrKey) %>% count()
+ttr01.rrn <- ttr01.rr %>% group_by(PcrKey) %>% count()
+ttr01.gcsn <- ttr01.gcs %>% group_by(PcrKey) %>% count()
+ttr01.avpun <- ttr01.avpu %>% group_by(PcrKey) %>% count()
+
+```
+
+Create 0/1 variable for each vital sign and rename columns to prepare for merging
+```{r}
+colnames(ttr01.sbpn)[2] <- "sbp.n"
+colnames(ttr01.hrn)[2] <- "hr.n"
+colnames(ttr01.spo2n)[2] <- "spo2.n"
+colnames(ttr01.rrn)[2] <- "rr.n"
+colnames(ttr01.gcsn)[2] <- "gcs.n"
+colnames(ttr01.avpun)[2] <- "avpu.n"
+
+ttr01.sbpn <- ttr01.sbpn %>% mutate(sbp.num = ifelse(sbp.n > 0, 1, 0)) 
+ttr01.hrn <- ttr01.hrn %>% mutate(hr.num = ifelse(hr.n > 0, 1, 0))
+ttr01.spo2n <- ttr01.spo2n %>% mutate(spo2.num = ifelse(spo2.n > 0, 1, 0))
+ttr01.rrn <- ttr01.rrn %>% mutate(rr.num = ifelse(rr.n > 0, 1, 0))
+ttr01.gcsn <- ttr01.gcsn %>% mutate(gcs.num = ifelse(gcs.n > 0, 1, 0))
+ttr01.avpun <- ttr01.avpun %>% mutate(avpu.num = ifelse(avpu.n > 0, 1, 0))
+
+```
+
+Calculate LOC
+```{r}
+ttr01.pcrkey <- ttr01.denom %>% dplyr::select(PcrKey)
+
+ttr01.loc <- left_join(ttr01.pcrkey, ttr01.gcsn, by="PcrKey")
+ttr01.loc <- left_join(ttr01.loc, ttr01.avpun, by="PcrKey")
+ttr01.loc <- ttr01.loc %>% mutate(loc.num = ifelse(avpu.num==1 & gcs.num==1, 1, 0))
+
+table(ttr01.loc$loc.num)
+
+```
+
+Merge numerator variables together
+```{r}
+sbp <- ttr01.sbpn %>% dplyr::select(PcrKey, sbp.num)
+hr <- ttr01.hrn %>% dplyr::select(PcrKey, hr.num)
+spo2 <- ttr01.spo2n %>% dplyr::select(PcrKey, spo2.num)
+rr <- ttr01.rrn %>% dplyr::select(PcrKey, rr.num)
+loc <- ttr01.loc %>% dplyr::select(PcrKey, loc.num)
+
+colnames(ttr01.denom)
+
+ttr01 <- left_join(ttr01.denom, sbp, by="PcrKey")
+ttr01 <- left_join(ttr01, hr, by="PcrKey")
+ttr01 <- left_join(ttr01, spo2, by="PcrKey")
+ttr01 <- left_join(ttr01, rr, by="PcrKey")
+ttr01 <- left_join(ttr01, loc, by="PcrKey")
+colnames(ttr01)
+
+ttr01$sbp.num[is.na(ttr01$sbp.num)] <- 0
+ttr01$hr.num[is.na(ttr01$hr.num)] <- 0
+ttr01$spo2.num[is.na(ttr01$spo2.num)] <- 0
+ttr01$rr.num[is.na(ttr01$rr.num)] <- 0
+ttr01$loc.num[is.na(ttr01$loc.num)] <- 0
+
+ttr01 <- ttr01 %>% mutate(numerator = ifelse(sbp.num == 1 & hr.num == 1
+                                             & spo2.num == 1 & rr.num == 1 
+                                             & loc.num == 1, 1, 0))
+
+```
+
+Add in additional variables for analysis
+```{r}
+comp.data<- read.csv("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/computed.ttr01.csv")
+
+ttr01.addlvar <- read.csv("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/ttr01.addlvar.csv")
+
+ttr01 <- left_join(ttr01, comp.data, by="PcrKey")
+ttr01 <- left_join(ttr01, ttr01.addlvar, by="PcrKey")
+
+colnames(ttr01)
+ttr01 <- ttr01 %>% dplyr::select(-X, -X.1, -X.y, -X.x)
+
+write.csv(ttr01, "C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/ttr01.csv")
+ttr01 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/ttr01.csv")
+ttr01 <- left_join(ttr01, ttr01.psap, by="PcrKey")
+ttr01 <- ttr01 %>% dplyr::select(-eTimes_09)
+write.csv(ttr01, "C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/ttr01.csv")
+
+
+ttr01.adult <- ttr01 %>% filter(age.cat == 2)
+write.csv(ttr01.adult, "C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/ttr01.adult.csv")
+```
+
+```{r}
+colnames(ttr01.adult)
+ttr01.adult <- ttr01.adult %>% mutate(numerator.char = ifelse(numerator==1, "Pass", "Fail"))
+
+gender = ttr01.adult %>% group_by(ePatient_13, numerator.char) %>% count() %>% pivot_wider(names_from = numerator.char, values_from = n)
+
+Urbanicity = ttr01.adult %>% group_by(Urbanicity, numerator.char) %>% count() %>% pivot_wider(names_from = numerator.char, values_from = n)
+
+NasemsoRegion = ttr01.adult %>% group_by(NasemsoRegion, numerator.char) %>% count() %>% pivot_wider(names_from = numerator.char, values_from = n)
+
+DispatchReason = ttr01.adult %>% group_by(eDispatch_01, numerator.char) %>% count() %>% pivot_wider(names_from = numerator.char, values_from = n)
+DispatchReason$Total = DispatchReason$Fail+DispatchReason$Pass
+
+primary.imp = ttr01.adult %>% group_by(DiagnosisCodeDescr, numerator.char) %>% count() %>% pivot_wider(names_from = numerator.char, values_from = n)
+primary.imp$Total <- primary.imp$Fail+primary.imp$Pass
+write.csv(primary.imp, "C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/ttr01primaryimp.csv")
+primary.imp <- readxl::read_excel("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/ttr01primaryimp.xlsx")
+primary.imp$primary[is.na(primary.imp$primary)] <- "Other Primary Impression"
+
+primary.table <- left_join(ttr01.adult, primary.imp, by="DiagnosisCodeDescr")
+primary.table = primary.table %>% group_by(primary, numerator.char) %>% count() %>% pivot_wider(names_from = numerator.char, values_from = n)
+primary.table$Total <- primary.table$Fail+primary.table$Pass
+primary.table <- primary.table %>%
+  mutate(primary.i = str_to_title(primary))
+primary.table$TTR01.perf <- primary.table$Pass/primary.table$Total
+denom <- sum(primary.table$Total)
+primary.table$prop <- primary.table$Total/denom
+writexl::write_xlsx(primary.table, "C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/primarytable.xlsx")
+
+scene.location = ttr01.adult %>% group_by(eScene_09, numerator.char) %>% count() %>% pivot_wider(names_from = numerator.char, values_from = n)
+scene.location$Total <- scene.location$Fail+scene.location$Pass
+
+resp.15 = ttr01.adult %>% group_by(eResponse_15, numerator.char) %>% count() %>% pivot_wider(names_from = numerator.char, values_from = n)
+
+resp.07 = ttr01.adult %>% group_by(eResponse_07, numerator.char) %>% count() %>% pivot_wider(names_from = numerator.char, values_from = n)
+
+payment = ttr01.adult %>% group_by(ePayment_50, numerator.char) %>% count() %>% pivot_wider(names_from = numerator.char, values_from = n)
+
+disposition = ttr01.adult %>% group_by(eDisposition_12, numerator.char) %>% count() %>% pivot_wider(names_from = numerator.char, values_from = n)
+
+timeofday <- ttr01.adult %>% dplyr::select(PcrKey, eTimes_01)
+
+age <- ttr01.adult %>% dplyr::select(PcrKey, ageinyear)
+```
+
+Clean Dispatch Reason
+```{r}
+DispatchReason <- DispatchReason %>% mutate(dispatch.reason = case_when(eDispatch_01 == "2301033" ~ "Falls",
+                                                                        eDispatch_01 == "2301061" ~ "Sick Person",
+                                                                        eDispatch_01 == "2301069" ~ "MVC",
+                                                                        eDispatch_01 == "2301051" ~ "Other",
+                                                                        eDispatch_01 == "2301013" ~ "Breathing Problem",
+                                                                        eDispatch_01 == "2301077" ~ "Unconscious/Fainting",
+                                                                        eDispatch_01 == "2301021" ~ "Chest Pain",
+                                                                        eDispatch_01 == "2301079" ~ "Uknown/Person Down",
+                                                                        eDispatch_01 == "2301007" ~ "Assault",
+                                                                        eDispatch_01 == "2301073" ~ "Traumatic Injury",
+                                                                        eDispatch_01 == "2301027" ~ "Diabetic Problem",
+                                                                        eDispatch_01 == "2301025" ~ "Seizure",
+                                                                        eDispatch_01 == "2301059" ~ "Behavioral",
+                                                                        eDispatch_01 == "2301053" ~ "OD/Poisoning",
+                                                                        eDispatch_01 == "2301045" ~ "Laceration/Hemorrhage",
+                                                                        TRUE~NA))
+DispatchReason$Total = DispatchReason$Fail+DispatchReason$Pass
+DispatchReason$TTR01Perf = DispatchReason$Pass/DispatchReason$Total
+DispatchReason <- DispatchReason %>% filter(!is.na(dispatch.reason))
+DispatchReason <- DispatchReason %>% dplyr::select(dispatch.reason, Total, TTR01Perf)
+writexl::write_xlsx(DispatchReason, "C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/dispatch.xlsx")
+
+resp.07 <- resp.07 %>% mutate(unit.capability = case_when(eResponse_07 == "2207011" ~ "Air",
+                                                          eResponse_07 == "2207013" ~ "Air",
+                                                          eResponse_07 == "2207003" ~ "Transport",
+                                                          eResponse_07 == "2207005" ~ "Non-Transport",
+                                                          eResponse_07 == "2207007" ~ "Non-Transport",
+                                                          eResponse_07 == "2207009" ~ "Non-Transport",
+                                                          TRUE~NA))
+
+resp.15 <- resp.15 %>% mutate(levelofcare = case_when(eResponse_15 == "2215001" ~ "EMR",
+                                                      eResponse_15 == "2215003" ~ "EMT",
+                                                      eResponse_15 == "2215005" ~ "AEMT/I",
+                                                      eResponse_15 == "2215007" ~ "AEMT/I",
+                                                      eResponse_15 == "2215023" ~ "BLS-Community",
+                                                      eResponse_15 == "2215009" ~ "AEMT/I",
+                                                      eResponse_15 == "2215011" ~ "AEMT/I",
+                                                      eResponse_15 == "2215013" ~ "ALS",
+                                                      eResponse_15 == "2215015" ~ "ALS-Community",
+                                                      eResponse_15 == "2215017" ~ "ALS",
+                                                      eResponse_15 == "2215019" ~ "ALS",
+                                                      eResponse_15 == "2215021" ~ "ALS",
+                                                      TRUE~NA
+                                                      ))
+
+disposition <- disposition %>% mutate(dispo = case_when(eDisposition_12 == "4212003" ~ "Assist-Public",
+                                                       eDisposition_12 == "4212021" ~ "Evaluated.NoTx",
+                                                       eDisposition_12 == "4212025" ~ "RefusedTx",
+                                                       eDisposition_12 == "4212027" ~ "Treat.ReleaseAMA",
+                                                       eDisposition_12 == "4212029" ~ "Treat.ReleaseProtocol",
+                                                       eDisposition_12 == "4212035" ~ "Treat.TxLEO",
+                                                       eDisposition_12 == "4212037" ~ "Treat.TxPOV",
+                                                       TRUE~NA))
+gender <- gender %>% mutate(gender = case_when(ePatient_13 == "9906001" ~ "Female",
+                                               ePatient_13 == "9906003" ~ "Male",
+                                               ePatient_13 == "9906005" ~ "Unknown",
+                                               ePatient_13 == "9906011" ~ "Other, Neither exclusively M/F",
+                                               TRUE~NA))
+payment <- payment %>% mutate(cms.levelofcare = case_when(ePayment_50 == "2650001" ~ "ALS",
+                                                          ePayment_50 == "2650003" ~ "ALS",
+                                                          ePayment_50 == "2650005" ~ "ALS",
+                                                          ePayment_50 == "2650007" ~ "BLS",
+                                                          ePayment_50 == "2650009" ~ "BLS",
+                                                          ePayment_50 == "2650011" ~ "Air",
+                                                          ePayment_50 == "2650013" ~ "ALS",
+                                                          ePayment_50 == "2650015" ~ "ALS",
+                                                          ePayment_50 == "2650017" ~ "Air",
+                                                          TRUE~NA))
+
+scene.location <- scene.location %>%
+  mutate(location = case_when(grepl("Y92.0", eScene_09) ~ "Residence/Home",
+                              grepl("Y92.1", eScene_09) ~ "Institutional Residence",
+                              grepl("Y92.2", eScene_09) ~ "School/Public Building",
+                              grepl("Y92.3", eScene_09) ~ "Sports/Athletic Area",
+                              grepl("Y92.4", eScene_09) ~ "Street/Highway",
+                              grepl("Y92.5", eScene_09) ~ "Business/Commercial Building",
+                              grepl("Y92.6", eScene_09) ~ "Industrial",
+                              grepl("Y92.7", eScene_09) ~ "Farm",
+                              grepl("Y92.8", eScene_09) ~ "Other",
+                              TRUE~NA))
+
+#Correct datetime format for psap time
+timeofday$psap <- timeofday$eTimes_01
+class(timeofday$psap)
+timeofday$psap <- trimws(timeofday$psap)
+substring(timeofday$psap, 10, 10) = " "
+timeofday$psap <- gsub("([A-Z])([A-Z])([A-Z])", " \\1\\2\\3 ", x = timeofday$psap)
+timeofday$psap <- dmy_hms(timeofday$psap)
+class(timeofday$psap)
+
+timeofday <- timeofday %>% mutate(hour = hour(psap))
+tod <- timeofday %>% group_by(hour) %>% count()
+tod <- tod %>% filter(!is.na(hour))
+barplot(tod$n, 
+        names.arg = tod$hour, 
+        col = "blue", 
+        border = "black", 
+        main = "Bar Plot of tod$n by Hour", 
+        xlab = "Hour of Day", 
+        ylab = "Value of n")
+
+age.check <- age %>% group_by(ageinyear) %>% count()
+
+barplot(age.check$n, 
+        names.arg = age.check$ageinyear, 
+        col = "blue", 
+        border = "black", 
+        main = "Bar Plot of Age in Years TTR-01", 
+        xlab = "Age in Years", 
+        ylab = "Count")
+
+age.check <- age %>% group_by(ageinyear) %>% count()
+ttr01.adult <- ttr01.adult %>% mutate(age.group = case_when(ageinyear < 30 ~ "18-29",
+                                          ageinyear >= 30 & ageinyear < 40 ~ "30-39",
+                                          ageinyear >= 40 & ageinyear < 50 ~ "40-49",
+                                          ageinyear >= 50 & ageinyear < 60 ~ "50-59",
+                                          ageinyear >= 60 & ageinyear < 70 ~ "60-69",
+                                          ageinyear >= 70 & ageinyear < 80 ~ "70-79",
+                                          ageinyear >= 80 & ageinyear < 90 ~ "80-89",
+                                          ageinyear >= 90 & ageinyear < 100 ~ "90-99",
+                                          ageinyear >= 100 ~ ">100",
+                                          TRUE~NA
+                                          ))
+
+race<- read_dta("C:/Users/alyss/OneDrive/Documents/data/STATA/PCRPATIENTRACEGROUP.dta")
+
+ttrkey <- ttr01.adult$PcrKey
+
+race <- race %>% filter(PcrKey %in% ttrkey)
+
+race.dis <- race %>% group_by(PcrKey) %>% count() %>% filter(n>1)
+racedupkey <- race.dis$PcrKey
+
+race <- race %>% dplyr::select(PcrKey, ePatient_14) %>% distinct(PcrKey, .keep_all=TRUE)
+
+race <- race %>% mutate(race.cat = case_when(PcrKey %in% racedupkey ~ "Multiple",
+                                             ePatient_14 == "2514001" ~ "American Indian/Alaskan",
+                                             ePatient_14 == "2514003" ~ "Asian",
+                                             ePatient_14 == "2514005" ~ "Black/African American",
+                                             ePatient_14 == "2514007" ~ "Hispanic/Latino",
+                                             ePatient_14 == "2514009" ~ "Native Haqaiian/Pacific Islander",
+                                             ePatient_14 == "2514011" ~ "White",
+                                             TRUE~NA))
+table(race$race.cat)
+```
+
+```{r}
+colnames(ttr01.adult)
+
+dispo.m <- disposition %>% dplyr::select(eDisposition_12, dispo)
+ttr01.adult <- left_join(ttr01.adult, dispo.m, by="eDisposition_12")
+
+dispatch.m <- DispatchReason %>% dplyr::select(eDispatch_01, dispatch.reason)
+ttr01.adult <- left_join(ttr01.adult, dispatch.m, by="eDispatch_01")
+
+gender.m <- gender %>% dplyr::select(ePatient_13, gender)
+ttr01.adult <- left_join(ttr01.adult, gender.m, by="ePatient_13")
+
+payment.m <- payment %>% dplyr::select(ePayment_50, cms.levelofcare)
+ttr01.adult <- left_join(ttr01.adult, payment.m, by="ePayment_50")
+
+resp.07m <- resp.07 %>% dplyr::select(eResponse_07, unit.capability)
+ttr01.adult <- left_join(ttr01.adult, resp.07m, by="eResponse_07")
+
+resp.15m <- resp.15 %>% dplyr::select(eResponse_15, levelofcare)
+ttr01.adult <- left_join(ttr01.adult, resp.15m, by="eResponse_15")
+
+scene.m <- scene.location %>% dplyr::select(eScene_09, location)
+ttr01.adult <- left_join(ttr01.adult, scene.m, by="eScene_09")
+
+primary.m <- primary.imp %>% dplyr::select(DiagnosisCodeDescr, primary)
+ttr01.adult <- left_join(ttr01.adult, primary.m, by="DiagnosisCodeDescr")
+
+tod.m <- timeofday %>% dplyr::select(PcrKey, hour)
+ttr01.adult <- left_join(ttr01.adult, tod.m, by="PcrKey")
+
+race.m <- race %>% dplyr::select(PcrKey, race.cat)
+ttr01.adult <- left_join(ttr01.adult, race.m, by="PcrKey")
+
+ttr01.clean <- ttr01.adult %>% dplyr::select(PcrKey, sbp.num, hr.num, spo2.num, rr.num, loc.num, numerator, numerator.char, ageinyear, age.group, gender, race.cat, Urbanicity, NasemsoRegion, EMSSceneTimeMin, dispo, hour, dispatch.reason, primary, location, unit.capability, levelofcare, cms.levelofcare)
+write.csv(ttr01.clean, "C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/ttr01.clean.csv")
+```
+
+```{r}
+install.packages("summarytools")
+library(summarytools)
+summarytools::view(dfSummary(ttr01.clean))
+
+```
+
+```{r}
+table1 <- 
+  tbl_summary(ttr01.clean,
+              include=c(ageinyear, age.group, gender, race.cat, urbanicity, NasemsoRegion),
+              by=numerator.char)
+print(table1)
+
+table1a
+```
+
+
+```{r}
+tod.num <- ttr01.clean %>% group_by(hour) %>% summarise(num = sum(numerator))
+tod <- ttr01.clean %>% group_by(hour) %>% count()
+tod <- left_join(tod, tod.num, by="hour")
+tod <- tod %>% filter(!is.na(hour))
+tod$hour <- as.numeric(tod$hour)
+tod <- tod %>% mutate(hour.group = case_when(hour >=5& hour <=8 ~ "EarlyAM",
+                                             hour > 8 & hour <= 11 ~ "MidAM",
+                                             hour >11 & hour <= 18 ~ "Afternoon",
+                                             hour >18 ~ "Evening",
+                                             hour < 5 ~ "Overnight",
+                                             TRUE~NA))
+table(tod$hour.group)
+library(scales)
+tod.plot <- ggplot(tod, aes(x = factor(hour), y = n, fill = hour.group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Bar Plot by Time of Day (Hour)", x = "Time of Day (Hour)", y = "Number of Patients") +
+  theme_minimal() +
+  geom_line(aes(y = num, group = 1, color = "Performance"), size = 1) +  # Line plot with legend
+  geom_point(aes(y = num, color = "Performance"), size = 2) +  # Optional points with legend
+  scale_y_continuous(labels = label_number()) +  # Update y-axis labels
+  scale_color_manual(name = "TTR-01", values = "black")  # Custom legend title and color
+
+ggsave("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/tod.jpg", tod.plot, width = 8, height = 6)
+```
+
+```{r}
+age <- ttr01.adult %>% dplyr::select(PcrKey, ageinyear)
+age <- age %>% group_by(ageinyear) %>% count()
+age <- age %>% mutate(age.group = case_when(ageinyear < 30 ~ "18-29",
+                                          ageinyear >= 30 & ageinyear < 40 ~ "30-39",
+                                          ageinyear >= 40 & ageinyear < 50 ~ "40-49",
+                                          ageinyear >= 50 & ageinyear < 60 ~ "50-59",
+                                          ageinyear >= 60 & ageinyear < 70 ~ "60-69",
+                                          ageinyear >= 70 & ageinyear < 80 ~ "70-79",
+                                          ageinyear >= 80 & ageinyear < 90 ~ "80-89",
+                                          ageinyear >= 90 & ageinyear < 100 ~ "90-99",
+                                          ageinyear >= 100 ~ ">100",
+                                          TRUE~NA
+                                          ))
+age.num <- ttr01.adult %>% group_by(ageinyear) %>% summarise(num = sum(numerator))
+age <- left_join(age, age.num, by="ageinyear")
+
+library(scales)
+
+  library(ggplot2)
+library(scales)
+
+age.plot <- ggplot(age, aes(x = factor(ageinyear), y = n, fill = age.group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Bar Plot by Patient Age (Years)", 
+       x = "Patient Age (Years)", 
+       y = "Number of Patients") +
+  theme_minimal() +
+  geom_line(aes(y = num, group = 1, color = "Performance"), size = 1) +  # Line plot with legend
+  geom_point(aes(y = num, color = "Performance"), size = 2) +  # Optional points with legend
+  scale_y_continuous(labels = label_number()) +  # Update y-axis labels
+  scale_x_discrete(breaks = seq(20, max(age$ageinyear), by = 10)) +  # Set x-axis labels every 10 years
+  scale_color_manual(name = "TTR-01", values = "black")  # Custom legend title and color
+
+
+ggsave("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/age.jpg", age.plot, width = 8, height = 6)
+```
+
+```{r}
+scene <- ttr01.adult %>% dplyr::select(PcrKey, EMSSceneTimeMin)
+scene <- scene %>% group_by(EMSSceneTimeMin) %>% count()
+scene <- scene %>% filter(!is.na(EMSSceneTimeMin))
+scene.num <- ttr01.adult %>% group_by(EMSSceneTimeMin) %>% summarise(num = sum(numerator))
+scene <- left_join(scene, scene.num, by="EMSSceneTimeMin")
+scene <- scene %>% mutate(scene.group = case_when(EMSSceneTimeMin <= 5~ "0-5",
+                                                  EMSSceneTimeMin >5 & EMSSceneTimeMin <= 10 ~ "05-10",
+                                                  EMSSceneTimeMin >10 & EMSSceneTimeMin <=15 ~ "10-15",
+                                                  EMSSceneTimeMin > 15 & EMSSceneTimeMin <=20 ~ "15-20",
+                                                  EMSSceneTimeMin > 20 & EMSSceneTimeMin <= 25 ~"20-25",
+                                                  EMSSceneTimeMin > 25 & EMSSceneTimeMin <=30 ~ "25-30",
+                                                  EMSSceneTimeMin >30 & EMSSceneTimeMin <=35 ~ "30-35", 
+                                                  EMSSceneTimeMin >35 & EMSSceneTimeMin <=40~ "35-40",
+                                                  EMSSceneTimeMin >40 & EMSSceneTimeMin <=45~ "40-45",
+                                                  EMSSceneTimeMin >45 & EMSSceneTimeMin <=50~ "45-50",
+                                                  EMSSceneTimeMin >50 & EMSSceneTimeMin <=55~ "50-55", 
+                                                  EMSSceneTimeMin >55 & EMSSceneTimeMin <=60~ "55-60", 
+                                                  EMSSceneTimeMin >60 & EMSSceneTimeMin < 120~ "60+",  
+                                                  TRUE~NA))
+scene.gr <- scene %>% group_by(scene.group) %>% summarise(n.gr = sum(n),
+                                                       num.gr = sum(num))
+
+scene.gr$TTR01.perf = scene.gr$num.gr/scene.gr$n.gr
+writexl::write_xlsx(scene.gr, "C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/scenetime.xlsx")
+
+library(scales)
+
+scene.plot <- 
+  ggplot(scene.gr, aes(x = scene.group, y = n.gr, fill=scene.group)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Bar Plot by EMS Scene Time (Minutes)", 
+       x = "Scene Time (Minutes)", 
+       y = "Number of Patients") +
+  theme_minimal() +
+  geom_line(aes(y = num.gr, group = 1, color = "Performance"), size = 1) +  # Line plot with legend
+  geom_point(aes(y = num.gr, color = "Performance"), size = 2) +  # Optional points with legend
+  scale_y_continuous(labels = label_number()) +  # Update y-axis labels
+  #scale_x_continuous(breaks = seq(0, 60, by = 10)) +  # Set x-axis labels every 1 minute
+  scale_color_manual(name = "TTR-01", values = "black")  # Custom legend title and color
+
+
+ggsave("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/scene.jpg", scene.plot, width = 8, height = 6)
+```
+
+
+
+
+Filter for patients in ttr01 adult and correct Date/Time format
+```{r}
+vitals.filtered <- vitals.ttr01 %>% filter(PcrKey %in% ttr01.adult$PcrKey)
+
+write.csv(vitals.filtered, "C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/vitals.ttr01adult.csv")
+
+vitals.filtered1 <- read.csv("C:/Users/alyss/OneDrive/Documents/data/TTR-01 Research Data/vitals.ttr01adult.csv")
+
+#Correct datetime format for vitals time
+class(vitals.filtered$eVitals_01)
+vitals.filtered$eVitals_01 <- trimws(vitals.filtered$eVitals_01)
+substring(vitals.filtered$eVitals_01, 10, 10) = " "
+vitals.filtered$eVitals_01 <- gsub("([A-Z])([A-Z])([A-Z])", " \\1\\2\\3 ", x = vitals.filtered$eVitals_01)
+vitals.filtered$eVitals_01 <- dmy_hms(vitals.filtered$eVitals_01)
+class(vitals.filtered$eVitals_01)
+```
+
+```{r}
+#Correct datetime format for vitals time
+class(vitals.filtered1$eVitals_01)
+vitals.filtered1$eVitals_01 <- trimws(vitals.filtered1$eVitals_01)
+substring(vitals.filtered1$eVitals_01, 10, 10) = " "
+vitals.filtered1$eVitals_01 <- gsub("([A-Z])([A-Z])([A-Z])", " \\1\\2\\3 ", x = vitals.filtered1$eVitals_01)
+vitals.filtered1$eVitals_01 <- dmy_hms(vitals.filtered1$eVitals_01)
+class(vitals.filtered1$eVitals_01)
+
+vitals.filtered <- vitals.filtered1
+```
+
+Separate vitals variables for cleaning
+```{r}
+ttr01.sbp <- vitals.filtered %>% dplyr::select(PcrKey, eVitals_01, eVitals_06)
+ttr01.hr <- vitals.filtered %>% dplyr::select(PcrKey, eVitals_01, eVitals_10)
+ttr01.spo2 <- vitals.filtered %>% dplyr::select(PcrKey, eVitals_01, eVitals_12)
+ttr01.rr <- vitals.filtered %>% dplyr::select(PcrKey, eVitals_01, eVitals_14)
+ttr01.gcs <- vitals.filtered %>% dplyr::select(PcrKey, eVitals_01, eVitals_19, eVitals_20, eVitals_21)
+ttr01.avpu <- vitals.filtered %>% dplyr::select(PcrKey, eVitals_01, eVitals_26)
+```
+
+Remove NA/NR values
+```{r}
+na.nr <- c("7701001", "7701003", "8801005", "8801019", "8801023")
+
+ttr01.sbp <- ttr01.sbp %>% filter(!eVitals_06 %in% na.nr)
+ttr01.hr <- ttr01.hr %>% filter(!eVitals_10 %in% na.nr)
+ttr01.spo2 <- ttr01.spo2 %>% filter(!eVitals_12 %in% na.nr)
+ttr01.rr <- ttr01.rr %>% filter(!eVitals_14 %in% na.nr)
+ttr01.gcs <- ttr01.gcs %>% filter(!eVitals_19 %in% na.nr & !eVitals_20 %in% na.nr & !eVitals_21 %in% na.nr)
+ttr01.avpu <- ttr01.avpu %>% filter(!eVitals_26 %in% na.nr)
+```
+
+Filter for last assessed vitals per patient and create variable to note abnormal vital signs
+SPO2
+SBP
+HR
+RR
+LOC
+
+```{r}
+ttr01.spo2OOR <- ttr01.spo2 %>% group_by(PcrKey) %>% mutate(last.time = max(eVitals_01))
+ttr01.spo2OOR <- ttr01.spo2OOR %>% filter(eVitals_01 == last.time) 
+ttr01.spo2OOR <- ttr01.spo2OOR%>% mutate(hypoxia = ifelse(eVitals_12 < 90, 1,0)) 
+sum(ttr01.spo2OOR$hypoxia, na.rm=TRUE)
+
+spo2OOR <- ttr01.spo2OOR %>% dplyr::select(PcrKey, hypoxia)
+```
+
+```{r}
+ttr01.sbpOOR <- ttr01.sbp %>% group_by(PcrKey) %>% mutate(last.time = max(eVitals_01))
+ttr01.sbpOOR <- ttr01.sbpOOR %>% filter(eVitals_01 == last.time) 
+ttr01.sbpOOR <- ttr01.sbpOOR%>% mutate(hypotension = ifelse(eVitals_06 < 90, 1,0))
+sum(ttr01.sbpOOR$hypotension, na.rm=TRUE)
+
+sbpOOR <- ttr01.sbpOOR %>% dplyr::select(PcrKey, hypotension)
+```
+
+
+```{r}
+ttr01.hrOOR <- ttr01.hr %>%
+  group_by(PcrKey) %>%
+  slice(which.max(eVitals_01)) %>%
+  dplyr::select(PcrKey, eVitals_10)
+
+#ttr01.hrOOR <- ttr01.hr %>% group_by(PcrKey) %>% mutate(last.time = max(eVitals_01))
+#ttr01.hrOOR <- ttr01.hrOOR %>% filter(eVitals_01 == last.time) 
+ttr01.hrOOR <- ttr01.hrOOR %>% mutate(tachycardia = ifelse(eVitals_10 >100, 1, 0))
+sum(ttr01.hrOOR$tachycardia, na.rm=TRUE)
+
+hrOOR <- ttr01.hrOOR %>% dplyr::select(PcrKey, tachycardia)
+```
+
+```{r}
+ttr01.rrOOR <- ttr01.rr %>%
+  group_by(PcrKey) %>%
+  slice(which.max(eVitals_01)) %>%
+  dplyr::select(PcrKey, eVitals_14) %>% 
+  mutate(tachypnea = ifelse(eVitals_14 >100, 1, 0))
+
+#ttr01.rrOOR <- ttr01.rr %>% group_by(PcrKey) %>% mutate(last.time = max(eVitals_01))
+#ttr01.rrOOR <- ttr01.rrOOR %>% filter(eVitals_01 == last.time) 
+#ttr01.rrOOR <- ttr01.rrOOR %>% mutate(tachypnea = ifelse(eVitals_14 >100, 1, 0))
+sum(ttr01.rrOOR$tachypnea, na.rm=TRUE)
+
+rrOOR <- ttr01.rrOOR %>% dplyr::select(PcrKey, tachypnea)
+```
+
+```{r}
+ttr01.gcs$gcs.score <- ttr01.gcs$eVitals_19 + ttr01.gcs$eVitals_20 + ttr01.gcs$eVitals_21
+#ttr01.gcsOOR <- ttr01.gcs %>% group_by(PcrKey) %>% mutate(last.time = max(eVitals_01))
+#ttr01.gcsOOR <- ttr01.gcsOOR %>% filter(eVitals_01 == last.time) 
+#ttr01.gcsOOR <- ttr01.gcsOOR %>% mutate(dec.gcs = ifelse(gcs.score < 13, 1, 0))
+
+ttr01.gcsOOR <- ttr01.gcs %>%
+  group_by(PcrKey) %>%
+  slice(which.max(eVitals_01)) %>%
+  dplyr::select(PcrKey, gcs.score) %>% 
+  mutate(dec.gcs = ifelse(gcs.score < 13, 1, 0))
+
+gcsOOR <- ttr01.gcsOOR %>% dplyr::select(PcrKey, dec.gcs)
+```
+
+```{r}
+levels(factor(ttr01.avpu$eVitals_26))
+#ttr01.avpuOOR <- ttr01.avpu %>% group_by(PcrKey) %>% mutate(last.time = max(eVitals_01))
+#ttr01.avpuOOR <- ttr01.avpuOOR %>% filter(eVitals_01 == last.time) 
+#ttr01.avpuOOR <- ttr01.avpuOOR %>% mutate(dec.avpu = ifelse(eVitals_26 != "3326001", 1, 0))
+
+ttr01.avpuOOR <- ttr01.avpu %>%
+  group_by(PcrKey) %>%
+  slice(which.max(eVitals_01)) %>%
+  dplyr::select(PcrKey, eVitals_26) %>%
+  mutate(dec.avpu = ifelse(eVitals_26 != "3326001", 1, 0))
+avpuOOR <- ttr01.avpuOOR %>% dplyr::select(PcrKey, dec.avpu)
+```
+
+Merge OOR together
+```{r}
+spo2OOR <- spo2OOR %>% group_by(PcrKey) %>% summarise(hypox = sum(hypoxia))
+sbpOOR <- sbpOOR %>% group_by(PcrKey) %>% summarise(hypoten = sum(hypotension))
+hrOOR <- hrOOR %>% group_by(PcrKey) %>% summarise(tachycar = sum(tachycardia))
+rrOOR <- rrOOR %>% group_by(PcrKey) %>% summarise(tachyrr = sum(tachypnea))
+gcsOOR <- gcsOOR %>% group_by(PcrKey) %>% summarise(decreased.gcs = sum(dec.gcs))
+avpuOOR <- avpuOOR %>% group_by(PcrKey) %>% summarise(decreased.avpu = sum(dec.avpu))
+
+ttr01.oor <- ttr01.adult %>% dplyr::select(PcrKey)
+oor <- left_join(ttr01.oor, spo2OOR, by="PcrKey")
+oor <- left_join(oor, sbpOOR, by="PcrKey")
+oor <- left_join(oor, hrOOR, by="PcrKey")
+oor <- left_join(oor, rrOOR, by="PcrKey")
+oor <- left_join(oor, gcsOOR, by="PcrKey")
+oor <- left_join(oor, avpuOOR, by="PcrKey")
+
+oor <- oor %>% mutate_all(~replace_na(.,0))
+
+colnames(oor)
+
+oor$hypox[oor$hypox!=0] <- 1
+oor$hypoten[oor$hypoten!=0] <- 1
+oor$tachycar[oor$tachycar!=0] <- 1
+oor$tachyrr[oor$tachyrr!=0] <- 1
+oor$decreased.gcs[oor$decreased.gcs!=0] <- 1
+oor$decreased.avpu[oor$decreased.avpu!=0] <- 1
+
+sum(oor$hypox)
+sum(oor$hypoten)
+sum(oor$tachycar)
+sum(oor$tachyrr)
+sum(oor$decreased.gcs)
+sum(oor$decreased.avpu)
+
+59265/4271787
+44773/4572429
+1070565/5190882
+2414/4898894
+62842/4378253
+63390/4378253
+```
+
+
+
