@@ -52,16 +52,26 @@ A summary data frame containing the following columns:
 # Example
 
 ``` r
-# packages
-  
-library(tidyverse)
-library(janitor)
+``` r
+################################################################################
+### Respiratory-01 Test  #######################################################
+################################################################################
+
+  library(tidyverse)
+  library(janitor)
 #> 
 #> Attaching package: 'janitor'
 #> The following objects are masked from 'package:stats':
 #> 
 #>     chisq.test, fisher.test
-library(scales)
+  library(rlang)
+#> 
+#> Attaching package: 'rlang'
+#> The following objects are masked from 'package:purrr':
+#> 
+#>     %@%, flatten, flatten_chr, flatten_dbl, flatten_int, flatten_lgl,
+#>     flatten_raw, invoke, splice
+  library(scales)
 #> 
 #> Attaching package: 'scales'
 #> The following object is masked from 'package:purrr':
@@ -71,23 +81,60 @@ library(scales)
 #> 
 #>     col_factor
   
-# functions
+# the function will load necessary packages in the background
   
-  pretty_percent <- function(variable, n_decimal = 0.1) {
+  respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col) {
     
-    formatted_percent <- percent(variable, accuracy = n_decimal)
+    # Load necessary packages
+    for (pkg in c("tidyverse", "janitor", "scales", "rlang")) {
+      if (!pkg %in% installed.packages()) install.packages(pkg, quiet = TRUE)
+      if (!paste0("package:", pkg) %in% search()) library(pkg, quietly = TRUE)
+    }
     
-    # If there are trailing zeros after decimal point, remove them
-    formatted_percent <- sub("(\\.\\d*?)0+%$", "\\1%", formatted_percent)
+    # Ensure df is a data frame or tibble
+    if (!is.data.frame(df) && !is_tibble(df)) {
+      cli_abort(c(
+        "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
+        "i" = "The passed object is of class {.val {class(df)}}."
+      ))
+    }
     
-    # If it ends with ".%", replace it with "%"
-    formatted_percent <- sub("\\.%$", "%", formatted_percent)
+    # provide better error messaging if df is missing
+    if(missing(df)) {
+      
+      cli_abort(c("No object of class {.cls data.frame} was passed to {.fn respiratory_01}.",
+                  "i" = "Please supply a {.cls data.frame} to the first argument in {.fn respiratory_01}."
+      ))
+      
+    }
     
-    formatted_percent
+    # use quasiquotation on the date variables to check format
+    incident_date <- enquo(incident_date_col)
+    patient_DOB <- enquo(patient_DOB_col)
     
-  }
-
-  respiratory_01 <- function(df, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, epatient_15_col) {
+    if(!is.Date(df[[as_name(incident_date)]]) & !is.POSIXct(df[[as_name(incident_date)]]) & !is.Date(df[[as_name(patient_DOB)]]) & !is.POSIXct(df[[as_name(patient_DOB)]])) {
+      
+      cli_abort("For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class.")
+      
+    }
+    
+    if(!exists("pretty_percent")) {
+      
+      pretty_percent <- function(variable, n_decimal = 0.1) {
+        
+        formatted_percent <- percent(variable, accuracy = n_decimal)
+        
+        # If there are trailing zeros after decimal point, remove them
+        formatted_percent <- sub("(\\.\\d*?)0+%$", "\\1%", formatted_percent)
+        
+        # If it ends with ".%", replace it with "%"
+        formatted_percent <- sub("\\.%$", "%", formatted_percent)
+        
+        formatted_percent
+        
+      }
+      
+    }
     
     # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
     
@@ -103,6 +150,13 @@ library(scales)
     
     # filter the table to get the initial population regardless of age
     initial_population <- df %>% 
+      
+      # create the age in years variable
+      
+      mutate(patient_age_in_years_col = as.numeric(
+        difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days")) / 365
+        
+      ) %>% 
       
       # filter down to 911 calls
       
@@ -124,11 +178,11 @@ library(scales)
     
     # filter adult
     adult_pop <- initial_population %>% 
-      dplyr::filter({{epatient_15_col}} >= 18)
+      dplyr::filter(patient_age_in_years_col >= 18)
     
     # filter peds
     peds_pop <- initial_population %>% 
-      dplyr::filter({{epatient_15_col}} < 18)
+      dplyr::filter(patient_age_in_years_col < 18)
     
     # get the summary of results
     
@@ -137,7 +191,8 @@ library(scales)
       summarize(pop = "All",
                 numerator = sum(vitals_check, na.rm = T),
                 denominator = n(),
-                prop = pretty_percent(numerator / denominator, n_decimal = 0.01)
+                prop = numerator / denominator,
+                prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
       )
     
     # adults
@@ -145,7 +200,8 @@ library(scales)
       summarize(pop = "Adults",
                 numerator = sum(vitals_check, na.rm = T),
                 denominator = n(),
-                prop = pretty_percent(numerator / denominator, n_decimal = 0.01)
+                prop = numerator / denominator,
+                prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
       )
     
     # peds
@@ -153,23 +209,27 @@ library(scales)
       summarize(pop = "Peds",
                 numerator = sum(vitals_check, na.rm = T),
                 denominator = n(),
-                prop = pretty_percent(numerator / denominator, n_decimal = 0.01)
+                prop = numerator / denominator,
+                prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
       )
     
     # summary
-    respiratory_01 <- bind_rows(adult_population, peds_population, total_population)
+    resp_01 <- bind_rows(adult_population, peds_population, total_population)
     
-    respiratory_01
+    resp_01
     
     
-  }
+  }  
   
 # load data
   
   set.seed(50319)
 
   respiratory_01_test <- tibble(
-    `Patient Age In Years (ePatient.15)` = sample(0:120, size = 1000, replace = T),
+    `Incident Date` = sample(seq(as.Date("2023-01-01"), as.Date("2023-12-31"), by = "day"), 
+                               size = 1000, replace = TRUE),
+    `Patient Date Of Birth (ePatient.17)` = sample(seq(as.Date("1980-01-01"), as.Date("2022-12-31"), by = "day"), 
+                             size = 1000, replace = TRUE),
     `Situation Provider Primary Impression Code (eSituation.11)` = sample(
       c(
         "I50.9",
@@ -314,148 +374,68 @@ respiratory_01_test_clean <- respiratory_01_test %>%
   clean_names(case = "screaming_snake", sep_out = "_") %>% 
   mutate(region = sample(c("1A", "1C", "2", "3", "4", "5", "6", "7"), size = nrow(respiratory_01_test), replace = T))
 
-# test the function process
-
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
-  
-  # 911 codes for eresponse.05
-  codes_911 <- "2205001|2205003|2205009"
-  
-  # get codes as a regex to filter primary impression fields
-  resp_codes <- "I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9"
-  
-  # get codes that indicate a missing data element
-  
-  missing_codes <- "7701003|7701001"
-  
-  # filter the table to get the initial population regardless of age
-  initial_population <- respiratory_01_test_clean %>% 
-    
-    # filter down to 911 calls
-    
-    dplyr::filter(grepl(pattern = codes_911, x = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05, ignore.case = T),
-                  
-                  # Identify Records that have Respiratory Distress Codes defined above
-                  
-                  if_any(
-                    c(SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_E_SITUATION_11, SITUATION_PROVIDER_SECONDARY_IMPRESSION_CODE_LIST_E_SITUATION_12), ~ grepl(pattern = resp_codes, x = ., ignore.case = T)
-                  )
-    ) %>% 
-    
-    # classify records as having both vitals or not
-    mutate(vitals_check = if_else(!is.na(PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12) & !is.na(PATIENT_INITIAL_RESPIRATORY_RATE_E_VITALS_14), 1, 0
-    )
-    )
-  
-  # Adult and Pediatric Populations
-  
-  # filter adult
-  adult_pop <- initial_population %>% 
-    dplyr::filter(PATIENT_AGE_IN_YEARS_E_PATIENT_15 >= 18)
-  
-  # filter peds
-  peds_pop <- initial_population %>% 
-    dplyr::filter(PATIENT_AGE_IN_YEARS_E_PATIENT_15 < 18)
-  
-  # get the summary of results
-  
-  # all
-  total_population <- initial_population %>% 
-    summarize(pop = "All",
-              numerator = sum(vitals_check, na.rm = T),
-              denominator = n(),
-              prop = numerator / denominator,
-              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
-    )
-  
-  # adults
-  adult_population <- adult_pop %>% 
-    summarize(pop = "Adults",
-              numerator = sum(vitals_check, na.rm = T),
-              denominator = n(),
-              prop = numerator / denominator,
-              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
-    )
-  
-  # peds
-  peds_population <- peds_pop %>% 
-    summarize(pop = "Peds",
-              numerator = sum(vitals_check, na.rm = T),
-              denominator = n(),
-              prop = numerator / denominator,
-              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
-    )
-  
-  # summary
-  resp_01 <- bind_rows(adult_population, peds_population, total_population)
-  
-  resp_01
-#> # A tibble: 3 × 5
-#>   pop    numerator denominator  prop prop_label
-#>   <chr>      <dbl>       <int> <dbl> <chr>     
-#> 1 Adults       131         133 0.985 98.5%     
-#> 2 Peds          39          39 1     100%      
-#> 3 All          170         172 0.988 98.84%
-
-
 # test the function
 
 respiratory_01_test_clean %>% 
-  respiratory_01(eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
-          esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_E_SITUATION_11,
-          esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_CODE_LIST_E_SITUATION_12,
-          evitals_12_col = PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12,
-          evitals_14_col = PATIENT_INITIAL_RESPIRATORY_RATE_E_VITALS_14,
-          epatient_15_col = PATIENT_AGE_IN_YEARS_E_PATIENT_15
-          )
-#> # A tibble: 3 × 4
-#>   pop    numerator denominator prop  
-#>   <chr>      <dbl>       <int> <chr> 
-#> 1 Adults       131         133 98.5% 
-#> 2 Peds          39          39 100%  
-#> 3 All          170         172 98.84%
+  respiratory_01(
+    incident_date_col = INCIDENT_DATE,
+    patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+    eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+    esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_E_SITUATION_11,
+    esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_CODE_LIST_E_SITUATION_12,
+    evitals_12_col = PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12,
+    evitals_14_col = PATIENT_INITIAL_RESPIRATORY_RATE_E_VITALS_14
+  )
+#> # A tibble: 3 × 5
+#>   pop    numerator denominator  prop prop_label
+#>   <chr>      <dbl>       <int> <dbl> <chr>     
+#> 1 Adults        84          85 0.988 98.82%    
+#> 2 Peds          64          67 0.955 95.52%    
+#> 3 All          148         152 0.974 97.37%
 
 # by region
 
 respiratory_01_test_clean %>% 
   group_by(region) %>% 
-  respiratory_01(eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
-          esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_E_SITUATION_11,
-          esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_CODE_LIST_E_SITUATION_12,
-          evitals_12_col = PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12,
-          evitals_14_col = PATIENT_INITIAL_RESPIRATORY_RATE_E_VITALS_14,
-          epatient_15_col = PATIENT_AGE_IN_YEARS_E_PATIENT_15
-          ) %>% 
+  respiratory_01(
+    incident_date_col = INCIDENT_DATE,
+    patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+    eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+    esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_E_SITUATION_11,
+    esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_CODE_LIST_E_SITUATION_12,
+    evitals_12_col = PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12,
+    evitals_14_col = PATIENT_INITIAL_RESPIRATORY_RATE_E_VITALS_14
+  ) %>% 
   print(n = Inf)
-#> # A tibble: 24 × 5
-#>    region pop    numerator denominator prop  
-#>    <chr>  <chr>      <dbl>       <int> <chr> 
-#>  1 1A     Adults        18          18 100%  
-#>  2 1C     Adults        15          15 100%  
-#>  3 2      Adults        18          18 100%  
-#>  4 3      Adults        12          13 92.31%
-#>  5 4      Adults        15          15 100%  
-#>  6 5      Adults        15          15 100%  
-#>  7 6      Adults        15          15 100%  
-#>  8 7      Adults        23          24 95.83%
-#>  9 1A     Peds           8           8 100%  
-#> 10 1C     Peds           3           3 100%  
-#> 11 2      Peds           5           5 100%  
-#> 12 3      Peds           8           8 100%  
-#> 13 4      Peds           4           4 100%  
-#> 14 5      Peds           3           3 100%  
-#> 15 6      Peds           4           4 100%  
-#> 16 7      Peds           4           4 100%  
-#> 17 1A     All           26          26 100%  
-#> 18 1C     All           18          18 100%  
-#> 19 2      All           23          23 100%  
-#> 20 3      All           20          21 95.24%
-#> 21 4      All           19          19 100%  
-#> 22 5      All           18          18 100%  
-#> 23 6      All           19          19 100%  
-#> 24 7      All           27          28 96.43%
+#> # A tibble: 24 × 6
+#>    region pop    numerator denominator  prop prop_label
+#>    <chr>  <chr>      <dbl>       <int> <dbl> <chr>     
+#>  1 1A     Adults        16          16 1     100%      
+#>  2 1C     Adults         6           7 0.857 85.71%    
+#>  3 2      Adults         9           9 1     100%      
+#>  4 3      Adults        10          10 1     100%      
+#>  5 4      Adults        10          10 1     100%      
+#>  6 5      Adults        13          13 1     100%      
+#>  7 6      Adults        10          10 1     100%      
+#>  8 7      Adults        10          10 1     100%      
+#>  9 1A     Peds           7           8 0.875 87.5%     
+#> 10 1C     Peds          12          13 0.923 92.31%    
+#> 11 2      Peds          10          10 1     100%      
+#> 12 3      Peds           3           3 1     100%      
+#> 13 4      Peds           6           7 0.857 85.71%    
+#> 14 5      Peds          10          10 1     100%      
+#> 15 6      Peds           8           8 1     100%      
+#> 16 7      Peds           8           8 1     100%      
+#> 17 1A     All           23          24 0.958 95.83%    
+#> 18 1C     All           18          20 0.9   90%       
+#> 19 2      All           19          19 1     100%      
+#> 20 3      All           13          13 1     100%      
+#> 21 4      All           16          17 0.941 94.12%    
+#> 22 5      All           23          23 1     100%      
+#> 23 6      All           18          18 1     100%      
+#> 24 7      All           18          18 1     100%
 ```
 
-<sup>Created on 2024-10-30 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
+<sup>Created on 2024-11-01 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
 
 Original code credit goes to the illustrious Alyssa Whim.
