@@ -37,6 +37,7 @@ A tibble with three rows (`pediatric`, `adult`, and `overall`) showing:
 * Calculates age in days and years for filtering.
 * Generates a unique ID for each incident based on multiple columns.
 * Handles grouping to create pediatric and adult populations.
+* Grouping handled via tidy dots (`...`) passed to the `dplyr::summarize()` function.
 
 # Value
 Returns a tibble summarizing the overall and age-grouped respiratory-02 metrics, formatted for ease of interpretation.
