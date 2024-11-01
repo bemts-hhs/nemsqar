@@ -1,3 +1,18 @@
+respiratory_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/respiratory01_Export.csv")
+
+respiratory_01_clean <- respiratory_01_data %>% 
+  mutate(across(c(`Incident Date`, `Patient Date Of Birth (ePatient.17)`), ~ mdy(
+    str_remove_all(string = ., pattern = "\\s12:00:00\\sAM")
+  ))) %>% 
+  mutate(Patient_age_in_days = as.numeric(
+    difftime(`Incident Date`, `Patient Date Of Birth (ePatient.17)`, units = "days")),
+         Patient_age_in_mins = as.numeric(
+           difftime(`Incident Date`, `Patient Date Of Birth (ePatient.17)`, units = "mins")),
+        Patient_age_in_years = Patient_age_in_days / 365,
+         .before = `Patient Age In Years (ePatient.15)`
+         )
+
+
 reprex::reprex({
 
 ################################################################################
