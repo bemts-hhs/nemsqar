@@ -24,17 +24,9 @@
 respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col) {
   
   # Load necessary packages
-  for (pkg in c("tidyverse", "janitor", "scales", "rlang")) {
+  for (pkg in c("tidyverse", "scales", "rlang")) {
     if (!pkg %in% installed.packages()) install.packages(pkg, quiet = TRUE)
     if (!paste0("package:", pkg) %in% search()) library(pkg, quietly = TRUE)
-  }
-
-  # Ensure df is a data frame or tibble
-  if (!is.data.frame(df) && !is_tibble(df)) {
-    cli_abort(c(
-      "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-      "i" = "The passed object is of class {.val {class(df)}}."
-    ))
   }
   
   # provide better error messaging if df is missing
@@ -44,6 +36,14 @@ respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_
                 "i" = "Please supply a {.cls data.frame} to the first argument in {.fn respiratory_01}."
                 ))
     
+  }
+  
+  # Ensure df is a data frame or tibble
+  if (!is.data.frame(df) && !is_tibble(df)) {
+    cli_abort(c(
+      "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
+      "i" = "The passed object is of class {.val {class(df)}}."
+    ))
   }
   
   # use quasiquotation on the date variables to check format
