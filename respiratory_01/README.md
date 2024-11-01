@@ -5,7 +5,7 @@ The `respiratory_01` function filters and analyzes data related to emergency 911
 
 ## Usage
 ```R
-respiratory_01(df, incident_date_col, patient_DOB_col, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col)
+respiratory_01(df, incident_date_col, patient_DOB_col, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, ...)
 ```
 
 # Arguments
