@@ -17,6 +17,7 @@ respiratory_01(df, incident_date_col, patient_DOB_col, eresponse_05_col, esituat
 * `esituation_12_col`: Column name for secondary impression codes related to respiratory distress.
 * `evitals_12_col`: Column name for the first vital sign measurement.
 * `evitals_14_col`: Column name for the second vital sign measurement.
+* `...`: arguments passed to `dplyr::summarize()`.
 
 # Output
 Returns a data frame summarizing the proportion of cases with complete vital sign data, divided into:
@@ -29,6 +30,7 @@ Returns a data frame summarizing the proportion of cases with complete vital sig
 * Filters data based on 911 response and specific respiratory distress codes.
 * Identifies complete vital sign recordings.
 * Computes summary statistics for adult, pediatric, and total populations.
+* Allows grouping via `dplyr::summarize()` using tidy dots `...`.
 
 # Value
 A summary data frame containing the following columns:
@@ -48,7 +50,6 @@ A summary data frame containing the following columns:
 * The esituation.12 is best as concatenation of all secondary impressions entered
 * The first argument is a dataframe, no joining is done by the function.
 * Any joins to get vitals etc. will need to be done outside the function
-* Grouping via `dplyr::group_by()` can be done before the function to get the calculations by region or other grouping
 
 # Example
 
