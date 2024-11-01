@@ -34,7 +34,8 @@ respiratory_02 <- function(df,
                            eresponse_05_col,
                            evitals_12_col,
                            emedications_03_col,
-                           eprocedures_03_col) {
+                           eprocedures_03_col,
+                           ...) {
   
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
@@ -127,6 +128,8 @@ respiratory_02_peds <- initial_population %>%
 respiratory_02_adults <- initial_population %>% 
   filter(patient_age_in_years >= 18)
 
+if(is.null(by)) {
+
 # calculations for peds
 peds_calculation <- respiratory_02_peds %>% 
   summarize(pop = "Peds",
@@ -140,7 +143,6 @@ peds_calculation <- respiratory_02_peds %>%
             )
 
 # calculations for adults
-
 adults_calculation <- respiratory_02_adults %>% 
   summarize(pop = "Adults",
             numerator = sum(
@@ -153,7 +155,6 @@ adults_calculation <- respiratory_02_adults %>%
             )
 
 # overall calculation
-
 total_population <- initial_population %>% 
   summarize(pop = "All",
             numerator = sum(
@@ -166,9 +167,56 @@ total_population <- initial_population %>%
             )
 
 # bind rows of calculations for final table
-
 resp_02 <- bind_rows(total_population, peds_calculation, adults_calculation)
 
 resp_02
+
+} else if(!is.null(by)) {
+  
+  # calculations for peds
+  peds_calculation <- respiratory_02_peds %>% 
+    summarize(pop = "Peds",
+              numerator = sum(
+                grepl(pattern = "7806", x = {{emedications_03_col}}) | 
+                  grepl(pattern = "57485005", x = {{eprocedures_03_col}}), na.rm = T
+              ),
+              denominator = n(),
+              prop = numerator / denominator,
+              prop_label = pretty_percent(prop, n_decimal = 0.01),
+              ...
+    )
+  
+  # calculations for adults
+  adults_calculation <- respiratory_02_adults %>% 
+    summarize(pop = "Adults",
+              numerator = sum(
+                grepl(pattern = "7806", x = {{emedications_03_col}}) | 
+                  grepl(pattern = "57485005", x = {{eprocedures_03_col}}), na.rm = T
+              ),
+              denominator = n(),
+              prop = numerator / denominator,
+              prop_label = pretty_percent(prop, n_decimal = 0.01),
+              ...
+    )
+  
+  # overall calculation
+  total_population <- initial_population %>% 
+    summarize(pop = "All",
+              numerator = sum(
+                grepl(pattern = "7806", x = {{emedications_03_col}}) | 
+                  grepl(pattern = "57485005", x = {{eprocedures_03_col}}), na.rm = T
+              ),
+              denominator = n(),
+              prop = numerator / denominator,
+              prop_label = pretty_percent(prop, n_decimal = 0.01),
+              ...
+    )
+  
+  # bind rows of calculations for final table
+  resp_02 <- bind_rows(total_population, peds_calculation, adults_calculation)
+  
+  resp_02
+  
+}
   
 }
