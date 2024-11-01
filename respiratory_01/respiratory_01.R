@@ -21,7 +21,7 @@
 ###_____________________________________________________________________________
 
 
-respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col) {
+respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, ...) {
   
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
@@ -130,7 +130,8 @@ respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_
               numerator = sum(vitals_check, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
-              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
+              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
+              ...
     )
   
   # adults
@@ -139,7 +140,8 @@ respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_
               numerator = sum(vitals_check, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
-              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
+              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
+              ...
     )
   
   # peds
@@ -148,7 +150,8 @@ respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_
               numerator = sum(vitals_check, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
-              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
+              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
+              ...
     )
   
   # summary
