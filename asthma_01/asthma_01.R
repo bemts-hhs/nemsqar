@@ -10,9 +10,13 @@
 ### this function also assumes that rows that are missing any value are NA,
 ### not the not known / not recorded values common to ImageTrend or the value codes
 ### that correspond to "not values".
-### the function assumes that vitals in the vital signs columns are likely the
-### first vital signs, or are a list column.  This will give an indication of whether
-### or not any vitals were taken.
+### the function assumes that the primary/secondary impression fields have the
+### ICD-10 code in them.  The text description can be present, too, for reference.
+### the function assumes that the eresponse.05 column has the codes in it, text
+### can be present, too, for reference
+### the function assumes that emedications_03 contains all medications administered,
+### and that it contains the text description of the medication.  The code can be
+### included for reference, but will not be checked.
 ### the esituation_12 is best as a list column of the secondary impressions entered
 ### the first argument is a dataframe, no joining is done.
 ### any joins to get vitals etc. will need to be done outside the function
@@ -20,8 +24,14 @@
 ### or other grouping
 ###_____________________________________________________________________________
 
-
-asthma_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_col, emedications_03_col, ...) {
+asthma_01 <- function(df,
+                      incident_date_col,
+                      patient_DOB_col,
+                      eresponse_05_col,
+                      esituation_11_col,
+                      esituation_12_col,
+                      emedications_03_col,
+                      ...) {
   
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
@@ -79,12 +89,11 @@ asthma_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_col, 
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
   
-  # get codes as a regex to filter primary impression fields
-  resp_codes <- "I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9"
+  # get codes as a regex to filter primary/secondary impression fields
+  beta_agonist <- "albuterol|ipratropium|duoneb|levalbuterol|metaproterenol"
   
-  # get codes that indicate a missing data element
-  
-  missing_codes <- "7701003|7701001"
+  # codes for asthma or acute bronchospasm
+  asthma_codes <- "J45|J98.01"
   
   # filter the table to get the initial population regardless of age
   initial_population <- df %>% 
@@ -103,12 +112,12 @@ asthma_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_col, 
                   # Identify Records that have Respiratory Distress Codes defined above
                   
                   if_any(
-                    c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(pattern = resp_codes, x = ., ignore.case = T)
+                    c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(pattern = asthma_codes, x = ., ignore.case = T)
                     )
                   ) %>% 
     
     # make sure that 
-    mutate(vitals_check = if_else(!is.na({{evitals_12_col}}) & !is.na({{evitals_14_col}}), 1, 0
+    mutate(beta_agonist_check = if_else(grepl(pattern = beta_agonist, x = {{emedications_03_col}}, ignore.case = TRUE), 1, 0
                                   )
            )
   
@@ -120,7 +129,9 @@ asthma_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_col, 
   
   # filter peds
   peds_pop <- initial_population %>% 
-    dplyr::filter(patient_age_in_years_col < 18)
+    dplyr::filter(patient_age_in_years_col < 18,
+                  patient_age_in_years_col >= 2
+                  )
   
   # get the summary of results
   

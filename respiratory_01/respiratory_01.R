@@ -10,6 +10,10 @@
 ### this function also assumes that rows that are missing any value are NA,
 ### not the not known / not recorded values common to ImageTrend or the value codes
 ### that correspond to "not values".
+### the function assumes that the primary/secondary impression fields have the text
+### description in them.  The code can be present, too, for reference.
+### the function assumes that the eresponse.05 column has the codes in it, text
+### can be present, too, for reference
 ### the function assumes that vitals in the vital signs columns are likely the
 ### first vital signs, or are a list column.  This will give an indication of whether
 ### or not any vitals were taken.
@@ -81,10 +85,6 @@ respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_
   
   # get codes as a regex to filter primary impression fields
   resp_codes <- "I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9"
-  
-  # get codes that indicate a missing data element
-  
-  missing_codes <- "7701003|7701001"
   
   # filter the table to get the initial population regardless of age
   initial_population <- df %>% 
