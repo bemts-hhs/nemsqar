@@ -1,5 +1,5 @@
 ################################################################################
-### Respiratory_01 Function  ###################################################
+### Asthma-01 ##################################################################
 ################################################################################
 
 ###_____________________________________________________________________________
@@ -21,7 +21,7 @@
 ###_____________________________________________________________________________
 
 
-respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_col, esituation_11_col, esituation_12_col, evitals_12_col, evitals_14_col, ...) {
+asthma_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_col, emedications_03_col, ...) {
   
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
