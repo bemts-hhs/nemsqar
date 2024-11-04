@@ -138,7 +138,7 @@ asthma_01 <- function(df,
   # all
   total_population <- initial_population %>% 
     summarize(pop = "All",
-              numerator = sum(vitals_check, na.rm = T),
+              numerator = sum(beta_agonist_check, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
               prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -148,7 +148,7 @@ asthma_01 <- function(df,
   # adults
   adult_population <- adult_pop %>% 
     summarize(pop = "Adults",
-              numerator = sum(vitals_check, na.rm = T),
+              numerator = sum(beta_agonist_check, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
               prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -158,7 +158,7 @@ asthma_01 <- function(df,
   # peds
   peds_population <- peds_pop %>% 
     summarize(pop = "Peds",
-              numerator = sum(vitals_check, na.rm = T),
+              numerator = sum(beta_agonist_check, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
               prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -166,9 +166,9 @@ asthma_01 <- function(df,
     )
   
   # summary
-  resp_01 <- bind_rows(adult_population, peds_population, total_population)
+  asthma.01 <- bind_rows(adult_population, peds_population, total_population)
   
-  resp_01
+  asthma.01
   
   
 }
