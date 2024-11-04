@@ -1,4 +1,4 @@
-# `asthma_01` Function Documentation
+# `asthma_01`
 
 ## Description
 Calculates key statistics related to asthma-related incidents in an EMS dataset, specifically focusing on cases where 911 was called for respiratory distress, and certain medications were administered. This function segments the data by age into adult and pediatric populations, computing the proportion of cases that received beta-agonist treatment.
