@@ -10,8 +10,8 @@
 ### this function also assumes that rows that are missing any value are NA,
 ### not the not known / not recorded values common to ImageTrend or the value codes
 ### that correspond to "not values".
-### the function assumes that the primary/secondary impression fields have the text
-### description in them.  The code can be present, too, for reference.
+### the function assumes that the primary/secondary impression fields have the
+### ICD-10 code in them.  The text description can be present, too, for reference.
 ### the function assumes that the eresponse.05 column has the codes in it, text
 ### can be present, too, for reference
 ### the function assumes that vitals in the vital signs columns are likely the

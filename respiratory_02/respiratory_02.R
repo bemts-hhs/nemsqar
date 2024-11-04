@@ -16,7 +16,7 @@
 ### This function assumes you have the following fields:
 ### eRecord.01, eresponse.05 (must contain code), evitals.12 (all values), emedications.03 (all with code),
 ### eprocedures.03 (with code)
-### this function assumes that there is an age in years calculated for epatient.15
+### this function will calculate age in years for the end user.
 ### this function also assumes that rows that are missing any value are NA,
 ### not the not known / not recorded values common to ImageTrend or the value codes
 ### that correspond to "not values".
