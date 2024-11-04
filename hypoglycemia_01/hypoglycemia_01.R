@@ -90,10 +90,10 @@ hypoglycemia_01 <- function(df,
   codes_911 <- "2205001|2205003|2205009"
   
   # get codes as a regex to filter primary/secondary impression fields
-  beta_agonist <- "albuterol|ipratropium|duoneb|levalbuterol|metaproterenol"
+  treatment_codes <- "4850|237653|309778|260258|237648|807169|4832"
   
-  # codes for asthma or acute bronchospasm
-  asthma_codes <- "J45|J98.01"
+  # code(s) for altered mental status
+  altered_mental_status <- "R41.82"
   
   # filter the table to get the initial population regardless of age
   initial_population <- df %>% 
