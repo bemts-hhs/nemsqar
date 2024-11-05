@@ -108,28 +108,26 @@ hypoglycemia_01 <- function(df,
     
     mutate(patient_age_in_years = as.numeric(
       difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days")) / 365
-    ) %>% 
-    rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
-    mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>% 
-    ungroup()
+    )
   
   # filter the table to get the initial population regardless of age
   initial_population_1 <- initial_population_0 %>% 
     
     # filter down to 911 calls
     
-    dplyr::filter(grepl(pattern = codes_911, x = {{eresponse_05_col}}, ignore.case = T),
-                  
-                  # Identify Records that have GCUS < 15, or AVPU not equal to Alert, or
-                  # primary/secondary impression of altered mental status
-                  
-                  if_any(
-                    c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(pattern =  altered_mental_status, x = ., ignore.case = T)) | 
-                      (!is.na({{evitals_26_col}}) & {{evitals_26_col}} %not_in% c("Alert", "Not Applicable", "Not Recorded")) | 
-                    {{evitals_23_cl}} < 15
-                  ) %>% 
+    dplyr::filter(grepl(pattern = codes_911, x = {{eresponse_05_col}}, ignore.case = T)) %>% 
     
-    # make sure that 
+    # Identify Records that have GCUS < 15, or AVPU not equal to Alert, or
+    # primary/secondary impression of altered mental status
+    
+    mutate(altered = grepl(pattern =  altered_mental_status, x = {{esituation_11_col}}, ignore.case = T) | 
+                    grepl(pattern =  altered_mental_status, x = {{esituation_12_col}}, ignore.case = T),
+           AVPU = !is.na({{evitals_26_col}}) & {{evitals_26_col}} %not_in% c("Alert", "Not Applicable", "Not Recorded"),
+           GCS = {{evitals_23_cl}} < 15
+                  ) %>%
+    filter(altered == TRUE | AVPU == TRUE | GCS == TRUE) %>% 
+    
+    # create variable that documents if any of target treatments were used
     mutate(correct_treatment = if_else(grepl(pattern = hypoglycemia_treatment_codes, x = {{emedications_03_col}}, ignore.case = TRUE), 1, 0
                                   )
            )
@@ -137,7 +135,10 @@ hypoglycemia_01 <- function(df,
   # final pass with manipulations to get a tidy table
   # 1 row per observation, 1 column per feature
   
-  initial_population <- initial_population_1 %>%
+  initial_population <- initial_population_1 %>% 
+    rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
+    mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>% 
+    ungroup() %>%
     mutate({{evitals_18_col}} := str_c({{evitals_18_col}}, collapse = ", "), 
            {{evitals_23_cl}} := str_c({{evitals_23_cl}}, collapse = ", "), 
            {{evitals_26_col}} := str_c({{evitals_26_col}}, collapse = ", "),
