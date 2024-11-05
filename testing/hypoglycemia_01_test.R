@@ -153,7 +153,8 @@ library(rlang)
     
     # all
     total_population <- initial_population %>% 
-      summarize(pop = "All",
+      summarize(measure = "Hypoglycemia-01",
+                pop = "All",
                 numerator = sum(correct_treatment, na.rm = T),
                 denominator = n(),
                 prop = numerator / denominator,
@@ -163,7 +164,8 @@ library(rlang)
     
     # adults
     adult_population <- adult_pop %>% 
-      summarize(pop = "Adults",
+      summarize(measure = "Hypoglycemia-01",
+                pop = "Adults",
                 numerator = sum(correct_treatment, na.rm = T),
                 denominator = n(),
                 prop = numerator / denominator,
@@ -173,7 +175,8 @@ library(rlang)
     
     # peds
     peds_population <- peds_pop %>% 
-      summarize(pop = "Peds",
+      summarize(measure = "Hypoglycemia-01",
+                pop = "Peds",
                 numerator = sum(correct_treatment, na.rm = T),
                 denominator = n(),
                 prop = numerator / denominator,
@@ -304,7 +307,8 @@ hypoglycemia_01_clean <- hypoglycemia_01_data %>%
   
   # all
   total_population <- initial_population %>% 
-    summarize(pop = "All",
+    summarize(measure = "Hypoglycemia-01",
+              pop = "All",
               numerator = sum(correct_treatment, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
@@ -313,7 +317,8 @@ hypoglycemia_01_clean <- hypoglycemia_01_data %>%
   
   # adults
   adult_population <- adult_pop %>% 
-    summarize(pop = "Adults",
+    summarize(measure = "Hypoglycemia-01",
+              pop = "Adults",
               numerator = sum(correct_treatment, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
@@ -322,7 +327,8 @@ hypoglycemia_01_clean <- hypoglycemia_01_data %>%
   
   # peds
   peds_population <- peds_pop %>% 
-    summarize(pop = "Peds",
+    summarize(measure = "Hypoglycemia-01",
+              pop = "Peds",
               numerator = sum(correct_treatment, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,

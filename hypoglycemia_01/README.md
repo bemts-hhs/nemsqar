@@ -108,12 +108,12 @@ hypoglycemia_01_clean %>%
                   emedications_03_col = PATIENT_MEDICATION_GIVEN_OR_ADMINISTERED_DESCRIPTION_AND_RXCUI_CODES_LIST_E_MEDICATIONS_03
                   )
                   
-#> # A tibble: 3 × 5
-#>   pop    numerator denominator  prop prop_label
-#>   <chr>      <dbl>       <int> <dbl> <chr>     
-#> 1 Adults      1266        2076 0.610 60.98%    
-#> 2 Peds          14          25 0.56  56%       
-#> 3 All         1280        2101 0.609 60.92%
+#> # A tibble: 3 × 6
+#>   measure         pop    numerator denominator  prop prop_label
+#>   <chr>           <chr>      <dbl>       <int> <dbl> <chr>     
+#> 1 Hypoglycemia-01 Adults      1266        2076 0.610 60.98%    
+#> 2 Hypoglycemia-01 Peds          14          25 0.56  56%       
+#> 3 Hypoglycemia-01 All         1280        2101 0.609 60.92%
 ```
 
 <sup>Created on 2024-11-05 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
