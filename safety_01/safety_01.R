@@ -99,20 +99,8 @@ safety_01 <- function(df,
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
   
-  # get codes as a regex to filter primary impression fields
-  transport_responses <-
-    c(
-      "Patient Refused Evaluation/Care (With Transport)",
-      "Patient Treated, Transported by this EMS Unit",
-      "TX W/Mutual Aid Transported",
-      "Treat / Transport ALS by this unit",
-      "Treat / Transport BLS by this unit",
-      "Transport by This EMS Unit (This Crew Only)",
-      "Transport by This EMS Unit, with a Member of Another Crew",
-      "Patient Treated, Transported by Another EMS Unit",
-      "Mutual Aid Tx & Transport",
-      "Patient Treated, Transported with this EMS Crew in Another Vehicle"
-    )
+  # get codes as a regex to find lights and siren responses
+  lights_and_sirens <- "2224023|2224021|2224015"
   
   # filter the table to get the initial population regardless of age
   initial_population <- df %>%
@@ -160,7 +148,7 @@ safety_01 <- function(df,
   # all
   total_population <- initial_population %>%
     summarize(
-      measure = "Respiratory-01",
+      measure = "Safety-01",
       pop = "All",
       numerator = sum(vitals_check, na.rm = T),
       denominator = n(),
@@ -172,7 +160,7 @@ safety_01 <- function(df,
   # adults
   adult_population <- adult_pop %>%
     summarize(
-      measure = "Respiratory-01",
+      measure = "Safety-01",
       pop = "Adults",
       numerator = sum(vitals_check, na.rm = T),
       denominator = n(),
@@ -184,7 +172,7 @@ safety_01 <- function(df,
   # peds
   peds_population <- peds_pop %>%
     summarize(
-      measure = "Respiratory-01",
+      measure = "Safety-01",
       pop = "Peds",
       numerator = sum(vitals_check, na.rm = T),
       denominator = n(),
@@ -194,9 +182,9 @@ safety_01 <- function(df,
     )
   
   # summary
-  resp_01 <- bind_rows(adult_population, peds_population, total_population)
+  safety.01 <- bind_rows(adult_population, peds_population, total_population)
   
-  resp_01
+  safety.01
   
   
 }
