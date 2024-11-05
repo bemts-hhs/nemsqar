@@ -152,7 +152,8 @@ hypoglycemia_01 <- function(df,
            {{evitals_26_col}} := str_c({{evitals_26_col}}, collapse = ", "),
            .by = Unique_ID
            ) %>% 
-    distinct(Unique_ID, .keep_all = T)
+    distinct(Unique_ID, .keep_all = T) %>% 
+    filter(patient_age_in_days >= 1)
   
   # Adult and Pediatric Populations
   

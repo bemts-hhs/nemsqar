@@ -116,7 +116,8 @@ initial_population <- initial_population %>%
     {{evitals_12_col}} := str_c({{evitals_12_col}}, collapse = ", "), # take all vitals for each pt and roll them into one cell per pt
     .by = Unique_ID
   ) %>% 
-  distinct(Unique_ID, .keep_all = T) # this will ensure each row is an observation, and each column is a feature
+  distinct(Unique_ID, .keep_all = T) %>%  # this will ensure each row is an observation, and each column is a feature
+  filter(patient_age_in_days >= 1)
 
 # get population 1 for respiratory-02, peds
 respiratory_02_peds <- initial_population %>% 

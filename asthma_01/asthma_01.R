@@ -95,7 +95,7 @@ asthma_01 <- function(df,
   # codes for asthma or acute bronchospasm
   asthma_codes <- "J45|J98.01"
   
-  # filter the table to get the initial population regardless of age
+  # filter the table to get the initial population ages >= 2 years
   initial_population <- df %>% 
     
     # create the age in years variable
@@ -119,7 +119,8 @@ asthma_01 <- function(df,
     # check to ensure beta agonist was used
     mutate(beta_agonist_check = if_else(grepl(pattern = beta_agonist, x = {{emedications_03_col}}, ignore.case = TRUE), 1, 0
                                   )
-           )
+           ) %>% 
+    filter(patient_age_in_years_col >= 2)
   
   # Adult and Pediatric Populations
   
