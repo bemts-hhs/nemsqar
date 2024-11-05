@@ -97,10 +97,7 @@ initial_population <- df %>%
     difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days")) / 365,
     patient_age_in_days = as.numeric(
       difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days"))
-    ) %>% 
-  rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
-  mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>% 
-  ungroup()
+    )
 
 # finish filters and make the table distinct
 initial_population <- initial_population %>% 
@@ -111,7 +108,10 @@ initial_population <- initial_population %>%
       ignore.case = T
     ),
     {{evitals_12_col}} < 90
-  ) %>%
+  ) %>% 
+  rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
+  mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>% 
+  ungroup() %>%
   mutate(
     {{evitals_12_col}} := str_c({{evitals_12_col}}, collapse = ", "), # take all vitals for each pt and roll them into one cell per pt
     .by = Unique_ID
