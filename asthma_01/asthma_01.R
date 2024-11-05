@@ -109,14 +109,14 @@ asthma_01 <- function(df,
     
     dplyr::filter(grepl(pattern = codes_911, x = {{eresponse_05_col}}, ignore.case = T),
                   
-                  # Identify Records that have Respiratory Distress Codes defined above
+                  # Identify Records that have specified asthma
                   
                   if_any(
                     c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(pattern = asthma_codes, x = ., ignore.case = T)
                     )
                   ) %>% 
     
-    # make sure that 
+    # check to ensure beta agonist was used
     mutate(beta_agonist_check = if_else(grepl(pattern = beta_agonist, x = {{emedications_03_col}}, ignore.case = TRUE), 1, 0
                                   )
            )

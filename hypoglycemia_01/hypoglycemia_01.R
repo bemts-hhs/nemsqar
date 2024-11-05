@@ -25,11 +25,15 @@
 ###_____________________________________________________________________________
 
 hypoglycemia_01 <- function(df,
+                      erecord_01_col,
                       incident_date_col,
                       patient_DOB_col,
                       eresponse_05_col,
                       esituation_11_col,
                       esituation_12_col,
+                      evitals_18_col,
+                      evitals_23_cl,
+                      evitals_26_col,
                       emedications_03_col,
                       ...) {
   
@@ -90,47 +94,66 @@ hypoglycemia_01 <- function(df,
   codes_911 <- "2205001|2205003|2205009"
   
   # get codes as a regex to filter primary/secondary impression fields
-  treatment_codes <- "4850|237653|309778|260258|237648|807169|4832"
+  hypoglycemia_treatment_codes <- "4850|237653|309778|260258|237648|807169|4832"
   
   # code(s) for altered mental status
   altered_mental_status <- "R41.82"
   
-  # filter the table to get the initial population regardless of age
-  initial_population <- df %>% 
+  # some manipulations to prepare the table
+  # create the patient age in years and the patient age in days variables for filters
+  # create the unique ID variable
+  initial_population_0 <- df %>% 
     
     # create the age in years variable
     
-    mutate(patient_age_in_years_col = as.numeric(
+    mutate(patient_age_in_years = as.numeric(
       difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days")) / 365
-      
-      ) %>% 
+    ) %>% 
+    rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
+    mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>% 
+    ungroup()
+  
+  # filter the table to get the initial population regardless of age
+  initial_population_1 <- initial_population_0 %>% 
     
     # filter down to 911 calls
     
     dplyr::filter(grepl(pattern = codes_911, x = {{eresponse_05_col}}, ignore.case = T),
                   
-                  # Identify Records that have Respiratory Distress Codes defined above
+                  # Identify Records that have GCUS < 15, or AVPU not equal to Alert, or
+                  # primary/secondary impression of altered mental status
                   
                   if_any(
-                    c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(pattern = asthma_codes, x = ., ignore.case = T)
-                    )
+                    c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(pattern =  altered_mental_status, x = ., ignore.case = T)) | 
+                      (!is.na({{evitals_26_col}}) & {{evitals_26_col}} %not_in% c("Alert", "Not Applicable", "Not Recorded")) | 
+                    {{evitals_23_cl}} < 15
                   ) %>% 
     
     # make sure that 
-    mutate(beta_agonist_check = if_else(grepl(pattern = beta_agonist, x = {{emedications_03_col}}, ignore.case = TRUE), 1, 0
+    mutate(correct_treatment = if_else(grepl(pattern = hypoglycemia_treatment_codes, x = {{emedications_03_col}}, ignore.case = TRUE), 1, 0
                                   )
            )
+  
+  # final pass with manipulations to get a tidy table
+  # 1 row per observation, 1 column per feature
+  
+  initial_population <- initial_population_1 %>%
+    mutate({{evitals_18_col}} := str_c({{evitals_18_col}}, collapse = ", "), 
+           {{evitals_23_cl}} := str_c({{evitals_23_cl}}, collapse = ", "), 
+           {{evitals_26_col}} := str_c({{evitals_26_col}}, collapse = ", "),
+           .by = Unique_ID
+           ) %>% 
+    distinct(Unique_ID, .keep_all = T)
   
   # Adult and Pediatric Populations
   
   # filter adult
   adult_pop <- initial_population %>% 
-    dplyr::filter(patient_age_in_years_col >= 18)
+    dplyr::filter(patient_age_in_years >= 18)
   
   # filter peds
   peds_pop <- initial_population %>% 
-    dplyr::filter(patient_age_in_years_col < 18,
-                  patient_age_in_years_col >= 2
+    dplyr::filter(patient_age_in_years < 18
                   )
   
   # get the summary of results
@@ -138,7 +161,7 @@ hypoglycemia_01 <- function(df,
   # all
   total_population <- initial_population %>% 
     summarize(pop = "All",
-              numerator = sum(beta_agonist_check, na.rm = T),
+              numerator = sum(correct_treatment, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
               prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -148,7 +171,7 @@ hypoglycemia_01 <- function(df,
   # adults
   adult_population <- adult_pop %>% 
     summarize(pop = "Adults",
-              numerator = sum(beta_agonist_check, na.rm = T),
+              numerator = sum(correct_treatment, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
               prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -158,7 +181,7 @@ hypoglycemia_01 <- function(df,
   # peds
   peds_population <- peds_pop %>% 
     summarize(pop = "Peds",
-              numerator = sum(beta_agonist_check, na.rm = T),
+              numerator = sum(correct_treatment, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
               prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -166,9 +189,9 @@ hypoglycemia_01 <- function(df,
     )
   
   # summary
-  asthma.01 <- bind_rows(adult_population, peds_population, total_population)
+  hypoglycemia.01 <- bind_rows(adult_population, peds_population, total_population)
   
-  asthma.01
+  hypoglycemia.01
   
   
 }
