@@ -128,55 +128,11 @@ respiratory_02_peds <- initial_population %>%
 # get population 2 for respiratory-02, adults
 respiratory_02_adults <- initial_population %>% 
   filter(patient_age_in_years >= 18)
-
-if(is.null(by)) {
-
-# calculations for peds
-peds_calculation <- respiratory_02_peds %>% 
-  summarize(pop = "Peds",
-            numerator = sum(
-              grepl(pattern = "7806", x = {{emedications_03_col}}) | 
-                grepl(pattern = "57485005", x = {{eprocedures_03_col}}), na.rm = T
-            ),
-            denominator = n(),
-            prop = numerator / denominator,
-            prop_label = pretty_percent(prop, n_decimal = 0.01)
-            )
-
-# calculations for adults
-adults_calculation <- respiratory_02_adults %>% 
-  summarize(pop = "Adults",
-            numerator = sum(
-              grepl(pattern = "7806", x = {{emedications_03_col}}) | 
-                grepl(pattern = "57485005", x = {{eprocedures_03_col}}), na.rm = T
-            ),
-            denominator = n(),
-            prop = numerator / denominator,
-            prop_label = pretty_percent(prop, n_decimal = 0.01)
-            )
-
-# overall calculation
-total_population <- initial_population %>% 
-  summarize(pop = "All",
-            numerator = sum(
-              grepl(pattern = "7806", x = {{emedications_03_col}}) | 
-                grepl(pattern = "57485005", x = {{eprocedures_03_col}}), na.rm = T
-            ),
-            denominator = n(),
-            prop = numerator / denominator,
-            prop_label = pretty_percent(prop, n_decimal = 0.01)
-            )
-
-# bind rows of calculations for final table
-resp_02 <- bind_rows(total_population, peds_calculation, adults_calculation)
-
-resp_02
-
-} else if(!is.null(by)) {
   
   # calculations for peds
   peds_calculation <- respiratory_02_peds %>% 
-    summarize(pop = "Peds",
+    summarize(measure = "Respiratory-02",
+              pop = "Peds",
               numerator = sum(
                 grepl(pattern = "7806", x = {{emedications_03_col}}) | 
                   grepl(pattern = "57485005", x = {{eprocedures_03_col}}), na.rm = T
@@ -189,7 +145,8 @@ resp_02
   
   # calculations for adults
   adults_calculation <- respiratory_02_adults %>% 
-    summarize(pop = "Adults",
+    summarize(measure = "Respiratory-02",
+              pop = "Adults",
               numerator = sum(
                 grepl(pattern = "7806", x = {{emedications_03_col}}) | 
                   grepl(pattern = "57485005", x = {{eprocedures_03_col}}), na.rm = T
@@ -202,7 +159,8 @@ resp_02
   
   # overall calculation
   total_population <- initial_population %>% 
-    summarize(pop = "All",
+    summarize(measure = "Respiratory-02",
+              pop = "All",
               numerator = sum(
                 grepl(pattern = "7806", x = {{emedications_03_col}}) | 
                   grepl(pattern = "57485005", x = {{eprocedures_03_col}}), na.rm = T
@@ -217,7 +175,5 @@ resp_02
   resp_02 <- bind_rows(total_population, peds_calculation, adults_calculation)
   
   resp_02
-  
-}
   
 }
