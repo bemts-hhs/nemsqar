@@ -94,7 +94,7 @@ respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_
     mutate(patient_age_in_years_col = as.numeric(
       difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days")) / 365
       
-      ) %>% 
+    ) %>% 
     
     # filter down to 911 calls
     
@@ -104,13 +104,13 @@ respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_
                   
                   if_any(
                     c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(pattern = resp_codes, x = ., ignore.case = T)
-                    )
-                  ) %>% 
+                  )
+    ) %>% 
     
     # make sure that 
     mutate(vitals_check = if_else(!is.na({{evitals_12_col}}) & !is.na({{evitals_14_col}}), 1, 0
-                                  )
-           )
+    )
+    )
   
   # Adult and Pediatric Populations
   
@@ -126,7 +126,8 @@ respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_
   
   # all
   total_population <- initial_population %>% 
-    summarize(pop = "All",
+    summarize(measure = "Respiratory-01",
+              pop = "All",
               numerator = sum(vitals_check, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
@@ -136,7 +137,8 @@ respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_
   
   # adults
   adult_population <- adult_pop %>% 
-    summarize(pop = "Adults",
+    summarize(measure = "Respiratory-01",
+              pop = "Adults",
               numerator = sum(vitals_check, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
@@ -146,7 +148,8 @@ respiratory_01 <- function(df, incident_date_col, patient_DOB_col, eresponse_05_
   
   # peds
   peds_population <- peds_pop %>% 
-    summarize(pop = "Peds",
+    summarize(measure = "Respiratory-01",
+              pop = "Peds",
               numerator = sum(vitals_check, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
