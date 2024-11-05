@@ -41,6 +41,7 @@ hypoglycemia_01(
 # Output
 A tibble summarizing the initial population and filtered subgroups (adult, pediatric, total) with hypoglycemia events. It includes:
 
+* `measure`: The measure name for reference in output contexts with multiple measures together.
 * `pop`: Population group (All, Adults, Peds).
 * `numerator`: Count of cases receiving appropriate treatment.
 * `denominator`: Total cases in each population group.
@@ -73,8 +74,9 @@ library(rlang)
   
 # load data
 
-hypoglycemia_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/hypoglycemia01_Export.csv") %>% 
+hypoglycemia_01_data <- read_csv("hypoglycemia01_Export.csv") %>% 
   clean_names(case = "screaming_snake", sep_out = "_")
+  
 #> Rows: 679139 Columns: 13
 #> ── Column specification ────────────────────────────────────────────────────────
 #> Delimiter: ","

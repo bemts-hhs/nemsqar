@@ -138,7 +138,8 @@ asthma_01 <- function(df,
   
   # all
   total_population <- initial_population %>% 
-    summarize(pop = "All",
+    summarize(measure = "Asthma-01",
+              pop = "All",
               numerator = sum(beta_agonist_check, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
@@ -148,7 +149,8 @@ asthma_01 <- function(df,
   
   # adults
   adult_population <- adult_pop %>% 
-    summarize(pop = "Adults",
+    summarize(measure = "Asthma-01",
+              pop = "Adults",
               numerator = sum(beta_agonist_check, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
@@ -158,7 +160,8 @@ asthma_01 <- function(df,
   
   # peds
   peds_population <- peds_pop %>% 
-    summarize(pop = "Peds",
+    summarize(measure = "Asthma-01",
+              pop = "Peds",
               numerator = sum(beta_agonist_check, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,

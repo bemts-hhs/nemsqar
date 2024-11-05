@@ -171,7 +171,8 @@ hypoglycemia_01 <- function(df,
   
   # all
   total_population <- initial_population %>% 
-    summarize(pop = "All",
+    summarize(measure = "Hypoglycemia-01",
+              pop = "All",
               numerator = sum(correct_treatment, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
@@ -181,7 +182,8 @@ hypoglycemia_01 <- function(df,
   
   # adults
   adult_population <- adult_pop %>% 
-    summarize(pop = "Adults",
+    summarize(measure = "Hypoglycemia-01",
+              pop = "Adults",
               numerator = sum(correct_treatment, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,
@@ -191,7 +193,8 @@ hypoglycemia_01 <- function(df,
   
   # peds
   peds_population <- peds_pop %>% 
-    summarize(pop = "Peds",
+    summarize(measure = "Hypoglycemia-01",
+              pop = "Peds",
               numerator = sum(correct_treatment, na.rm = T),
               denominator = n(),
               prop = numerator / denominator,

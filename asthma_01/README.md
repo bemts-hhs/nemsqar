@@ -68,6 +68,14 @@ A summarized data.frame with counts and proportions of beta-agonist treatment am
 # load data
 asthma_01_data <- read_csv("asthma01_Export.csv") %>% 
   clean_names(case = "screaming_snake", sep_out = "_")
+  
+#> Rows: 458787 Columns: 10
+#> ── Column specification ────────────────────────────────────────────────────────
+#> Delimiter: ","
+#> chr (10): Incident Patient Care Report Number - PCR (eRecord.01), Incident D...
+#> 
+#> ℹ Use `spec()` to retrieve the full column specification for this data.
+#> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 # clean
 asthma_01_clean <- asthma_01_data %>% 
@@ -86,12 +94,12 @@ asthma_01_clean %>%
             emedications_03_col = PATIENT_MEDICATION_GIVEN_OR_ADMINISTERED_DESCRIPTION_AND_RXCUI_CODES_LIST_E_MEDICATIONS_03
             )
             
-#> # A tibble: 3 × 5
-#>   pop    numerator denominator  prop prop_label
-#>   <chr>      <dbl>       <int> <dbl> <chr>     
-#> 1 Adults       708        1164 0.608 60.82%    
-#> 2 Peds         111         205 0.541 54.15%    
-#> 3 All          825        1406 0.587 58.68%
+#> # A tibble: 3 × 6
+#>   measure   pop    numerator denominator  prop prop_label
+#>   <chr>     <chr>      <dbl>       <int> <dbl> <chr>     
+#> 1 Asthma-01 Adults       708        1164 0.608 60.82%    
+#> 2 Asthma-01 Peds         111         205 0.541 54.15%    
+#> 3 Asthma-01 All          825        1406 0.587 58.68%
 ```
 
-<sup>Created on 2024-11-04 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
+<sup>Created on 2024-11-05 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>

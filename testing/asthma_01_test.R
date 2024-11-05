@@ -107,7 +107,8 @@ reprex::reprex({
     
     # all
     total_population <- initial_population %>% 
-      summarize(pop = "All",
+      summarize(measure = "Asthma-01",
+                pop = "All",
                 numerator = sum(beta_agonist_check, na.rm = T),
                 denominator = n(),
                 prop = numerator / denominator,
@@ -117,7 +118,8 @@ reprex::reprex({
     
     # adults
     adult_population <- adult_pop %>% 
-      summarize(pop = "Adults",
+      summarize(measure = "Asthma-01",
+                pop = "Adults",
                 numerator = sum(beta_agonist_check, na.rm = T),
                 denominator = n(),
                 prop = numerator / denominator,
@@ -127,7 +129,8 @@ reprex::reprex({
     
     # peds
     peds_population <- peds_pop %>% 
-      summarize(pop = "Peds",
+      summarize(measure = "Asthma-01",
+                pop = "Peds",
                 numerator = sum(beta_agonist_check, na.rm = T),
                 denominator = n(),
                 prop = numerator / denominator,
@@ -151,7 +154,8 @@ reprex::reprex({
   
   library(tidyverse)
   library(janitor)
-  library(scale)
+  library(scales)
+  library(rlang)
   
 # load data
 asthma_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/asthma01_Export.csv") %>% 
