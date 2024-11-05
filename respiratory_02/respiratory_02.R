@@ -121,7 +121,7 @@ initial_population <- initial_population %>%
 # get population 1 for respiratory-02, peds
 respiratory_02_peds <- initial_population %>% 
   filter(patient_age_in_years < 18,
-         patient_age_in_days >= 24 
+         patient_age_in_days >= 1 
          )
 
 # get population 2 for respiratory-02, adults

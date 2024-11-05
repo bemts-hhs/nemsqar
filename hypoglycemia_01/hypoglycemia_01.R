@@ -107,7 +107,9 @@ hypoglycemia_01 <- function(df,
     # create the age in years variable
     
     mutate(patient_age_in_years = as.numeric(
-      difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days")) / 365
+      difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days")) / 365,
+      patient_age_in_days = as.numeric(
+        difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days"))
     )
   
   # filter the table to get the initial population regardless of age
@@ -160,7 +162,8 @@ hypoglycemia_01 <- function(df,
   
   # filter peds
   peds_pop <- initial_population %>% 
-    dplyr::filter(patient_age_in_years < 18
+    dplyr::filter(patient_age_in_years < 18,
+                  patient_age_in_days >= 1
                   )
   
   # get the summary of results
