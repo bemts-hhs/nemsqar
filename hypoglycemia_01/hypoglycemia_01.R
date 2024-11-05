@@ -122,10 +122,12 @@ hypoglycemia_01 <- function(df,
     
     mutate(altered = grepl(pattern =  altered_mental_status, x = {{esituation_11_col}}, ignore.case = T) | 
                     grepl(pattern =  altered_mental_status, x = {{esituation_12_col}}, ignore.case = T),
-           AVPU = !is.na({{evitals_26_col}}) & {{evitals_26_col}} %not_in% c("Alert", "Not Applicable", "Not Recorded"),
+           AVPU = {{evitals_26_col}} %in% c("Unresponsive", "Verbal", "Painful"),
            GCS = {{evitals_23_cl}} < 15
                   ) %>%
-    filter(altered == TRUE | AVPU == TRUE | GCS == TRUE) %>% 
+    filter(altered == TRUE | AVPU == TRUE | GCS == TRUE,
+           {{evitals_18_col}} < 60
+           ) %>% 
     
     # create variable that documents if any of target treatments were used
     mutate(correct_treatment = if_else(grepl(pattern = hypoglycemia_treatment_codes, x = {{emedications_03_col}}, ignore.case = TRUE), 1, 0
