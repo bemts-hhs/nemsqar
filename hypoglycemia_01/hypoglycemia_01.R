@@ -125,6 +125,10 @@ hypoglycemia_01 <- function(df,
            AVPU = {{evitals_26_col}} %in% c("Unresponsive", "Verbal", "Painful"),
            GCS = {{evitals_23_cl}} < 15
                   ) %>%
+    
+    # filter down to the target population with any of the three logical conditions, and 
+    # blood glucose < 60
+    
     filter(altered == TRUE | AVPU == TRUE | GCS == TRUE,
            {{evitals_18_col}} < 60
            ) %>% 
