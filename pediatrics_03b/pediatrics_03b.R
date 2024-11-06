@@ -120,16 +120,15 @@ pediatrics_03b <- function(df,
   
   # create the age in years variable
   initial_population_1 <- initial_population_0 %>%
-    mutate(
-      patient_age_in_years_col = as.numeric(difftime(
-        time1 = {{incident_date_col}},
-        time2 = {{patient_DOB_col}},
-        units = "days"
-      )) / 365) %>% 
+    mutate(patient_age_in_years_col = as.numeric(difftime(
+      time1 = {{incident_date_col}},
+      time2 = {{patient_DOB_col}},
+      units = "days"
+    )) / 365) %>%
     filter(patient_age_in_years_col < 18)
   
-  initial_population_2 <- initial_population_1 %>% 
-      
+  initial_population_2 <- initial_population_1 %>%
+    
     mutate(
       # check if weight was documented
       documented_weight = if_else(!is.na({{eexam_01_col}}) |
@@ -146,9 +145,7 @@ pediatrics_03b <- function(df,
     ) %>%
     
     # filter down to 911 calls where weight-based meds were passed
-    filter(non_weight_based == FALSE,
-           meds_given == TRUE
-           )
+    filter(non_weight_based == FALSE, meds_given == TRUE)
   
   # second filtering process, make the table distinct by rolling up emedications.04
   # based on a unique identifier
@@ -156,8 +153,7 @@ pediatrics_03b <- function(df,
     rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
     mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
     ungroup() %>%
-    mutate({{emedications_04_col}} := str_c({{emedications_04_col}}, collapse = ", "),
-           .by = Unique_ID) %>%
+    mutate({{emedications_04_col}} := str_c({{emedications_04_col}}, collapse = ", "), .by = Unique_ID) %>%
     distinct(Unique_ID, .keep_all = T)
   
   # get the summary of results, already filtered down to the target age group for the measure
@@ -175,6 +171,6 @@ pediatrics_03b <- function(df,
     )
   
   # summary
-  pediatrics.03b 
+  pediatrics.03b
   
 }
