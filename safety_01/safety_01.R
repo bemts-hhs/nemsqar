@@ -90,8 +90,6 @@ safety_01 <- function(df,
     
   }
   
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
-  
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
   
