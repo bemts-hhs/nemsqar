@@ -14,21 +14,28 @@
 ### can be present, too, for reference
 ### the function assumes that edisposition.18 is a list column or a column that has all
 ### text descriptors for additional transport mode descriptors.  These can be separated
-### by commas or other characters as long as all eresponse.24 values are present
+### by commas or other characters as long as all eresponse.18 values are present
 ### in one cell for each unique erecord.01 value.  Codes can be present
 ### but will be ignored by the function.
+### for the argument transport_disposition_cols, this argument can receive the unquoted
+### column names of edisposition.12 and edisposition.30.  One or both can be entered and
+### the function will evaluate them.  These columns are used to create a `transport`
+### variable that is used to filter the table down furhter.  AS such, these columns 
+### edisposition.12 and edisposition.30 must be list columns that and/or contain all values
+### from each unique incident entered for each field.  These can be comma separated values
+### all in one cell to make the table tidy.
 ### the first argument is a dataframe, no joining is done.
 ### any joins to get vitals etc. will need to be done outside the function
 ### grouping can be done before the function to get the calculations by region
 ### or other grouping
 ###_____________________________________________________________________________
 
-
 safety_02 <- function(df,
                       incident_date_col,
                       patient_DOB_col,
                       eresponse_05_col,
                       edisposition_18_col,
+                      transport_disposition_cols,
                       ...) {
   
   # Load necessary packages
@@ -95,6 +102,10 @@ safety_02 <- function(df,
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
   
+  # define transports
+  transport_responses <-
+      "Patient Refused Evaluation/Care (With Transport)|Patient Treated, Transported by this EMS Unit|TX W/Mutual Aid Transported|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Transport by This EMS Unit (This Crew Only)|Transport by This EMS Unit, with a Member of Another Crew|Mutual Aid Tx & Transport|4212033|itDisposition.112.116|4212023|itDisposition.112.141|itDisposition.112.142|itDisposition.112.111"
+  
   # get codes as a regex to find lights and siren responses
   lights_and_sirens <- "Initial Lights and Sirens, Downgraded to No Lights or Sirens|Initial No Lights or Sirens, Upgraded to Lights and Sirens|Lights and Sirens"
   
@@ -107,18 +118,22 @@ safety_02 <- function(df,
       time1 = {{incident_date_col}},
       time2 = {{patient_DOB_col}},
       units = "days"
-    )) / 365) %>%
+    )) / 365,
+    transport = if_else(if_any(c({{transport_disposition_cols}}), ~ grepl(pattern = transport_responses, x = ., ignore.case = T)), TRUE, FALSE
+    )) %>%
     
-    # filter down to 911 calls
+    # filter down to 911 calls that involved transport
     
     dplyr::filter(grepl(
       pattern = codes_911,
       x = {{eresponse_05_col}},
       ignore.case = T
-    )) %>%
+    ),
+    transport == TRUE
+    ) %>%
     
     # if lights and sirens ARE NOT present, 1, else 0
-    mutate(l_s_check = if_else(!grepl(pattern = lights_and_sirens, x = {{eresponse_24_col}}), 1, 0))
+    mutate(l_s_check = if_else(!grepl(pattern = lights_and_sirens, x = {{edisposition_18_col}}), 1, 0))
   
   # Adult and Pediatric Populations
   
@@ -135,7 +150,7 @@ safety_02 <- function(df,
   # all
   total_population <- initial_population %>%
     summarize(
-      measure = "Safety-01",
+      measure = "Safety-02",
       pop = "All",
       numerator = sum(l_s_check, na.rm = T),
       denominator = n(),
@@ -147,7 +162,7 @@ safety_02 <- function(df,
   # adults
   adult_population <- adult_pop %>%
     summarize(
-      measure = "Safety-01",
+      measure = "Safety-02",
       pop = "Adults",
       numerator = sum(l_s_check, na.rm = T),
       denominator = n(),
@@ -159,7 +174,7 @@ safety_02 <- function(df,
   # peds
   peds_population <- peds_pop %>%
     summarize(
-      measure = "Safety-01",
+      measure = "Safety-02",
       pop = "Peds",
       numerator = sum(l_s_check, na.rm = T),
       denominator = n(),
@@ -169,9 +184,9 @@ safety_02 <- function(df,
     )
   
   # summary
-  safety.01 <- bind_rows(adult_population, peds_population, total_population)
+  safety.02 <- bind_rows(adult_population, peds_population, total_population)
   
-  safety.01
+  safety.02
   
   
 }
