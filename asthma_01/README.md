@@ -44,13 +44,6 @@ A data.frame summarizing results for three population groups (All, Adults, and P
 # Value
 A summarized data.frame with counts and proportions of beta-agonist treatment among 911 respiratory distress calls, segmented by population group.
 
-# Notes
-* Assumes each row in df represents an observation, with columns as features.
-* Expects valid Date or POSIXct formats for incident_date_col and patient_DOB_col.
-* Assumes eresponse.05 contains 911 response codes in string format, and emedications_03 contains descriptions of administered medications.
-* The dataset should be pre-joined if it requires additional variables or information.
-* Assumes missing values are represented as NA rather than coded "not values" often found in data collection systems like ImageTrend.
-
 # Example
 
 ``` r
@@ -103,3 +96,12 @@ asthma_01_clean %>%
 ```
 
 <sup>Created on 2024-11-05 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
+
+# Notes
+* Assumes each row in df represents an observation, with columns as features.
+* Expects valid Date or POSIXct formats for incident_date_col and patient_DOB_col.
+* Assumes eresponse.05 contains 911 response codes in string format, and emedications_03 contains descriptions of administered medications.
+* The dataset should be pre-joined if it requires additional variables or information.
+* Assumes missing values are represented as NA rather than coded "not values" often found in data collection systems like ImageTrend.
+
+Original code by Nicoals Foss, Ed.D., MS
