@@ -10,14 +10,13 @@
 ### this function also assumes that rows that are missing any value are NA,
 ### not the not known / not recorded values common to ImageTrend or the value codes
 ### that correspond to "not values".
-### the function assumes that the primary/secondary impression fields have the
-### ICD-10 code in them.  The text description can be present, too, for reference.
 ### the function assumes that the eresponse.05 column has the codes in it, text
 ### can be present, too, for reference
-### the function assumes that vitals in the vital signs columns are likely the
-### first vital signs, or are a list column.  This will give an indication of whether
-### or not any vitals were taken.
-### the esituation_12 is best as a list column of the secondary impressions entered
+### the function assumes that erepsonse.24 is a list column or a column that has all
+### text descriptors for additional response mode descriptors.  These can be separated
+### by commas or other characters as long as all eresponse.24 values are present
+### in one cell for each unique erecord.01 value.  Codes can be present
+### but will be ignored by the function.
 ### the first argument is a dataframe, no joining is done.
 ### any joins to get vitals etc. will need to be done outside the function
 ### grouping can be done before the function to get the calculations by region
@@ -26,14 +25,11 @@
 
 
 safety_01 <- function(df,
-                           incident_date_col,
-                           patient_DOB_col,
-                           eresponse_05_col,
-                           esituation_11_col,
-                           esituation_12_col,
-                           evitals_12_col,
-                           evitals_14_col,
-                           ...) {
+                      incident_date_col,
+                      patient_DOB_col,
+                      eresponse_05_col,
+                      eresponse_24_col,
+                      ...) {
   
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
@@ -100,7 +96,7 @@ safety_01 <- function(df,
   codes_911 <- "2205001|2205003|2205009"
   
   # get codes as a regex to find lights and siren responses
-  lights_and_sirens <- "2224023|2224021|2224015"
+  lights_and_sirens <- "Initial Lights and Sirens, Downgraded to No Lights or Sirens|Initial No Lights or Sirens, Upgraded to Lights and Sirens|Lights and Sirens"
   
   # filter the table to get the initial population regardless of age
   initial_population <- df %>%
@@ -119,19 +115,10 @@ safety_01 <- function(df,
       pattern = codes_911,
       x = {{eresponse_05_col}},
       ignore.case = T
-    ),
+    )) %>%
     
-    # Identify Records that have Respiratory Distress Codes defined above
-    
-    if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
-      pattern = resp_codes,
-      x = .,
-      ignore.case = T
-    ))) %>%
-    
-    # make sure that
-    mutate(vitals_check = if_else(!is.na({{evitals_12_col}}) &
-                                    !is.na({{evitals_14_col}}), 1, 0))
+    # if lights and sirens ARE NOT present, 1, else 0
+    mutate(l_s_check = if_else(!grepl(pattern = lights_and_sirens, x = {{eresponse_24_col}}), 1, 0))
   
   # Adult and Pediatric Populations
   
@@ -150,7 +137,7 @@ safety_01 <- function(df,
     summarize(
       measure = "Safety-01",
       pop = "All",
-      numerator = sum(vitals_check, na.rm = T),
+      numerator = sum(l_s_check, na.rm = T),
       denominator = n(),
       prop = numerator / denominator,
       prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -162,7 +149,7 @@ safety_01 <- function(df,
     summarize(
       measure = "Safety-01",
       pop = "Adults",
-      numerator = sum(vitals_check, na.rm = T),
+      numerator = sum(l_s_check, na.rm = T),
       denominator = n(),
       prop = numerator / denominator,
       prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -174,7 +161,7 @@ safety_01 <- function(df,
     summarize(
       measure = "Safety-01",
       pop = "Peds",
-      numerator = sum(vitals_check, na.rm = T),
+      numerator = sum(l_s_check, na.rm = T),
       denominator = n(),
       prop = numerator / denominator,
       prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),

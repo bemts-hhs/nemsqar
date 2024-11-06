@@ -129,7 +129,7 @@ respiratory_01 <- function(df,
       ignore.case = T
     ))) %>%
     
-    # make sure that
+    # check to see if target vitals were captured
     mutate(vitals_check = if_else(!is.na({{evitals_12_col}}) &
                                     !is.na({{evitals_14_col}}), 1, 0))
   

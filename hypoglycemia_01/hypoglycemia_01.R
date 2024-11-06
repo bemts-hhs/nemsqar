@@ -178,7 +178,11 @@ hypoglycemia_01 <- function(df,
     rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
     mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
     ungroup() %>%
-    mutate({{evitals_18_col}} := str_c({{evitals_18_col}}, collapse = ", "), {{evitals_23_cl}} := str_c({{evitals_23_cl}}, collapse = ", "), {{evitals_26_col}} := str_c({{evitals_26_col}}, collapse = ", "), .by = Unique_ID) %>%
+    mutate({{evitals_18_col}} := str_c({{evitals_18_col}}, collapse = ", "), 
+           {{evitals_23_cl}} := str_c({{evitals_23_cl}}, collapse = ", "), 
+           {{evitals_26_col}} := str_c({{evitals_26_col}}, collapse = ", "), 
+           .by = Unique_ID
+           ) %>%
     distinct(Unique_ID, .keep_all = T) %>%
     filter(patient_age_in_days >= 1)
   
@@ -190,7 +194,7 @@ hypoglycemia_01 <- function(df,
   
   # filter peds
   peds_pop <- initial_population %>%
-    dplyr::filter(patient_age_in_years < 18, patient_age_in_days >= 1)
+    dplyr::filter(patient_age_in_days < 6570, patient_age_in_days >= 1)
   
   # get the summary of results
   
