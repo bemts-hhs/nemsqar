@@ -7,7 +7,7 @@
 ### The data must be a dataframe or tibble that contains emedications.03 and eprocedures.03
 ### as columns where each cell contains all values entered for each respective incident.
 ### These are not list columns but can be comma separated values in each cell, and must contain
-### all medications for each incident.  
+### all medications for each incident.
 ### The table must also have the erecord.01 values to attempt a best estimate of a unique ID by concatenating
 ### the erecord.01, incident date, and patient DOB.
 ### The table can include all values entered for evitals.12
@@ -36,44 +36,51 @@ respiratory_02 <- function(df,
                            emedications_03_col,
                            eprocedures_03_col,
                            ...) {
-  
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
-    if (!pkg %in% installed.packages()) install.packages(pkg, quiet = TRUE)
-    if (!paste0("package:", pkg) %in% search()) library(pkg, quietly = TRUE)
+    if (!pkg %in% installed.packages())
+      install.packages(pkg, quiet = TRUE)
+    if (!paste0("package:", pkg) %in% search())
+      library(pkg, quietly = TRUE)
   }
   
   # provide better error messaging if df is missing
-  if(missing(df)) {
-    
-    cli_abort(c("No object of class {.cls data.frame} was passed to {.fn respiratory_01}.",
-                "i" = "Please supply a {.cls data.frame} to the first argument in {.fn respiratory_01}."
-                ))
+  if (missing(df)) {
+    cli_abort(
+      c(
+        "No object of class {.cls data.frame} was passed to {.fn respiratory_01}.",
+        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn respiratory_01}."
+      )
+    )
     
   }
   
   # Ensure df is a data frame or tibble
   if (!is.data.frame(df) && !is_tibble(df)) {
-    cli_abort(c(
-      "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-      "i" = "The passed object is of class {.val {class(df)}}."
-    ))
+    cli_abort(
+      c(
+        "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
+        "i" = "The passed object is of class {.val {class(df)}}."
+      )
+    )
   }
   
   # use quasiquotation on the date variables to check format
   incident_date <- enquo(incident_date_col)
   patient_DOB <- enquo(patient_DOB_col)
   
-  if(!is.Date(df[[as_name(incident_date)]]) & !is.POSIXct(df[[as_name(incident_date)]]) & !is.Date(df[[as_name(patient_DOB)]]) & !is.POSIXct(df[[as_name(patient_DOB)]])) {
-    
-    cli_abort("For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class.")
+  if ((!is.Date(df[[as_name(incident_date)]]) &
+       !is.POSIXct(df[[as_name(incident_date)]])) ||
+      (!is.Date(df[[as_name(patient_DOB)]]) &
+       !is.POSIXct(df[[as_name(patient_DOB)]]))) {
+    cli_abort(
+      "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+    )
     
   }
   
-  if(!exists("pretty_percent")) {
-    
+  if (!exists("pretty_percent")) {
     pretty_percent <- function(variable, n_decimal = 0.1) {
-      
       formatted_percent <- percent(variable, accuracy = n_decimal)
       
       # If there are trailing zeros after decimal point, remove them
@@ -89,86 +96,93 @@ respiratory_02 <- function(df,
   }
   
   
-# some manipulations to prepare the table
-# create the patient age in years and the patient age in days variables for filters
-# create the unique ID variable
-initial_population <- df %>% 
-  mutate(patient_age_in_years = as.numeric(
-    difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days")) / 365,
-    patient_age_in_days = as.numeric(
-      difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days"))
+  # some manipulations to prepare the table
+  # create the patient age in years and the patient age in days variables for filters
+  # create the unique ID variable
+  initial_population <- df %>%
+    mutate(
+      patient_age_in_years = as.numeric(difftime(
+        time1 = {{incident_date_col}},
+        time2 = {{patient_DOB_col}},
+        units = "days"
+      )) / 365,
+      patient_age_in_days = as.numeric(difftime(
+        time1 = {{incident_date_col}},
+        time2 = {{patient_DOB_col}},
+        units = "days"
+      ))
     )
-
-# finish filters and make the table distinct
-initial_population <- initial_population %>% 
-  filter(
-    grepl(
+  
+  # finish filters and make the table distinct
+  initial_population <- initial_population %>%
+    filter(grepl(
       pattern = "2205001|2205003|2205009",
       x = {{eresponse_05_col}},
       ignore.case = T
     ),
-    {{evitals_12_col}} < 90
-  ) %>% 
-  rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
-  mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>% 
-  ungroup() %>%
-  mutate(
-    {{evitals_12_col}} := str_c({{evitals_12_col}}, collapse = ", "), # take all vitals for each pt and roll them into one cell per pt
-    .by = Unique_ID
-  ) %>% 
-  distinct(Unique_ID, .keep_all = T) %>%  # this will ensure each row is an observation, and each column is a feature
-  filter(patient_age_in_days >= 1)
-
-# get population 1 for respiratory-02, peds
-respiratory_02_peds <- initial_population %>% 
-  filter(patient_age_in_years < 18,
-         patient_age_in_days >= 1 
-         )
-
-# get population 2 for respiratory-02, adults
-respiratory_02_adults <- initial_population %>% 
-  filter(patient_age_in_years >= 18)
+    {{evitals_12_col}} < 90) %>%
+    rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
+    mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
+    ungroup() %>%
+    mutate({{evitals_12_col}} := str_c({{evitals_12_col}}, collapse = ", "), # take all vitals for each pt and roll them into one cell per pt
+           .by = Unique_ID) %>%
+    distinct(Unique_ID, .keep_all = T) %>%  # this will ensure each row is an observation, and each column is a feature
+    filter(patient_age_in_days >= 1)
+  
+  # get population 1 for respiratory-02, peds
+  respiratory_02_peds <- initial_population %>%
+    filter(patient_age_in_years < 18, patient_age_in_days >= 1)
+  
+  # get population 2 for respiratory-02, adults
+  respiratory_02_adults <- initial_population %>%
+    filter(patient_age_in_years >= 18)
   
   # calculations for peds
-  peds_calculation <- respiratory_02_peds %>% 
-    summarize(measure = "Respiratory-02",
-              pop = "Peds",
-              numerator = sum(
-                grepl(pattern = "7806", x = {{emedications_03_col}}) | 
-                  grepl(pattern = "57485005", x = {{eprocedures_03_col}}), na.rm = T
-              ),
-              denominator = n(),
-              prop = numerator / denominator,
-              prop_label = pretty_percent(prop, n_decimal = 0.01),
-              ...
+  peds_calculation <- respiratory_02_peds %>%
+    summarize(
+      measure = "Respiratory-02",
+      pop = "Peds",
+      numerator = sum(
+        grepl(pattern = "7806", x = {{emedications_03_col}}) |
+          grepl(pattern = "57485005", x = {{eprocedures_03_col}}),
+        na.rm = T
+      ),
+      denominator = n(),
+      prop = numerator / denominator,
+      prop_label = pretty_percent(prop, n_decimal = 0.01),
+      ...
     )
   
   # calculations for adults
-  adults_calculation <- respiratory_02_adults %>% 
-    summarize(measure = "Respiratory-02",
-              pop = "Adults",
-              numerator = sum(
-                grepl(pattern = "7806", x = {{emedications_03_col}}) | 
-                  grepl(pattern = "57485005", x = {{eprocedures_03_col}}), na.rm = T
-              ),
-              denominator = n(),
-              prop = numerator / denominator,
-              prop_label = pretty_percent(prop, n_decimal = 0.01),
-              ...
+  adults_calculation <- respiratory_02_adults %>%
+    summarize(
+      measure = "Respiratory-02",
+      pop = "Adults",
+      numerator = sum(
+        grepl(pattern = "7806", x = {{emedications_03_col}}) |
+          grepl(pattern = "57485005", x = {{eprocedures_03_col}}),
+        na.rm = T
+      ),
+      denominator = n(),
+      prop = numerator / denominator,
+      prop_label = pretty_percent(prop, n_decimal = 0.01),
+      ...
     )
   
   # overall calculation
-  total_population <- initial_population %>% 
-    summarize(measure = "Respiratory-02",
-              pop = "All",
-              numerator = sum(
-                grepl(pattern = "7806", x = {{emedications_03_col}}) | 
-                  grepl(pattern = "57485005", x = {{eprocedures_03_col}}), na.rm = T
-              ),
-              denominator = n(),
-              prop = numerator / denominator,
-              prop_label = pretty_percent(prop, n_decimal = 0.01),
-              ...
+  total_population <- initial_population %>%
+    summarize(
+      measure = "Respiratory-02",
+      pop = "All",
+      numerator = sum(
+        grepl(pattern = "7806", x = {{emedications_03_col}}) |
+          grepl(pattern = "57485005", x = {{eprocedures_03_col}}),
+        na.rm = T
+      ),
+      denominator = n(),
+      prop = numerator / denominator,
+      prop_label = pretty_percent(prop, n_decimal = 0.01),
+      ...
     )
   
   # bind rows of calculations for final table

@@ -69,10 +69,11 @@ hypoglycemia_01 <- function(df,
   incident_date <- enquo(incident_date_col)
   patient_DOB <- enquo(patient_DOB_col)
   
-  if (!is.Date(df[[as_name(incident_date)]]) &
-      !is.POSIXct(df[[as_name(incident_date)]]) &
-      !is.Date(df[[as_name(patient_DOB)]]) &
-      !is.POSIXct(df[[as_name(patient_DOB)]])) {
+  if ((!is.Date(df[[as_name(incident_date)]]) &
+       !is.POSIXct(df[[as_name(incident_date)]])) ||
+      (!is.Date(df[[as_name(patient_DOB)]]) &
+       !is.POSIXct(df[[as_name(patient_DOB)]]))) {
+    
     cli_abort(
       "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
     )
@@ -158,7 +159,8 @@ hypoglycemia_01 <- function(df,
     # filter down to the target population with any of the three logical conditions, and
     # blood glucose < 60
     
-    filter(altered == TRUE | AVPU == TRUE | GCS == TRUE, {{evitals_18_col}} < 60) %>%
+    filter(altered == TRUE |
+             AVPU == TRUE | GCS == TRUE, {{evitals_18_col}} < 60) %>%
     
     # create variable that documents if any of target treatments were used
     mutate(correct_treatment = if_else(
@@ -178,11 +180,7 @@ hypoglycemia_01 <- function(df,
     rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
     mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
     ungroup() %>%
-    mutate({{evitals_18_col}} := str_c({{evitals_18_col}}, collapse = ", "), 
-           {{evitals_23_cl}} := str_c({{evitals_23_cl}}, collapse = ", "), 
-           {{evitals_26_col}} := str_c({{evitals_26_col}}, collapse = ", "), 
-           .by = Unique_ID
-           ) %>%
+    mutate({{evitals_18_col}} := str_c({{evitals_18_col}}, collapse = ", "), {{evitals_23_cl}} := str_c({{evitals_23_cl}}, collapse = ", "), {{evitals_26_col}} := str_c({{evitals_26_col}}, collapse = ", "), .by = Unique_ID) %>%
     distinct(Unique_ID, .keep_all = T) %>%
     filter(patient_age_in_days >= 1)
   

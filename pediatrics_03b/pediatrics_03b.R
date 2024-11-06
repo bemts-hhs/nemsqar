@@ -1,38 +1,49 @@
 ################################################################################
-### Respiratory_01 Function  ###################################################
+### Pediatrics-03b Function ####################################################
 ################################################################################
 
 ###_____________________________________________________________________________
 ### Assume data are already loaded
-### Need to be a table where each row is 1 observation and each column is a feature
-### or distinct datasets that can be referenced as unique columns
+### The data must be a dataframe or tibble that contains emedications.03
+### as a column where each cell contains all values entered for each respective incident.
+### This is not a list column but can be comma separated values in each cell, and must contain
+### all medications for each incident.
+### emedications.04 is the full list of medication administration routes present in the data
+### can the function will roll up these values so that the table is distinct with each row being
+### 1 observation, and each column a feature.
 ### this function will calculate an age in years
 ### this function also assumes that rows that are missing any value are NA,
 ### not the not known / not recorded values common to ImageTrend or the value codes
 ### that correspond to "not values".
-### the function assumes that the primary/secondary impression fields have the
-### ICD-10 code in them.  The text description can be present, too, for reference.
 ### the function assumes that the eresponse.05 column has the codes in it, text
 ### can be present, too, for reference
-### the function assumes that vitals in the vital signs columns are likely the
-### first vital signs, or are a list column.  This will give an indication of whether
-### or not any vitals were taken.
-### the esituation_12 is best as a list column of the secondary impressions entered
+### the function assumes that edisposition.18 is a list column or a column that has all
+### text descriptors for additional transport mode descriptors.  These can be separated
+### by commas or other characters as long as all eresponse.18 values are present
+### in one cell for each unique erecord.01 value.  Codes can be present
+### but will be ignored by the function.
+### for the argument transport_disposition_cols, this argument can receive the unquoted
+### column names of edisposition.12 and edisposition.30.  One or both can be entered and
+### the function will evaluate them.  These columns are used to create a `transport`
+### variable that is used to filter the table down furhter.  AS such, these columns
+### edisposition.12 and edisposition.30 must be list columns that and/or contain all values
+### from each unique incident entered for each field.  These can be comma separated values
+### all in one cell to make the table tidy.
 ### the first argument is a dataframe, no joining is done.
 ### any joins to get vitals etc. will need to be done outside the function
 ### grouping can be done before the function to get the calculations by region
 ### or other grouping
 ###_____________________________________________________________________________
 
-
-respiratory_01 <- function(df,
+pediatrics_03b <- function(df,
+                           erecord_01_col,
                            incident_date_col,
                            patient_DOB_col,
                            eresponse_05_col,
-                           esituation_11_col,
-                           esituation_12_col,
-                           evitals_12_col,
-                           evitals_14_col,
+                           eexam_01_col,
+                           eexam_02_col,
+                           emedications_03_col,
+                           emedications_04_col,
                            ...) {
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
@@ -71,7 +82,6 @@ respiratory_01 <- function(df,
        !is.POSIXct(df[[as_name(incident_date)]])) ||
       (!is.Date(df[[as_name(patient_DOB)]]) &
        !is.POSIXct(df[[as_name(patient_DOB)]]))) {
-    
     cli_abort(
       "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
     )
@@ -94,44 +104,55 @@ respiratory_01 <- function(df,
     
   }
   
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
-  
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
   
-  # get codes as a regex to filter primary impression fields
-  resp_codes <- "I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9"
+  # non-weight-based medications
+  non_weight_based_meds <- "Bag Valve Mask (BVM)|Non-Rebreather Mask|Nasal Cannula|Inhalation|Re-breather mask|Ventimask|Topical|OxyMask|CPAP"
   
-  # filter the table to get the initial population regardless of age
-  initial_population <- df %>%
-    
-    # create the age in years variable
-    
-    mutate(patient_age_in_years_col = as.numeric(difftime(
-      time1 = {{incident_date_col}},
-      time2 = {{patient_DOB_col}},
-      units = "days"
-    )) / 365) %>%
-    
-    # filter down to 911 calls
-    
+  # filter the table to get the initial population regardless of age, only 911 responses
+  initial_population_0 <- df %>%
     dplyr::filter(grepl(
       pattern = codes_911,
       x = {{eresponse_05_col}},
       ignore.case = T
-    ),
+    ))
+  
+  # create the age in years variable
+  initial_population_1 <- initial_population_0 %>%
+    mutate(
+      patient_age_in_years_col = as.numeric(difftime(
+        time1 = {{incident_date_col}},
+        time2 = {{patient_DOB_col}},
+        units = "days"
+      )) / 365,
+      
+      # check if weight was documented
+      documented_weight = if_else(!is.na({{eexam_01_col}}) |
+                                    !is.na({{eexam_02_col}}), 1, 0),
+      # confirm meds passed
+      meds_given = if_else(!is.na(emedications_03_col), TRUE, FALSE),
+      
+      # check to see if non-weight-based meds
+      non_weight_based = grepl(
+        pattern = non_weight_based_meds,
+        x = {{emedications_04_col}},
+        ignore.case = TRUE
+      )
+    ) %>%
     
-    # Identify Records that have Respiratory Distress Codes defined above
-    
-    if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
-      pattern = resp_codes,
-      x = .,
-      ignore.case = T
-    ))) %>%
-    
-    # check to see if target vitals were captured
-    mutate(vitals_check = if_else(!is.na({{evitals_12_col}}) &
-                                    !is.na({{evitals_14_col}}), 1, 0))
+    # filter down to 911 calls where weight-based meds were passed
+    filter(non_weight_based == FALSE)
+  
+  # second filtering process, make the table distinct by rolling up emedications.04
+  # based on a unique identifier
+  
+  initial_population <- initial_population_0 %>%
+    rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
+    mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
+    ungroup() %>%
+    mutate({{emedications_04_col}} := str_c({{emedications_04_col}}, collapse = ", ")) %>%
+    distinct(Unique_ID, .keep_all = T)
   
   # Adult and Pediatric Populations
   
@@ -148,9 +169,9 @@ respiratory_01 <- function(df,
   # all
   total_population <- initial_population %>%
     summarize(
-      measure = "Respiratory-01",
+      measure = "Pediatrics-03b",
       pop = "All",
-      numerator = sum(vitals_check, na.rm = T),
+      numerator = sum(l_s_check, na.rm = T),
       denominator = n(),
       prop = numerator / denominator,
       prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -160,9 +181,9 @@ respiratory_01 <- function(df,
   # adults
   adult_population <- adult_pop %>%
     summarize(
-      measure = "Respiratory-01",
+      measure = "Pediatrics-03b",
       pop = "Adults",
-      numerator = sum(vitals_check, na.rm = T),
+      numerator = sum(l_s_check, na.rm = T),
       denominator = n(),
       prop = numerator / denominator,
       prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -172,9 +193,9 @@ respiratory_01 <- function(df,
   # peds
   peds_population <- peds_pop %>%
     summarize(
-      measure = "Respiratory-01",
+      measure = "Pediatrics-03b",
       pop = "Peds",
-      numerator = sum(vitals_check, na.rm = T),
+      numerator = sum(l_s_check, na.rm = T),
       denominator = n(),
       prop = numerator / denominator,
       prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -182,9 +203,9 @@ respiratory_01 <- function(df,
     )
   
   # summary
-  resp_01 <- bind_rows(adult_population, peds_population, total_population)
+  safety.02 <- bind_rows(adult_population, peds_population, total_population)
   
-  resp_01
+  safety.02
   
   
 }

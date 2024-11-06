@@ -62,7 +62,7 @@ library(rlang)
   
 # load data
 
-safety_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/safety01_02_Export.csv") %>% 
+safety_01_data <- read_csv("safety01_02_Export.csv") %>% 
   clean_names(case = "screaming_snake", sep_out = "_")
   
 #> Rows: 458647 Columns: 12

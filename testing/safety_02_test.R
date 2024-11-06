@@ -1,7 +1,7 @@
 reprex::reprex({
 
 ################################################################################
-### Test for Safety-01 #########################################################
+### Test for Safety-02 #########################################################
 ################################################################################
 
 # packages
@@ -13,11 +13,12 @@ library(rlang)
   
 # function
   
-  safety_01 <- function(df,
+  safety_02 <- function(df,
                         incident_date_col,
                         patient_DOB_col,
                         eresponse_05_col,
-                        eresponse_24_col,
+                        edisposition_18_col,
+                        transport_disposition_cols,
                         ...) {
     
     # Load necessary packages
@@ -84,6 +85,10 @@ library(rlang)
     # 911 codes for eresponse.05
     codes_911 <- "2205001|2205003|2205009"
     
+    # define transports
+    transport_responses <-
+      "Patient Refused Evaluation/Care (With Transport)|Patient Treated, Transported by this EMS Unit|TX W/Mutual Aid Transported|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Transport by This EMS Unit (This Crew Only)|Transport by This EMS Unit, with a Member of Another Crew|Mutual Aid Tx & Transport|4212033|itDisposition.112.116|4212023|itDisposition.112.141|itDisposition.112.142|itDisposition.112.111"
+    
     # get codes as a regex to find lights and siren responses
     lights_and_sirens <- "Initial Lights and Sirens, Downgraded to No Lights or Sirens|Initial No Lights or Sirens, Upgraded to Lights and Sirens|Lights and Sirens"
     
@@ -96,18 +101,22 @@ library(rlang)
         time1 = {{incident_date_col}},
         time2 = {{patient_DOB_col}},
         units = "days"
-      )) / 365) %>%
+      )) / 365,
+      transport = if_else(if_any(c({{transport_disposition_cols}}), ~ grepl(pattern = transport_responses, x = ., ignore.case = T)), TRUE, FALSE
+      )) %>%
       
-      # filter down to 911 calls
+      # filter down to 911 calls that involved transport
       
       dplyr::filter(grepl(
         pattern = codes_911,
         x = {{eresponse_05_col}},
         ignore.case = T
-      )) %>%
+      ),
+      transport == TRUE
+      ) %>%
       
       # if lights and sirens ARE NOT present, 1, else 0
-      mutate(l_s_check = if_else(!grepl(pattern = lights_and_sirens, x = {{eresponse_24_col}}), 1, 0))
+      mutate(l_s_check = if_else(!grepl(pattern = lights_and_sirens, x = {{edisposition_18_col}}), 1, 0))
     
     # Adult and Pediatric Populations
     
@@ -124,7 +133,7 @@ library(rlang)
     # all
     total_population <- initial_population %>%
       summarize(
-        measure = "Safety-01",
+        measure = "Safety-02",
         pop = "All",
         numerator = sum(l_s_check, na.rm = T),
         denominator = n(),
@@ -136,7 +145,7 @@ library(rlang)
     # adults
     adult_population <- adult_pop %>%
       summarize(
-        measure = "Safety-01",
+        measure = "Safety-02",
         pop = "Adults",
         numerator = sum(l_s_check, na.rm = T),
         denominator = n(),
@@ -148,7 +157,7 @@ library(rlang)
     # peds
     peds_population <- peds_pop %>%
       summarize(
-        measure = "Safety-01",
+        measure = "Safety-02",
         pop = "Peds",
         numerator = sum(l_s_check, na.rm = T),
         denominator = n(),
@@ -158,32 +167,34 @@ library(rlang)
       )
     
     # summary
-    safety.01 <- bind_rows(adult_population, peds_population, total_population)
+    safety.02 <- bind_rows(adult_population, peds_population, total_population)
     
-    safety.01
+    safety.02
     
     
   }
   
 # load data
 
-safety_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/safety01_02_Export.csv") %>% 
+safety_02_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/safety01_02_Export_2023.csv") %>% 
   clean_names(case = "screaming_snake", sep_out = "_")
 
 # clean
 
-safety_01_clean <- safety_01_data %>% 
+safety_02_clean <- safety_02_data %>% 
   mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
     str_remove_all(., pattern = "\\s12:00:00\\sAM")
   )))
 
 # run function
 
-safety_01_clean %>% 
-  safety_01(incident_date_col = INCIDENT_DATE,
-            patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
-            eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
-            eresponse_24_col = RESPONSE_ADDITIONAL_RESPONSE_MODE_DESCRIPTORS_LIST_E_RESPONSE_24
+safety_02_clean %>% 
+  safety_02(incident_date_col = INCIDENT_DATE,
+            PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+            RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+            DISPOSITION_ADDITIONAL_TRANSPORT_MODE_DESCRIPTOR_LIST_E_DISPOSITION_18,
+            transport_disposition_cols = c(DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112, 
+                                           TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30)
             )
 
 }, venue = "gh", advertise = TRUE)

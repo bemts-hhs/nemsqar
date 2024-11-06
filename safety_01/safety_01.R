@@ -30,7 +30,6 @@ safety_01 <- function(df,
                       eresponse_05_col,
                       eresponse_24_col,
                       ...) {
-  
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
     if (!pkg %in% installed.packages())
@@ -64,10 +63,11 @@ safety_01 <- function(df,
   incident_date <- enquo(incident_date_col)
   patient_DOB <- enquo(patient_DOB_col)
   
-  if (!is.Date(df[[as_name(incident_date)]]) &
-      !is.POSIXct(df[[as_name(incident_date)]]) &
-      !is.Date(df[[as_name(patient_DOB)]]) &
-      !is.POSIXct(df[[as_name(patient_DOB)]])) {
+  if ((!is.Date(df[[as_name(incident_date)]]) &
+       !is.POSIXct(df[[as_name(incident_date)]])) ||
+      (!is.Date(df[[as_name(patient_DOB)]]) &
+       !is.POSIXct(df[[as_name(patient_DOB)]]))) {
+    
     cli_abort(
       "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
     )

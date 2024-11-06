@@ -20,7 +20,7 @@
 ### for the argument transport_disposition_cols, this argument can receive the unquoted
 ### column names of edisposition.12 and edisposition.30.  One or both can be entered and
 ### the function will evaluate them.  These columns are used to create a `transport`
-### variable that is used to filter the table down furhter.  AS such, these columns 
+### variable that is used to filter the table down furhter.  AS such, these columns
 ### edisposition.12 and edisposition.30 must be list columns that and/or contain all values
 ### from each unique incident entered for each field.  These can be comma separated values
 ### all in one cell to make the table tidy.
@@ -37,7 +37,6 @@ safety_02 <- function(df,
                       edisposition_18_col,
                       transport_disposition_cols,
                       ...) {
-  
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
     if (!pkg %in% installed.packages())
@@ -71,10 +70,11 @@ safety_02 <- function(df,
   incident_date <- enquo(incident_date_col)
   patient_DOB <- enquo(patient_DOB_col)
   
-  if (!is.Date(df[[as_name(incident_date)]]) &
-      !is.POSIXct(df[[as_name(incident_date)]]) &
-      !is.Date(df[[as_name(patient_DOB)]]) &
-      !is.POSIXct(df[[as_name(patient_DOB)]])) {
+  if ((!is.Date(df[[as_name(incident_date)]]) &
+       !is.POSIXct(df[[as_name(incident_date)]])) ||
+      (!is.Date(df[[as_name(patient_DOB)]]) &
+       !is.POSIXct(df[[as_name(patient_DOB)]]))) {
+    
     cli_abort(
       "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
     )
@@ -104,7 +104,7 @@ safety_02 <- function(df,
   
   # define transports
   transport_responses <-
-      "Patient Refused Evaluation/Care (With Transport)|Patient Treated, Transported by this EMS Unit|TX W/Mutual Aid Transported|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Transport by This EMS Unit (This Crew Only)|Transport by This EMS Unit, with a Member of Another Crew|Mutual Aid Tx & Transport|4212033|itDisposition.112.116|4212023|itDisposition.112.141|itDisposition.112.142|itDisposition.112.111"
+    "Patient Refused Evaluation/Care (With Transport)|Patient Treated, Transported by this EMS Unit|TX W/Mutual Aid Transported|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Transport by This EMS Unit (This Crew Only)|Transport by This EMS Unit, with a Member of Another Crew|Mutual Aid Tx & Transport|4212033|itDisposition.112.116|4212023|itDisposition.112.141|itDisposition.112.142|itDisposition.112.111"
   
   # get codes as a regex to find lights and siren responses
   lights_and_sirens <- "Initial Lights and Sirens, Downgraded to No Lights or Sirens|Initial No Lights or Sirens, Upgraded to Lights and Sirens|Lights and Sirens"
@@ -114,13 +114,21 @@ safety_02 <- function(df,
     
     # create the age in years variable
     
-    mutate(patient_age_in_years_col = as.numeric(difftime(
-      time1 = {{incident_date_col}},
-      time2 = {{patient_DOB_col}},
-      units = "days"
-    )) / 365,
-    transport = if_else(if_any(c({{transport_disposition_cols}}), ~ grepl(pattern = transport_responses, x = ., ignore.case = T)), TRUE, FALSE
-    )) %>%
+    mutate(
+      patient_age_in_years_col = as.numeric(difftime(
+        time1 = {{incident_date_col}},
+        time2 = {{patient_DOB_col}},
+        units = "days"
+      )) / 365,
+      transport = if_else(if_any(
+        c({{transport_disposition_cols}}),
+        ~ grepl(
+          pattern = transport_responses,
+          x = .,
+          ignore.case = T
+        )
+      ), TRUE, FALSE)
+    ) %>%
     
     # filter down to 911 calls that involved transport
     
@@ -129,8 +137,7 @@ safety_02 <- function(df,
       x = {{eresponse_05_col}},
       ignore.case = T
     ),
-    transport == TRUE
-    ) %>%
+    transport == TRUE) %>%
     
     # if lights and sirens ARE NOT present, 1, else 0
     mutate(l_s_check = if_else(!grepl(pattern = lights_and_sirens, x = {{edisposition_18_col}}), 1, 0))
