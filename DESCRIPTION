@@ -14,7 +14,7 @@ Description: nemsqar is an R package designed to automate the calculation of EMS
              reliable, evidence-based quality measures, nemsqar aims to 
              streamline metric calculation for healthcare providers, EMS 
              agencies, and researchers dedicated to improving patient outcomes.
-License: MIT
+License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.3
@@ -24,4 +24,9 @@ Config/testthat/edition: 3
 URL: https://github.com/bemts-hhs/nemsqar-package
 BugReports: https://github.com/bemts-hhs/nemsqar-package/issues
 Imports: 
-    lifecycle
+    cli,
+    dplyr,
+    lubridate,
+    rlang,
+    scales,
+    tibble
