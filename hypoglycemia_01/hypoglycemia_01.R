@@ -9,6 +9,9 @@
 ### this function also assumes that rows that are missing any value are NA,
 ### not the not known / not recorded values common to ImageTrend or the value codes
 ### that correspond to "not values".
+### the vitals fields may be the full list of values for each field, or the lowest
+### estimated evitals.18 (must include the low blood glucouse flag), lowest estimated
+### patient AVPUT via evitals.26, and 
 ### the function assumes that the primary/secondary impression fields have the
 ### ICD-10 code in them.  The text description can be present, too, for reference.
 ### the function assumes that the eresponse.05 column has the codes in it, text
@@ -28,6 +31,8 @@ hypoglycemia_01 <- function(df,
                             erecord_01_col,
                             incident_date_col,
                             patient_DOB_col,
+                            epatient_15_col,
+                            epatient_16_col,
                             eresponse_05_col,
                             esituation_11_col,
                             esituation_12_col,
@@ -114,7 +119,15 @@ hypoglycemia_01 <- function(df,
   
   # codes for diabetes via primary and secondary impression
   
-  diabetes_codes <- "E13.64|E16.2"
+  diabetes_codes <- "E13.64|E16.2|Other specified diabetes mellitus with hypoglycemia|Hypoglycemia, unspecified"
+  
+  # AVPU responses
+  
+  avpu_responses <- "Unresponsive|Verbal|Painful|3326003|3326005|3326007"
+  
+  # days, hours, minutes, months
+  
+  minor_values <- "days|hours|minutes|months"
   
   # some manipulations to prepare the table
   # create the patient age in years and the patient age in days variables for filters
@@ -153,16 +166,9 @@ hypoglycemia_01 <- function(df,
           x = {{esituation_12_col}},
           ignore.case = T
         ),
-      AVPU = {{evitals_26_col}} %in% c("Unresponsive", "Verbal", "Painful"),
-      GCS = {{evitals_23_cl}} < 15
-    ) %>% 
-    
-    # filter down to 911 calls
-    
-    dplyr::filter(
-    
-    # check for diabetes via primary/secondary impressions
-    grepl(
+      AVPU = grepl(pattern = avpu_responses, x = {{evitals_26_col}}, ignore.case = T),
+      GCS = {{evitals_23_cl}} < 15,
+      diabetes_dx = grepl(
         pattern =  diabetes_codes,
         x = {{esituation_11_col}},
         ignore.case = T
@@ -171,22 +177,24 @@ hypoglycemia_01 <- function(df,
           pattern =  diabetes_codes,
           x = {{esituation_12_col}},
           ignore.case = T
-        ),
+        )
+      
+    ) %>% 
     
-    # GCUS < 15, AVPU < Alert, altered mental status == TRUE
-      GCS == TRUE |
-      AVPU == TRUE |
-      altered == TRUE,
-    
-    # blood glucose filter
+    dplyr::filter(
+      
+      # 911 calls only
+      grepl(
+        pattern = codes_911,
+        x = {{eresponse_05_col}},
+        ignore.case = T
+      ),
       {{evitals_18_col}} < 60,
-    
-    # 911 calls only
-           grepl(
-             pattern = codes_911,
-             x = {{eresponse_05_col}},
-             ignore.case = T
-           )) %>%
+      # check for diabetes via primary/secondary impressions
+      diabetes_dx == T,
+      (GCS == T | AVPU == T | altered == T)
+      
+    ) %>%
     
     # create variable that documents if any of target treatments were used
     mutate(correct_treatment = if_else(
@@ -194,7 +202,12 @@ hypoglycemia_01 <- function(df,
         pattern = hypoglycemia_treatment_codes,
         x = {{emedications_03_col}},
         ignore.case = TRUE
-      ),
+      ) |
+        grepl(
+          pattern = hypoglycemia_procedure_codes,
+          x = {{eprocedures_03_col}},
+          ignore.case = T
+        ),
       1,
       0
     ))
@@ -206,24 +219,43 @@ hypoglycemia_01 <- function(df,
     rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
     mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
     ungroup() %>%
-    mutate({{evitals_18_col}} := str_c({{evitals_18_col}}, collapse = ", "), {{evitals_23_cl}} := str_c({{evitals_23_cl}}, collapse = ", "), {{evitals_26_col}} := str_c({{evitals_26_col}}, collapse = ", "), .by = Unique_ID) %>%
-    distinct(Unique_ID, .keep_all = T) %>%
-    filter(patient_age_in_days >= 1)
+    mutate({{evitals_18_col}} := str_c({{evitals_18_col}}, collapse = ", "), 
+           {{evitals_23_cl}} := str_c({{evitals_23_cl}}, collapse = ", "), 
+           {{evitals_26_col}} := str_c({{evitals_26_col}}, collapse = ", "), 
+           .by = Unique_ID
+           ) %>%
+    distinct(Unique_ID, .keep_all = T)
   
   # Adult and Pediatric Populations
   
   # filter adult
   adult_pop <- initial_population %>%
-    dplyr::filter(patient_age_in_years >= 18)
+    dplyr::filter(patient_age_in_years >= 18 | 
+                    (
+                      {{epatient_15_col}} >= 18 & grepl(pattern = minor_values, x = {{epatient_16_col}}, ignore.case = T)
+                      )
+                    )
   
   # filter peds
   peds_pop <- initial_population %>%
-    dplyr::filter(patient_age_in_days < 6570, patient_age_in_days >= 1)
+    dplyr::filter((patient_age_in_years < 18 & patient_age_in_days >= 1) | 
+                    (!is.na({{epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col}}, ignore.case = T)) 
+                    ) %>% 
+    filter(patient_age_in_days >= 1 | 
+             {{epatient_15_col}} >= 1 & {{epatient_16_col}} == "Days" | 
+             {{epatient_15_col}} >= 24 & {{epatient_16_col}} == "Hours" | 
+             {{epatient_15_col}} >= 120 & {{epatient_16_col}} == "Minutes"
+             )
   
   # get the summary of results
   
   # all
   total_population <- initial_population %>% 
+    filter(patient_age_in_days >= 1 | 
+             {{epatient_15_col}} >= 1 & {{epatient_16_col}} == "Days" | 
+             {{epatient_15_col}} >= 24 & {{epatient_16_col}} == "Hours" | 
+             {{epatient_15_col}} >= 120 & {{epatient_16_col}} == "Minutes"
+             ) %>% 
     summarize(
       measure = "Hypoglycemia-01",
       pop = "All",
