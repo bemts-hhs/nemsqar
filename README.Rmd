@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# nemsqar <img src="man/figures/logo.png" align="right" height="138" alt="" />
+# nemsqar <img src="man/figures/nemsqar.png" align="right" height="138" alt="" />
 
 <!-- badges: start -->
 [![Codecov test coverage](https://codecov.io/gh/bemts-hhs/nemsqar-package/branch/main/graph/badge.svg)](https://app.codecov.io/gh/bemts-hhs/nemsqar-package?branch=main)
