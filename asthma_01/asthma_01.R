@@ -133,9 +133,8 @@ asthma_01 <- function(df,
       pattern = beta_agonist,
       x = {{emedications_03_col}},
       ignore.case = TRUE
-    ), 1, 0)) %>%
-    filter(patient_age_in_years_col >= 2)
-  
+    ), 1, 0))
+
   # Adult and Pediatric Populations
   
   # filter adult
