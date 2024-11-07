@@ -22,40 +22,54 @@ library(rlang)
                               evitals_23_cl,
                               evitals_26_col,
                               emedications_03_col,
+                              eprocedures_03_col,
                               ...) {
+    # Load necessary packages
+    for (pkg in c("tidyverse", "scales", "rlang")) {
+      if (!pkg %in% installed.packages())
+        install.packages(pkg, quiet = TRUE)
+      if (!paste0("package:", pkg) %in% search())
+        library(pkg, quietly = TRUE)
+    }
     
-
     # provide better error messaging if df is missing
-    if(missing(df)) {
-      
-      cli_abort(c("No object of class {.cls data.frame} was passed to {.fn respiratory_01}.",
-                  "i" = "Please supply a {.cls data.frame} to the first argument in {.fn respiratory_01}."
-      ))
+    if (missing(df)) {
+      cli_abort(
+        c(
+          "No object of class {.cls data.frame} was passed to {.fn respiratory_01}.",
+          "i" = "Please supply a {.cls data.frame} to the first argument in {.fn respiratory_01}."
+        )
+      )
       
     }
     
     # Ensure df is a data frame or tibble
     if (!is.data.frame(df) && !is_tibble(df)) {
-      cli_abort(c(
-        "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-        "i" = "The passed object is of class {.val {class(df)}}."
-      ))
+      cli_abort(
+        c(
+          "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
+          "i" = "The passed object is of class {.val {class(df)}}."
+        )
+      )
     }
     
     # use quasiquotation on the date variables to check format
     incident_date <- enquo(incident_date_col)
     patient_DOB <- enquo(patient_DOB_col)
     
-    if(!is.Date(df[[as_name(incident_date)]]) & !is.POSIXct(df[[as_name(incident_date)]]) & !is.Date(df[[as_name(patient_DOB)]]) & !is.POSIXct(df[[as_name(patient_DOB)]])) {
+    if ((!is.Date(df[[as_name(incident_date)]]) &
+         !is.POSIXct(df[[as_name(incident_date)]])) ||
+        (!is.Date(df[[as_name(patient_DOB)]]) &
+         !is.POSIXct(df[[as_name(patient_DOB)]]))) {
       
-      cli_abort("For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class.")
+      cli_abort(
+        "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+      )
       
     }
     
-    if(!exists("pretty_percent")) {
-      
+    if (!exists("pretty_percent")) {
       pretty_percent <- function(variable, n_decimal = 0.1) {
-        
         formatted_percent <- percent(variable, accuracy = n_decimal)
         
         # If there are trailing zeros after decimal point, remove them
@@ -76,112 +90,159 @@ library(rlang)
     codes_911 <- "2205001|2205003|2205009"
     
     # get codes as a regex to filter primary/secondary impression fields
-    hypoglycemia_treatment_codes <- "4850|237653|309778|260258|237648|807169|4832"
+    hypoglycemia_treatment_codes <- "4832|4850|377980|376937|372326|237653|260258|309778|1795610|1795477|1794567|1165823|1165822|1165819"
+    
+    # hypoglycemia procedures
+    
+    hypoglycemia_procedure_codes <- "225285007|710925007"
     
     # code(s) for altered mental status
     altered_mental_status <- "R41.82"
     
+    # codes for diabetes via primary and secondary impression
+    
+    diabetes_codes <- "E13.64|E16.2"
+    
     # some manipulations to prepare the table
     # create the patient age in years and the patient age in days variables for filters
     # create the unique ID variable
-    initial_population_0 <- df %>% 
+    initial_population_0 <- df %>%
       
       # create the age in years variable
       
-      mutate(patient_age_in_years = as.numeric(
-        difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days")) / 365,
-        patient_age_in_days = as.numeric(
-          difftime(time1 = {{incident_date_col}}, time2 = {{patient_DOB_col}}, units = "days"))
+      mutate(
+        patient_age_in_years = as.numeric(difftime(
+          time1 = {{incident_date_col}},
+          time2 = {{patient_DOB_col}},
+          units = "days"
+        )) / 365,
+        patient_age_in_days = as.numeric(difftime(
+          time1 = {{incident_date_col}},
+          time2 = {{patient_DOB_col}},
+          units = "days"
+        ))
       )
     
     # filter the table to get the initial population regardless of age
-    initial_population_1 <- initial_population_0 %>% 
-      
-      # filter down to 911 calls
-      
-      dplyr::filter(grepl(pattern = codes_911, x = {{eresponse_05_col}}, ignore.case = T)) %>% 
+    initial_population_1 <- initial_population_0 %>%
       
       # Identify Records that have GCUS < 15, or AVPU not equal to Alert, or
       # primary/secondary impression of altered mental status
       
-      mutate(altered = grepl(pattern =  altered_mental_status, x = {{esituation_11_col}}, ignore.case = T) | 
-               grepl(pattern =  altered_mental_status, x = {{esituation_12_col}}, ignore.case = T),
-             AVPU = {{evitals_26_col}} %in% c("Unresponsive", "Verbal", "Painful"),
-             GCS = {{evitals_23_cl}} < 15
-      ) %>%
-      
-      # filter down to the target population with any of the three logical conditions, and 
-      # blood glucose < 60
-      
-      filter(altered == TRUE | AVPU == TRUE | GCS == TRUE,
-             {{evitals_18_col}} < 60
+      mutate(
+        altered = grepl(
+          pattern =  altered_mental_status,
+          x = {{esituation_11_col}},
+          ignore.case = T
+        ) |
+          grepl(
+            pattern =  altered_mental_status,
+            x = {{esituation_12_col}},
+            ignore.case = T
+          ),
+        AVPU = {{evitals_26_col}} %in% c("Unresponsive", "Verbal", "Painful"),
+        GCS = {{evitals_23_cl}} < 15
       ) %>% 
       
+      # filter down to 911 calls
+      
+      dplyr::filter(
+        
+        # check for diabetes via primary/secondary impressions
+        grepl(
+          pattern =  diabetes_codes,
+          x = {{esituation_11_col}},
+          ignore.case = T
+        ) |
+          grepl(
+            pattern =  diabetes_codes,
+            x = {{esituation_12_col}},
+            ignore.case = T
+          ),
+        
+        # GCUS < 15, AVPU < Alert, altered mental status == TRUE
+        GCS == TRUE |
+          AVPU == TRUE |
+          altered == TRUE,
+        
+        # blood glucose filter
+        {{evitals_18_col}} < 60,
+        
+        # 911 calls only
+        grepl(
+          pattern = codes_911,
+          x = {{eresponse_05_col}},
+          ignore.case = T
+        )) %>%
+      
       # create variable that documents if any of target treatments were used
-      mutate(correct_treatment = if_else(grepl(pattern = hypoglycemia_treatment_codes, x = {{emedications_03_col}}, ignore.case = TRUE), 1, 0
-      )
-      )
+      mutate(correct_treatment = if_else(
+        grepl(
+          pattern = hypoglycemia_treatment_codes,
+          x = {{emedications_03_col}},
+          ignore.case = TRUE
+        ),
+        1,
+        0
+      ))
     
     # final pass with manipulations to get a tidy table
     # 1 row per observation, 1 column per feature
     
-    initial_population <- initial_population_1 %>% 
+    initial_population <- initial_population_1 %>%
       rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
-      mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>% 
+      mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
       ungroup() %>%
-      mutate({{evitals_18_col}} := str_c({{evitals_18_col}}, collapse = ", "), 
-             {{evitals_23_cl}} := str_c({{evitals_23_cl}}, collapse = ", "), 
-             {{evitals_26_col}} := str_c({{evitals_26_col}}, collapse = ", "),
-             .by = Unique_ID
-      ) %>% 
-      distinct(Unique_ID, .keep_all = T) %>% 
+      mutate({{evitals_18_col}} := str_c({{evitals_18_col}}, collapse = ", "), {{evitals_23_cl}} := str_c({{evitals_23_cl}}, collapse = ", "), {{evitals_26_col}} := str_c({{evitals_26_col}}, collapse = ", "), .by = Unique_ID) %>%
+      distinct(Unique_ID, .keep_all = T) %>%
       filter(patient_age_in_days >= 1)
     
     # Adult and Pediatric Populations
     
     # filter adult
-    adult_pop <- initial_population %>% 
+    adult_pop <- initial_population %>%
       dplyr::filter(patient_age_in_years >= 18)
     
     # filter peds
-    peds_pop <- initial_population %>% 
-      dplyr::filter(patient_age_in_years < 18,
-                    patient_age_in_days >= 1
-      )
+    peds_pop <- initial_population %>%
+      dplyr::filter(patient_age_in_days < 6570, patient_age_in_days >= 1)
     
     # get the summary of results
     
     # all
     total_population <- initial_population %>% 
-      summarize(measure = "Hypoglycemia-01",
-                pop = "All",
-                numerator = sum(correct_treatment, na.rm = T),
-                denominator = n(),
-                prop = numerator / denominator,
-                prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
-                ...
+      summarize(
+        measure = "Hypoglycemia-01",
+        pop = "All",
+        numerator = sum(correct_treatment, na.rm = T),
+        denominator = n(),
+        prop = numerator / denominator,
+        prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
+        ...
       )
     
     # adults
-    adult_population <- adult_pop %>% 
-      summarize(measure = "Hypoglycemia-01",
-                pop = "Adults",
-                numerator = sum(correct_treatment, na.rm = T),
-                denominator = n(),
-                prop = numerator / denominator,
-                prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
-                ...
+    adult_population <- adult_pop %>%
+      summarize(
+        measure = "Hypoglycemia-01",
+        pop = "Adults",
+        numerator = sum(correct_treatment, na.rm = T),
+        denominator = n(),
+        prop = numerator / denominator,
+        prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
+        ...
       )
     
     # peds
-    peds_population <- peds_pop %>% 
-      summarize(measure = "Hypoglycemia-01",
-                pop = "Peds",
-                numerator = sum(correct_treatment, na.rm = T),
-                denominator = n(),
-                prop = numerator / denominator,
-                prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
-                ...
+    peds_population <- peds_pop %>%
+      summarize(
+        measure = "Hypoglycemia-01",
+        pop = "Peds",
+        numerator = sum(correct_treatment, na.rm = T),
+        denominator = n(),
+        prop = numerator / denominator,
+        prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
+        ...
       )
     
     # summary
@@ -195,7 +256,7 @@ library(rlang)
   
 # load data
 
-hypoglycemia_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/hypoglycemia01_Export.csv") %>% 
+hypoglycemia_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/hypoglycemia01_Export_2023.csv") %>% 
   clean_names(case = "screaming_snake", sep_out = "_")
 
 # clean data
@@ -204,142 +265,6 @@ hypoglycemia_01_clean <- hypoglycemia_01_data %>%
   mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~  mdy(str_remove_all(., pattern = "\\s12:00:00\\sAM"))
                 )
          )
-
-# test the function process
-
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
-  
-  # 911 codes for eresponse.05
-  codes_911 <- "2205001|2205003|2205009"
-  
-  # get codes as a regex to filter primary/secondary impression fields
-  hypoglycemia_treatment_codes <- "4850|237653|309778|260258|237648|807169|4832"
-  
-  # code(s) for altered mental status
-  altered_mental_status <- "R41.82"
-  
-  # some manipulations to prepare the table
-  # create the patient age in years and the patient age in days variables for filters
-  # create the unique ID variable
-  initial_population_0 <- hypoglycemia_01_clean %>% 
-    
-    # create the age in years variable
-    
-    mutate(patient_age_in_years = as.numeric(
-      difftime(
-        time1 = INCIDENT_DATE,
-        time2 = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
-        units = "days"
-      )
-    ) / 365)
-  
-  # filter the table to get the initial population regardless of age
-  initial_population_1 <- initial_population_0 %>%
-    
-    # filter down to 911 calls and patients with blood glucose < 60
-    
-    dplyr::filter(
-      grepl(
-        pattern = codes_911,
-        x = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
-        ignore.case = T
-      )
-    ) %>%
-    
-    # Identify Records that have GCUS < 15, or AVPU not equal to Alert, or
-    # primary/secondary impression of altered mental status
-    
-    mutate(
-      altered = grepl(
-        pattern =  altered_mental_status,
-        x = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
-        ignore.case = T
-      ) |
-        grepl(
-          pattern =  altered_mental_status,
-          x = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
-          ignore.case = T
-        ),
-      AVPU = !is.na(VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26) &
-        VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26 %not_in% c("Alert", "Not Applicable", "Not Recorded"),
-      GCS = VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26 < 15
-    ) %>%
-    filter(altered == TRUE | AVPU == TRUE | GCS == TRUE,
-           VITALS_BLOOD_GLUCOSE_LEVEL_E_VITALS_18 < 60) %>%
-    
-    # create variable that documents if any of target treatments were used
-    mutate(correct_treatment = if_else(
-      grepl(
-        pattern = hypoglycemia_treatment_codes,
-        x = PATIENT_MEDICATION_GIVEN_OR_ADMINISTERED_DESCRIPTION_AND_RXCUI_CODES_LIST_E_MEDICATIONS_03,
-        ignore.case = TRUE
-      ),
-      1,
-      0
-    ))
-  
-  # final pass with manipulations to get a tidy table
-  # 1 row per observation, 1 column per feature
-  
-  initial_population <- initial_population_1 %>% 
-    rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
-    mutate(Unique_ID = str_c(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01, INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17, sep = "-")) %>% 
-    ungroup() %>%
-    mutate(VITALS_BLOOD_GLUCOSE_LEVEL_E_VITALS_18 = str_c(VITALS_BLOOD_GLUCOSE_LEVEL_E_VITALS_18, collapse = ", "), 
-           VITALS_TOTAL_GLASGOW_COMA_SCORE_GCS_E_VITALS_23 = str_c(VITALS_TOTAL_GLASGOW_COMA_SCORE_GCS_E_VITALS_23, collapse = ", "), 
-           VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26 = str_c(VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26, collapse = ", "),
-           .by = Unique_ID
-    ) %>% 
-    distinct(Unique_ID, .keep_all = T)
-  
-  # Adult and Pediatric Populations
-  
-  # filter adult
-  adult_pop <- initial_population %>% 
-    dplyr::filter(patient_age_in_years >= 18)
-  
-  # filter peds
-  peds_pop <- initial_population %>% 
-    dplyr::filter(patient_age_in_years < 18
-    )
-  
-  # get the summary of results
-  
-  # all
-  total_population <- initial_population %>% 
-    summarize(measure = "Hypoglycemia-01",
-              pop = "All",
-              numerator = sum(correct_treatment, na.rm = T),
-              denominator = n(),
-              prop = numerator / denominator,
-              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
-    )
-  
-  # adults
-  adult_population <- adult_pop %>% 
-    summarize(measure = "Hypoglycemia-01",
-              pop = "Adults",
-              numerator = sum(correct_treatment, na.rm = T),
-              denominator = n(),
-              prop = numerator / denominator,
-              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
-    )
-  
-  # peds
-  peds_population <- peds_pop %>% 
-    summarize(measure = "Hypoglycemia-01",
-              pop = "Peds",
-              numerator = sum(correct_treatment, na.rm = T),
-              denominator = n(),
-              prop = numerator / denominator,
-              prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01)
-    )
-  
-  # summary
-  hypoglycemia.01 <- bind_rows(adult_population, peds_population, total_population)
-  
-  hypoglycemia.01
-  
 
 # run the function
 
@@ -353,7 +278,8 @@ hypoglycemia_01_clean %>%
                   evitals_18_col = VITALS_BLOOD_GLUCOSE_LEVEL_E_VITALS_18,
                   evitals_23_cl = VITALS_TOTAL_GLASGOW_COMA_SCORE_GCS_E_VITALS_23,
                   evitals_26_col = VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26,
-                  emedications_03_col = PATIENT_MEDICATION_GIVEN_OR_ADMINISTERED_DESCRIPTION_AND_RXCUI_CODES_LIST_E_MEDICATIONS_03
+                  emedications_03_col = PATIENT_MEDICATION_GIVEN_OR_ADMINISTERED_DESCRIPTION_AND_RXCUI_CODES_LIST_E_MEDICATIONS_03,
+                  eprocedures_03_col = 
                   )
 
 }, venue = "gh", advertise = TRUE)

@@ -13,9 +13,9 @@
 ### ICD-10 code in them.  The text description can be present, too, for reference.
 ### the function assumes that the eresponse.05 column has the codes in it, text
 ### can be present, too, for reference
-### the function assumes that emedications_03 contains all medications administered,
+### the function assumes that emedications_03 and eprocedures.03 contain all medications/procedures administered/used,
 ### and that it contains the text description of the medication.  The code can be
-### included for reference, but will not be checked. All medications administered are
+### included for reference, but will not be checked. All medications/procedures are
 ### in one cell per record.  This can be a list column or comma separated.
 ### the esituation_12 is best as a list column of the secondary impressions entered
 ### the first argument is a dataframe, no joining is done.
@@ -35,6 +35,7 @@ hypoglycemia_01 <- function(df,
                             evitals_23_cl,
                             evitals_26_col,
                             emedications_03_col,
+                            eprocedures_03_col,
                             ...) {
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
@@ -102,10 +103,18 @@ hypoglycemia_01 <- function(df,
   codes_911 <- "2205001|2205003|2205009"
   
   # get codes as a regex to filter primary/secondary impression fields
-  hypoglycemia_treatment_codes <- "4850|237653|309778|260258|237648|807169|4832"
+  hypoglycemia_treatment_codes <- "4832|4850|377980|376937|372326|237653|260258|309778|1795610|1795477|1794567|1165823|1165822|1165819"
+  
+  # hypoglycemia procedures
+  
+  hypoglycemia_procedure_codes <- "225285007|710925007"
   
   # code(s) for altered mental status
   altered_mental_status <- "R41.82"
+  
+  # codes for diabetes via primary and secondary impression
+  
+  diabetes_codes <- "E13.64|E16.2"
   
   # some manipulations to prepare the table
   # create the patient age in years and the patient age in days variables for filters
@@ -126,18 +135,10 @@ hypoglycemia_01 <- function(df,
         units = "days"
       ))
     )
-  
+
   # filter the table to get the initial population regardless of age
   initial_population_1 <- initial_population_0 %>%
-    
-    # filter down to 911 calls
-    
-    dplyr::filter(grepl(
-      pattern = codes_911,
-      x = {{eresponse_05_col}},
-      ignore.case = T
-    )) %>%
-    
+
     # Identify Records that have GCUS < 15, or AVPU not equal to Alert, or
     # primary/secondary impression of altered mental status
     
@@ -154,13 +155,38 @@ hypoglycemia_01 <- function(df,
         ),
       AVPU = {{evitals_26_col}} %in% c("Unresponsive", "Verbal", "Painful"),
       GCS = {{evitals_23_cl}} < 15
-    ) %>%
+    ) %>% 
     
-    # filter down to the target population with any of the three logical conditions, and
-    # blood glucose < 60
+    # filter down to 911 calls
     
-    filter(altered == TRUE |
-             AVPU == TRUE | GCS == TRUE, {{evitals_18_col}} < 60) %>%
+    dplyr::filter(
+    
+    # check for diabetes via primary/secondary impressions
+    grepl(
+        pattern =  diabetes_codes,
+        x = {{esituation_11_col}},
+        ignore.case = T
+      ) |
+        grepl(
+          pattern =  diabetes_codes,
+          x = {{esituation_12_col}},
+          ignore.case = T
+        ),
+    
+    # GCUS < 15, AVPU < Alert, altered mental status == TRUE
+      GCS == TRUE |
+      AVPU == TRUE |
+      altered == TRUE,
+    
+    # blood glucose filter
+      {{evitals_18_col}} < 60,
+    
+    # 911 calls only
+           grepl(
+             pattern = codes_911,
+             x = {{eresponse_05_col}},
+             ignore.case = T
+           )) %>%
     
     # create variable that documents if any of target treatments were used
     mutate(correct_treatment = if_else(
@@ -197,7 +223,7 @@ hypoglycemia_01 <- function(df,
   # get the summary of results
   
   # all
-  total_population <- initial_population %>%
+  total_population <- initial_population %>% 
     summarize(
       measure = "Hypoglycemia-01",
       pop = "All",
