@@ -108,59 +108,60 @@ pediatrics_03b <- function(df,
   codes_911 <- "2205001|2205003|2205009"
   
   # non-weight-based medications
-  non_weight_based_meds <- "Inhalation|Topical"
+  non_weight_based_meds <- "Inhalation|Topical|9927049|9927009"
   
   # not responses for medication route
   not_values <- "Not Recorded|Not Applicable|Not Reporting"
   
-  # filter the table to get the initial population regardless of age, only 911 responses
-  initial_population_0 <- df %>%
-    dplyr::filter(
-      # only 911 calls
-      grepl(
-        pattern = codes_911,
-        x = {{eresponse_05_col}},
-        ignore.case = T
-      ),
-      # only patients that had meds passed
-      !is.na({{emedications_03_col}}),
-      # only weight-based meds
-      !grepl(
+      # filter the table to get the initial population regardless of age, only 911 responses
+    initial_population_0 <- df %>%
+      mutate(patient_age_in_years_col = as.numeric(difftime(
+        time1 = {{incident_date_col}},
+        time2 = {{patient_DOB_col}},
+        units = "days"
+      )) / 365,
+      
+      # check to see if non-weight-based meds
+      non_weight_based = grepl(
         pattern = non_weight_based_meds,
         x = {{emedications_04_col}},
         ignore.case = TRUE
+      )) %>%
+      dplyr::filter(
+        
+        # age filter
+        patient_age_in_years_col < 18,
+        
+        # only rows where meds are passed
+        !is.na({{emedications_03_col}}),
+        
+        # only 911 calls
+        grepl(
+          pattern = codes_911,
+          x = {{eresponse_05_col}},
+          ignore.case = T
+        )
       )
-    )
-  
-  # create the age in years variable
-  initial_population_1 <- initial_population_0 %>%
-    mutate(patient_age_in_years_col = as.numeric(difftime(
-      time1 = {{incident_date_col}},
-      time2 = {{patient_DOB_col}},
-      units = "days"
-    )) / 365
-    ) %>%
-    filter(patient_age_in_years_col < 18) %>%
+      
+      initial_population_1 <- initial_population_0 %>%
+      
+      mutate(
+        # check if weight was documented
+        documented_weight = if_else(!is.na({{eexam_01_col}}) |
+                                      !is.na({{eexam_02_col}}), 1, 0),
+      ) %>%
+      
+      # filter down to where weight-based meds were passed
+      filter(non_weight_based == FALSE)
     
-    # check if weight was documented
-    mutate(documented_weight = if_else(!is.na({{eexam_01_col}}) |
-                                         (
-                                           !is.na({{eexam_02_col}}) &
-                                             !grepl(
-                                               pattern = not_values,
-                                               x = {{eexam_02_col}},
-                                               ignore.case = T
-                                             )
-                                         ), 1, 0))
-  
-  # second filtering process, make the table distinct by rolling up emedications.04
-  # based on a unique identifier
-  initial_population <- initial_population_1 %>%
-    rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
-    mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
-    ungroup() %>%
-    mutate({{emedications_04_col}} := str_c({{emedications_04_col}}, collapse = ", "), .by = Unique_ID) %>%
-    distinct(Unique_ID, .keep_all = T)
+    # second filtering process, make the table distinct by rolling up emedications.04
+    # based on a unique identifier
+    initial_population <- initial_population_1 %>%
+      rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
+      mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
+      ungroup() %>%
+      mutate({{emedications_04_col}} := str_c({{emedications_04_col}}, collapse = ", "), .by = Unique_ID) %>%
+      distinct(Unique_ID, .keep_all = T)
   
   # get the summary of results, already filtered down to the target age group for the measure
   

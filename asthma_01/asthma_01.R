@@ -32,6 +32,7 @@ asthma_01 <- function(df,
                       esituation_12_col,
                       emedications_03_col,
                       ...) {
+  
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
     if (!pkg %in% installed.packages())
@@ -96,7 +97,7 @@ asthma_01 <- function(df,
   codes_911 <- "2205001|2205003|2205009"
   
   # get codes as a regex to filter primary/secondary impression fields
-  beta_agonist <- "albuterol|ipratropium|duoneb|levalbuterol|metaproterenol"
+  beta_agonist <- "albuterol|ipratropium|levalbuterol|metaproterenol"
   
   # codes for asthma or acute bronchospasm
   asthma_codes <- "J45|J98.01"
@@ -112,21 +113,22 @@ asthma_01 <- function(df,
       units = "days"
     )) / 365) %>%
     
-    # filter down to 911 calls
     
-    dplyr::filter(grepl(
-      pattern = codes_911,
-      x = {{eresponse_05_col}},
-      ignore.case = T
-    ),
-    
-    # Identify Records that have specified asthma
-    
-    if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
-      pattern = asthma_codes,
-      x = .,
-      ignore.case = T
-    ))) %>%
+    dplyr::filter(
+      
+      # Identify Records that have specified asthma
+      if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
+        pattern = asthma_codes,
+        x = .,
+        ignore.case = T
+      )),
+      
+      # filter down to 911 calls
+      grepl(
+        pattern = codes_911,
+        x = {{eresponse_05_col}},
+        ignore.case = T
+      )) %>% 
     
     # check to ensure beta agonist was used
     mutate(beta_agonist_check = if_else(grepl(
