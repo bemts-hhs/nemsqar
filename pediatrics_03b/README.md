@@ -14,6 +14,8 @@ pediatrics_03b(df, erecord_01_col, incident_date_col, patient_DOB_col, eresponse
 * `erecord_01_col`: Column for unique EMS record identifiers.
 * `incident_date_col`: Column indicating the date of the EMS incident.
 * `patient_DOB_col`: Column specifying patient date of birth.
+* `epatient_15_col`: Column giving the calculated age value.
+* `epatient_16_col`: Column giving the provided age unit value.
 * `eresponse_05_col`: Column containing the EMS response codes.
 * `eexam_01_col`: Column containing documented weight information.
 * `eexam_02_col`: Another column for weight documentation, if applicable.
@@ -26,6 +28,7 @@ pediatrics_03b(df, erecord_01_col, incident_date_col, patient_DOB_col, eresponse
 * *Automatic Package Loading*: Ensures tidyverse, scales, and rlang are loaded.
 * *Error Handling*: Includes custom error messaging for missing or invalid `df` along with the date columns.
 * *Patient Age Calculation*: Derives patient age based on incident and birth dates.
+* *Picking Up Potential Missing Ages*: This function will try hard to find an age even if the system based values are missing.
 * *911 Response Filtering*: Filters data based on 911-specific response codes.
 * *Medication Classification*: Identifies non-weight-based medications.
 * *Distinct Record Filtering*: Consolidates duplicate records by a unique identifier.
@@ -59,18 +62,19 @@ library(rlang)
 
 # load data
 
-pediatrics_03b_data <- read_csv("pediatrics03b_Export_2023.csv") %>% 
+pediatrics_03b_data <- read_csv("pediatrics03b_Export_2023.csv") %>%
   clean_names(case = "screaming_snake", sep_out = "_")
   
-#> Rows: 492496 Columns: 23
+#> Rows: 492498 Columns: 25
 #> ── Column specification ────────────────────────────────────────────────────────
 #> Delimiter: ","
-#> chr (19): Incident Patient Care Report Number - PCR (eRecord.01), Agency Nam...
-#> dbl  (3): Agency Unique State ID (dAgency.01), Agency Number (dAgency.02), P...
+#> chr (20): Incident Patient Care Report Number - PCR (eRecord.01), Agency Nam...
+#> dbl  (4): Agency Unique State ID (dAgency.01), Agency Number (dAgency.02), P...
 #> lgl  (1): Agency Is Demo Service
 #> 
 #> ℹ Use `spec()` to retrieve the full column specification for this data.
 #> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
 
 # clean
 
@@ -81,21 +85,24 @@ pediatrics_03b_clean <- pediatrics_03b_data %>%
 
 # run function
 
-pediatrics_03b_clean %>% 
-  pediatrics_03b(erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
-            incident_date_col = INCIDENT_DATE,
-            patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
-            eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
-            eexam_01_col = PATIENT_WEIGHT_IN_KILOGRAMS_E_EXAM_01,
-            eexam_02_col = PATIENT_LENGTH_BASED_COLOR_E_EXAM_02,
-            emedications_03_col = PATIENT_MEDICATION_GIVEN_OR_ADMINISTERED_DESCRIPTION_AND_RXCUI_CODES_LIST_E_MEDICATIONS_03,
-            emedications_04_col = MEDICATION_ADMINISTERED_ROUTE_E_MEDICATIONS_04
-            )
+pediatrics_03b_clean %>%
+  pediatrics_03b(
+    erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+    incident_date_col = INCIDENT_DATE,
+    patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+    epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+    epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+    eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+    eexam_01_col = PATIENT_WEIGHT_IN_KILOGRAMS_E_EXAM_01,
+    eexam_02_col = PATIENT_LENGTH_BASED_COLOR_E_EXAM_02,
+    emedications_03_col = PATIENT_MEDICATION_GIVEN_OR_ADMINISTERED_DESCRIPTION_AND_RXCUI_CODES_LIST_E_MEDICATIONS_03,
+    emedications_04_col = MEDICATION_ADMINISTERED_ROUTE_E_MEDICATIONS_04
+  )
             
 #> # A tibble: 1 × 6
 #>   measure        pop   numerator denominator  prop prop_label
 #>   <chr>          <chr>     <dbl>       <int> <dbl> <chr>     
-#> 1 Pediatrics-03b Peds       1751        2187 0.801 80.06%
+#> 1 Pediatrics-03b Peds       2037        2557 0.797 79.66%
 ```
 
 <sup>Created on 2024-11-06 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>

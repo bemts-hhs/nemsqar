@@ -65,17 +65,18 @@ library(scales)
   
 # load data
 
-  respiratory_01_data <- read_csv("respiratory01_Export.csv") %>% 
+  respiratory_01_data <- read_csv("respiratory01_Export_2023.csv") %>% 
     clean_names(case = "screaming_snake", sep_out = "_")
     
-#> Rows: 458773 Columns: 11
+#> Rows: 458815 Columns: 25
 #> ── Column specification ────────────────────────────────────────────────────────
 #> Delimiter: ","
-#> chr (9): Incident Patient Care Report Number - PCR (eRecord.01), Incident Da...
-#> dbl (2): Patient Initial Pulse Oximetry (eVitals.12), Patient Initial Respir...
+#> chr (19): Incident Patient Care Report Number - PCR (eRecord.01), Agency Nam...
+#> dbl  (5): Agency Unique State ID (dAgency.01), Agency Number (dAgency.02), P...
+#> lgl  (1): Agency Is Demo Service
 #> 
 #> ℹ Use `spec()` to retrieve the full column specification for this data.
-#> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
 
 # clean
 
@@ -100,9 +101,9 @@ respiratory_01(
 #> # A tibble: 3 × 6
 #>   measure        pop    numerator denominator  prop prop_label
 #>   <chr>          <chr>      <dbl>       <int> <dbl> <chr>     
-#> 1 Respiratory-01 Adults     24897       27430 0.908 90.77%    
-#> 2 Respiratory-01 Peds        1529        1844 0.829 82.92%    
-#> 3 Respiratory-01 All        26527       29637 0.895 89.51%
+#> 1 Respiratory-01 Adults     24882       27417 0.908 90.75%    
+#> 2 Respiratory-01 Peds        1533        1850 0.829 82.86%    
+#> 3 Respiratory-01 All        26399       29246 0.903 90.27%
 ```
 
 <sup>Created on 2024-11-01 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>

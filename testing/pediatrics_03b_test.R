@@ -110,37 +110,38 @@ reprex::reprex({
         pattern = codes_911,
         x = {{eresponse_05_col}},
         ignore.case = T
-      )) %>%
+      ),
+      meds_not_missing = !is.na({{emedications_03_col}}),
+      system_age_check = {{epatient_15_col}} < 18 & {{epatient_16_col}} == "Years" | 
+        !is.na({{epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col}}, ignore.case = T),
+      calc_age_check = patient_age_in_years_col < 18
+      ) %>%
       dplyr::filter(
-        
-        # age filter
-        patient_age_in_years_col < 18 | 
-          ({{epatient_15_col}} < 18 & {{epatient_16_col}} == "Years") | 
-          (!is.na({{epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col}}, ignore.case = T)),
+        # only 911 calls
+        call_911,
         
         # only rows where meds are passed
-        !is.na({{emedications_03_col}}),
+        meds_not_missing,
         
-        # only 911 calls
-        call_911
+        # age filter
+        system_age_check | calc_age_check,
+        
+        # exclude non-weight based meds
+        !non_weight_based
       )
-      
-      initial_population_1 <- initial_population_0 %>%
+    
+    initial_population_1 <- initial_population_0 %>%
       
       mutate(
         # check if weight was documented
         documented_weight = if_else(!is.na({{eexam_01_col}}) |
                                       !is.na({{eexam_02_col}}), 1, 0),
-      ) %>%
-      
-      # filter down to where weight-based meds were passed
-      filter(!non_weight_based)
+      )
     
     # second filtering process, make the table distinct by rolling up emedications.04
     # based on a unique identifier
     initial_population <- initial_population_1 %>%
-      # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
-      mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
+      mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>% 
       distinct(Unique_ID, .keep_all = T)
     
     # get the summary of results, already filtered down to the target age group for the measure
