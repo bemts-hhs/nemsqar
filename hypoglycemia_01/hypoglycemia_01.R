@@ -42,6 +42,7 @@ hypoglycemia_01 <- function(df,
                             emedications_03_col,
                             eprocedures_03_col,
                             ...) {
+  
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
     if (!pkg %in% installed.packages())
@@ -115,7 +116,7 @@ hypoglycemia_01 <- function(df,
   hypoglycemia_procedure_codes <- "225285007|710925007"
   
   # code(s) for altered mental status
-  altered_mental_status <- "R41.82"
+  altered_mental_status <- "R41.82|Altered Mental Status, unspecified"
   
   # codes for diabetes via primary and secondary impression
   
@@ -177,22 +178,24 @@ hypoglycemia_01 <- function(df,
           pattern =  diabetes_codes,
           x = {{esituation_12_col}},
           ignore.case = T
-        )
+        ),
+      blood_glucose_flag = {{evitals_18_col}} < 60,
+      call_911 = grepl(
+        pattern = codes_911,
+        x = {{eresponse_05_col}},
+        ignore.case = T
+      )
       
     ) %>% 
     
     dplyr::filter(
+      # diabetic patients 
+      # patients with a GCS < 15, or AVPU < Alert,
+      # or altered mental status, and blood glucose less than 60
       
-      # 911 calls only
-      grepl(
-        pattern = codes_911,
-        x = {{eresponse_05_col}},
-        ignore.case = T
-      ),
-      {{evitals_18_col}} < 60,
-      # check for diabetes via primary/secondary impressions
-      diabetes_dx == T,
-      (GCS == T | AVPU == T | altered == T)
+      (diabetes_dx & (GCS | AVPU)) | 
+        (altered & blood_glucose_flag),
+      call_911
       
     ) %>%
     
@@ -216,14 +219,7 @@ hypoglycemia_01 <- function(df,
   # 1 row per observation, 1 column per feature
   
   initial_population <- initial_population_1 %>%
-    rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
-    mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
-    ungroup() %>%
-    mutate({{evitals_18_col}} := str_c({{evitals_18_col}}, collapse = ", "), 
-           {{evitals_23_cl}} := str_c({{evitals_23_cl}}, collapse = ", "), 
-           {{evitals_26_col}} := str_c({{evitals_26_col}}, collapse = ", "), 
-           .by = Unique_ID
-           ) %>%
+    mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>% 
     distinct(Unique_ID, .keep_all = T)
   
   # Adult and Pediatric Populations
@@ -231,30 +227,30 @@ hypoglycemia_01 <- function(df,
   # filter adult
   adult_pop <- initial_population %>%
     dplyr::filter(patient_age_in_years >= 18 | 
-                    (
-                      {{epatient_15_col}} >= 18 & grepl(pattern = minor_values, x = {{epatient_16_col}}, ignore.case = T)
-                      )
+                      ({{epatient_15_col}} >= 18 & {{epatient_16_col}} == "Years")
+                      
                     )
   
   # filter peds
   peds_pop <- initial_population %>%
-    dplyr::filter((patient_age_in_years < 18 & patient_age_in_days >= 1) | 
-                    (!is.na({{epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col}}, ignore.case = T)) 
+    dplyr::filter(patient_age_in_years < 18 | 
+                    ({{epatient_15_col}} < 18 & {{epatient_16_col}} == "Years") | 
+                  !is.na({{epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col}}, ignore.case = T)
                     ) %>% 
     filter(patient_age_in_days >= 1 | 
-             {{epatient_15_col}} >= 1 & {{epatient_16_col}} == "Days" | 
-             {{epatient_15_col}} >= 24 & {{epatient_16_col}} == "Hours" | 
-             {{epatient_15_col}} >= 120 & {{epatient_16_col}} == "Minutes"
+               !({{epatient_15_col}} < 1 & {{epatient_16_col}} == "Days") & 
+                 !({{epatient_15_col}} < 24 & {{epatient_16_col}} == "Hours") & 
+                 !({{epatient_15_col}} < 120 & {{epatient_16_col}} == "Minutes")
+             
              )
   
   # get the summary of results
   
   # all
   total_population <- initial_population %>% 
-    filter(patient_age_in_days >= 1 | 
-             {{epatient_15_col}} >= 1 & {{epatient_16_col}} == "Days" | 
-             {{epatient_15_col}} >= 24 & {{epatient_16_col}} == "Hours" | 
-             {{epatient_15_col}} >= 120 & {{epatient_16_col}} == "Minutes"
+    filter(!({{epatient_15_col}} < 1 & {{epatient_16_col}} == "Days") & 
+             !({{epatient_15_col}} < 24 & {{epatient_16_col}} == "Hours") & 
+             !({{epatient_15_col}} < 120 & {{epatient_16_col}} == "Minutes")
              ) %>% 
     summarize(
       measure = "Hypoglycemia-01",
