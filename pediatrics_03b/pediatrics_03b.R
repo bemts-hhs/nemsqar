@@ -39,6 +39,8 @@ pediatrics_03b <- function(df,
                            erecord_01_col,
                            incident_date_col,
                            patient_DOB_col,
+                           epatient_15_col,
+                           epatient_16_col,
                            eresponse_05_col,
                            eexam_01_col,
                            eexam_02_col,
@@ -110,8 +112,8 @@ pediatrics_03b <- function(df,
   # non-weight-based medications
   non_weight_based_meds <- "Inhalation|Topical|9927049|9927009"
   
-  # not responses for medication route
-  not_values <- "Not Recorded|Not Applicable|Not Reporting"
+  # minor values
+  minor_values <- "days|hours|minutes|months"
   
       # filter the table to get the initial population regardless of age, only 911 responses
     initial_population_0 <- df %>%
@@ -122,25 +124,30 @@ pediatrics_03b <- function(df,
       )) / 365,
       
       # check to see if non-weight-based meds
-      non_weight_based = grepl(
+      weight_based_only = !grepl(
         pattern = non_weight_based_meds,
         x = {{emedications_04_col}},
         ignore.case = TRUE
-      )) %>%
+      ),
+      call_911 = grepl(
+        pattern = codes_911,
+        x = {{eresponse_05_col}},
+        ignore.case = T
+      ),
+      meds_not_missing = !is.na({{emedications_03_col}})
+      ) %>%
       dplyr::filter(
         
         # age filter
-        patient_age_in_years_col < 18,
+          ({{epatient_15_col}} < 18 & {{epatient_16_col}} == "Years") | 
+          (!is.na({{epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col}}, ignore.case = T)) | 
+            (is.na({{epatient_15_col}}) & !is.na(patient_age_in_years_col) & patient_age_in_years_col < 18),
         
         # only rows where meds are passed
-        !is.na({{emedications_03_col}}),
+        meds_not_missing,
         
         # only 911 calls
-        grepl(
-          pattern = codes_911,
-          x = {{eresponse_05_col}},
-          ignore.case = T
-        )
+        call_911
       )
       
       initial_population_1 <- initial_population_0 %>%
@@ -149,29 +156,25 @@ pediatrics_03b <- function(df,
         # check if weight was documented
         documented_weight = if_else(!is.na({{eexam_01_col}}) |
                                       !is.na({{eexam_02_col}}), 1, 0),
-      ) %>%
-      
-      # filter down to where weight-based meds were passed
-      filter(non_weight_based == FALSE)
+      )
     
-    # second filtering process, make the table distinct by rolling up emedications.04
-    # based on a unique identifier
-    initial_population <- initial_population_1 %>%
-      rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
-      mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
-      ungroup() %>%
-      mutate({{emedications_04_col}} := str_c({{emedications_04_col}}, collapse = ", "), .by = Unique_ID) %>%
-      distinct(Unique_ID, .keep_all = T)
-  
+      # second filtering process, make the table distinct by rolling up emedications.04
+      # based on a unique identifier
+      initial_population <- initial_population_1 %>%
+        mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>% 
+        distinct({{erecord_01_col}}, .keep_all = T)
+      
   # get the summary of results, already filtered down to the target age group for the measure
   
   # peds
   pediatrics.03b <- initial_population %>%
+    
+    # filter down to where weight-based meds were passed
     summarize(
       measure = "Pediatrics-03b",
       pop = "Peds",
-      numerator = sum(documented_weight, na.rm = T),
-      denominator = n(),
+      numerator = sum(documented_weight & weight_based_only, na.rm = T),
+      denominator = sum(weight_based_only, na.rm = T),
       prop = numerator / denominator,
       prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
       ...

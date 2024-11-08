@@ -16,6 +16,8 @@ reprex::reprex({
                              erecord_01_col,
                              incident_date_col,
                              patient_DOB_col,
+                             epatient_15_col,
+                             epatient_16_col,
                              eresponse_05_col,
                              eexam_01_col,
                              eexam_02_col,
@@ -85,7 +87,10 @@ reprex::reprex({
     codes_911 <- "2205001|2205003|2205009"
     
     # non-weight-based medications
-    non_weight_based_meds <- "Bag Valve Mask (BVM)|Non-Rebreather Mask|Nasal Cannula|Inhalation|Re-breather mask|Ventimask|Topical"
+    non_weight_based_meds <- "Inhalation|Topical|9927049|9927009"
+    
+    # minor values
+    minor_values <- "days|hours|minutes|months"
     
     # filter the table to get the initial population regardless of age, only 911 responses
     initial_population_0 <- df %>%
@@ -100,21 +105,24 @@ reprex::reprex({
         pattern = non_weight_based_meds,
         x = {{emedications_04_col}},
         ignore.case = TRUE
+      ),
+      call_911 = grepl(
+        pattern = codes_911,
+        x = {{eresponse_05_col}},
+        ignore.case = T
       )) %>%
       dplyr::filter(
         
         # age filter
-        patient_age_in_years_col < 18,
+        patient_age_in_years_col < 18 | 
+          ({{epatient_15_col}} < 18 & {{epatient_16_col}} == "Years") | 
+          (!is.na({{epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col}}, ignore.case = T)),
         
         # only rows where meds are passed
         !is.na({{emedications_03_col}}),
         
         # only 911 calls
-        grepl(
-          pattern = codes_911,
-          x = {{eresponse_05_col}},
-          ignore.case = T
-        )
+        call_911
       )
       
       initial_population_1 <- initial_population_0 %>%
@@ -126,15 +134,13 @@ reprex::reprex({
       ) %>%
       
       # filter down to where weight-based meds were passed
-      filter(non_weight_based == FALSE)
+      filter(!non_weight_based)
     
     # second filtering process, make the table distinct by rolling up emedications.04
     # based on a unique identifier
     initial_population <- initial_population_1 %>%
-      rowwise() %>% # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
+      # use rowwise() as we do not have a reliable grouping variable yet if the table is not distinct
       mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) %>%
-      ungroup() %>%
-      mutate({{emedications_04_col}} := str_c({{emedications_04_col}}, collapse = ", "), .by = Unique_ID) %>%
       distinct(Unique_ID, .keep_all = T)
     
     # get the summary of results, already filtered down to the target age group for the measure
@@ -168,7 +174,7 @@ reprex::reprex({
   pediatrics_03b_clean <- pediatrics_03b_data %>%
     mutate(across(
       c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17),
-      ~ mdy(str_remove_all(., pattern = "\\s12:00:00\\sAM"))
+      ~ mdy(str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+)?(\\s(AM|PM))?"))
     ))
   
   # run function
@@ -178,6 +184,8 @@ reprex::reprex({
       erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
       incident_date_col = INCIDENT_DATE,
       patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+      epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+      epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
       eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
       eexam_01_col = PATIENT_WEIGHT_IN_KILOGRAMS_E_EXAM_01,
       eexam_02_col = PATIENT_LENGTH_BASED_COLOR_E_EXAM_02,
