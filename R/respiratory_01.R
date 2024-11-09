@@ -146,10 +146,10 @@ respiratory_01 <- function(df,
       
       # Identify Records that have Respiratory Distress Codes defined above
       respiratory_distress,
-    
+      
       # filter down to 911 calls
       call_911
-    
+      
     ) %>%
     
     # check to see if target vitals were captured

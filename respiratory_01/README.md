@@ -12,6 +12,8 @@ respiratory_01(df, incident_date_col, patient_DOB_col, eresponse_05_col, esituat
 * `df`: A data frame containing incident data with each row representing an observation.
 * `incident_date_col`: Column name for the Incident Date field.
 * `patient_DOB_col`: Column name for epatient.17.
+* `epatient_15_col`: Column giving the calculated age value.
+* `epatient_16_col`: Column giving the provided age unit value.
 * `eresponse_05_col`: Column name for 911 response codes (e.g., 2205001, 2205003, 2205009).
 * `esituation_11_col`: Column name for primary impression codes related to respiratory distress.
 * `esituation_12_col`: Column name for secondary impression codes related to respiratory distress.
@@ -63,11 +65,10 @@ library(janitor)
 library(rlang)
 library(scales)
   
-# load data
-
-  respiratory_01_data <- read_csv("respiratory01_Export_2023.csv") %>% 
+# data
+  
+  respiratory_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/respiratory01_Export_2023.csv") %>% 
     clean_names(case = "screaming_snake", sep_out = "_")
-    
 #> Rows: 458815 Columns: 25
 #> ── Column specification ────────────────────────────────────────────────────────
 #> Delimiter: ","
@@ -76,28 +77,31 @@ library(scales)
 #> lgl  (1): Agency Is Demo Service
 #> 
 #> ℹ Use `spec()` to retrieve the full column specification for this data.
-
+#> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
 
 # clean
 
-respiratory_01_clean <- respiratory_01_data %>%
-  mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
-    str_remove_all(., pattern = "\\s12:00:00\\sAM")
-  )))
+  respiratory_01_clean <- respiratory_01_data %>%
+    mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
+      str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+)?(\\s(AM|PM))?")
+    )))
 
-# test the function
-
-respiratory_01_clean %>% 
-respiratory_01(
-  incident_date_col = INCIDENT_DATE,
-  patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
-  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
-  esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
-  esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
-  evitals_12_col = PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12,
-  evitals_14_col = PATIENT_INITIAL_RESPIRATORY_RATE_E_VITALS_14
-)
+  # test the function
   
+  respiratory_01_clean %>% 
+    respiratory_01(
+      erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+      incident_date_col = INCIDENT_DATE,
+      patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+      epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+      epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+      eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+      esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
+      esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
+      evitals_12_col = PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12,
+      evitals_14_col = PATIENT_INITIAL_RESPIRATORY_RATE_E_VITALS_14
+    )
+    
 #> # A tibble: 3 × 6
 #>   measure        pop    numerator denominator  prop prop_label
 #>   <chr>          <chr>      <dbl>       <int> <dbl> <chr>     

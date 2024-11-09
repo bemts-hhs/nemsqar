@@ -14,8 +14,11 @@ safety_02(df, incident_date_col, patient_DOB_col, eresponse_05_col, edisposition
 * `df`: A data frame where each row is an observation, and each column represents a feature.
 * `incident_date_col`: Unquoted column name representing the date of the incident.
 * `patient_DOB_col`: Unquoted column name for the patient's date of birth.
-* `eresponse_05_col`: Unquoted column name with response codes, identifying 911 responses.
-* `edisposition_18_col`: Unquoted column name with transport mode descriptors, including possible lights-and-sirens indicators.
+* `epatient_15_col`: Column giving the calculated age value.
+* `epatient_16_col`: Column giving the provided age unit value.
+* `eresponse_05_col`: Column giving response codes, identifying 911 responses.
+* `edisposition_18_col`: Column giving transport mode descriptors, including possible lights-and-sirens indicators.
+* `edisposition_28_col`: Column giving patient evaluation and care categories for the EMS response.
 * `transport_disposition_cols`: One or more unquoted column names (such as edisposition.12, edisposition.30) containing transport disposition details.
 * `...`: Additional arguments for summary calculation, if needed.
 
@@ -63,12 +66,12 @@ library(rlang)
 safety_02_data <- read_csv("safety01_02_Export_2023.csv") %>% 
   clean_names(case = "screaming_snake", sep_out = "_")
   
-#> Rows: 458694 Columns: 24
+#> Rows: 458696 Columns: 28
 #> ── Column specification ────────────────────────────────────────────────────────
 #> Delimiter: ","
-#> chr (20): Incident Patient Care Report Number - PCR (eRecord.01), Agency Nam...
-#> dbl  (2): Agency Unique State ID (dAgency.01), Agency Number (dAgency.02)
-#> lgl  (2): Transport Disposition Code (3.4=itDisposition.102/3.5=eDisposition...
+#> chr (22): Incident Patient Care Report Number - PCR (eRecord.01), Agency Nam...
+#> dbl  (3): Agency Unique State ID (dAgency.01), Agency Number (dAgency.02), P...
+#> lgl  (3): Patient Evaluation/Care Code (3.4=itDisposition.100/3.5=eDispositi...
 #> 
 #> ℹ Use `spec()` to retrieve the full column specification for this data.
 #> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
@@ -77,7 +80,7 @@ safety_02_data <- read_csv("safety01_02_Export_2023.csv") %>%
 
 safety_02_clean <- safety_02_data %>% 
   mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
-    str_remove_all(., pattern = "\\s12:00:00\\sAM")
+    str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+)?(\\s(AM|PM))?")
   )))
 
 # run function
@@ -94,12 +97,12 @@ safety_02_clean %>%
 #> # A tibble: 3 × 6
 #>   measure   pop    numerator denominator  prop prop_label
 #>   <chr>     <chr>      <dbl>       <int> <dbl> <chr>     
-#> 1 Safety-02 Adults    159279      183445 0.868 86.83%    
-#> 2 Safety-02 Peds        7672        8994 0.853 85.3%     
-#> 3 Safety-02 All       167188      192789 0.867 86.72%
+#> 1 Safety-02 Adults     21190       34369 0.617 61.65%    
+#> 2 Safety-02 Peds         808        1479 0.546 54.63%    
+#> 3 Safety-02 All        22173       36228 0.612 61.2%
 ```
 
-<sup>Created on 2024-11-06 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
+<sup>Created on 2024-11-08 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
 
 
 # Notes

@@ -27,6 +27,8 @@
 safety_01 <- function(df,
                       incident_date_col,
                       patient_DOB_col,
+                      epatient_15_col,
+                      epatient_16_col,
                       eresponse_05_col,
                       eresponse_24_col,
                       ...) {
@@ -94,7 +96,7 @@ safety_01 <- function(df,
   codes_911 <- "2205001|2205003|2205009"
   
   # get codes as a regex to find lights and siren responses
-  lights_and_sirens <- "Initial Lights and Sirens, Downgraded to No Lights or Sirens|Initial No Lights or Sirens, Upgraded to Lights and Sirens|Lights and Sirens"
+  no_lights_and_sirens <- "No Lights or Sirens|2224019"
   
   # filter the table to get the initial population regardless of age
   initial_population <- df %>%
@@ -105,28 +107,44 @@ safety_01 <- function(df,
       time1 = {{incident_date_col}},
       time2 = {{patient_DOB_col}},
       units = "days"
-    )) / 365) %>%
+    )) / 365,
     
-    # filter down to 911 calls
-    
-    dplyr::filter(grepl(
+    # 911 variable
+    call_911 = grepl(
       pattern = codes_911,
       x = {{eresponse_05_col}},
       ignore.case = T
-    )) %>%
+    ),
     
-    # if lights and sirens ARE NOT present, 1, else 0
-    mutate(l_s_check = if_else(!grepl(pattern = lights_and_sirens, x = {{eresponse_24_col}}), 1, 0))
-  
+    # no lights and sirens check
+    no_ls_check = if_else(grepl(pattern = no_lights_and_sirens, x = {{eresponse_24_col}}), 1, 0),
+    
+    # system age check
+    system_age_adult = {{epatient_15_col}} >= 18 & {{epatient_16_col}} == "Years",
+    system_age_minor1 = ({{epatient_15_col}} >= 2 & {{epatient_15_col}} < 18) & {{epatient_16_col}} == "Years",
+    system_age_minor2 = {{epatient_15_col}} >= 24 & {{epatient_16_col}} == "Months",
+    system_age_minor = system_age_minor1 | system_age_minor2,
+    
+    # calculated age check
+    calc_age_adult = patient_age_in_years_col >= 18,
+    calc_age_minor = patient_age_in_years_col < 18 & patient_age_in_years_col >= 2
+    ) %>%
+    
+    # filter down to 911 calls
+    
+    dplyr::filter(
+      call_911
+    )
+    
   # Adult and Pediatric Populations
   
   # filter adult
   adult_pop <- initial_population %>%
-    dplyr::filter(patient_age_in_years_col >= 18)
+    dplyr::filter(system_age_adult | calc_age_adult)
   
   # filter peds
   peds_pop <- initial_population %>%
-    dplyr::filter(patient_age_in_years_col < 18)
+    dplyr::filter(system_age_minor | calc_age_minor)
   
   # get the summary of results
   
@@ -135,7 +153,7 @@ safety_01 <- function(df,
     summarize(
       measure = "Safety-01",
       pop = "All",
-      numerator = sum(l_s_check, na.rm = T),
+      numerator = sum(no_ls_check, na.rm = T),
       denominator = n(),
       prop = numerator / denominator,
       prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -147,7 +165,7 @@ safety_01 <- function(df,
     summarize(
       measure = "Safety-01",
       pop = "Adults",
-      numerator = sum(l_s_check, na.rm = T),
+      numerator = sum(no_ls_check, na.rm = T),
       denominator = n(),
       prop = numerator / denominator,
       prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -159,7 +177,7 @@ safety_01 <- function(df,
     summarize(
       measure = "Safety-01",
       pop = "Peds",
-      numerator = sum(l_s_check, na.rm = T),
+      numerator = sum(no_ls_check, na.rm = T),
       denominator = n(),
       prop = numerator / denominator,
       prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),

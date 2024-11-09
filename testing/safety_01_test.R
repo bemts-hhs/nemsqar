@@ -16,10 +16,11 @@ library(rlang)
   safety_01 <- function(df,
                         incident_date_col,
                         patient_DOB_col,
+                        epatient_15_col,
+                        epatient_16_col,
                         eresponse_05_col,
                         eresponse_24_col,
                         ...) {
-    
     # Load necessary packages
     for (pkg in c("tidyverse", "scales", "rlang")) {
       if (!pkg %in% installed.packages())
@@ -53,10 +54,11 @@ library(rlang)
     incident_date <- enquo(incident_date_col)
     patient_DOB <- enquo(patient_DOB_col)
     
-    if (!is.Date(df[[as_name(incident_date)]]) &
-        !is.POSIXct(df[[as_name(incident_date)]]) &
-        !is.Date(df[[as_name(patient_DOB)]]) &
-        !is.POSIXct(df[[as_name(patient_DOB)]])) {
+    if ((!is.Date(df[[as_name(incident_date)]]) &
+         !is.POSIXct(df[[as_name(incident_date)]])) ||
+        (!is.Date(df[[as_name(patient_DOB)]]) &
+         !is.POSIXct(df[[as_name(patient_DOB)]]))) {
+      
       cli_abort(
         "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
       )
@@ -79,13 +81,11 @@ library(rlang)
       
     }
     
-    # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
-    
     # 911 codes for eresponse.05
     codes_911 <- "2205001|2205003|2205009"
     
     # get codes as a regex to find lights and siren responses
-    lights_and_sirens <- "Initial Lights and Sirens, Downgraded to No Lights or Sirens|Initial No Lights or Sirens, Upgraded to Lights and Sirens|Lights and Sirens"
+    no_lights_and_sirens <- "No Lights or Sirens|2224019"
     
     # filter the table to get the initial population regardless of age
     initial_population <- df %>%
@@ -96,28 +96,44 @@ library(rlang)
         time1 = {{incident_date_col}},
         time2 = {{patient_DOB_col}},
         units = "days"
-      )) / 365) %>%
+      )) / 365,
       
-      # filter down to 911 calls
-      
-      dplyr::filter(grepl(
+      # 911 variable
+      call_911 = grepl(
         pattern = codes_911,
         x = {{eresponse_05_col}},
         ignore.case = T
-      )) %>%
+      ),
       
-      # if lights and sirens ARE NOT present, 1, else 0
-      mutate(l_s_check = if_else(!grepl(pattern = lights_and_sirens, x = {{eresponse_24_col}}), 1, 0))
+      # no lights and sirens check
+      no_ls_check = if_else(grepl(pattern = no_lights_and_sirens, x = {{eresponse_24_col}}), 1, 0),
+      
+      # system age check
+      system_age_adult = {{epatient_15_col}} >= 18 & {{epatient_16_col}} == "Years",
+      system_age_minor1 = ({{epatient_15_col}} >= 2 & {{epatient_15_col}} < 18) & {{epatient_16_col}} == "Years",
+      system_age_minor2 = {{epatient_15_col}} >= 24 & {{epatient_16_col}} == "Months",
+      system_age_minor = system_age_minor1 | system_age_minor2,
+      
+      # calculated age check
+      calc_age_adult = patient_age_in_years_col >= 18,
+      calc_age_minor = patient_age_in_years_col < 18 & patient_age_in_years_col >= 2
+      ) %>%
+      
+      # filter down to 911 calls
+      
+      dplyr::filter(
+        call_911
+      )
     
     # Adult and Pediatric Populations
     
     # filter adult
     adult_pop <- initial_population %>%
-      dplyr::filter(patient_age_in_years_col >= 18)
+      dplyr::filter(system_age_adult | calc_age_adult)
     
     # filter peds
     peds_pop <- initial_population %>%
-      dplyr::filter(patient_age_in_years_col < 18)
+      dplyr::filter(system_age_minor | calc_age_minor)
     
     # get the summary of results
     
@@ -126,7 +142,7 @@ library(rlang)
       summarize(
         measure = "Safety-01",
         pop = "All",
-        numerator = sum(l_s_check, na.rm = T),
+        numerator = sum(no_ls_check, na.rm = T),
         denominator = n(),
         prop = numerator / denominator,
         prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -138,7 +154,7 @@ library(rlang)
       summarize(
         measure = "Safety-01",
         pop = "Adults",
-        numerator = sum(l_s_check, na.rm = T),
+        numerator = sum(no_ls_check, na.rm = T),
         denominator = n(),
         prop = numerator / denominator,
         prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -150,7 +166,7 @@ library(rlang)
       summarize(
         measure = "Safety-01",
         pop = "Peds",
-        numerator = sum(l_s_check, na.rm = T),
+        numerator = sum(no_ls_check, na.rm = T),
         denominator = n(),
         prop = numerator / denominator,
         prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
@@ -167,14 +183,14 @@ library(rlang)
   
 # load data
 
-safety_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/safety01_02_Export.csv") %>% 
+safety_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/safety01_02_Export_2023.csv") %>% 
   clean_names(case = "screaming_snake", sep_out = "_")
 
 # clean
 
 safety_01_clean <- safety_01_data %>% 
   mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
-    str_remove_all(., pattern = "\\s12:00:00\\sAM")
+    str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+)?(\\s(AM|PM))?")
   )))
 
 # run function
@@ -182,6 +198,8 @@ safety_01_clean <- safety_01_data %>%
 safety_01_clean %>% 
   safety_01(incident_date_col = INCIDENT_DATE,
             patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+            epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+            epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
             eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
             eresponse_24_col = RESPONSE_ADDITIONAL_RESPONSE_MODE_DESCRIPTORS_LIST_E_RESPONSE_24
             )

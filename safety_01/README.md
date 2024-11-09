@@ -62,14 +62,15 @@ library(rlang)
   
 # load data
 
-safety_01_data <- read_csv("safety01_02_Export.csv") %>% 
+safety_01_data <- read_csv("safety01_02_Export_2023.csv") %>% 
   clean_names(case = "screaming_snake", sep_out = "_")
   
-#> Rows: 458647 Columns: 12
+#> Rows: 458696 Columns: 28
 #> ── Column specification ────────────────────────────────────────────────────────
 #> Delimiter: ","
-#> chr (11): Incident Patient Care Report Number - PCR (eRecord.01), Incident D...
-#> lgl  (1): Transport Disposition Code (3.4=itDisposition.102/3.5=eDisposition...
+#> chr (22): Incident Patient Care Report Number - PCR (eRecord.01), Agency Nam...
+#> dbl  (3): Agency Unique State ID (dAgency.01), Agency Number (dAgency.02), P...
+#> lgl  (3): Patient Evaluation/Care Code (3.4=itDisposition.100/3.5=eDispositi...
 #> 
 #> ℹ Use `spec()` to retrieve the full column specification for this data.
 #> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
@@ -78,7 +79,7 @@ safety_01_data <- read_csv("safety01_02_Export.csv") %>%
 
 safety_01_clean <- safety_01_data %>% 
   mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
-    str_remove_all(., pattern = "\\s12:00:00\\sAM")
+    str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+)?(\\s(AM|PM))?")
   )))
 
 # run function
@@ -86,22 +87,23 @@ safety_01_clean <- safety_01_data %>%
 safety_01_clean %>% 
   safety_01(incident_date_col = INCIDENT_DATE,
             patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+            epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+            epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
             eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
             eresponse_24_col = RESPONSE_ADDITIONAL_RESPONSE_MODE_DESCRIPTORS_LIST_E_RESPONSE_24
             )
-            
 #> # A tibble: 3 × 6
 #>   measure   pop    numerator denominator  prop prop_label
 #>   <chr>     <chr>      <dbl>       <int> <dbl> <chr>     
-#> 1 Safety-01 Adults    180009      309694 0.581 58.12%    
-#> 2 Safety-01 Peds       10114       19051 0.531 53.09%    
-#> 3 Safety-01 All       220040      373257 0.590 58.95%
+#> 1 Safety-01 Adults     93043      312991 0.297 29.73%    
+#> 2 Safety-01 Peds        3892       15902 0.245 24.47%    
+#> 3 Safety-01 All       111571      373282 0.299 29.89%
 ```
 
-<sup>Created on 2024-11-06 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
+<sup>Created on 2024-11-08 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
 
 
 # Notes
 
-* Ensure incident_date_col and patient_DOB_col columns are of Date or POSIXct type.
+* Ensure incident_date_col and patient_DOB_col columns are of `Date` or `POSIXct` type.
 * Grouping the data by region or other identifiers can be done inside the function to calculate results for subsets.

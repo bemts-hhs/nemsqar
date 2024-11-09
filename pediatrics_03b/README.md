@@ -78,10 +78,11 @@ pediatrics_03b_data <- read_csv("pediatrics03b_Export_2023.csv") %>%
 
 # clean
 
-pediatrics_03b_clean <- pediatrics_03b_data %>% 
-  mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
-    str_remove_all(., pattern = "\\s12:00:00\\sAM")
-  )))
+pediatrics_03b_clean <- pediatrics_03b_data %>%
+  mutate(across(
+    c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17),
+    ~ mdy(str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+)?(\\s(AM|PM))?"))
+  ))
 
 # run function
 

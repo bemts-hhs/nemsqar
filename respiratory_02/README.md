@@ -15,6 +15,8 @@ respiratory_02(df, erecord_01_col, incident_date_col, patient_DOB_col, eresponse
 * `erecord_01_col`: Column name for eRecord.01, used to form a unique patient ID.
 * `incident_date_col`: Column name for the incident date.
 * `patient_DOB_col`: Column name for the patient's date of birth.
+* `epatient_15_col`: Column giving the calculated age value.
+* `epatient_16_col`: Column giving the provided age unit value.
 * `eresponse_05_col`: Column name for response codes (e.g., incident type).
 * `evitals_12_col`: Column name for oxygen saturation (SpO2) values.
 * `emedications_03_col`: Column name for medication codes.
@@ -22,7 +24,7 @@ respiratory_02(df, erecord_01_col, incident_date_col, patient_DOB_col, eresponse
 * `...`: arguments passed to `dplyr::summarize()`.
 
 # Output
-A tibble with three rows (`pediatric`, `adult`, and `overall`) showing:
+A tibble with two rows (`pediatric`, and `adult`) showing:
 
 * `pop`: Population type ("Peds", "Adults", "All").
 * `numerator`: Count of patients meeting the criteria.
@@ -57,15 +59,16 @@ library(scales)
 library(rlang)
 
 # load data
-  
-respiratory_02_data <- read_csv("respiratory02_Export.csv") %>% 
-  clean_names(case = "screaming_snake", sep_out = "_")
-  
-#> Rows: 851102 Columns: 10
+
+respiratory_02_data <- read_csv("respiratory02_Export_2023.csv") %>% 
+    clean_names(case = "screaming_snake", sep_out = "_")
+    
+#> Rows: 720096 Columns: 25
 #> ── Column specification ────────────────────────────────────────────────────────
 #> Delimiter: ","
-#> chr (9): Incident Patient Care Report Number - PCR (eRecord.01), Incident Da...
-#> dbl (1): Vitals Pulse Oximetry (eVitals.12)
+#> chr (19): Incident Patient Care Report Number - PCR (eRecord.01), Agency Nam...
+#> dbl  (4): Agency Unique State ID (dAgency.01), Agency Number (dAgency.02), P...
+#> lgl  (2): Vitals Low Pulse Oximetry Flag (eVitals.12), Agency Is Demo Service
 #> 
 #> ℹ Use `spec()` to retrieve the full column specification for this data.
 #> ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
@@ -73,9 +76,9 @@ respiratory_02_data <- read_csv("respiratory02_Export.csv") %>%
 # clean
 
 respiratory_02_clean <- respiratory_02_data %>% 
-  mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
-    str_remove_all(., pattern = "\\s12:00:00\\sAM")
-  )))
+    mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
+        str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+)?(\\s(AM|PM))?")
+    )))
 
 # test the function
 
@@ -83,21 +86,22 @@ respiratory_02_clean %>%
   respiratory_02(erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
                  incident_date_col = INCIDENT_DATE,
                  patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+                 epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+                 epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
                  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
-                 evitals_12_col = VITALS_PULSE_OXIMETRY_E_VITALS_12,
+                 evitals_12_col = PATIENT_LOW_PULSE_OXIMETRY_E_VITALS_12,
                  emedications_03_col = PATIENT_MEDICATION_GIVEN_OR_ADMINISTERED_DESCRIPTION_AND_RXCUI_CODES_LIST_E_MEDICATIONS_03,
                  eprocedures_03_col = PATIENT_ATTEMPTED_PROCEDURE_DESCRIPTIONS_AND_CODES_LIST_E_PROCEDURES_03
                  )
                  
-#> # A tibble: 3 × 6
+#> # A tibble: 2 × 6
 #>   measure        pop    numerator denominator  prop prop_label
 #>   <chr>          <chr>      <int>       <int> <dbl> <chr>     
-#> 1 Respiratory-02 All        11967       26402 0.453 45.33%    
-#> 2 Respiratory-02 Peds         253         694 0.365 36.46%    
-#> 3 Respiratory-02 Adults     11714       25708 0.456 45.57%
+#> 1 Respiratory-02 Peds         261         710 0.368 36.76%    
+#> 2 Respiratory-02 Adults     11716       25718 0.456 45.56%
 ```
 
-<sup>Created on 2024-11-06 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
+<sup>Created on 2024-11-08 with [reprex v2.1.1](https://reprex.tidyverse.org)</sup>
 
 # Notes
 * Data Preparation: Ensure that `emedications.03` and `eprocedures.03` columns contain comma-separated codes for each incident, not list columns.
