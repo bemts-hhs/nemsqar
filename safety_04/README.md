@@ -1,12 +1,12 @@
-# `safety_02` Function
+# `safety_04` Function
 
 # Description
-The `safety_02` function calculates the Safety-02 metric, evaluating the proportion of emergency medical calls involving transport where no lights and sirens were used. This function categorizes the population into adult and pediatric groups based on their age, and summarizes results with a total population count as well.
+The `safety_04` function calculates the Safety-02 metric, evaluating the proportion of emergency medical calls involving transport where no lights and sirens were used. This function categorizes the population into adult and pediatric groups based on their age, and summarizes results with a total population count as well.
 
 # Usage
 
 ```r
-safety_02(df, incident_date_col, patient_DOB_col, eresponse_05_col, edisposition_18_col, transport_disposition_cols, ...)
+safety_04(df, incident_date_col, patient_DOB_col, eresponse_05_col, edisposition_18_col, transport_disposition_cols, ...)
 ```
 
 # Arguments

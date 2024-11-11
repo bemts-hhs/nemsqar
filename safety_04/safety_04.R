@@ -1,5 +1,5 @@
 ################################################################################
-### Safety-02 Function #########################################################
+### Safety-04 Function #########################################################
 ################################################################################
 
 ###_____________________________________________________________________________
@@ -12,18 +12,18 @@
 ### that correspond to "not values".
 ### the function assumes that the eresponse.05 column has the codes in it, text
 ### can be present, too, for reference
-### the function assumes that edisposition.18 is a list column or a column that has all
+### the function assumes that edisposition.14 is a list column or a column that has all
 ### text descriptors for additional transport mode descriptors.  These can be separated
-### by commas or other characters as long as all eresponse.18 values are present
+### by commas or other characters as long as all eresponse.14 values are present
 ### in one cell for each unique erecord.01 value.  Codes can be present
 ### but will be ignored by the function.
-### for the argument transport_disposition_cols, this argument can receive the unquoted
-### column names of edisposition.12 and edisposition.30.  One or both can be entered and
-### the function will evaluate them.  These columns are used to create a `transport`
-### variable that is used to filter the table down furhter.  AS such, these columns
-### edisposition.12 and edisposition.30 must be list columns that and/or contain all values
-### from each unique incident entered for each field.  These can be comma separated values
-### all in one cell to make the table tidy.
+### the function assumes that earrest.01 values contain the text and code, and are typically
+### one response per patient encounter per responding service.
+### eprocedures.03 is a list column or a column that has all text descriptors for additional transport mode descriptors.  
+### These can be separated by commas or other characters as long as all eprocedures.03 values are present
+### in one cell for each unique erecord.01 value.  Codes can be present.
+### all values for einjury.03 can be passed to the function.  The function will detect any duplicate values
+### and will filter on the unique values per each unique patient encounter.
 ### the first argument is a dataframe, no joining is done.
 ### any joins to get vitals etc. will need to be done outside the function
 ### grouping can be done before the function to get the calculations by region
@@ -36,9 +36,8 @@ safety_02 <- function(df,
                       epatient_15_col,
                       epatient_16_col,
                       eresponse_05_col,
-                      edisposition_18_col,
-                      edisposition_28_col,
-                      transport_disposition_cols,
+                      earrest_01_col,
+                      einjury_03_col,
                       ...) {
   # Load necessary packages
   for (pkg in c("tidyverse", "scales", "rlang")) {
