@@ -1,0 +1,295 @@
+#' Hypoglycemia-01
+#'
+#' The `hypoglycemia_01` function calculates the NEMSQA measure evaluating how often
+#' hypoglycemic patients with altered mental status receive hypoglycemia treatment.
+#'
+#' @section Data Assumptions:
+#' The `df` argument should be a dataframe or tibble with the following assumptions:
+#' - The data is already loaded.
+#' - The data has one row per patient/incident and one column for each feature/field.
+#' - The function will calculate an age in years using the incident date and the patient DOB.
+#' - The incident date and the patient DOB are Date or POSIXct data types.
+#' - Any missing values are encoded as `NA`, not the "Not Known"/"Not Recorded" text values
+#'   or NEMSIS "not value" codes commonly reported by ePCR vendors.
+#' - The vitals field may be the full list of values for each field or the lowest estimated
+#'   eVitals.18 (must include the "Low Blood Glucose" flag) and lowest estimated patient AVPU
+#'   in eVitals.2.
+#' - The function assumes that the primary and secondary impression fields (eSituation.11
+#'   and eSituation.12) have the ICD-10 codes in them. The test description can be present,
+#'   too, for reference.
+#' - The function assumes that the eResponse.05 fields have the NEMSIS codes in them,
+#'   although text can be also be present for reference.
+#' - The function assumes that the eMedications_03 and eProcedures_03 fields contain
+#'   all medications/procedures and that it contains the text description of the
+#'   generic name of the medication. The codes can be included for reference, but will
+#'   not be checked. ALL medications and prodcedures are in one field per record, as either
+#'   a list column or a comma-separated list.
+#' - The eSituation.12 (Secondary Impression) field is best as a list column of the secondary
+#'   impressions. No joining is done.
+#' - Any joins to get vitals, etc., will need to be done outside the function.
+#' - Grouping can be done before the function to get the calculations by region or any other
+#'   grouping.
+#'
+#'
+#'
+#' @param df A data frame or tibble containing emergency response records.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Column representing the unique record identifier.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> POSIXct or Date column representing the date of the incident.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> POSIXct or Date column representing the patient's date of birth.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's numeric age agnostic of unit.
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's age unit ("Years", "Months", "Days", "Hours", or "Minute").
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column containing response type codes.
+#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column for primary impression fields, containing ICD-10 codes.
+#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column for secondary impression fields, containing ICD-10 codes.
+#' @param evitals_18_col <['tidy-select'][dplyr_tidy_select]> Column for blood glucose levels.
+#' @param evitals_23_cl <['tidy-select'][dplyr_tidy_select]> Column for Glasgow Coma Scale (GCS) scores.
+#' @param evitals_26_col <['tidy-select'][dplyr_tidy_select]> Column for AVPU alertness levels.
+#' @param emedications_03_col <['tidy-select'][dplyr_tidy_select]> Column for administered medications.
+#' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column for procedures performed.
+#' @param ... Additional arguments for summarization, passed to the summarize function.
+#'
+#' @return A tibble summarizing the initial population and filtered subgroups (adult, pediatric, total) with hypoglycemia events.
+#' @export
+hypoglycemia_01 <- function(df,
+                            erecord_01_col,
+                            incident_date_col,
+                            patient_DOB_col,
+                            epatient_15_col,
+                            epatient_16_col,
+                            eresponse_05_col,
+                            esituation_11_col,
+                            esituation_12_col,
+                            evitals_18_col,
+                            evitals_23_cl,
+                            evitals_26_col,
+                            emedications_03_col,
+                            eprocedures_03_col,
+                            ...) {
+
+  # provide better error messaging if df is missing
+  if (missing(df)) {
+    cli::cli_abort(
+      c(
+        "No object of class {.cls data.frame} was passed to {.fn respiratory_01}.",
+        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn respiratory_01}."
+      )
+    )
+
+  }
+
+  # Ensure df is a data frame or tibble
+  if (!is.data.frame(df) && !tibble::is_tibble(df)) {
+    cli::cli_abort(
+      c(
+        "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
+        "i" = "The passed object is of class {.val {class(df)}}."
+      )
+    )
+  }
+
+  # use quasiquotation on the date variables to check format
+  incident_date <- rlang::enquo(incident_date_col)
+  patient_DOB <- rlang::enquo(patient_DOB_col)
+
+  if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
+       !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
+      (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
+       !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
+
+    cli::cli_abort(
+      "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+    )
+
+  }
+
+
+  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
+
+  # 911 codes for eresponse.05
+  codes_911 <- "2205001|2205003|2205009"
+
+  # get codes as a regex to filter primary/secondary impression fields
+  hypoglycemia_treatment_codes <- "4832|4850|377980|376937|372326|237653|260258|309778|1795610|1795477|1794567|1165823|1165822|1165819"
+
+  # hypoglycemia procedures
+
+  hypoglycemia_procedure_codes <- "225285007|710925007"
+
+  # code(s) for altered mental status
+  altered_mental_status <- "R41.82|Altered Mental Status, unspecified"
+
+  # codes for diabetes via primary and secondary impression
+
+  diabetes_codes <- "E13.64|E16.2|Other specified diabetes mellitus with hypoglycemia|Hypoglycemia, unspecified"
+
+  # AVPU responses
+
+  avpu_responses <- "Unresponsive|Verbal|Painful|3326003|3326005|3326007"
+
+  # days, hours, minutes, months
+
+  minor_values <- "days|hours|minutes|months"
+
+  # some manipulations to prepare the table
+  # create the patient age in years and the patient age in days variables for filters
+  # create the unique ID variable
+  initial_population_0 <- df |>
+
+    # create the age in years variable
+
+    dplyr::mutate(
+      patient_age_in_years = as.numeric(difftime(
+        time1 = {{incident_date_col}},
+        time2 = {{patient_DOB_col}},
+        units = "days"
+      )) / 365,
+      patient_age_in_days = as.numeric(difftime(
+        time1 = {{incident_date_col}},
+        time2 = {{patient_DOB_col}},
+        units = "days"
+      ))
+    )
+
+  # filter the table to get the initial population regardless of age
+  initial_population_1 <- initial_population_0 |>
+
+    # Identify Records that have GCUS < 15, or AVPU not equal to Alert, or
+    # primary/secondary impression of altered mental status
+
+    dplyr::mutate(
+      altered = grepl(
+        pattern =  altered_mental_status,
+        x = {{esituation_11_col}},
+        ignore.case = T
+      ) |
+        grepl(
+          pattern =  altered_mental_status,
+          x = {{esituation_12_col}},
+          ignore.case = T
+        ),
+      AVPU = grepl(pattern = avpu_responses, x = {{evitals_26_col}}, ignore.case = T),
+      GCS = {{evitals_23_cl}} < 15,
+      diabetes_dx = grepl(
+        pattern =  diabetes_codes,
+        x = {{esituation_11_col}},
+        ignore.case = T
+      ) |
+        grepl(
+          pattern =  diabetes_codes,
+          x = {{esituation_12_col}},
+          ignore.case = T
+        ),
+      blood_glucose_flag = {{evitals_18_col}} < 60,
+      call_911 = grepl(
+        pattern = codes_911,
+        x = {{eresponse_05_col}},
+        ignore.case = T
+      )
+
+    ) |>
+
+    dplyr::filter(
+      # diabetic patients
+      # patients with a GCS < 15, or AVPU < Alert,
+      # or altered mental status, and blood glucose less than 60
+
+      (diabetes_dx & (GCS | AVPU)) |
+        (altered & blood_glucose_flag),
+      call_911
+
+    ) |>
+
+    # create variable that documents if any of target treatments were used
+    dplyr::mutate(correct_treatment = dplyr::if_else(
+      grepl(
+        pattern = hypoglycemia_treatment_codes,
+        x = {{emedications_03_col}},
+        ignore.case = TRUE
+      ) |
+        grepl(
+          pattern = hypoglycemia_procedure_codes,
+          x = {{eprocedures_03_col}},
+          ignore.case = T
+        ),
+      1,
+      0
+    ))
+
+  # final pass with manipulations to get a tidy table
+  # 1 row per observation, 1 column per feature
+
+  initial_population <- initial_population_1 |>
+    dplyr::mutate(Unique_ID = stringr::str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) |>
+    dplyr::distinct(Unique_ID, .keep_all = T)
+
+  # Adult and Pediatric Populations
+
+  # filter adult
+  adult_pop <- initial_population |>
+    dplyr::filter(patient_age_in_years >= 18 |
+                      ({{epatient_15_col}} >= 18 & {{epatient_16_col}} == "Years")
+
+                    )
+
+  # filter peds
+  peds_pop <- initial_population |>
+    dplyr::filter(patient_age_in_years < 18 |
+                    ({{epatient_15_col}} < 18 & {{epatient_16_col}} == "Years") |
+                  !is.na({{epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col}}, ignore.case = T)
+                    ) |>
+    dplyr::filter(patient_age_in_days >= 1 |
+               !({{epatient_15_col}} < 1 & {{epatient_16_col}} == "Days") &
+                 !({{epatient_15_col}} < 24 & {{epatient_16_col}} == "Hours") &
+                 !({{epatient_15_col}} < 120 & {{epatient_16_col}} == "Minutes")
+
+             )
+
+  # get the summary of results
+
+  # all
+  total_population <- initial_population |>
+    dplyr::filter(!({{epatient_15_col}} < 1 & {{epatient_16_col}} == "Days") &
+                  !({{epatient_15_col}} < 24 & {{epatient_16_col}} == "Hours") &
+                  !({{epatient_15_col}} < 120 & {{epatient_16_col}} == "Minutes")
+             ) |>
+    dplyr::summarize(
+      measure = "Hypoglycemia-01",
+      pop = "All",
+      numerator = sum(correct_treatment, na.rm = T),
+      denominator = dplyr::n(),
+      prop = sum(correct_treatment, na.rm = T) / dplyr::n(),
+      prop_label = pretty_percent(sum(correct_treatment, na.rm = T) / dplyr::n(), n_decimal = 0.01),
+      ...
+    )
+
+  # adults
+  adult_population <- adult_pop |>
+    dplyr::summarize(
+      measure = "Hypoglycemia-01",
+      pop = "Adults",
+      numerator = sum(correct_treatment, na.rm = T),
+      denominator = dplyr::n(),
+      prop = sum(correct_treatment, na.rm = T) / dplyr::n(),
+      prop_label = pretty_percent(sum(correct_treatment, na.rm = T) / dplyr::n(), n_decimal = 0.01),
+      ...
+    )
+
+  # peds
+  peds_population <- peds_pop |>
+    dplyr::summarize(
+      measure = "Hypoglycemia-01",
+      pop = "Peds",
+      numerator = sum(correct_treatment, na.rm = T),
+      denominator = dplyr::n(),
+      prop = sum(correct_treatment, na.rm = T) / dplyr::n(),
+      prop_label = pretty_percent(sum(correct_treatment, na.rm = T) / dplyr::n(), n_decimal = 0.01),
+      ...
+    )
+
+  # summary
+  hypoglycemia.01 <- dplyr::bind_rows(adult_population, peds_population, total_population)
+
+  hypoglycemia.01
+
+
+}
