@@ -26,7 +26,12 @@ BugReports: https://github.com/bemts-hhs/nemsqar-package/issues
 Imports: 
     cli,
     dplyr,
+    ggplot2,
+    ggthemes,
     lubridate,
+    patchwork,
     rlang,
     scales,
-    tibble
+    stringr,
+    tibble,
+    viridis
