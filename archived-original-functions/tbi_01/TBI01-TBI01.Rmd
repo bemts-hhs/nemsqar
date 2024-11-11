@@ -1,0 +1,281 @@
+---
+title: "TBI01"
+author: "Alyssa Green"
+date: "2024-10-31"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+TBI-01
+
+Load and Prep Event Data (PUB_PCREVENTS.dta)
+Select variables needed for measure: 
+eResponse filter
+
+```{r}
+#Full incident count:
+stata.data <- read_dta("C:/Users/alyss/OneDrive - ACEP/NEMSQA/Data Project/Raw Data/Pub_PCRevents.dta")
+
+##### Filter for initial population starting with incidents for 911 response
+#Levels of 911 response in eResponse_05
+resp.911 <- c("2205001", "2205003", "2205009")
+#Apply filter for levels of 911 response 
+data <- stata.data %>%
+  filter(eResponse_05 %in% resp.911)
+
+#table(factor(data$eResponse_05))
+
+```
+
+```{r}
+primary.data <- read_dta("C:/Users/alyss/OneDrive - ACEP/NEMSQA/Data Project/Raw Data/FACTPCRPRIMARYIMPRESSION.dta")
+secondary.data <- read_dta("C:/Users/alyss/OneDrive - ACEP/NEMSQA/Data Project/Raw Data/FACTPCRSECONDARYIMPRESSION.dta")
+
+```
+
+IPP 
+```{r}
+#impressions <- c("S02", "S04.4", "S06", "S07.1", "S09.90", "T74.4", "7701001", "7701003") 
+#colnames(primary.data)
+#colnames(secondary.data)
+primary <- primary.data %>% filter(str_detect(eSituation_11, "S02|S04.4|S06|S07.1|S09|T74.4|7701001|7701003"))
+secondary <- secondary.data %>% filter(str_detect(eSituation_12, "S02|S04.4|S06|S07.1|S09|T74.4|7701001|7701003"))
+
+primary <- primary %>% 
+  mutate(primary.imp = case_when(str_detect(eSituation_11, "S02")~"S02",
+                                 str_detect(eSituation_11, "S04.4")~"S04.4",
+                                 str_detect(eSituation_11, "S06")~"S06",
+                                 str_detect(eSituation_11, "S07.1")~"S07.1",
+                                 str_detect(eSituation_11, "S09")~"S09",
+                                 str_detect(eSituation_11, "T74.4")~"T74.4",
+                                 str_detect(eSituation_11, "7701001")~"7701001",
+                                 str_detect(eSituation_11, "7701003")~"7701003",
+                                 TRUE~"CHECK"))
+
+primary.summary <- primary %>% group_by(primary.imp) %>% count()
+
+secondary <- secondary %>% 
+  mutate(secondary.imp = case_when(str_detect(eSituation_12, "S02")~"S02",
+                                 str_detect(eSituation_12, "S04.4")~"S04.4",
+                                 str_detect(eSituation_12, "S06")~"S06",
+                                 str_detect(eSituation_12, "S07.1")~"S07.1",
+                                 str_detect(eSituation_12, "S09")~"S09",
+                                 str_detect(eSituation_12, "T74.4")~"T74.4",
+                                 str_detect(eSituation_12, "7701001")~"7701001",
+                                 str_detect(eSituation_12, "7701003")~"7701003",
+                                 TRUE~"CHECK"))
+secondary.summary <- secondary %>% group_by(secondary.imp)%>% count()
+
+#colnames(data) #need eDisposition variable for filter
+
+data <- data %>%
+  filter(eDisposition_12 == "4212033")
+
+na.nr <- c("7701001", "7701003")
+primary <- primary %>% filter(!eSituation_11 %in% na.nr)
+secondary<- secondary %>% filter(!eSituation_12 %in% na.nr)
+
+secondary <- secondary %>% distinct(PcrKey)
+
+imp.data <- merge(primary, secondary, by="PcrKey", all=TRUE)
+
+data.1 <- inner_join(data, imp.data, by="PcrKey")
+write.csv(data.1 , "C:/Users/alyss/OneDrive - ACEP/NEMSQA/Data Project/PQM/TBIdata.1.csv")
+
+rm(stata.data)
+rm(data)
+
+vitals.data <- read_dta("C:/Users/alyss/OneDrive - ACEP/NEMSQA/Data Project/Raw Data/FACTPCRVITAL.dta")
+
+```
+
+```{r}
+vitals <- vitals.data %>% dplyr::select(PcrKey, eVitals_19, eVitals_20, eVitals_21)
+
+#table(vitals$eVitals_19)
+#table(vitals$eVitals_20)
+#table(vitals$eVitals_21)
+drop = c("7701001", "7701003", "7701005", "8801019", "8801023")
+
+vitals$eVitals_19 <- as.numeric(vitals$eVitals_19)
+vitals$eVitals_20 <- as.numeric(vitals$eVitals_20)
+vitals$eVitals_21 <- as.numeric(vitals$eVitals_21)
+vitals <- vitals %>%
+  filter(!eVitals_19 %in% drop & !eVitals_20 %in% drop & !eVitals_21 %in% drop)
+
+v.19 <- vitals %>% filter(eVitals_19 < 4)
+v.20 <- vitals %>% filter(eVitals_20 < 5)
+v.21 <- vitals %>% filter(eVitals_21 < 6)
+
+vitals$eVitals_23 <- vitals$eVitals_19+vitals$eVitals_20+vitals$eVitals_21
+  
+vitals <- vitals %>% 
+  #mutate(eVitals_23 =  eVitals_19+eVitals_20+eVitals.21) %>%
+  filter(eVitals_23 < 15)
+vitals <- vitals %>% distinct(PcrKey)
+
+ip <- inner_join(data.1, vitals, by="PcrKey")
+
+```
+
+
+```{r}
+peds.units <- c("2516001", "2516003", "2516005", "2516007")
+pop1 <- ip %>%
+  filter((ePatient_15 < 18 & ePatient_16 == 2516009)|(ePatient_15 <=120 & ePatient_16 %in% peds.units))
+
+table(factor(pop1$ePatient_16))
+
+pop2 <- ip %>%
+  filter(ePatient_15 >= 18 & ePatient_16 == 2516009)
+
+table(factor(pop2$ePatient_16))
+
+age.less <- pop1 %>% filter(ePatient_15 < 18)
+age.more <- pop1 %>% filter(ePatient_15 >= 18)
+colnames(pop1)
+```
+
+```{r}
+vitals <- vitals.data %>% dplyr::select(PcrKey, eVitals_12, eVitals_16, eVitals_06)
+
+pop1.1 <- left_join(pop1, vitals, by="PcrKey")
+
+pop2.1 <- left_join(pop2, vitals, by="PcrKey")
+```
+
+```{r}
+spo2.pop1 <- pop1.1 %>% filter(eVitals_12 %in% drop)
+SBP.pop1<- pop1.1 %>% filter(eVitals_06 %in% drop)
+etco2.pop1<- pop1.1 %>% filter(eVitals_16 %in% drop)
+
+table(spo2.pop1$eVitals_12)
+table(etco2.pop1$eVitals_16)
+table(SBP.pop1$eVitals_06)
+
+spo2.pop2 <- pop2.1 %>% filter(eVitals_12 %in% drop)
+SBP.pop2 <- pop2.1 %>% filter(eVitals_06 %in% drop)
+etco2.pop2 <- pop2.1 %>% filter(eVitals_16 %in% drop)
+table(spo2.pop2$eVitals_12)
+table(etco2.pop2$eVitals_16)
+table(SBP.pop2$eVitals_06)
+```
+
+numerator
+```{r}
+pop1.1 <- pop1.1 %>% mutate(spo2 = case_when(!eVitals_12 %in% drop ~ 1, TRUE ~ 0)) %>%
+  mutate(sbp = case_when(!eVitals_16 %in% drop ~ 1, TRUE ~ 0)) %>%
+  mutate(etco2 = case_when(!eVitals_06 %in% drop ~ 1, TRUE ~ 0))
+pop2.1<- pop2.1 %>% mutate(spo2 = case_when(!eVitals_12 %in% drop ~ 1, TRUE ~ 0)) %>%
+  mutate(sbp = case_when(!eVitals_16 %in% drop ~ 1, TRUE ~ 0)) %>%
+  mutate(etco2 = case_when(!eVitals_06 %in% drop ~ 1, TRUE ~ 0))
+
+pop1.2 <- pop1.1 %>% group_by(PcrKey) %>% summarise(spo2.sum = sum(spo2),
+                                                    etco2.sum = sum(etco2),
+                                                    sbp.sum = sum(sbp))
+pop2.2 <- pop2.1 %>% group_by(PcrKey) %>% summarise(spo2.sum = sum(spo2),
+                                                    etco2.sum = sum(etco2),
+                                                    sbp.sum = sum(sbp))
+pop1.2 <- pop1.2 %>% mutate(num = case_when(spo2.sum> 0 & etco2.sum > 0 & sbp.sum > 0 ~ 1, TRUE ~ 0))
+pop2.2 <- pop2.2 %>% mutate(num = case_when(spo2.sum> 0 & etco2.sum > 0 & sbp.sum > 0 ~ 1, TRUE ~ 0))
+
+agency.data <- read_sas("C:/Users/alyss/OneDrive - ACEP/NEMSQA/Data Project/Raw Data/emsagencydata2022.sas7bdat")
+
+pop1.2 <- left_join(pop1.2, agency.data, by="PcrKey")
+pop2.2 <- left_join(pop2.2, agency.data, by="PcrKey")
+
+write.csv(pop1.2, "C:/Users/alyss/OneDrive - ACEP/NEMSQA/Data Project/PQM/TBIpop1.2.csv")
+write.csv(pop2.2, "C:/Users/alyss/OneDrive - ACEP/NEMSQA/Data Project/PQM/TBIpop2.2.csv")
+
+pop1.2 <- read.csv("C:/Users/alyss/OneDrive - ACEP/NEMSQA/Data Project/PQM/TBIpop1.2.csv")
+pop2.2 <- read.csv("C:/Users/alyss/OneDrive - ACEP/NEMSQA/Data Project/PQM/TBIpop2.2.csv")
+
+
+```
+
+```{r}
+result.pop1 <- pop1.2 %>%
+  mutate(Elig_Ppatients = case_when(!is.na(PcrKey)~1, TRUE~0)) %>%
+  mutate(Patients_Reported = case_when(Elig_Ppatients == 1 ~ 1, TRUE ~ 0)) %>%
+  mutate(Measure_Met = case_when(num == 1 ~ 1, TRUE ~ 0))
+
+calc <- result.pop1 %>%
+  dplyr::select(AgencyKey_Char, Elig_Ppatients, Patients_Reported, Measure_Met) %>%
+  group_by(AgencyKey_Char) %>%
+  summarise(EligPpatients = sum(Elig_Ppatients),
+            PatientsReported = sum(Patients_Reported),
+            MeasureMet = sum(Measure_Met))
+
+calc <- calc %>%
+  mutate(Performance_Rate = MeasureMet/PatientsReported)
+
+calc$Performance_Rate[is.na(calc$Performance_Rate)] <- 0
+
+result.pop2 <- pop2.2 %>%
+  mutate(Elig_Ppatients = case_when(!is.na(PcrKey)~1, TRUE~0)) %>%
+  mutate(Patients_Reported = case_when(Elig_Ppatients == 1 ~ 1, TRUE ~ 0)) %>%
+  mutate(Measure_Met = case_when(num == 1 ~ 1, TRUE ~ 0))
+
+calc2 <- result.pop2 %>%
+  dplyr::select(AgencyKey_Char, Elig_Ppatients, Patients_Reported, Measure_Met) %>%
+  group_by(AgencyKey_Char) %>%
+  summarise(EligPpatients = sum(Elig_Ppatients),
+            PatientsReported = sum(Patients_Reported),
+            MeasureMet = sum(Measure_Met))
+
+calc2 <- calc2 %>%
+  mutate(Performance_Rate = MeasureMet/PatientsReported)
+
+calc2$Performance_Rate[is.na(calc2$Performance_Rate)] <- 0
+write.csv(calc, "C:/Users/alyss/OneDrive - ACEP/NEMSQA/Data Project/PQM/TBIcalc1.csv")
+write.csv(calc2, "C:/Users/alyss/OneDrive - ACEP/NEMSQA/Data Project/PQM/TBIcalc2.csv")
+```
+
+Clean up output grouped by "encounter"
+```{r}
+colnames(result.pop2)
+
+result.pop2new <- result.pop2 %>%
+  mutate(spo2.num = case_when(spo2.sum > 0 ~ 1, TRUE~0)) %>%
+  mutate(sbp.num = case_when(sbp.sum > 0 ~ 1, TRUE~0)) %>%
+  mutate(etco2.num = case_when(etco2.sum > 0 ~ 1, TRUE~0))
+
+result.pop1new <- result.pop1 %>%
+  mutate(spo2.num = case_when(spo2.sum > 0 ~ 1, TRUE~0)) %>%
+  mutate(sbp.num = case_when(sbp.sum > 0 ~ 1, TRUE~0)) %>%
+  mutate(etco2.num = case_when(etco2.sum > 0 ~ 1, TRUE~0))
+
+write.csv(result.pop2new, "~/NEMSQA-DESKTOP-JQJ3BK5/Data Project/PQM/result.pop2coded.csv")
+write.csv(result.pop1new, "~/NEMSQA-DESKTOP-JQJ3BK5/Data Project/PQM/result.pop1coded.csv")
+
+result.pqm2 <- read.csv("~/NEMSQA-DESKTOP-JQJ3BK5/Data Project/PQM/result.pop2coded.csv")
+result.pqm1 <- read.csv("~/NEMSQA-DESKTOP-JQJ3BK5/Data Project/PQM/result.pop1coded.csv")
+colnames(result.pqm2)
+sum(result.pqm2$sbp.num)
+sum(result.pqm2$etco2.num)
+sum(result.pqm2$spo2.num)
+
+colnames(result.pqm2) <- c("X1", "X", "PcrKey", "spo2.sum", "sbp.sum", "etco2.sum", "num", "AgencyKey_Char", "Masked_EMSAgencyNumber", "Elig_Ppatients", "Patients Reported", "Measure_Met", "spo2.num", "etco2.num", "sbp.num")
+
+colnames(result.pqm1)
+sum(result.pqm1$sbp.num)
+sum(result.pqm1$etco2.num)
+sum(result.pqm1$spo2.num)
+colnames(result.pqm1) <- c("X1", "X", "PcrKey", "spo2.sum", "sbp.sum", "etco2.sum", "num", "AgencyKey_Char", "Masked_EMSAgencyNumber", "Elig_Ppatients", "Patients Reported", "Measure_Met", "spo2.num", "etco2.num", "sbp.num")
+
+write.csv(result.pqm2, "~/NEMSQA-DESKTOP-JQJ3BK5/Data Project/PQM/result.pop2coded.csv")
+write.csv(result.pqm1, "~/NEMSQA-DESKTOP-JQJ3BK5/Data Project/PQM/result.pop1coded.csv")
+
+result.pqm1 <- read.csv("~/NEMSQA-DESKTOP-JQJ3BK5/Data Project/PQM/result.pop1coded.csv")
+result.pqm2 <- read.csv("~/NEMSQA-DESKTOP-JQJ3BK5/Data Project/PQM/result.pop2coded.csv")
+
+sum(result.pqm1$spo2.sum)
+sum(result.pqm2$spo2.sum)
+sum(result.pqm1$etco2.sum)
+sum(result.pqm2$etco2.sum)
+sum(result.pqm1$sbp.sum)
+sum(result.pqm2$sbp.sum)
+```
