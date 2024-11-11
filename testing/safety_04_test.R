@@ -1,38 +1,18 @@
+reprex::reprex({
+
 ################################################################################
-### Safety-04 Function #########################################################
+### Test for Safety-04 #########################################################
 ################################################################################
 
-###_____________________________________________________________________________
-### Assume data are already loaded
-### Need to be a table where each row is 1 observation and each column is a feature
-### or distinct datasets that can be referenced as unique columns
-### this function will calculate an age in years
-### this function also assumes that rows that are missing any value are NA,
-### not the not known / not recorded values common to ImageTrend or the value codes
-### that correspond to "not values".
-### the function assumes that the eresponse.05 column has the codes in it, text
-### can be present, too, for reference
-### the function assumes that edisposition.14 is a list column or a column that has all
-### text descriptors for additional transport mode descriptors.  These can be separated
-### by commas or other characters as long as all eresponse.14 values are present
-### in one cell for each unique erecord.01 value.  Codes can be present
-### but will be ignored by the function.
-### the function assumes that earrest.01 values contain the text and code, and are typically
-### one response per patient encounter per responding service.
-### eprocedures.03 is a list column or a column that has all text descriptors for additional transport mode descriptors.  
-### These can be separated by commas or other characters as long as all eprocedures.03 values are present
-### in one cell for each unique erecord.01 value.  Codes can be present.
-### all values for einjury.03 can be passed to the function.  The function will detect any duplicate values
-### and will filter on the unique values per each unique patient encounter.
-### edisposition.12 and edisposition.30 must be list columns that and/or contain all values
-### from each unique incident entered for each field.  These can be comma separated values
-### all in one cell to make the table tidy.
-### the first argument is a dataframe, no joining is done.
-### any joins to get vitals etc. will need to be done outside the function
-### grouping can be done before the function to get the calculations by region
-### or other grouping
-###_____________________________________________________________________________
-
+# packages
+  
+library(tidyverse)
+library(janitor)
+library(scales)
+library(rlang)
+  
+# function
+  
 safety_04 <- function(df,
                       incident_date_col,
                       patient_DOB_col,
@@ -235,3 +215,32 @@ safety_04 <- function(df,
   
   
 }
+  
+# load data
+
+safety_04_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/safety04_Export_2023.csv") %>% 
+  clean_names(case = "screaming_snake", sep_out = "_")
+
+# clean
+
+safety_04_clean <- safety_04_data %>% 
+  mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
+    str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+)?(\\s(AM|PM))?")
+  )))
+
+# run function
+
+safety_04_clean %>% 
+  safety_04(incident_date_col = INCIDENT_DATE,
+            patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+            epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+            epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+            eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+            earrest_01_col = CARDIAC_ARREST_DURING_EMS_EVENT_WITH_CODE_E_ARREST_01,
+            einjury_03_col = INJURY_TRAUMA_CENTER_TRIAGE_CRITERIA_STEPS_1_AND_2_LIST_E_INJURY_03,
+            eprocedures_03_col = PATIENT_ATTEMPTED_PROCEDURE_DESCRIPTIONS_AND_CODES_LIST_E_PROCEDURES_03,
+            edisposition_14_col = DISPOSITION_POSITION_OF_PATIENT_DURING_TRANSPORT_LIST_E_DISPOSITION_14,
+            transport_disposition_cols = c(DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112, TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30)
+            )
+
+}, venue = "gh", advertise = TRUE)

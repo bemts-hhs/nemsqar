@@ -36,8 +36,8 @@ reprex::reprex({
     if (missing(df)) {
       cli_abort(
         c(
-          "No object of class {.cls data.frame} was passed to {.fn respiratory_01}.",
-          "i" = "Please supply a {.cls data.frame} to the first argument in {.fn respiratory_01}."
+          "No object of class {.cls data.frame} was passed to {.fn pediatrics_03b}.",
+          "i" = "Please supply a {.cls data.frame} to the first argument in {.fn pediatrics_03b}."
         )
       )
       
