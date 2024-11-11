@@ -112,3 +112,5 @@ pediatrics_03b_clean %>%
 
 * This function assumes that `df` includes 911 response codes compatible with the codes_911 patterns.
 * Requires date variables to be formatted as `Date` or `POSIXct` classes to ensure correct age calculations.
+
+Original code by Peter Geissert.
