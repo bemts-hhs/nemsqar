@@ -86,8 +86,8 @@ a list column or a comma-separated list.
 \item The eSituation.12 (Secondary Impression) field is best as a list column of the secondary
 impressions. No joining is done.
 \item Any joins to get vitals, etc., will need to be done outside the function.
-\item Grouping can be done before the function to get the calculations by region or any other
-grouping.
+\item Grouping by specific attributes (e.g., region) can be performed inside this function by
+utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
 }
 }
 

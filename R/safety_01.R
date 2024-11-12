@@ -1,29 +1,3 @@
-################################################################################
-### Safety-01 Function #########################################################
-################################################################################
-
-### _____________________________________________________________________________
-### Assume data are already loaded
-### Need to be a table where each row is 1 observation and each column is a feature
-### or distinct datasets that can be referenced as unique columns
-### this function will calculate an age in years
-### this function also assumes that rows that are missing any value are NA,
-### not the not known / not recorded values common to ImageTrend or the value codes
-### that correspond to "not values".
-### the function assumes that the eresponse.05 column has the codes in it, text
-### can be present, too, for reference
-### the function assumes that erepsonse.24 is a list column or a column that has all
-### text descriptors for additional response mode descriptors.  These can be separated
-### by commas or other characters as long as all eresponse.24 values are present
-### in one cell for each unique erecord.01 value.  Codes can be present
-### but will be ignored by the function.
-### the first argument is a dataframe, no joining is done.
-### any joins to get vitals etc. will need to be done outside the function
-### grouping can be done before the function to get the calculations by region
-### or other grouping
-### _____________________________________________________________________________
-
-
 #' Safety-01 Calculation
 #'
 #' The `safety_01` function calculates the proportion of 911 responses where
@@ -55,6 +29,12 @@
 #' @param ... arguments passed on to summarize.
 #'
 #' @return Returns a tibble summarizing the Safety-01 metric for all populations, adult, and pediatric groups.
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.
+#' 
 #' @export
 #'
 safety_01 <- function(df,

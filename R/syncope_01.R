@@ -1,19 +1,67 @@
-#' Title
+#' Syncope-01:
+#' 
+#' The `syncope_01` function processes EMS dataset to identify potential syncope (fainting) cases
+#' based on specific criteria and calculates related ECG measures. This function filters data for 
+#' 911 response calls, assesses primary and associated symptoms for syncope, determines age-based 
+#' populations (adult and pediatric), and aggregates results by unique patient encounters.
+#' 
+#' @section Data Assumptions:
+#' 
+#' This function assumes that:
+#' 
+#' * Data are loaded into a data frame or tibble where each row represents one observation (e.g., patient)
+#' and each column is a distinct feature (field).
+#' * Missing values in rows are represented as `NA`. Any "Not Known" or "Not Recorded" values commonly used 
+#' in EMS datasets should be pre-cleaned before use.
+#' * The `eresponse_05_col` column contains NEMSIS response codes, specifically for identifying 911 responses.
+#' * Symptom and impression columns (`esituation_09_col`, `esituation_10_col`, `esituation_11_col`, and `esituation_12_col`) 
+#' should contain relevant codes or text descriptions that identify syncope and related conditions.  The secondary and associated symptoms
+#' columns need to be columns that contain all values in a comma separated format with all responses in one cell for a unique incident.
+#' These can also be a list column that is unnested before passing to the function.   
+#' * Patient ECG results, if present, are found in `evitals_04_col`. Values for this column need to contain all values in a comma
+#' separated format with all responses in one cell for a unique incident. This can also be a list column that is unnested before passing to the 
+#' function. 
+#' * Age information is captured across columns `epatient_15_col` and `epatient_16_col` to distinguish between adults 
+#' and pediatric cases.
+#' * Grouping by specific attributes (e.g., region) can be performed inside this function by
+#' utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
+#' 
+#' The first argument is the main data frame (`df`). No joins are performed; any necessary joins 
+#' should be completed prior to calling this function.
+#' 
+#' @section Practical Tips:
+#' 
+#' Ensure data are pre-processed with any missing values coded as `NA`. Additionally, ensure that date fields 
+#' (e.g., `incident_date_col`, `patient_DOB_col`) are of type `Date` or `POSIXct`, as incorrect formatting will 
+#' trigger an error message.
+#' 
+#' @param df <['tidy-select'][dplyr_tidy_select]> Main data frame containing EMS records.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column containing the incident date, used to calculate age.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column containing the patient's date of birth.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient age (numeric).
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column for the patient age units (e.g., "Years", "Months").
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column containing response type codes, specifically 911 codes.
+#' @param esituation_09_col <['tidy-select'][dplyr_tidy_select]> Column with primary symptoms associated with the patient encounter.
+#' @param esituation_10_col <['tidy-select'][dplyr_tidy_select]> Column with other associated symptoms.
+#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column for primary impression code.
+#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column for secondary impression codes.
+#' @param evitals_04_col <['tidy-select'][dplyr_tidy_select]> Column with ECG information if available.
+#' @param ... Additional arguments passed to `dplyr::summarize` for grouped summaries.
 #'
-#' @param df 
-#' @param incident_date_col 
-#' @param patient_DOB_col 
-#' @param epatient_15_col 
-#' @param epatient_16_col 
-#' @param eresponse_05_col 
-#' @param esituation_09_col 
-#' @param esituation_10_col 
-#' @param esituation_11_col 
-#' @param esituation_12_col 
-#' @param evitals_04_col 
-#' @param ... 
-#'
-#' @return
+#' @return A tibble summarizing results for three population groups (Adults, and Peds) with the following columns:
+#' 
+#' `pop`: Population type (Adults, Peds).
+#' `numerator`: Count of incidents where beta-agonist medications were administered.
+#' `denominator`: Total count of incidents.
+#' `prop`: Proportion of incidents involving beta-agonist medications.
+#' `prop_label`: Proportion formatted as a percentage with a specified number of
+#' decimal places.
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.
+#' 
 #' @export
 #'
 syncope_01 <- function(df,
@@ -128,6 +176,7 @@ syncope_01 <- function(df,
       calc_age_adult = patient_age_in_years_col >= 18,
       calc_age_minor = patient_age_in_years_col < 18
     ) |> 
+    
     filter(
       
       # only records with a syncope dx
@@ -170,7 +219,7 @@ syncope_01 <- function(df,
   
 }
 
-syncope_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/syncope01_Export.csv") |> 
+syncope_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/syncope01_Export_2023.csv") |> 
   clean_names(case = "screaming_snake", sep_out = "_")
 
 syncope_01_clean <- syncope_01_data |> 

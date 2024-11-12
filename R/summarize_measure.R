@@ -12,6 +12,14 @@
 #' @param ... (optional) additional arguments
 #'
 #' @return Summarized information
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Samuel Kordik, BBA, BS)[https://www.linkedin.com/in/samuelkordik] at Dallas Fire-Rescue Office of the Medical
+#' Director.
+#' 
+#' @export
+#' 
 summarize_measure <- function(data,
                               measure_name,
                               population_name,

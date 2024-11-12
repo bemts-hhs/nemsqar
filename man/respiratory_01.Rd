@@ -69,7 +69,7 @@ or not any vitals were taken.
 the esituation_12 is best as a list column of the secondary impressions entered
 the first argument is a dataframe, no joining is done.
 any joins to get vitals etc. will need to be done outside the function
-grouping can be done before the function to get the calculations by region
-or other grouping
+Grouping by specific attributes (e.g., region) can be performed inside this function by
+utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
 }
 

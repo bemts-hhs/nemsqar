@@ -35,6 +35,12 @@
 #' @param ... Additional arguments passed to ggplot2 themes or other customization.
 #'
 #' @return A tibble containing mean, SD, min/max/quartiles, number of missing values, Shapiro-Wilk p-value, normality diagnosis, and optional plots.
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.#' 
+#' 
 #' @export
 #'
 #' @examples

@@ -5,6 +5,12 @@
 #' @param p_value numeric p-value to be formatted
 #'
 #' @return string containing p-value significance and p-value.
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.
+#' 
 #' @export
 #'
 #' @examples
@@ -68,6 +74,11 @@ format_p_value <- function(p_value) {
 #' @param round A logical value indicating whether to round the numbers (default is `TRUE`).
 #'
 #' @return Returns a character vector of formatted numbers.
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.
 #' @export
 #'
 #' @examples
@@ -172,6 +183,12 @@ pretty_number <- function(x, n_decimal = 2, prefix = NULL, round = T) {
 #' @param n_decimal The precision (number of decimal places, scale from 0 to 1) to which the percentage is formatted (default is 0.1).
 #'
 #' @return string representation of percentage
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.
+#' 
 #' @export
 #'
 #' @examples

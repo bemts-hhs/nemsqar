@@ -14,6 +14,14 @@
 #' @param ... (optional) additional arguments
 #'
 #' @return Results tibble
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Samuel Kordik, BBA, BS)[https://www.linkedin.com/in/samuelkordik] at Dallas Fire-Rescue Office of the Medical
+#' Director.
+#' 
+#' @export
+#' 
 results_summarize <- function(total_population,
                               adult_population,
                               peds_population,

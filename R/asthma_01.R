@@ -74,6 +74,11 @@
 #' `prop`: Proportion of incidents involving beta-agonist medications.
 #' `prop_label`: Proportion formatted as a percentage with a specified number of
 #' decimal places.
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.
 #'
 #' @export
 #'

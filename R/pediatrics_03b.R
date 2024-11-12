@@ -37,8 +37,8 @@
 #' all in one cell to make the table tidy.
 #' the first argument is a dataframe, no joining is done.
 #' any joins to get vitals etc. will need to be done outside the function
-#' grouping can be done before the function to get the calculations by region
-#' or other grouping
+#' Grouping by specific attributes (e.g., region) can be performed inside this function by
+#' utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
 #'
 #'
 #' @param df Data frame or tibble containing EMS records.
@@ -55,6 +55,13 @@
 #' @param ... Additional parameters for the `dplyr::summarize` output.
 #'
 #' @return A summary tibble with columns for measure name, population, numerator, denominator, and proportion.
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.  (Peter Geissert's)[https://www.linkedin.com/in/peter-geissert-ba7607ba] original code base was
+#' used to develop this function.
+#' 
 #' @export
 #'
 pediatrics_03b <- function(df,

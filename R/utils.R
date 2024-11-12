@@ -12,6 +12,12 @@
 #'
 #' @return Returns a logical vector indicating `TRUE` for elements of `x` that
 #'         are not in `y`, and `FALSE` for those that are.
+#'         
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.
+#' 
 #' @export
 #'
 #' @examples
@@ -39,6 +45,12 @@
 #' @param string A character vector containing the elements to be concatenated with the "or" operator.
 #'
 #' @return Returns a single concatenated string, with each element separated by a `|` operator.
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Peter Geissert, MPH)[https://www.linkedin.com/in/peter-geissert-ba7607ba] at Oregon EMS &
+#' Trauma Systems, Public Health Division.
+#' 
 #' @export
 #'
 #' @examples
@@ -82,7 +94,12 @@ orRify <- function(string){
 #' @return Returns a character vector containing `n` randomly generated IDs.
 #'        Each ID is formatted as a string of 10 letters followed by a hyphen
 #'        and a 10-digit number.
-
+#'        
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.
+#' 
 #' @export
 #'
 #' @examples

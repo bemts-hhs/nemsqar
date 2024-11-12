@@ -27,8 +27,8 @@
 #' - The eSituation.12 (Secondary Impression) field is best as a list column of the secondary
 #'   impressions. No joining is done.
 #' - Any joins to get vitals, etc., will need to be done outside the function.
-#' - Grouping can be done before the function to get the calculations by region or any other
-#'   grouping.
+#' - Grouping by specific attributes (e.g., region) can be performed inside this function by
+#'   utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
 #'
 #'
 #'
@@ -49,6 +49,12 @@
 #' @param ... Additional arguments for summarization, passed to the summarize function.
 #'
 #' @return A tibble summarizing the initial population and filtered subgroups (adult, pediatric, total) with hypoglycemia events.
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.
+#' 
 #' @export
 hypoglycemia_01 <- function(df,
                             erecord_01_col,

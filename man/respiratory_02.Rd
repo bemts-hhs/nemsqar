@@ -70,7 +70,7 @@ value are NA, not the not known / not recorded values common to ImageTrend or
 the value codes that correspond to "not values". the first argument is a
 dataframe, no joining is done in the function. any needed table joins must be
 done prior to running the function to ensure required columns are present.
-grouping can be done before the function to get the calculations by region or
-other grouping
+Grouping by specific attributes (e.g., region) can be performed inside this function by
+utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
 }
 

@@ -31,8 +31,8 @@
 #' all in one cell to make the table tidy.
 #' the first argument is a dataframe, no joining is done.
 #' any joins to get vitals etc. will need to be done outside the function
-#' grouping can be done before the function to get the calculations by region
-#' or other grouping
+#' Grouping by specific attributes (e.g., region) can be performed inside this function by
+#' utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
 #'
 #' @param df A data frame where each row is an observation, and each column represents a feature.
 #' @param incident_date_col Date or POSIXct Unquoted column name representing the date of the incident.
@@ -46,6 +46,11 @@
 #' @param ... Additional arguments for summary calculation, if needed.
 #'
 #' @return A data frame summarizing the Safety-02 metric with calculated values for three populations:
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.
 #' @export
 #'
 safety_02 <- function(df,

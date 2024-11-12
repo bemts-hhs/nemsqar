@@ -20,8 +20,8 @@
 #' the esituation_12 is best as a list column of the secondary impressions entered
 #' the first argument is a dataframe, no joining is done.
 #' any joins to get vitals etc. will need to be done outside the function
-#' grouping can be done before the function to get the calculations by region
-#' or other grouping
+#' Grouping by specific attributes (e.g., region) can be performed inside this function by
+#' utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
 #'
 #' @param df A data frame containing incident data with each row representing an observation.
 #' @param erecord_01_col Unique Patient ID
@@ -37,6 +37,13 @@
 #' @param ... arguments passed to `dplyr::summarize()`.
 #'
 #' @return Returns a data frame summarizing the proportion of cases with complete vital sign data, divided by population
+#' 
+#' #' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.  (Alyssa Green's)[https://www.linkedin.com/in/alyssa-green-1a7aa4218] original code base was 
+#' used to develop this function.
+#' 
 #' @export
 #'
 respiratory_01 <- function(df,

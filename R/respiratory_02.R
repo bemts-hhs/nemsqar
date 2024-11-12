@@ -24,8 +24,8 @@
 #' the value codes that correspond to "not values". the first argument is a
 #' dataframe, no joining is done in the function. any needed table joins must be
 #' done prior to running the function to ensure required columns are present.
-#' grouping can be done before the function to get the calculations by region or
-#' other grouping
+#' Grouping by specific attributes (e.g., region) can be performed inside this function by
+#' utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
 #'
 #'
 #' @param df  Data frame or tibble containing EMS incident data.
@@ -41,6 +41,12 @@
 #' @param ... arguments passed to `dplyr::summarize()`.
 #'
 #' @return Returns a tibble summarizing the overall and age-grouped respiratory-02 metrics, formatted for ease of interpretation.
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.
+#' 
 #' @export
 respiratory_02 <- function(df,
                            erecord_01_col,

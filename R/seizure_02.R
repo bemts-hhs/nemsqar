@@ -42,7 +42,8 @@
 #' incorporate additional data (e.g., vitals) must be conducted prior to calling 
 #' this function.
 #'
-#' Grouping for specific calculations (e.g., by region) can be done within the function.
+#' Grouping by specific attributes (e.g., region) can be performed inside this function by
+#' utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
 #' 
 #' @section Practical Tips:
 #' 
@@ -74,6 +75,11 @@
 #' `prop`: Proportion of incidents involving beta-agonist medications.
 #' `prop_label`: Proportion formatted as a percentage with a specified number of
 #' decimal places.
+#' 
+#' @section Credit:
+#' 
+#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
+#' Services, Division of Public Health, Iowa HHS.
 #'
 #' @import tidyverse, rlang, scales
 #' 

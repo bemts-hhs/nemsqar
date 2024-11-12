@@ -95,7 +95,8 @@ The first argument to the function is a data frame; any joins needed to
 incorporate additional data (e.g., vitals) must be conducted prior to calling
 this function.
 
-Grouping for specific calculations (e.g., by region) can be done within the function.
+Grouping by specific attributes (e.g., region) can be performed inside this function by
+utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
 }
 
 \section{Practical Tips}{
