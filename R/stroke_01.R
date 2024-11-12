@@ -109,8 +109,8 @@ stroke_01 <- function(df,
   if (missing(df)) {
     cli_abort(
       c(
-        "No object of class {.cls data.frame} was passed to {.fn stroke_02}.",
-        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn stroke_02}."
+        "No object of class {.cls data.frame} was passed to {.fn stroke_01}.",
+        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn stroke_01}."
       )
     )
     

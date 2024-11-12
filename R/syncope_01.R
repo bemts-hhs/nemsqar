@@ -1,24 +1,40 @@
-
-
+#' Title
+#'
+#' @param df 
+#' @param incident_date_col 
+#' @param patient_DOB_col 
+#' @param epatient_15_col 
+#' @param epatient_16_col 
+#' @param eresponse_05_col 
+#' @param esituation_09_col 
+#' @param esituation_10_col 
+#' @param esituation_11_col 
+#' @param esituation_12_col 
+#' @param evitals_04_col 
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
 syncope_01 <- function(df,
-                       erecord_01_col,
                        incident_date_col,
                        patient_DOB_col,
+                       epatient_15_col,
+                       epatient_16_col,
                        eresponse_05_col,
+                       esituation_09_col,
+                       esituation_10_col,
                        esituation_11_col,
                        esituation_12_col,
-                       evitals_23_col,
-                       evitals_26_col,
-                       evitals_29_col,
-                       evitals_30_col,
+                       evitals_04_col,
                        ...) {
   
   # provide better error messaging if df is missing
   if (missing(df)) {
     cli_abort(
       c(
-        "No object of class {.cls data.frame} was passed to {.fn stroke_02}.",
-        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn stroke_02}."
+        "No object of class {.cls data.frame} was passed to {.fn syncope_01}.",
+        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn syncope_01}."
       )
     )
     
@@ -50,37 +66,47 @@ syncope_01 <- function(df,
   }
   
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
+  # filter down the primary / other associated symptoms
   
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
   
   # primary and secondary provider impression values
-  syncope_pattern <- "R(55|40.4)"
+  syncope_pattern <- "R(55|40.4)|Syncope and collapse|Transient alteration of awareness"
   
-  # AVPU exclusion
-  avpu_pattern <- "3326007|Unresponsive"
+  # ECG pattern
+  ecg_pattern <- "12 Lead-Left Sided \\(Normal\\)|12 Lead-Right Sided|15 Lead|18 Lead"
   
-  # stroke score not values
+  # minor values
   
-  stroke_values <- "positive|negative|conclusive"
-  
-  # scale_values
-  
-  scale_values <- "F\\.A\\.S\\.T\\. Exam|Miami Emergency Neurologic Deficit \\(MEND\\)|Cincinnati|Other Stroke Scale Type|NIH|Los Angeles|RACE \\(Rapid Arterial Occlusion Evaluation\\)|Los Angeles Motor Score \\(LAMS\\)|Massachusetts"
-  
+  minor_values <- "days|hours|minutes|months"
+
   # filter the table to get the initial population regardless of age
-  initial_population_0 <- df |>
+  initial_population <- df |>
     
     # create the age in years variable
-    
-    mutate(
+    mutate(patient_age_in_years_col = as.numeric(difftime(
+      time1 = {{ incident_date_col }},
+      time2 = {{ patient_DOB_col }},
+      units = "days"
+    )) / 365,
       
-      # create the respiratory distress variable
-      stroke = if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
-        pattern = stroke_pattern,
+      # create the syncope variable using primary / associated symptoms
+      syncope1 = if_any(c({{esituation_09_col}}, {{esituation_10_col}}), ~ grepl(
+        pattern = syncope_pattern,
         x = .,
         ignore.case = T
       )),
+      
+      # create the syncope variable using primary / secondary impressions
+      syncope2 = if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
+        pattern = syncope_pattern,
+        x = .,
+        ignore.case = T
+      )),
+      
+      # final syncope variable
+      syncope = syncope1 | syncope2,
       
       # create the 911 variable
       call_911 = grepl(
@@ -89,65 +115,56 @@ syncope_01 <- function(df,
         ignore.case = T
       ),
       
-      # GCS > 9
-      gcs_greater_9 = {{evitals_23_col}} <= 9,
+      # create the ECG variable
+      ecg_present = if_else(grepl(pattern = ecg_pattern, x = {{evitals_04_col}}, ignore.case = T), 1, 0),
       
-      # AVPU not equal to Unresponsive
-      avpu_not_unresponsive = grepl(pattern = avpu_pattern, x = {{evitals_26_col}}, ignore.case = T)
-    ) |>
-    
-    dplyr::filter(
+      # system age check
+      system_age_adult = {{ epatient_15_col }} >= 18 & {{ epatient_16_col }} == "Years",
+      system_age_minor1 = {{ epatient_15_col }} < 18 & {{ epatient_16_col }} == "Years",
+      system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}),
+      system_age_minor = system_age_minor1 | system_age_minor2,
       
-      # Identify Records that have seizure documentation defined above
-      stroke,
-      
-      # filter down to 911 calls
-      call_911,
-      
-      # no GCS < 9 or AVPU not equal to Unresponsive 
-      !gcs_greater_9 | !avpu_not_unresponsive
-      
-    )
-  
-  # continue manipulations with a separate mutate() process
-  
-  initial_population <- initial_population_0 |> 
-    mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) |> 
-    
-    # tidy stroke scale data 
-    mutate({{evitals_29_col}} := str_c({{evitals_29_col}}, collapse = ", "),
-           {{evitals_30_col}} := str_c({{evitals_30_col}}, collapse = ", "),
-           .by = Unique_ID
+      # calculated age check
+      calc_age_adult = patient_age_in_years_col >= 18,
+      calc_age_minor = patient_age_in_years_col < 18
     ) |> 
-    
-    # remove columns that introduce row explosion
-    select(-c({{evitals_23_col}}, {{evitals_26_col}})) |> 
-    distinct(Unique_ID, .keep_all = T) |> 
-    
-    # create the numerator variable for stroke scales
-    mutate(stroke_scale1 = !is.na({{evitals_29_col}}) & grepl(pattern = stroke_values, x = {{evitals_29_col}}, ignore.case = T),
-           stroke_scale2 = !is.na({{evitals_30_col}}) & grepl(pattern = scale_values, x = {{evitals_30_col}}, ignore.case = T),
-           stroke_scale = if_else(stroke_scale1 | stroke_scale2, 1, 0)
-    )
+    filter(
+      
+      # only records with a syncope dx
+      syncope,
+      
+      # only 911 calls
+      call_911
+           )
+
+
+  # Adult and Pediatric Populations
   
-  # Initial population only
+  # filter adult
+  adult_pop <- initial_population |>
+    dplyr::filter(system_age_adult | calc_age_adult)
+  
+  # filter peds
+  peds_pop <- initial_population |>
+    dplyr::filter(system_age_minor | calc_age_minor)
   
   # get the summary of results
   
-  # all
-  total_population <- initial_population |>
-    summarize(
-      measure = "Stroke-02",
-      pop = "All",
-      numerator = sum(stroke_scale, na.rm = T),
-      denominator = n(),
-      prop = numerator / denominator,
-      prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
-      ...
-    )
+  # adults
+  adult_population <- adult_pop |>
+    summarize_measure(measure_name = "Syncope-01",
+                      population_name = "Adult",
+                      ecg_present,
+                      ...)
   
+  # peds
+  peds_population <- peds_pop |>
+    summarize_measure(measure_name = "Syncope-01",
+                      population_name = "Peds",
+                      ecg_present,
+                      ...)
   # summary
-  syncope.01 <- total_population
+  syncope.01 <- dplyr::bind_rows(adult_population, peds_population)
   
   syncope.01
   
@@ -156,7 +173,20 @@ syncope_01 <- function(df,
 syncope_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/syncope01_Export.csv") |> 
   clean_names(case = "screaming_snake", sep_out = "_")
 
-stroke_01_clean <- stroke_01_data |> 
+syncope_01_clean <- syncope_01_data |> 
   mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
     str_remove_all(string = ., pattern = "\\s\\d+:\\d+(:\\d+)?(\\s(AM|PM))?")
   )))
+
+syncope_01_clean |> 
+  syncope_01(incident_date_col = INCIDENT_DATE,
+             patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+             eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+             epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+             epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+             esituation_09_col = SITUATION_PRIMARY_SYMPTOM_E_SITUATION_09,
+             esituation_10_col = SITUATION_OTHER_ASSOCIATED_SYMPTOMS_LIST_E_SITUATION_10,
+             esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
+             esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
+             evitals_04_col = PATIENT_ECG_TYPE_LIST_E_VITALS_04
+             )
