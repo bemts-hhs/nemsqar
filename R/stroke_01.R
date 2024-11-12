@@ -228,15 +228,11 @@ stroke_01 <- function(df,
   
   # all
   total_population <- initial_population |>
-    summarize(
-      measure = "Stroke-02",
-      pop = "All",
-      numerator = sum(stroke_scale, na.rm = T),
-      denominator = n(),
-      prop = numerator / denominator,
-      prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
-      ...
-    )
+    summarize_measure(measure_name = "Stroke-01",
+                      population_name = "All",
+                      numerator_col = stroke_scale,
+                      ...
+                      )
   
   # summary
   stroke.01 <- total_population

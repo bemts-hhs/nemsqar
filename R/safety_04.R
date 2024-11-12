@@ -265,13 +265,10 @@ safety_04 <- function(df,
   
   # peds
   peds_population <- peds_pop |>
-    summarize(
-      measure = "Safety-04",
-      pop = "Peds",
-      numerator = sum(car_seat_check, na.rm = T),
-      denominator = n(),
-      prop = numerator / denominator,
-      prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
+    summarize_measure(
+      measure_name = "Safety-04",
+      population_name = "Peds",
+      numerator_col = sum(car_seat_check, na.rm = T),
       ...
     )
   

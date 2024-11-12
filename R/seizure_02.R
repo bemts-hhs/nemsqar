@@ -205,37 +205,28 @@ seizure_02 <- function(df,
   
   # all
   total_population <- initial_population |>
-    summarize(
-      measure = "Seizure-02",
-      pop = "All",
-      numerator = sum(meds_check, na.rm = T),
-      denominator = n(),
-      prop = numerator / denominator,
-      prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
+    summarize_measure(
+      measure_name = "Seizure-02",
+      population_name = "All",
+      numerator_col = meds_check,
       ...
     )
   
   # adults
   adult_population <- adult_pop |>
-    summarize(
-      measure = "Seizure-02",
-      pop = "Adults",
-      numerator = sum(meds_check, na.rm = T),
-      denominator = n(),
-      prop = numerator / denominator,
-      prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
+    summarize_measure(
+      measure_name = "Seizure-02",
+      population_name = "Adults",
+      numerator_col = meds_check,
       ...
     )
   
   # peds
   peds_population <- peds_pop |>
-    summarize(
-      measure = "Seizure-02",
-      pop = "Peds",
-      numerator = sum(meds_check, na.rm = T),
-      denominator = n(),
-      prop = numerator / denominator,
-      prop_label = pretty_percent(numerator / denominator, n_decimal = 0.01),
+    summarize_measure(
+      measure_name = "Seizure-02",
+      population_name = "Peds",
+      numerator_col = meds_check,
       ...
     )
   
