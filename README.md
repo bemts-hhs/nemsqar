@@ -140,6 +140,12 @@ access.
   - contact: nicolas.foss at hhs.iowa.gov
   - work: Epidemiologist at Bureau of Emergency Medical and Trauma
     Services \> Iowa HHS
+- [Samuel Kordik, BBA, BS,
+  NREMT](https://www.linkedin.com/in/samuelkordik)
+  - contributions: maintainer, code
+  - contact: samuel.kordik at utsouthwestern.edu
+  - work: Quality Manager Dallas Fire-Rescue Office of the Medical
+    Director
 - [Peter Geissert, MPH,
   MS](https://www.linkedin.com/in/peter-geissert-ba7607ba)
   - contributions: nemsqar project conceptualization, code
@@ -151,12 +157,6 @@ access.
   - contributions: code
   - contact: awhim at nemsqa.org
   - work: Project Coordinator National EMS Quality Alliance (NEMSQA)
-- [Samuel Kordik, BBA, BS,
-  NREMT](https://www.linkedin.com/in/samuelkordik)
-  - contributions: maintainer, code
-  - contact: samuel.kordik at utsouthwestern.edu
-  - work: Quality Manager Dallas Fire-Rescue Office of the Medical
-    Director
 
 # Thanks!
 
