@@ -92,8 +92,8 @@ after creating a free user profile.
 | Safety-01 | Percentage of EMS responses from a 911 request without lights and sirens. | Process | Patient Safety | ✔️ |
 | Safety-02 | Percentage of EMS transports from a 911 request without lights and sirens during patient transport. | Process | Patient Safety | ✔️ |
 | Safety-04 | Percentage of EMS transports from a 911 or interfacility request for patients \<8 years transported with a pediatric restraint device. | Process | Patient Safety | ✔️ |
-| Seizure-02 | Percentage of EMS responses from a 911 request for patients with status epilepticus who received benzodiazepine. | Process | Clinical Process – Effectiveness | 🔧 |
-| Stroke-01 | Percentage of EMS responses from a 911 request for suspected stroke patients who had a stroke assessment. | Process | Clinical Process – Effectiveness | 🔧 |
+| Seizure-02 | Percentage of EMS responses from a 911 request for patients with status epilepticus who received benzodiazepine. | Process | Clinical Process – Effectiveness | ✔️ |
+| Stroke-01 | Percentage of EMS responses from a 911 request for suspected stroke patients who had a stroke assessment. | Process | Clinical Process – Effectiveness | ✔️ |
 | Syncope-01 | Percentage of EMS responses from a 911 request for syncope patients with a 12-lead (or greater) ECG performed. | Process | Clinical Process – Effectiveness | :wrench: |
 | TBI-01 | Percentage of EMS transports from a 911 request for suspected TBI patients with documented oxygen level, ETCO2, and systolic BP. | Process | Clinical Process – Effectiveness | :wrench: |
 | Trauma-01 | Percentage of EMS responses from a 911 request for injury patients assessed for pain. | Process | Patient Experience | 🔧 |
