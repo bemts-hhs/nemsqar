@@ -218,24 +218,3 @@ syncope_01 <- function(df,
   syncope.01
   
 }
-
-syncope_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/syncope01_Export_2023.csv") |> 
-  clean_names(case = "screaming_snake", sep_out = "_")
-
-syncope_01_clean <- syncope_01_data |> 
-  mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
-    str_remove_all(string = ., pattern = "\\s\\d+:\\d+(:\\d+)?(\\s(AM|PM))?")
-  )))
-
-syncope_01_clean |> 
-  syncope_01(incident_date_col = INCIDENT_DATE,
-             patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
-             eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
-             epatient_15_col = PATIENT_AGE_E_PATIENT_15,
-             epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
-             esituation_09_col = SITUATION_PRIMARY_SYMPTOM_E_SITUATION_09,
-             esituation_10_col = SITUATION_OTHER_ASSOCIATED_SYMPTOMS_LIST_E_SITUATION_10,
-             esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
-             esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
-             evitals_04_col = PATIENT_ECG_TYPE_LIST_E_VITALS_04
-             )
