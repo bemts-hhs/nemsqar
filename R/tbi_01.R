@@ -1,3 +1,26 @@
+#' Title
+#'
+#' @param df 
+#' @param erecord_01_col 
+#' @param incident_date_col 
+#' @param patient_DOB_col 
+#' @param epatient_15_col 
+#' @param epatient_16_col 
+#' @param eresponse_05_col 
+#' @param esituation_11_col 
+#' @param esituation_12_col 
+#' @param evitals_23_col 
+#' @param evitals_26_col 
+#' @param transport_disposition_cols 
+#' @param evitals_12_col 
+#' @param evitals_16_col 
+#' @param evitals_06_col 
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
+#' @examples
 tbi_01 <- function(df,
                    erecord_01_col,
                    incident_date_col,
@@ -14,14 +37,15 @@ tbi_01 <- function(df,
                    evitals_16_col,
                    evitals_06_col,
                    ...
-) {
+                   ) 
+{
   
   # provide better error messaging if df is missing
   if (missing(df)) {
     cli::cli_abort(
       c(
-        "No object of class {.cls data.frame} was passed to {.fn respiratory_01}.",
-        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn respiratory_01}."
+        "No object of class {.cls data.frame} was passed to {.fn tbi_01}.",
+        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn tbi_01}."
       )
     )
   }
@@ -55,14 +79,18 @@ tbi_01 <- function(df,
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
   
-  # patient evaluation care
-  patient_care <- "4228001|Patient Evaluated and Care Provided"
+  # avpu not values
+  avpu_values <- "3326003|3326005|3326007|Verbal|Painful|Unresponsive"
+  
+  # TBI injuries
+  tbi_injuries <- "S02|S04.4|S06|S06.X9|S06.0|S07.1|S09.90|T74.4"
   
   # define transports
   transport_responses <- "Transport by This EMS Unit \\(This Crew Only\\)|Transport by This EMS Unit, with a Member of Another Crew|Transport by Another EMS Unit, with a Member of This Crew|Patient Treated, Transported by this EMS Unit|Patient Treated, Transported with this EMS Crew in Another Vehicle|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Mutual Aid Tx & Transport|4212033|4230001|4230003|4230007|itDisposition\\.112\\.116|it4212\\.142|itDisposition\\.112\\.165|itDisposition\\.112\\.141|Treat / Transport BLS by this unit|itDisposition\\.112\\.142"
   
-  # get codes as a regex to find lights and siren responses
-  no_lights_and_sirens <- "4218015|No Lights or Sirens"
+  # minor values
+  
+  minor_values <- "days|hours|minutes|months"
   
   # filter the table to get the initial population regardless of age
   initial_population_0 <- df |>
@@ -92,37 +120,59 @@ tbi_01 <- function(df,
         ignore.case = T
       ),
       
-      # no lights and sirens check
-      no_ls_check = dplyr::if_else(grepl(pattern = no_lights_and_sirens, x = {{ edisposition_18_col }}), 1, 0),
+      # TBI variable
+      TBI = if_else(if_any(c({{ esituation_11_col }}, {{ esituation_12_col }}), ~ grepl(
+        pattern = tbi_injuries,
+        x = .,
+        ignore.case = T
+      )), TRUE, FALSE), 
       
-      # patient evaluation care provided
-      patient_care_provided = grepl(pattern = patient_care, x = {{ edisposition_28_col }}, ignore.case = T),
+      # GCS check
+      GCS_check = {{ evitals_23_col }} < 15,
+      
+      # AVPU check
+      AVPU_check = grepl(pattern = avpu_values, x = {{ evitals_26_col }}, ignore.case = T),
+      
+      # AVPU or GCS check,
+      AVPU_or_GCS = (GCS_check | AVPU_check),
       
       # system age check
       system_age_adult = {{ epatient_15_col }} >= 18 & {{ epatient_16_col }} == "Years",
-      system_age_minor1 = ({{ epatient_15_col }} >= 2 & {{ epatient_15_col }} < 18) & {{ epatient_16_col }} == "Years",
-      system_age_minor2 = {{ epatient_15_col }} >= 24 & {{ epatient_16_col }} == "Months",
+      system_age_minor1 = {{ epatient_15_col }} < 18 & {{ epatient_16_col }} == "Years",
+      system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
       system_age_minor = system_age_minor1 | system_age_minor2,
       
       # calculated age check
       calc_age_adult = patient_age_in_years_col >= 18,
-      calc_age_minor = patient_age_in_years_col < 18 & patient_age_in_years_col >= 2
+      calc_age_minor = patient_age_in_years_col < 18
     )
   
   # get the initial population
   initial_population <- initial_population_0 |>
     dplyr::filter(
       
-      # filter down to 911 calls
-      call_911,
+      # filter down GCS < 15 or AVPU < Alert
+      AVPU_or_GCS & 
       
-      # patient evaluated and care provided only
-      patient_care_provided,
+      # TBI Dx only
+      TBI & 
       
-      # NEMSIS 3.5 transports only
-      transport
-    )
-  
+      # 911 calls only
+      # NEMSIS 3.4/3.5 transports only
+      (call_911 & transport)
+      
+    ) |> 
+    
+    dplyr::select(-c({{ evitals_23_col }}, {{ evitals_26_col }}, {{ transport_disposition_cols }})) |> 
+    mutate(Unique_ID = str_c({{ erecord_01_col }}, {{ incident_date_col }}, {{ patient_DOB_col }}, sep = "-")) |> 
+    mutate(
+           across(c({{ evitals_12_col }}, {{ evitals_16_col }}, {{ evitals_06_col }}), ~ str_c(., collapse = ", ")),
+           .by = Unique_ID) |> 
+    distinct({{ erecord_01_col }}, .keep_all = T) |> 
+    mutate(
+           vitals_check = if_all(c({{ evitals_12_col }}, {{ evitals_16_col }}, {{ evitals_06_col }}), ~ !is.na(.)),
+      )
+
   # Adult and Pediatric Populations
   
   # filter adult
@@ -135,32 +185,23 @@ tbi_01 <- function(df,
   
   # get the summary of results
   
-  # all
-  total_population <- initial_population |>
-    summarize_measure(measure_name = "Safety-02",
-                      population_name = "All",
-                      no_ls_check,
-                      ...)
-  
   # adults
   adult_population <- adult_pop |>
-    summarize_measure(measure_name = "Safety-02",
+    summarize_measure(measure_name = "TBI-01",
                       population_name = "Adults",
-                      no_ls_check,
+                      vitals_check,
                       ...)
   
   # peds
   peds_population <- peds_pop |>
-    summarize_measure(measure_name = "Safety-02",
+    summarize_measure(measure_name = "TBI-01",
                       population_name = "Peds",
-                      no_ls_check,
+                      vitals_check,
                       ...)
   
   # summary
-  tbi.01 <- dplyr::bind_rows(adult_population, peds_population, total_population)
+  tbi.01 <- dplyr::bind_rows(adult_population, peds_population)
   
   tbi.01
-}
-
   
 }
