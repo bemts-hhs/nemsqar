@@ -135,7 +135,7 @@ access.
 
 # Contributors
 
-- [Nicolas Foss, Ed.D., MS](https://github.com/nicolasfoss);
+- [Nicolas Foss, Ed.D., MS](nicolas.foss@hhs.iowa.gov);
   - contributions: maintainer, code
   - contact: nicolas.foss at hhs.iowa.gov
   - work: Epidemiologist at Bureau of Emergency Medical and Trauma
