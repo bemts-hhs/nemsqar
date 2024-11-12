@@ -2,7 +2,7 @@
 #'
 #' The `safety_04` function processes EMS incident data for specific safety and transport criteria, filtering by patient age and incident type to identify cases that meet specified exclusion or inclusion criteria. This function accommodates data with various EMS-specific codes, age descriptors, and procedure identifiers.
 #' 
-#' #' @section Data Assumptions:
+#' @section Data Assumptions:
 #' 
 #' This function assumes that:
 #' 
@@ -40,16 +40,14 @@
 #' the function; any necessary joins (e.g., to incorporate vitals or additional fields) should
 #' be completed prior to calling this function.
 #' 
-#' Grouping by specific attributes (e.g., region) can be performed before invoking this function,
-#' allowing region-specific calculations to be carried out.
-
+#' Grouping by specific attributes (e.g., region) can be performed inside this function by
+#' utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
+#'
 #' @section Practical Tips:
 #' 
 #' Ensure data are pre-processed, with missing values coded as `NA`, before passing
 #' into the function.
 #' Prepare necessary joins (e.g., for vitals) in advance; this function does not perform joins.
-#' Consider grouping by relevant variables before running this function if calculations
-#' by subgroup (e.g., by region) are needed.
 #' 
 #' @section Value:
 #' 

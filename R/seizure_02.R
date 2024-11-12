@@ -1,4 +1,4 @@
-#' Seizure-02 
+#' @title Seizure-02:
 #'
 #' Calculates the NEMSQA Seizure-02 Measure.
 #' 
@@ -44,7 +44,7 @@
 #'
 #' Grouping for specific calculations (e.g., by region) can be done within the function.
 #' 
-#' @section Practical Tips
+#' @section Practical Tips:
 #' 
 #' The first argument is the data.frame prepared as above. No joining is done.
 #' Any joins to get specific data elements will need to be done outside of this function.
@@ -66,7 +66,7 @@
 #' or string with comma-separated values.
 #' @param ... Additional arguments passed to `dplyr::summarize`.
 #'
-#' @return A data.frame summarizing results for three population groups (All,
+#' @return A tibble summarizing results for three population groups (All,
 #' Adults, and Peds) with the following columns:
 #' `pop`: Population type (All, Adults, or Peds).
 #' `numerator`: Count of incidents where beta-agonist medications were administered.
