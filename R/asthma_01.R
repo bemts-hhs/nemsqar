@@ -11,7 +11,7 @@
 #' @section Data Assumptions:
 #'
 #' This function assumes that:
-#' Data are already loaded. The data needs to be a dataframe where each row is
+#' Data are already loaded. The data needs to be a data.frame or tibble where each row is
 #' one observation (patient) and each is a feature (field) or distinct datasets
 #' that can be references as unique columns.
 #'
@@ -38,8 +38,6 @@
 #'
 #' The first argument is the dataframe prepared as above. No joining is done.
 #' Any joins to get vitals, etc. will need to be done outside of this function.
-#' Grouping can be done before the function to get the calculations by region or
-#' other groupings.
 #'
 #' @section Features:
 #' * Filters for asthma-related incidents (ICD-10 codes starting with 'J45' and
@@ -49,7 +47,7 @@
 #' Formats proportions as percentages with customizable decimal precision.
 #'
 #' @section Value:
-#' A summarized data.frame with counts and proportions of beta-agonist treatment
+#' A summarized tibble with counts and proportions of beta-agonist treatment
 #' among 911 respiratory distress calls, segmented by population group.
 #'
 #' @param df A data.frame or tibble containing EMS data where each row represents
