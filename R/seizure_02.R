@@ -1,4 +1,4 @@
-#' @title Seizure-02:
+#' Seizure-02:
 #'
 #' Calculates the NEMSQA Seizure-02 Measure.
 #' 

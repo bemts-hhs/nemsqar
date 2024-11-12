@@ -2,7 +2,7 @@
 % Please edit documentation in R/stroke_01.R
 \name{stroke_01}
 \alias{stroke_01}
-\title{Stroke-01}
+\title{Stroke-01:}
 \usage{
 stroke_01(
   df,

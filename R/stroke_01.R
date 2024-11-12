@@ -1,4 +1,4 @@
-#' @title Stroke-01:
+#' Stroke-01:
 #' 
 #' The `stroke_01` function processes EMS dataset to identify potential stroke cases based on specific criteria
 #' and calculates the stroke scale measures. It filters the data for 911 response calls, identifies stroke-related

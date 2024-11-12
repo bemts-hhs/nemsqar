@@ -2,7 +2,7 @@
 % Please edit documentation in R/seizure_02.R
 \name{seizure_02}
 \alias{seizure_02}
-\title{Seizure-02}
+\title{Seizure-02:}
 \usage{
 seizure_02(
   df,
@@ -41,7 +41,7 @@ or string with comma-separated values.}
 \item{...}{Additional arguments passed to \code{dplyr::summarize}.}
 }
 \value{
-A data.frame summarizing results for three population groups (All,
+A tibble summarizing results for three population groups (All,
 Adults, and Peds) with the following columns:
 \code{pop}: Population type (All, Adults, or Peds).
 \code{numerator}: Count of incidents where beta-agonist medications were administered.
@@ -96,6 +96,13 @@ incorporate additional data (e.g., vitals) must be conducted prior to calling
 this function.
 
 Grouping for specific calculations (e.g., by region) can be done within the function.
+}
+
+\section{Practical Tips}{
+
+
+The first argument is the data.frame prepared as above. No joining is done.
+Any joins to get specific data elements will need to be done outside of this function.
 }
 
 \section{Value}{
