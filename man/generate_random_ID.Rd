@@ -27,6 +27,13 @@ The \code{generate_random_ID} function generates a specified number of random ID
 Each ID consists of 10 randomly chosen upper/lower case letters followed by a
 10-digit random number. Optionally, a seed can be set for reproducibility.
 }
+\section{Credit}{
+
+
+This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
+Services, Division of Public Health, Iowa HHS.
+}
+
 \examples{
 # Generate 5 random IDs with a seed for reproducibility
 random_ids <- generate_random_ID(5, set_seed = 42)

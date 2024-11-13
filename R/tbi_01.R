@@ -1,25 +1,54 @@
-#' Title
+#' TBI Screening Function
 #'
-#' @param df 
-#' @param erecord_01_col 
-#' @param incident_date_col 
-#' @param patient_DOB_col 
-#' @param epatient_15_col 
-#' @param epatient_16_col 
-#' @param eresponse_05_col 
-#' @param esituation_11_col 
-#' @param esituation_12_col 
-#' @param evitals_23_col 
-#' @param evitals_26_col 
-#' @param transport_disposition_col 
-#' @param evitals_12_col 
-#' @param evitals_16_col 
-#' @param evitals_06_col 
-#' @param ... 
+#' This function screens for potential traumatic brain injury (TBI) cases based on specific criteria
+#' in a patient dataset. It produces a subset of the data with calculated variables for TBI identification.
 #'
-#' @return
+#' @param df A data frame or tibble containing the patient data.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with the patient’s unique record ID.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with the incident date.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with the patient's date of birth.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with the patient’s age value.
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with the patient’s age unit (e.g., years, months).
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with response codes for the type of EMS call.
+#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with the primary provider impression.
+#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with the secondary provider impression.
+#' @param evitals_23_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with Glasgow Coma Scale (GCS) scores.
+#' @param evitals_26_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with AVPU (alert, verbal, painful, unresponsive) values.
+#' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with the transport disposition.
+#' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with pulse oximetry values.
+#' @param evitals_16_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with ETCO2 values.
+#' @param evitals_06_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with systolic blood pressure (SBP) values.
+#' @param ... Additional parameters passed to \code{\link[dplyr]{mutate}} or other dplyr functions.
+#'
+#' @return A tibble summarizing results for three population groups (Adults, and Peds) with the following columns:
+#' 
+#' `pop`: Population type (Adults, Peds).
+#' `numerator`: Count of incidents where beta-agonist medications were administered.
+#' `denominator`: Total count of incidents.
+#' `prop`: Proportion of incidents involving beta-agonist medications.
+#' `prop_label`: Proportion formatted as a percentage with a specified number of
+#' decimal places.
+#'
+#' @details
+#' The function performs data screening and processing to identify potential TBI cases by applying the following steps:
+#' - Ensures required columns are present and correctly formatted (e.g., date columns).
+#' - Creates unique IDs based on patient identifiers and incident dates.
+#' - Filters and selects patients who meet criteria for TBI indicators (e.g., Glasgow Coma Scale < 15, specific AVPU values, and TBI injury codes).
+#' - Generates derived variables for age classification, system-calculated age check, and other indicators.
+#' - Returns a filtered data frame suitable for TBI case identification.
+#'
+#' @note
+#' This function relies on columns formatted as \code{Date} or \code{POSIXct} for dates and expects numeric or categorical 
+#' values for other health indicators.
+#'
+#' @importFrom dplyr mutate select filter distinct pull arrange if_else
+#' @importFrom rlang enquo as_name
+#' @importFrom tidyr replace_na
+#' @importFrom cli cli_abort
+#' @importFrom lubridate is.Date is.POSIXct
+#' 
 #' @export
-#'
+#' 
 tbi_01 <- function(df,
                    erecord_01_col,
                    incident_date_col,

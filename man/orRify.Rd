@@ -22,6 +22,13 @@ equire an "or" condition between elements.
 The function assumes the input vector has at least one element; if the vector
 is empty, it will return an empty string.
 }
+\section{Credit}{
+
+
+This function was developed by (Peter Geissert, MPH)\link{https://www.linkedin.com/in/peter-geissert-ba7607ba} at Oregon EMS &
+Trauma Systems, Public Health Division.
+}
+
 \examples{
 terms <- c("apple", "banana", "cherry")
 orRified_terms <- orRify(terms)

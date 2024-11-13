@@ -62,3 +62,10 @@ This function assumes that:
 }
 }
 
+\section{Credit}{
+
+
+This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
+Services, Division of Public Health, Iowa HHS.
+}
+

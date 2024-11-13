@@ -24,6 +24,13 @@ indicating the absence of each element.
 The operator \verb{\%not_in\%} is a user-friendly alternative to the standard negation
 of the \%in\% operator.
 }
+\section{Credit}{
+
+
+This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
+Services, Division of Public Health, Iowa HHS.
+}
+
 \examples{
 x <- c(1, 2, 3, 4)
 y <- c(2, 4, 6)

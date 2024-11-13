@@ -91,3 +91,10 @@ utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code
 }
 }
 
+\section{Credit}{
+
+
+This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
+Services, Division of Public Health, Iowa HHS.
+}
+

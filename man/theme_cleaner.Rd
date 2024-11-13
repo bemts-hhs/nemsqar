@@ -4,14 +4,68 @@
 \alias{theme_cleaner}
 \title{Theme Cleaner}
 \usage{
-theme_cleaner(...)
+theme_cleaner(
+  base_size = 12,
+  base_family = "Work Sans",
+  base_color = "#70C8B8",
+  base_color_title = "#03617A",
+  title_text_size = ceiling(base_size * 1.1),
+  subtitle_text_size = ceiling(base_size * 1.05),
+  caption_color = "#19405B",
+  legend_position = "top",
+  vjust_title = 0,
+  vjust_subtitle = 0,
+  hjust_title = 0,
+  hjust_subtitle = 0,
+  axis_lines = FALSE,
+  facets = FALSE,
+  draw_panel_border = FALSE,
+  ...
+)
 }
 \arguments{
-\item{...}{Passed on to theme_clean()}
+\item{base_size}{Numeric. Default font size for plot elements.}
+
+\item{base_family}{Character. Font family used for text in the plot.}
+
+\item{base_color}{Character. Hex color code for primary plot elements.}
+
+\item{base_color_title}{Character. Hex color code for plot title and legend title.}
+
+\item{title_text_size}{Numeric. Font size for plot title text.}
+
+\item{subtitle_text_size}{Numeric. Font size for plot subtitle text.}
+
+\item{caption_color}{Character. Hex color code for plot caption text.}
+
+\item{legend_position}{Character. Legend position on the plot (e.g., "top", "bottom", "left", or "right").}
+
+\item{vjust_title}{Numeric. Vertical justification of the plot title.}
+
+\item{vjust_subtitle}{Numeric. Vertical justification of the plot subtitle.}
+
+\item{hjust_title}{Numeric. Horizontal justification of the plot title.}
+
+\item{hjust_subtitle}{Numeric. Horizontal justification of the plot subtitle.}
+
+\item{axis_lines}{Logical. If TRUE, axis lines are drawn in \code{base_color}; otherwise, they are hidden.}
+
+\item{facets}{Logical. If TRUE, formatting for facet plots is applied.}
+
+\item{draw_panel_border}{Logical. If TRUE, a border is drawn around panels in facet plots.}
+
+\item{...}{Additional arguments passed to \code{ggplot2::theme} for further customization.}
 }
 \value{
-ggplot2 theme.
+A \code{ggplot2} theme object.
 }
 \description{
-Temporary Theme for theme_cleaner function
+A customizable ggplot2 theme function for creating polished and minimalistic plots. The \code{theme_cleaner} function offers flexible options to control various plot elements, including font styles, sizes, colors, alignment, and the visibility of axes and grid lines.
 }
+\section{Credit}{
+
+
+This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
+Services, Division of Public Health, Iowa HHS.
+}
+

@@ -22,6 +22,13 @@ The function utilizes the percent function from the scales package to format
 the input as a percentage.It removes trailing zeros after the decimal point
 and simplifies formatting by eliminating unnecessary characters.
 }
+\section{Credit}{
+
+
+This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
+Services, Division of Public Health, Iowa HHS.
+}
+
 \examples{
 numerator <- c(7.5, 20.0, 0.3333, 100.0, 15.75, 0.005, 150.0)
 denominator <- c(100.0, 100.0, 1.0, 100.0, 100.0, 0.1, 300.0)
