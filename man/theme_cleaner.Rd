@@ -53,6 +53,8 @@ theme_cleaner(
 
 \item{facets}{Logical. If TRUE, formatting for facet plots is applied.}
 
+\item{facet_text_size}{Numeric. If facets = TRUE, size formatting for strip.text is applied.}
+
 \item{draw_panel_border}{Logical. If TRUE, a border is drawn around panels in facet plots.}
 
 \item{...}{Additional arguments passed to \code{ggplot2::theme} for further customization.}

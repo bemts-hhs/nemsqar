@@ -16,6 +16,7 @@
 #' @param hjust_subtitle Numeric. Horizontal justification of the plot subtitle.
 #' @param axis_lines Logical. If TRUE, axis lines are drawn in `base_color`; otherwise, they are hidden.
 #' @param facets Logical. If TRUE, formatting for facet plots is applied.
+#' @param facet_text_size Numeric. If facets = TRUE, size formatting for strip.text is applied.
 #' @param draw_panel_border Logical. If TRUE, a border is drawn around panels in facet plots.
 #' @param ... Additional arguments passed to `ggplot2::theme` for further customization.
 #'
