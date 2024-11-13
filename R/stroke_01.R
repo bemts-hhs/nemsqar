@@ -209,7 +209,9 @@ stroke_01 <- function(df,
   # continue manipulations with a separate mutate() process
   
   initial_population <- initial_population_0 |> 
-    mutate(Unique_ID = str_c({{erecord_01_col}}, {{incident_date_col}}, {{patient_DOB_col}}, sep = "-")) |> 
+    mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-09-01")),
+           PATIENT_DOB_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-05-01")),
+           Unique_ID = stringr::str_c({{erecord_01_col}}, INCIDENT_DATE_MISSING, PATIENT_DOB_MISSING, sep = "-")) |> 
     
     # tidy stroke scale data 
     mutate({{evitals_29_col}} := str_c({{evitals_29_col}}, collapse = ", "),

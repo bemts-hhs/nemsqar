@@ -149,7 +149,9 @@ respiratory_01 <- function(df,
     # check to see if target vitals were captured
     dplyr::mutate(vitals_check = dplyr::if_else(!is.na({{ evitals_12_col }}) &
       !is.na({{ evitals_14_col }}), 1, 0)) |>
-    dplyr::mutate(Unique_ID = stringr::str_c({{ erecord_01_col }}, {{ incident_date_col }}, {{ patient_DOB_col }}, sep = "-")) |>
+    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-09-01")),
+                  PATIENT_DOB_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-05-01")),
+                  Unique_ID = stringr::str_c({{erecord_01_col}}, INCIDENT_DATE_MISSING, PATIENT_DOB_MISSING, sep = "-")) |>
     dplyr::distinct(Unique_ID, .keep_all = T)
 
   # Adult and Pediatric Populations

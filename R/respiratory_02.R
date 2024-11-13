@@ -160,7 +160,9 @@ respiratory_02 <- function(df,
       # 911 calls
       call_911
     ) |>
-    dplyr::mutate(Unique_ID = str_c({{ erecord_01_col }}, {{ incident_date_col }}, {{ patient_DOB_col }}, sep = "-")) |>
+    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-09-01")),
+                  PATIENT_DOB_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-05-01")),
+                  Unique_ID = stringr::str_c({{erecord_01_col}}, INCIDENT_DATE_MISSING, PATIENT_DOB_MISSING, sep = "-")) |>
     dplyr::distinct(Unique_ID, .keep_all = T) # this will ensure each row is an observation, and each column is a feature
 
   # get population 1 for respiratory-02, peds

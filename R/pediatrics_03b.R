@@ -168,7 +168,9 @@ pediatrics_03b <- function(df,
   # second filtering process, make the table distinct by rolling up emedications.04
   # based on a unique identifier
   initial_population <- initial_population_1 |>
-    dplyr::mutate(Unique_ID = stringr::str_c({{ erecord_01_col }}, {{ incident_date_col }}, {{ patient_DOB_col }}, sep = "-")) |>
+    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-09-01")),
+                  PATIENT_DOB_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-05-01")),
+                  Unique_ID = stringr::str_c({{erecord_01_col}}, INCIDENT_DATE_MISSING, PATIENT_DOB_MISSING, sep = "-")) |>
     dplyr::distinct(Unique_ID, .keep_all = T)
 
   # get the summary of results, already filtered down to the target age group for the measure
