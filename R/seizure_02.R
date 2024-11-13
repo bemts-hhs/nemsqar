@@ -138,7 +138,7 @@ seizure_02 <- function(df,
   codes_911 <- "2205001|2205003|2205009"
   
   # get codes as a regex to filter primary/secondary impression fields
-  epilepsy_pattern <- "epilepsy.*?with status epilepticus|G40\\.\\d{1,3}"
+  epilepsy_pattern <- "epilepsy.*?with status epilepticus|\\b(?:G40\\.\\d{1,3})\\b"
   
   # medication values for seizure_02
   

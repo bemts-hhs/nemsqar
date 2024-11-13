@@ -11,7 +11,7 @@
 #' @param esituation_12_col 
 #' @param evitals_23_col 
 #' @param evitals_26_col 
-#' @param transport_disposition_cols 
+#' @param transport_disposition_col 
 #' @param evitals_12_col 
 #' @param evitals_16_col 
 #' @param evitals_06_col 
@@ -31,7 +31,7 @@ tbi_01 <- function(df,
                    esituation_12_col,
                    evitals_23_col,
                    evitals_26_col,
-                   transport_disposition_cols,
+                   transport_disposition_col,
                    evitals_12_col,
                    evitals_16_col,
                    evitals_06_col,
@@ -82,7 +82,7 @@ tbi_01 <- function(df,
   avpu_values <- "3326003|3326005|3326007|Verbal|Painful|Unresponsive"
   
   # TBI injuries
-  tbi_injuries <- "S02|S04.4|S06|S06.X9|S06.0|S07.1|S09.90|T74.4"
+  tbi_injuries <- "\\b(?:S02|S04\\.4|S06|S06\\.X9|S06\\.0|S07\\.1|S09\\.90|T74\\.4)\\b"
   
   # define transports
   transport_responses <- "Transport by This EMS Unit \\(This Crew Only\\)|Transport by This EMS Unit, with a Member of Another Crew|Transport by Another EMS Unit, with a Member of This Crew|Patient Treated, Transported by this EMS Unit|Patient Treated, Transported with this EMS Crew in Another Vehicle|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Mutual Aid Tx & Transport|4212033|4230001|4230003|4230007|itDisposition\\.112\\.116|it4212\\.142|itDisposition\\.112\\.165|itDisposition\\.112\\.141|Treat / Transport BLS by this unit|itDisposition\\.112\\.142"
@@ -91,194 +91,205 @@ tbi_01 <- function(df,
   
   minor_values <- "days|hours|minutes|months"
   
-  # filter the table to get the initial population regardless of age
-  initial_population_0 <- df |>
-    # create the age in years variable
-    
-    dplyr::mutate(
-      patient_age_in_years_col = as.numeric(difftime(
+  ###_____________________________________________________________________________
+  # from the full dataframe with all variables
+  # create one fact table and several dimension tables
+  # to complete calculations and avoid issues due to row
+  # explosion
+  ###_____________________________________________________________________________
+  
+  core_data <- df |> 
+  dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, base::as.Date("1984-09-09")),
+         PATIENT_DOB_MISSING = tidyr::replace_na({{ patient_DOB_col }}, base::as.Date("1982-05-19")),
+         Unique_ID = stringr::str_c({{ erecord_01_col }},
+                           INCIDENT_DATE_MISSING,
+                           PATIENT_DOB_MISSING, 
+                           sep = "-"
+         ))
+
+# fact table
+# the user should ensure that variables beyond those supplied for calculations
+# are distinct (i.e. one value or cell per patient)
+
+final_data <- core_data |> 
+  dplyr::select(-c({{ eresponse_05_col }}, 
+                   {{ evitals_23_col }},
+                   {{ evitals_26_col }},
+                   {{ esituation_11_col }},
+                   {{ esituation_12_col }},
+                   {{ transport_disposition_col }},
+                   {{ evitals_12_col }},
+                   {{ evitals_16_col }},
+                   {{ evitals_06_col }}
+  )) |> 
+  dplyr::distinct(Unique_ID, .keep_all = T) |> 
+  dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
         time1 = {{ incident_date_col }},
         time2 = {{ patient_DOB_col }},
         units = "days"
       )) / 365,
       
-      # transport variable
-      transport = dplyr::if_else(dplyr::if_any(
-        c({{ transport_disposition_cols }}),
-        ~ grepl(
-          pattern = transport_responses,
-          x = .,
-          ignore.case = T
-        )
-      ), TRUE, FALSE),
-      
-      # 911 variable
-      call_911 = grepl(
-        pattern = codes_911,
-        x = {{ eresponse_05_col }},
-        ignore.case = T
-      ),
-      
-      # TBI variable
-      TBI = if_else(if_any(c({{ esituation_11_col }}, {{ esituation_12_col }}), ~ grepl(
-        pattern = tbi_injuries,
-        x = .,
-        ignore.case = T
-      )), TRUE, FALSE), 
-      
-      # GCS check
-      GCS_check = {{ evitals_23_col }} < 15,
-      
-      # AVPU check
-      AVPU_check = grepl(pattern = avpu_values, x = {{ evitals_26_col }}, ignore.case = T),
-      
-      # AVPU or GCS check,
-      AVPU_or_GCS = (GCS_check | AVPU_check),
-      
       # system age check
-      system_age_adult = {{ epatient_15_col }} >= 18 & {{ epatient_16_col }} == "Years",
-      system_age_minor1 = {{ epatient_15_col }} < 18 & {{ epatient_16_col }} == "Years",
+      system_age_adult = {{ epatient_15_col }} >= 18 & {{ epatient_16_col }} == "Years", 
+      system_age_minor1 = {{ epatient_15_col }} < 18 & {{ epatient_16_col }} == "Years", 
       system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
-      system_age_minor = system_age_minor1 | system_age_minor2,
+      system_age_minor = system_age_minor1 | system_age_minor2, 
       
       # calculated age check
-      calc_age_adult = patient_age_in_years_col >= 18,
+      calc_age_adult = patient_age_in_years_col >= 18, 
       calc_age_minor = patient_age_in_years_col < 18
-    )
-  
-  # get the initial population
-  initial_population <- initial_population_0 |>
-    dplyr::filter(
-      
-      # filter down GCS < 15 or AVPU < Alert
-      AVPU_or_GCS & 
-      
-      # TBI Dx only
-      TBI & 
-      
-      # 911 calls only
-      # NEMSIS 3.4/3.5 transports only
-      (call_911 & transport)
-      
-    ) |> 
-    
-    dplyr::select(-c({{ evitals_23_col }}, {{ evitals_26_col }}, {{ transport_disposition_cols }})) |> 
-    mutate(Unique_ID = str_c({{ erecord_01_col }}, {{ incident_date_col }}, {{ patient_DOB_col }}, sep = "-")) |> 
-    mutate(
-           across(c({{ evitals_12_col }}, {{ evitals_16_col }}, {{ evitals_06_col }}), ~ str_c(., collapse = ", ")),
-           .by = Unique_ID) |> 
-    distinct(Unique_ID, .keep_all = T) |> 
-    mutate(
-           vitals_check = if_all(c({{ evitals_12_col }}, {{ evitals_16_col }}, {{ evitals_06_col }}), ~ !is.na(.)),
       )
 
-  # Adult and Pediatric Populations
-  
-  # filter adult
-  adult_pop <- initial_population |>
-    dplyr::filter(system_age_adult | calc_age_adult)
-  
-  # filter peds
-  peds_pop <- initial_population |>
-    dplyr::filter(system_age_minor | calc_age_minor)
-  
-  # get the summary of results
-  
-  # adults
-  adult_population <- adult_pop |>
-    summarize_measure(measure_name = "TBI-01",
-                      population_name = "Adults",
-                      vitals_check,
-                      ...)
-  
-  # peds
-  peds_population <- peds_pop |>
-    summarize_measure(measure_name = "TBI-01",
-                      population_name = "Peds",
-                      vitals_check,
-                      ...)
-  
-  # summary
-  tbi.01 <- dplyr::bind_rows(adult_population, peds_population)
-  
-  tbi.01
-  
-}
-
-tbi_01_data <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tbi01_Export_2023.csv") |> 
-  clean_names(case = "screaming_snake", sep_out = "_")
-
-tbi_01_clean <- tbi_01_data |> 
-  mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ mdy(
-    str_remove_all(string = ., pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
-  )))
-
-# try the function as is
-tbi_01_clean |> 
-  tbi_01(erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
-         incident_date_col = INCIDENT_DATE,
-         patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
-         epatient_15_col = PATIENT_AGE_E_PATIENT_15,
-         epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
-         eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
-         esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
-         esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
-         evitals_23_col = VITALS_TOTAL_GLASGOW_COMA_SCORE_GCS_E_VITALS_23,
-         evitals_26_col = VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26,
-         transport_disposition_cols = c(DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112,
-                                        TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30
-                                        ),
-         evitals_12_col = VITALS_PULSE_OXIMETRY_E_VITALS_12,
-         evitals_16_col = VITALS_CARBON_DIOXIDE_CO2_E_VITALS_16,
-         evitals_06_col = VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06
-         )
-
-# try an approach where the dataset is first assigned the unique ID and then split into smaller dataframes to deal with duplication
-
-core_data <- tbi_01_clean |> 
-  mutate(INCIDENT_DATE_MISSING = replace_na(INCIDENT_DATE, as.Date("1984-09-09")),
-         PATIENT_DOB_MISSING = replace_na(PATIENT_DATE_OF_BIRTH_E_PATIENT_17, as.Date("1982-05-19")),
-         Unique_ID = str_c(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
-                           INCIDENT_DATE_MISSING,
-                           PATIENT_DOB_MISSING, 
-                           sep = "-"
-                           ))
+###_____________________________________________________________________________
+### dimension tables
+### each dimension table is turned into a vector of unique IDs
+### that are then utilized on the fact table to create distinct variables
+### that tell if the patient had the characteristic or not for final
+### calculations of the numerator and filtering
+###_____________________________________________________________________________
 
 # GCS
 
 GCS_data <- core_data |> 
-  dplyr::select(Unique_ID, VITALS_TOTAL_GLASGOW_COMA_SCORE_GCS_E_VITALS_23) |> 
-  dplyr::group_by(Unique_ID) |> 
-  dplyr::distinct(VITALS_TOTAL_GLASGOW_COMA_SCORE_GCS_E_VITALS_23, .keep_all = T) |> 
-  dplyr::ungroup() |> 
-  dplyr::filter(VITALS_TOTAL_GLASGOW_COMA_SCORE_GCS_E_VITALS_23 < 15) |> 
+  dplyr::select(Unique_ID, {{ evitals_23_col }}) |> 
+  dplyr::filter({{ evitals_23_col }} < 15) |> 
   distinct(Unique_ID) |> 
   pull(Unique_ID)
-
-# GCS regex
-GCS_pattern <- paste0("(?:", 
-                      paste0(GCS_data, collapse = "|"),
-                      ")")
 
 # AVPU
 
 AVPU_data <- core_data |> 
-  dplyr::select(Unique_ID, VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26) |> 
-  dplyr::group_by(Unique_ID) |> 
-  dplyr::distinct(VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26, .keep_all = T) |> 
-  dplyr::ungroup() |> 
-  dplyr::filter(grepl(pattern = "3326003|3326005|3326007|Verbal|Painful|Unresponsive", 
-                      x = VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26, 
-                      ignore.case = T
-                      )
+  dplyr::select(Unique_ID, {{ evitals_26_col }}) |> 
+  dplyr::filter(grepl(pattern = avpu_values, 
+                      x = {{ evitals_26_col }}, 
+                      ignore.case = T)
                 ) |> 
-  distinct(Unique_ID) |> 
-  pull(Unique_ID)
+  dplyr::distinct(Unique_ID) |> 
+  dplyr::pull(Unique_ID)
 
-# AVPU regex
-AVPU_pattern <- paste0("(?:",
-                       paste0(AVPU_data, collapse = "|"),
-                       ")"
-                       )
+# sp02
 
-# 
+sp02_data <- core_data |> 
+  dplyr::select(Unique_ID, {{ evitals_12_col }}) |> 
+  dplyr::filter(!is.na({{ evitals_12_col }})) |> 
+  dplyr::distinct(Unique_ID) |> 
+  dplyr::pull(Unique_ID)
+
+# ETCO2
+
+etco2_data <- core_data |> 
+  dplyr::select(Unique_ID, {{ evitals_16_col }}) |> 
+  dplyr::filter(!is.na({{ evitals_16_col }})) |> 
+  dplyr::distinct(Unique_ID) |> 
+  dplyr::pull(Unique_ID)
+
+# SBP
+
+sbp_data <- core_data |> 
+  dplyr::select(Unique_ID, {{ evitals_06_col }}) |> 
+  dplyr::filter(!is.na({{ evitals_06_col }})) |> 
+  dplyr::distinct(Unique_ID, .keep_all = T) |> 
+  dplyr::arrange(Unique_ID) |> 
+  dplyr::pull(Unique_ID)
+
+# provider impression 1
+
+provider_impression_data1 <- core_data |> 
+  dplyr::select(Unique_ID, {{ esituation_11_col }}) |> 
+  dplyr::distinct(Unique_ID, .keep_all = T) |> 
+  dplyr::filter(
+    
+    grepl(pattern = tbi_injuries, x = {{ esituation_11_col }}, ignore.case = T)
+    
+    ) |> 
+  dplyr::distinct(Unique_ID) |> 
+  dplyr::pull(Unique_ID)
+
+# provider impression 2
+
+provider_impression_data2 <- core_data |> 
+  dplyr::select(Unique_ID, {{ esituation_12_col }}) |> 
+  dplyr::distinct(Unique_ID, .keep_all = T) |> 
+  dplyr::filter(
+    
+    grepl(pattern = tbi_injuries, x = {{ esituation_12_col }}, ignore.case = T)
+    
+    ) |> 
+  dplyr::distinct(Unique_ID) |> 
+  dplyr::pull(Unique_ID)
+
+# 911 calls
+
+call_911_data <- core_data |> 
+  dplyr::select(Unique_ID, {{ eresponse_05_col }}) |> 
+  dplyr::distinct(Unique_ID, .keep_all = T) |> 
+  dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)) |> 
+  dplyr::distinct(Unique_ID) |> 
+  dplyr::pull(Unique_ID)
+
+# transports
+
+  transport_data <- core_data |> 
+    dplyr::select(Unique_ID, {{ transport_disposition_col }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::filter( 
+      
+      grepl(pattern = transport_responses, x = {{ transport_disposition_col }}, ignore.case = T) 
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+
+# assign variables to final data
+
+  initial_population <- final_data |> 
+  dplyr::mutate(GCS = Unique_ID %in% GCS_data,
+         AVPU = Unique_ID %in% AVPU_data,
+         PROVIDER_IMPRESSION1 = Unique_ID %in% provider_impression_data1,
+         PROVIDER_IMPRESSION2 = Unique_ID %in% provider_impression_data2,
+         PROVIDER_IMPRESSION = PROVIDER_IMPRESSION1 | PROVIDER_IMPRESSION2,
+         CALL_911 = Unique_ID %in% call_911_data,
+         TRANSPORT = Unique_ID %in% transport_data,
+         PULSE_OXIMETRY = Unique_ID %in% sp02_data,
+         ETCO2 = Unique_ID %in% etco2_data,
+         SBP = Unique_ID %in% sbp_data,
+         VITALS_CHECK = if_else(PULSE_OXIMETRY & ETCO2 & SBP, 1, 0)
+         ) |> 
+  dplyr::filter(
+    GCS | AVPU,
+      PROVIDER_IMPRESSION,
+    CALL_911,
+    TRANSPORT
+  )
+  
+# Adult and Pediatric Populations
+
+# filter adult
+adult_pop <- initial_population |>
+  dplyr::filter(system_age_adult | calc_age_adult)
+
+# filter peds
+peds_pop <- initial_population |>
+  dplyr::filter(system_age_minor | calc_age_minor)
+
+# summarize
+
+# adults
+adult_population <- adult_pop |>
+  summarize_measure(measure_name = "TBI-01",
+                    population_name = "Adult",
+                    VITALS_CHECK,
+                    ...)
+
+# peds
+peds_population <- peds_pop |>
+  summarize_measure(measure_name = "TBI-01",
+                    population_name = "Peds",
+                    VITALS_CHECK,
+                    ...) 
+# summary
+tbi.01 <- dplyr::bind_rows(adult_population, peds_population)
+
+tbi.01
+  
+}

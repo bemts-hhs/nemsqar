@@ -135,7 +135,7 @@ asthma_01 <- function(df,
   beta_agonist <- "albuterol|ipratropium|levalbuterol|metaproterenol"
 
   # codes for asthma or acute bronchospasm
-  asthma_codes <- "J45|J98.01"
+  asthma_codes <- "\\b(?:J45|J98.01)\\b"
 
   # filter the table to get the initial population ages >= 2 years
   initial_population <- df |>

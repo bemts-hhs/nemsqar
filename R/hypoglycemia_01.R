@@ -122,11 +122,11 @@ hypoglycemia_01 <- function(df,
   hypoglycemia_procedure_codes <- "225285007|710925007"
 
   # code(s) for altered mental status
-  altered_mental_status <- "R41.82|Altered Mental Status, unspecified"
+  altered_mental_status <- "\\b(?:R41.82)\\b|Altered Mental Status, unspecified"
 
   # codes for diabetes via primary and secondary impression
 
-  diabetes_codes <- "E13.64|E16.2|Other specified diabetes mellitus with hypoglycemia|Hypoglycemia, unspecified"
+  diabetes_codes <- "\\b(?:E13.64|E16.2)\\b|Other specified diabetes mellitus with hypoglycemia|Hypoglycemia, unspecified"
 
   # AVPU responses
 

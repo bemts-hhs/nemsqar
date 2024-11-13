@@ -120,7 +120,7 @@ syncope_01 <- function(df,
   codes_911 <- "2205001|2205003|2205009"
   
   # primary and secondary provider impression values
-  syncope_pattern <- "R(55|40.4)|Syncope and collapse|Transient alteration of awareness"
+  syncope_pattern <- "\\b(?:R(?:55|40.4))\\b|Syncope and collapse|Transient alteration of awareness"
   
   # ECG pattern
   ecg_pattern <- "12 Lead-Left Sided \\(Normal\\)|12 Lead-Right Sided|15 Lead|18 Lead"

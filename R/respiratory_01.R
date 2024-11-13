@@ -100,7 +100,7 @@ respiratory_01 <- function(df,
   codes_911 <- "2205001|2205003|2205009"
 
   # get codes as a regex to filter primary impression fields
-  resp_codes <- "I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9"
+  resp_codes <- "\\b(?:I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9)\\b"
 
   # minor values
   minor_values <- "days|hours|minutes|months"

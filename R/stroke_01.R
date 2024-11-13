@@ -152,7 +152,7 @@ stroke_01 <- function(df,
   codes_911 <- "2205001|2205003|2205009"
   
   # primary and secondary provider impression values
-  stroke_pattern <- "I6[013]|G4[56]"
+  stroke_pattern <- "\\b(?:I6[013]|G4[56])\\b"
   
   # AVPU exclusion
   avpu_pattern <- "3326007|Unresponsive"
