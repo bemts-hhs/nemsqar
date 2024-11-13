@@ -20,7 +20,6 @@
 #' @return
 #' @export
 #'
-#' @examples
 tbi_01 <- function(df,
                    erecord_01_col,
                    incident_date_col,
