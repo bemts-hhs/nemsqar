@@ -43,6 +43,7 @@ theme_cleaner <-
            hjust_subtitle = 0,
            axis_lines = FALSE,
            facets = FALSE,
+           facet_text_size = base_size,
            draw_panel_border = FALSE,
            ...) {
     if (!facets) {
@@ -89,7 +90,6 @@ theme_cleaner <-
         panel.grid = element_blank(),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        panel.border = element_blank(),
         axis.line = element_line(color = if_else(
           axis_lines == TRUE, base_color, "transparent"
         )),
@@ -105,7 +105,6 @@ theme_cleaner <-
           color = if_else(draw_panel_border == F, "transparent", base_color),
           fill = NA
         ),
-        strip.background = element_blank(),
         plot.background = element_blank(),
         complete = TRUE,
         text = element_text(
@@ -142,10 +141,6 @@ theme_cleaner <-
         panel.grid = element_blank(),
         panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
-        panel.border = element_rect(
-          color = if_else(draw_panel_border == F, "transparent", base_color),
-          fill = NA
-        ),
         axis.line = element_line(color = if_else(
           axis_lines == TRUE, base_color, "transparent"
         )),

@@ -19,6 +19,7 @@ theme_cleaner(
   hjust_subtitle = 0,
   axis_lines = FALSE,
   facets = FALSE,
+  facet_text_size = base_size,
   draw_panel_border = FALSE,
   ...
 )
