@@ -1,4 +1,51 @@
-
+#' Trauma-01
+#'
+#' This function processes EMS data to calculate the Trauma-01 performance measure, 
+#' which evaluates the percentage of trauma patients assessed for pain using a numeric scale. 
+#' The function filters and summarizes the data based on specified inclusion criteria.
+#'
+#' @param df <['tidy-select'][dplyr_tidy_select]> A data frame or tibble containing EMS records.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Column name representing the EMS record ID.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column name for the incident date.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column name for the patient's date of birth.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column name for the patient's age in numeric format.
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column name for the unit of age (e.g., "Years", "Months").
+#' @param esituation_02_col <['tidy-select'][dplyr_tidy_select]> Column name indicating if the situation involved an injury.
+#' @param evitals_23_col <['tidy-select'][dplyr_tidy_select]> Column name for the Glasgow Coma Scale (GCS) total score.
+#' @param evitals_26_col <['tidy-select'][dplyr_tidy_select]> Column name for AVPU (Alert, Voice, Pain, Unresponsive) status.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column name for the type of EMS response (e.g., 911 call).
+#' @param edisposition_28_col <['tidy-select'][dplyr_tidy_select]> Column name for patient care disposition details.
+#' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> Column name for transport disposition details.
+#' @param evitals_27_col <['tidy-select'][dplyr_tidy_select]> Column name for the pain scale assessment.
+#' @param ... Additional arguments passed to the `summarize_measure` function for custom summarization.
+#'
+#' @return A tibble summarizing the Trauma-01 measure for the overall population, 
+#' adult population, and pediatric population, based on inclusion and exclusion criteria.
+#'
+#' @details The function performs the following steps:
+#' - Validates input data for proper formats and types.
+#' - Creates unique IDs for patient incidents to maintain row distinctness.
+#' - Filters records based on specific criteria, including injury status, GCS or AVPU values, 
+#' response type (911), patient care disposition, and transport type.
+#' - Separately identifies adult and pediatric populations based on system and calculated age.
+#' - Summarizes the Trauma-01 measure for the entire population, adults, and pediatrics.
+#'
+#' @features 
+#' - Handles missing or invalid date formats with error messaging.
+#' - Incorporates quasiquotation for flexible column referencing.
+#' - Creates reusable dimension tables for efficient filtering and summarization.
+#'
+#' @return A tibble summarizing results for three population groups (All, Adults, and Peds) with the following columns:
+#' 
+#' `pop`: Population type (All, Adults, Peds).
+#' `numerator`: Count of incidents where a pain scale was administered.
+#' `denominator`: Total count of incidents.
+#' `prop`: Proportion of incidents involving beta-agonist medications.
+#' `prop_label`: Proportion formatted as a percentage with a specified number of
+#' decimal places.
+#'
+#' @export
+#'
 trauma_01 <- function(df,
                       erecord_01_col,
                       incident_date_col,
