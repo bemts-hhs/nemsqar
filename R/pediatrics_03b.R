@@ -85,7 +85,7 @@ pediatrics_03b <- function(df,
       )
     )
   }
-
+  
   # Ensure df is a data frame or tibble
   if (!is.data.frame(df) && !tibble::is_tibble(df)) {
     cli::cli_abort(
@@ -95,93 +95,171 @@ pediatrics_03b <- function(df,
       )
     )
   }
-
+  
   # use quasiquotation on the date variables to check format
   incident_date <- rlang::enquo(incident_date_col)
   patient_DOB <- rlang::enquo(patient_DOB_col)
-
+  
   if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-    !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-    (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
-      !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
+       !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
+      (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
+       !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
     cli::cli_abort(
       "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
     )
   }
-
-
+  
+  
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
-
+  
   # non-weight-based medications
   non_weight_based_meds <- "Inhalation|Topical|9927049|9927009"
-
+  
   # minor values
   minor_values <- "days|hours|minutes|months"
-
-  # filter the table to get the initial population regardless of age, only 911 responses
-  initial_population_0 <- df |>
-    dplyr::mutate(
-      patient_age_in_years_col = as.numeric(difftime(
-        time1 = {{ incident_date_col }},
-        time2 = {{ patient_DOB_col }},
-        units = "days"
-      )) / 365,
-
-      # check to see if non-weight-based meds
-      non_weight_based = grepl(
-        pattern = non_weight_based_meds,
-        x = {{ emedications_04_col }},
-        ignore.case = TRUE
-      ),
-      call_911 = grepl(
-        pattern = codes_911,
-        x = {{ eresponse_05_col }},
-        ignore.case = T
-      ),
-      meds_not_missing = !is.na({{ emedications_03_col }}),
-      system_age_check = {{ epatient_15_col }} < 18 & {{ epatient_16_col }} == "Years" |
-        !is.na({{ epatient_15_col }}) & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
-      calc_age_check = patient_age_in_years_col < 18
-    ) |>
+  
+  ###_____________________________________________________________________________
+  # from the full dataframe with all variables
+  # create one fact table and several dimension tables
+  # to complete calculations and avoid issues due to row
+  # explosion
+  ###_____________________________________________________________________________
+  
+  core_data <- df |> 
+    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{  incident_date_col  }}, base::as.Date("1984-09-09")),
+                  PATIENT_DOB_MISSING = tidyr::replace_na({{  patient_DOB_col  }}, base::as.Date("1982-05-19")),
+                  Unique_ID = stringr::str_c({{  erecord_01_col  }},
+                                             INCIDENT_DATE_MISSING,
+                                             PATIENT_DOB_MISSING, 
+                                             sep = "-"
+                  ))
+  
+  # fact table
+  # the user should ensure that variables beyond those supplied for calculations
+  # are distinct (i.e. one value or cell per patient)
+  
+  final_data <- core_data |> 
+    dplyr::select(-c({{ eresponse_05_col }},
+                     {{ eexam_01_col }},
+                     {{ eexam_02_col }},
+                     {{ emedications_03_col }},
+                     {{ emedications_04_col }}
+                     
+    )) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
+      time1 = {{  incident_date_col  }},
+      time2 = {{  patient_DOB_col  }},
+      units = "days"
+    )) / 365,
+    
+    # system age check
+    system_age_check1 = {{ epatient_15_col }} < 18 & {{ epatient_16_col }} == "Years",
+    system_age_check2 = !is.na({{ epatient_15_col }}) & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_check = system_age_check1 | system_age_check2, 
+    
+    # calculated age check
+    calc_age_check = patient_age_in_years_col < 18
+    )
+  
+  ###_____________________________________________________________________________
+  ### dimension tables
+  ### each dimension table is turned into a vector of unique IDs
+  ### that are then utilized on the fact table to create distinct variables
+  ### that tell if the patient had the characteristic or not for final
+  ### calculations of the numerator and filtering
+  ###_____________________________________________________________________________
+  
+  # non-weight based medications
+  
+  non_weight_based_meds_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  emedications_04_col  }}) |> 
+    dplyr::filter(grepl(
+      pattern = non_weight_based_meds,
+      x = {{ emedications_04_col }},
+      ignore.case = TRUE
+    )) |> 
+    distinct(Unique_ID) |> 
+    pull(Unique_ID)
+  
+  # meds not missing
+  
+  meds_not_missing_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  emedications_03_col  }}) |> 
+    dplyr::filter(!is.na({{ emedications_03_col }})
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # 911 calls
+  
+  call_911_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  eresponse_05_col  }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::filter(grepl(pattern = codes_911, x = {{  eresponse_05_col  }}, ignore.case = T)) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # documented weight
+  
+  documented_weight_data1 <- core_data |> 
+    dplyr::select(Unique_ID, {{  eexam_01_col  }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::filter( 
+      
+      !is.na({{ eexam_01_col }})
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  documented_weight_data2 <- core_data |> 
+    dplyr::select(Unique_ID, {{  eexam_02_col  }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::filter( 
+      
+      !is.na({{ eexam_02_col }})
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # assign variables to final data
+  
+  initial_population <- final_data |> 
+    dplyr::mutate(NON_WEIGHT_BASED = Unique_ID %in% non_weight_based_meds_data,
+                  MEDS_NOT_MISSING = Unique_ID %in% meds_not_missing_data,
+                  CALL_911 = Unique_ID %in% call_911_data,
+                  DOCUMENTED_WEIGHT1 = Unique_ID %in% documented_weight_data1,
+                  DOCUMENTED_WEIGHT2 = Unique_ID %in% documented_weight_data2,
+                  DOCUMENTED_WEIGHT = DOCUMENTED_WEIGHT1 | DOCUMENTED_WEIGHT2
+    ) |> 
     dplyr::filter(
+      
       # only 911 calls
-      call_911,
-
+      CALL_911,
+      
       # only rows where meds are passed
-      meds_not_missing,
-
+      MEDS_NOT_MISSING,
+      
       # age filter
       system_age_check | calc_age_check,
-
+      
       # exclude non-weight based meds
-      !non_weight_based
+      !NON_WEIGHT_BASED
+      
     )
-
-  initial_population_1 <- initial_population_0 |>
-    dplyr::mutate(
-      # check if weight was documented
-      documented_weight = dplyr::if_else(!is.na({{ eexam_01_col }}) |
-        !is.na({{ eexam_02_col }}), 1, 0),
-    )
-
-  # second filtering process, make the table distinct by rolling up emedications.04
-  # based on a unique identifier
-  initial_population <- initial_population_1 |>
-    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-09-01")),
-                  PATIENT_DOB_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-05-01")),
-                  Unique_ID = stringr::str_c({{erecord_01_col}}, INCIDENT_DATE_MISSING, PATIENT_DOB_MISSING, sep = "-")) |>
-    dplyr::distinct(Unique_ID, .keep_all = T)
-
+  
   # get the summary of results, already filtered down to the target age group for the measure
-
+  
   # peds
   pediatrics.03b <- initial_population |>
     summarize_measure(measure_name = "Pediatrics-03b",
                       population_name = "Peds",
-                      documented_weight,
+                      DOCUMENTED_WEIGHT,
                       ...)
-
+  
   # summary
   pediatrics.03b
   
