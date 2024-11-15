@@ -54,8 +54,14 @@
 #' @param emedications_04_col Column listing medications administered.
 #' @param ... Additional parameters for the `dplyr::summarize` output.
 #'
-#' @return A summary tibble with columns for measure name, population, numerator, denominator, and proportion.
+#' @return A tibble summarizing results for three population groups (All, Adults, and Peds) with the following columns:
 #' 
+#' `pop`: Population type (All, Adults, Peds).
+#' `numerator`: Count of incidents where patient weight was documented.
+#' `denominator`: Total count of incidents.
+#' `prop`: Proportion of incidents where patient weight was documented.
+#' `prop_label`: Proportion formatted as a percentage with a specified number of
+#' decimal places.#' 
 #' @section Credit:
 #' 
 #' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 

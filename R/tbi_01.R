@@ -23,9 +23,9 @@
 #' @return A tibble summarizing results for three population groups (Adults, and Peds) with the following columns:
 #' 
 #' `pop`: Population type (Adults, Peds).
-#' `numerator`: Count of incidents where beta-agonist medications were administered.
+#' `numerator`: Count of incidents where SP02, ETCO2, and SBP were all measured.
 #' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents involving beta-agonist medications.
+#' `prop`: Proportion of incidents where SP02, ETCO2, and SBP were all measured.
 #' `prop_label`: Proportion formatted as a percentage with a specified number of
 #' decimal places.
 #'

@@ -48,8 +48,14 @@
 #' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column for procedures performed.
 #' @param ... Additional arguments for summarization, passed to the summarize function.
 #'
-#' @return A tibble summarizing the initial population and filtered subgroups (adult, pediatric, total) with hypoglycemia events.
+#' @return A tibble summarizing results for three population groups (All, Adults, and Peds) with the following columns:
 #' 
+#' `pop`: Population type (All, Adults, Peds).
+#' `numerator`: Count of incidents where specific hypoglycemia best practices were administered.
+#' `denominator`: Total count of incidents.
+#' `prop`: Proportion of incidents where specific hypoglycemia best practices were administered.
+#' `prop_label`: Proportion formatted as a percentage with a specified number of
+#' decimal places.#' 
 #' @section Credit:
 #' 
 #' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 

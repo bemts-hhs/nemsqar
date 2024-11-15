@@ -18,10 +18,7 @@
 #' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> Column name for transport disposition details.
 #' @param evitals_27_col <['tidy-select'][dplyr_tidy_select]> Column name for the pain scale assessment.
 #' @param ... Additional arguments passed to the `summarize_measure` function for custom summarization.
-#'
-#' @return A tibble summarizing the Trauma-01 measure for the overall population, 
-#' adult population, and pediatric population, based on inclusion and exclusion criteria.
-#'
+#'#'
 #' @details The function performs the following steps:
 #' - Validates input data for proper formats and types.
 #' - Creates unique IDs for patient incidents to maintain row distinctness.
@@ -40,7 +37,7 @@
 #' `pop`: Population type (All, Adults, Peds).
 #' `numerator`: Count of incidents where a pain scale was administered.
 #' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents involving beta-agonist medications.
+#' `prop`: Proportion of incidents where a pain scale was administered.
 #' `prop_label`: Proportion formatted as a percentage with a specified number of
 #' decimal places.
 #'
