@@ -143,8 +143,8 @@ asthma_01 <- function(df,
     # create the age in years variable
 
     dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
-      time1 = {{incident_date_col}},
-      time2 = {{patient_DOB_col}},
+      time1 = {{  incident_date_col  }},
+      time2 = {{ patient_DOB_col }},
       units = "days"
     )) / 365) |>
 
@@ -152,13 +152,13 @@ asthma_01 <- function(df,
 
     dplyr::filter(grepl(
       pattern = codes_911,
-      x = {{eresponse_05_col}},
+      x = {{ eresponse_05_col }},
       ignore.case = T
     ),
 
     # Identify Records that have specified asthma
 
-    dplyr::if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
+    dplyr::if_any(c({{ esituation_11_col}}, {{esituation_12_col }}), ~ grepl(
       pattern = asthma_codes,
       x = .,
       ignore.case = T
@@ -167,7 +167,7 @@ asthma_01 <- function(df,
     # check to ensure beta agonist was used
     dplyr::mutate(beta_agonist_check = dplyr::if_else(grepl(
       pattern = beta_agonist,
-      x = {{emedications_03_col}},
+      x = {{ emedications_03_col }},
       ignore.case = TRUE
     ), 1, 0))
 
@@ -183,11 +183,11 @@ asthma_01 <- function(df,
 
   # get the summary of results
   # summary
-  asthma.01 <- results_summarize(initial_population,
-                                 adult_pop,
-                                 peds_pop,
-                                 "Asthma-01",
-                                 beta_agonist_check,
+  asthma.01 <- results_summarize(total_population = initial_population,
+                                 adult_population = adult_pop,
+                                 peds_population = peds_pop,
+                                 measure_name = "Asthma-01",
+                                 numerator_col = beta_agonist_check,
                                  ...)
 
 

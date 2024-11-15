@@ -228,7 +228,7 @@ peds_pop <- initial_population |>
 
 total_population <- initial_population |> 
   summarize_measure(measure_name = "Trauma-01",
-                    population_name = "Adult",
+                    population_name = "All",
                     PAIN_SCALE,
                     ...)
 

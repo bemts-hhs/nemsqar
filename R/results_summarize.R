@@ -37,15 +37,15 @@ results_summarize <- function(total_population,
 
   dplyr::bind_rows(
     adult_population |> summarize_measure(measure_name,
-                                          population_names["adults"],
+                                          population_names[["adult"]],
                                           {{numerator_col}},
                                           ...),
     peds_population |> summarize_measure(measure_name,
-                                         population_names["peds"],
+                                         population_names[["peds"]],
                                          {{numerator_col}},
                                           ...),
     total_population |> summarize_measure(measure_name,
-                                          population_names["total"],
+                                          population_names[["total"]],
                                           {{numerator_col}},
                                           ...)
   )
