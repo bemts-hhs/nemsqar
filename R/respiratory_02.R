@@ -59,7 +59,7 @@ respiratory_02 <- function(df,
                            emedications_03_col,
                            eprocedures_03_col,
                            ...) {
-
+  
   # provide better error messaging if df is missing
   if (missing(df)) {
     cli::cli_abort(
@@ -69,7 +69,7 @@ respiratory_02 <- function(df,
       )
     )
   }
-
+  
   # Ensure df is a data frame or tibble
   if (!is.data.frame(df) && !tibble::is_tibble(df)) {
     cli::cli_abort(
@@ -79,139 +79,194 @@ respiratory_02 <- function(df,
       )
     )
   }
-
+  
   # use quasiquotation on the date variables to check format
   incident_date <- rlang::enquo(incident_date_col)
   patient_DOB <- rlang::enquo(patient_DOB_col)
-
+  
   if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-    !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-    (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
-      !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
+       !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
+      (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
+       !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
     cli::cli_abort(
       "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
     )
   }
-
-
+  
+  
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
-
+  
   # minor values
   minor_values <- "days|hours|minutes|months"
-
+  
   # not values for meds
   not_med <- "8801001|8801003|8801009|8801019|8801027"
-
+  
   # not values for procedures
   not_proc <- "8801001|8801023|8801003|8801019|8801027"
-  # some manipulations to prepare the table
-  # create the patient age in years and the patient age in days variables for filters
-  # create the unique ID variable
-  initial_population_0 <- df |>
-    dplyr::mutate(
-      patient_age_in_years = as.numeric(difftime(
-        time1 = {{ incident_date_col }},
-        time2 = {{ patient_DOB_col }},
-        units = "days"
-      )) / 365,
-      patient_age_in_days = as.numeric(difftime(
-        time1 = {{ incident_date_col }},
-        time2 = {{ patient_DOB_col }},
-        units = "days"
-      )),
-      # get 911 variable
-      call_911 = grepl(
-        pattern = codes_911,
-        x = {{ eresponse_05_col }},
-        ignore.case = T
-      ),
-
-      # get sp02 variable
-      pulse_oximetry_check = {{ evitals_12_col }} < 90,
-
-      # system age checks
-      system_age_adult = {{ epatient_15_col }} >= 18 & {{ epatient_16_col }} == "Years",
-      system_age_minor1 = {{ epatient_15_col }} < 18 & {{ epatient_16_col }} == "Years",
-      system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
-      system_age_minor = system_age_minor1 | system_age_minor2,
-      system_age_minor_exclusion1 = {{ epatient_15_col }} < 24 & {{ epatient_16_col }} == "Hours",
-      system_age_minor_exclusion2 = {{ epatient_15_col }} < 120 & {{ epatient_16_col }} == "Minutes",
-      system_age_minor_exclusion = system_age_minor_exclusion1 | system_age_minor_exclusion2,
-
-      # calculated age checks
-      calc_age_adult = patient_age_in_years >= 18,
-      calc_age_minor = patient_age_in_years < 18 & patient_age_in_days >= 1,
-
-      # oxygen variable for numerator
-      oxygen_med = grepl(pattern = "7806", x = {{ emedications_03_col }}) &
-        !grepl(pattern = not_med, x = {{ emedications_03_col }}, ignore.case = T),
-      oxygen_proc = grepl(pattern = "57485005", x = {{ eprocedures_03_col }}, ignore.case = T) &
-        !grepl(pattern = not_proc, x = {{ eprocedures_03_col }}, ignore.case = T)
+  
+  ###_____________________________________________________________________________
+  # from the full dataframe with all variables
+  # create one fact table and several dimension tables
+  # to complete calculations and avoid issues due to row
+  # explosion
+  ###_____________________________________________________________________________
+  
+  core_data <- df |> 
+    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, base::as.Date("1984-09-09")),
+                  PATIENT_DOB_MISSING = tidyr::replace_na({{ patient_DOB_col }}, base::as.Date("1982-05-19")),
+                  Unique_ID = stringr::str_c({{ erecord_01_col }},
+                                             INCIDENT_DATE_MISSING,
+                                             PATIENT_DOB_MISSING, 
+                                             sep = "-"
+                  ))
+  
+  # fact table
+  # the user should ensure that variables beyond those supplied for calculations
+  # are distinct (i.e. one value or cell per patient)
+  
+  final_data <- core_data |> 
+    dplyr::select(-c({{ eresponse_05_col }},
+                     {{ evitals_12_col }},
+                     {{ emedications_03_col }},
+                     {{ eprocedures_03_col }}
+    )) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::mutate(patient_age_in_years = as.numeric(difftime(
+      time1 = {{ incident_date_col }},
+      time2 = {{ patient_DOB_col }},
+      units = "days"
+    )) / 365,
+    patient_age_in_days = as.numeric(difftime(
+      time1 = {{ incident_date_col }},
+      time2 = {{ patient_DOB_col }},
+      units = "days"
+    )),
+    
+    # system age checks
+    system_age_adult = {{ epatient_15_col }} >= 18 & {{ epatient_16_col }} == "Years",
+    system_age_minor1 = {{ epatient_15_col }} < 18 & {{ epatient_16_col }} == "Years",
+    system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_minor = system_age_minor1 | system_age_minor2,
+    system_age_minor_exclusion1 = {{ epatient_15_col }} < 24 & {{ epatient_16_col }} == "Hours",
+    system_age_minor_exclusion2 = {{ epatient_15_col }} < 120 & {{ epatient_16_col }} == "Minutes",
+    system_age_minor_exclusion = system_age_minor_exclusion1 | system_age_minor_exclusion2,
+    
+    # calculated age checks
+    calc_age_adult = patient_age_in_years >= 18,
+    calc_age_minor = patient_age_in_years < 18 & patient_age_in_days >= 1
     )
-
-  # finish filters and make the table distinct
-  initial_population <- initial_population_0 |>
+  
+  ###_____________________________________________________________________________
+  ### dimension tables
+  ### each dimension table is turned into a vector of unique IDs
+  ### that are then utilized on the fact table to create distinct variables
+  ### that tell if the patient had the characteristic or not for final
+  ### calculations of the numerator and filtering
+  ###_____________________________________________________________________________
+  
+  # pulse oximetry
+  
+  pulse_oximetry_data <- core_data |> 
+    dplyr::select(Unique_ID, {{ evitals_12_col }}) |> 
     dplyr::filter(
-
-      # pulse oximetry < 90
-      pulse_oximetry_check,
-
-      # 911 calls
-      call_911
-    ) |>
-    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-09-01")),
-                  PATIENT_DOB_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-05-01")),
-                  Unique_ID = stringr::str_c({{erecord_01_col}}, INCIDENT_DATE_MISSING, PATIENT_DOB_MISSING, sep = "-")) |>
-    dplyr::distinct(Unique_ID, .keep_all = T) # this will ensure each row is an observation, and each column is a feature
-
+      
+      {{ evitals_12_col }} < 90
+      
+    ) |> 
+    distinct(Unique_ID) |> 
+    pull(Unique_ID)
+  
+  # vitals check
+  
+  oxygen_med_data <- core_data |> 
+    dplyr::select(Unique_ID, {{ emedications_03_col }}) |> 
+    dplyr::filter(
+      
+      grepl(pattern = "7806", x = {{ emedications_03_col }}) &
+        !grepl(pattern = not_med, x = {{ emedications_03_col }}, ignore.case = T)
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  oxygen_proc_data <- core_data |> 
+    dplyr::select(Unique_ID, {{ eprocedures_03_col }}) |> 
+    dplyr::filter(
+      
+      grepl(pattern = "57485005", x = {{ eprocedures_03_col }}, ignore.case = T) &
+        !grepl(pattern = not_proc, x = {{ eprocedures_03_col }}, ignore.case = T)
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # 911 calls
+  
+  call_911_data <- core_data |> 
+    dplyr::select(Unique_ID, {{ eresponse_05_col }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # assign variables to final data
+  
+  initial_population <- final_data |> 
+    dplyr::mutate(PULSE_OXIMETRY = Unique_ID %in% pulse_oximetry_data,
+                  OXYGEN1 = Unique_ID %in% oxygen_med_data,
+                  OXYGEN2 = Unique_ID %in% oxygen_proc_data,
+                  OXYGEN = OXYGEN1 | OXYGEN2,
+                  CALL_911 = Unique_ID %in% call_911_data
+    ) |> 
+    dplyr::filter(
+      
+      PULSE_OXIMETRY,
+      
+      CALL_911
+      
+    )
+  
   # get population 1 for respiratory-02, peds
   respiratory_02_peds <- initial_population |>
-    dplyr::filter((system_age_minor & !system_age_minor_exclusion) |
-      calc_age_minor)
-
+    dplyr::filter(
+      
+      (system_age_minor & !system_age_minor_exclusion) | calc_age_minor
+      
+    )
+  
   # get population 2 for respiratory-02, adults
   respiratory_02_adults <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
-
+  
   # calculations for peds
   peds_calculation <- respiratory_02_peds |>
     dplyr::summarize(
       measure = "Respiratory-02",
       pop = "Peds",
-      numerator = sum(
-        oxygen_med | oxygen_proc,
-        na.rm = T
-      ),
+      numerator = sum(OXYGEN, na.rm = T),
       denominator = dplyr::n(),
-      prop = sum(
-        oxygen_med | oxygen_proc,
-        na.rm = T
-      ) / dplyr::n(),
+      prop = sum(numerator, na.rm = T) / dplyr::n(),
       prop_label = pretty_percent(prop, n_decimal = 0.01),
       ...
     )
-
+  
   # calculations for adults
   adults_calculation <- respiratory_02_adults |>
     dplyr::summarize(
       measure = "Respiratory-02",
       pop = "Adults",
-      numerator = sum(
-        oxygen_med | oxygen_proc,
-        na.rm = T
-      ),
+      numerator = sum(OXYGEN, na.rm = T),
       denominator = dplyr::n(),
-      prop = sum(
-        oxygen_med | oxygen_proc,
-        na.rm = T
-      ) / dplyr::n(),
+      prop = sum(numerator, na.rm = T) / dplyr::n(),
       prop_label = pretty_percent(prop, n_decimal = 0.01),
       ...
     )
-
+  
   # bind rows of calculations for final table
   respiratory.02 <- dplyr::bind_rows(peds_calculation, adults_calculation)
-
+  
   respiratory.02
+  
 }
