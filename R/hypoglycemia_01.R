@@ -224,7 +224,7 @@ hypoglycemia_01 <- function(df,
   # final pass with manipulations to get a tidy table
   # 1 row per observation, 1 column per feature
 
-  initial_population <- initial_population_1 |>
+  initial_population_0 <- initial_population_1 |>
     dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-09-01")),
                   PATIENT_DOB_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-05-01")),
                   Unique_ID = stringr::str_c({{erecord_01_col}}, INCIDENT_DATE_MISSING, PATIENT_DOB_MISSING, sep = "-")) |>
@@ -233,14 +233,14 @@ hypoglycemia_01 <- function(df,
   # Adult and Pediatric Populations
 
   # filter adult
-  adult_pop <- initial_population |>
+  adult_pop <- initial_population_0 |>
     dplyr::filter(patient_age_in_years >= 18 |
                       ({{epatient_15_col}} >= 18 & {{epatient_16_col}} == "Years")
 
                     )
 
   # filter peds
-  peds_pop <- initial_population |>
+  peds_pop <- initial_population_0 |>
     dplyr::filter(patient_age_in_years < 18 |
                     ({{epatient_15_col}} < 18 & {{epatient_16_col}} == "Years") |
                   !is.na({{epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col}}, ignore.case = T)
@@ -255,47 +255,21 @@ hypoglycemia_01 <- function(df,
   # get the summary of results
 
   # all
-  total_population <- initial_population |>
+  initial_population <- initial_population_0 |>
     dplyr::filter(!({{epatient_15_col}} < 1 & {{epatient_16_col}} == "Days") &
                   !({{epatient_15_col}} < 24 & {{epatient_16_col}} == "Hours") &
                   !({{epatient_15_col}} < 120 & {{epatient_16_col}} == "Minutes")
-             ) |>
-    dplyr::summarize(
-      measure = "Hypoglycemia-01",
-      pop = "All",
-      numerator = sum(correct_treatment, na.rm = T),
-      denominator = dplyr::n(),
-      prop = sum(correct_treatment, na.rm = T) / dplyr::n(),
-      prop_label = pretty_percent(sum(correct_treatment, na.rm = T) / dplyr::n(), n_decimal = 0.01),
-      ...
-    )
+             )
 
-  # adults
-  adult_population <- adult_pop |>
-    dplyr::summarize(
-      measure = "Hypoglycemia-01",
-      pop = "Adults",
-      numerator = sum(correct_treatment, na.rm = T),
-      denominator = dplyr::n(),
-      prop = sum(correct_treatment, na.rm = T) / dplyr::n(),
-      prop_label = pretty_percent(sum(correct_treatment, na.rm = T) / dplyr::n(), n_decimal = 0.01),
-      ...
-    )
-
-  # peds
-  peds_population <- peds_pop |>
-    dplyr::summarize(
-      measure = "Hypoglycemia-01",
-      pop = "Peds",
-      numerator = sum(correct_treatment, na.rm = T),
-      denominator = dplyr::n(),
-      prop = sum(correct_treatment, na.rm = T) / dplyr::n(),
-      prop_label = pretty_percent(sum(correct_treatment, na.rm = T) / dplyr::n(), n_decimal = 0.01),
-      ...
-    )
+  
 
   # summary
-  hypoglycemia.01 <- dplyr::bind_rows(adult_population, peds_population, total_population)
+  hypoglycemia.01  <- results_summarize(total_population = initial_population,
+                                        adult_population = adult_pop,
+                                        peds_population = peds_pop,
+                                        measure_name = "Hypoglycemia-01",
+                                        numerator_col = correct_treatment,
+                                        ...)
 
   hypoglycemia.01
 
