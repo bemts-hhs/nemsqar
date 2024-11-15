@@ -1,7 +1,7 @@
 #' Syncope-01:
 #' 
 #' The `syncope_01` function processes EMS dataset to identify potential syncope (fainting) cases
-#' based on specific criteria and calculates related ECG measures. This function filters data for 
+#' based on specific criteria and calculates related ECG measures. This function dplyr::filters data for 
 #' 911 response calls, assesses primary and associated symptoms for syncope, determines age-based 
 #' populations (adult and pediatric), and aggregates results by unique patient encounters.
 #' 
@@ -35,17 +35,17 @@
 #' (e.g., `incident_date_col`, `patient_DOB_col`) are of type `Date` or `POSIXct`, as incorrect formatting will 
 #' trigger an error message.
 #' 
-#' @param df <['tidy-select'][dplyr_tidy_select]> Main data frame containing EMS records.
-#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column containing the incident date, used to calculate age.
-#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column containing the patient's date of birth.
-#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient age (numeric).
-#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column for the patient age units (e.g., "Years", "Months").
-#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column containing response type codes, specifically 911 codes.
-#' @param esituation_09_col <['tidy-select'][dplyr_tidy_select]> Column with primary symptoms associated with the patient encounter.
-#' @param esituation_10_col <['tidy-select'][dplyr_tidy_select]> Column with other associated symptoms.
-#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column for primary impression code.
-#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column for secondary impression codes.
-#' @param evitals_04_col <['tidy-select'][dplyr_tidy_select]> Column with ECG information if available.
+#' @param df <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Main data frame containing EMS records.
+#' @param incident_date_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column containing the incident date, used to calculate age.
+#' @param patient_DOB_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column containing the patient's date of birth.
+#' @param epatient_15_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column representing the patient age (numeric).
+#' @param epatient_16_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column for the patient age units (e.g., "Years", "Months").
+#' @param eresponse_05_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column containing response type codes, specifically 911 codes.
+#' @param esituation_09_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column with primary symptoms associated with the patient encounter.
+#' @param esituation_10_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column with other associated symptoms.
+#' @param esituation_11_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column for primary impression code.
+#' @param esituation_12_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column for secondary impression codes.
+#' @param evitals_04_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column with ECG information if available.
 #' @param ... Additional arguments passed to `dplyr::summarize` for grouped summaries.
 #'
 #' @return A tibble summarizing results for three population groups (Adults, and Peds) with the following columns:
@@ -89,7 +89,7 @@ syncope_01 <- function(df,
   }
   
   # Ensure df is a data frame or tibble
-  if (!is.data.frame(df) && !is_tibble(df)) {
+  if (!is.data.frame(df) && !tibble::is_tibble(df)) {
     cli_abort(
       c(
         "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
@@ -99,13 +99,13 @@ syncope_01 <- function(df,
   }
   
   # use quasiquotation on the date variables to check format
-  incident_date <- enquo(incident_date_col)
-  patient_DOB <- enquo(patient_DOB_col)
+  incident_date <- rlang::enquo(incident_date_col)
+  patient_DOB <- rlang::enquo(patient_DOB_col)
   
-  if ((!is.Date(df[[as_name(incident_date)]]) &
-       !is.POSIXct(df[[as_name(incident_date)]])) ||
-      (!is.Date(df[[as_name(patient_DOB)]]) &
-       !is.POSIXct(df[[as_name(patient_DOB)]]))) {
+  if ((!lubridate::is.Date(df[[as_name(incident_date)]]) &
+       !lubridate::is.POSIXct(df[[as_name(incident_date)]])) ||
+      (!lubridate::is.Date(df[[as_name(patient_DOB)]]) &
+       !lubridate::is.POSIXct(df[[as_name(patient_DOB)]]))) {
     
     cli_abort(
       "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
@@ -113,8 +113,8 @@ syncope_01 <- function(df,
     
   }
   
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
-  # filter down the primary / other associated symptoms
+  # dplyr::filter incident data for 911 response codes and the corresponding primary/secondary impressions
+  # dplyr::filter down the primary / other associated symptoms
   
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
@@ -129,25 +129,25 @@ syncope_01 <- function(df,
   
   minor_values <- "days|hours|minutes|months"
 
-  # filter the table to get the initial population regardless of age
+  # dplyr::filter the table to get the initial population regardless of age
   initial_population <- df |>
     
     # create the age in years variable
-    mutate(patient_age_in_years_col = as.numeric(difftime(
+    dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
       time1 = {{ incident_date_col }},
       time2 = {{ patient_DOB_col }},
       units = "days"
     )) / 365,
       
       # create the syncope variable using primary / associated symptoms
-      syncope1 = if_any(c({{esituation_09_col}}, {{esituation_10_col}}), ~ grepl(
+      syncope1 = dplyr::if_any(c({{esituation_09_col}}, {{esituation_10_col}}), ~ grepl(
         pattern = syncope_pattern,
         x = .,
         ignore.case = T
       )),
       
       # create the syncope variable using primary / secondary impressions
-      syncope2 = if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
+      syncope2 = dplyr::if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
         pattern = syncope_pattern,
         x = .,
         ignore.case = T
@@ -164,7 +164,7 @@ syncope_01 <- function(df,
       ),
       
       # create the ECG variable
-      ecg_present = if_else(grepl(pattern = ecg_pattern, x = {{evitals_04_col}}, ignore.case = T), 1, 0),
+      ecg_present = dplyr::if_else(grepl(pattern = ecg_pattern, x = {{evitals_04_col}}, ignore.case = T), 1, 0),
       
       # system age check
       system_age_adult = {{ epatient_15_col }} >= 18 & {{ epatient_16_col }} == "Years",
@@ -177,7 +177,7 @@ syncope_01 <- function(df,
       calc_age_minor = patient_age_in_years_col < 18
     ) |> 
     
-    filter(
+    dplyr::filter(
       
       # only records with a syncope dx
       syncope,
@@ -189,11 +189,11 @@ syncope_01 <- function(df,
 
   # Adult and Pediatric Populations
   
-  # filter adult
+  # dplyr::filter adult
   adult_pop <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
   
-  # filter peds
+  # dplyr::filter peds
   peds_pop <- initial_population |>
     dplyr::filter(system_age_minor | calc_age_minor)
   
