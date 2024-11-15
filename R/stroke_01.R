@@ -9,7 +9,7 @@
 #' This function assumes that:
 #' 
 #' Data are already loaded into a data frame or tibble where each row represents
-#' one observation (e.g., patient) and each column is a distinct feature (field).
+#' one observation (e.g., patient) and each column is a dplyr::distinct feature (field).
 #' Alternatively, data may consist of separate datasets referenced by unique columns.
 #'  
 #' Missing values in rows are represented as `NA`. "Not known" or "not recorded" values,
@@ -44,27 +44,27 @@
 #' A summarized tibble with counts and proportions of patients of all ages
 #' who had a 911 response, were suffering from stroke, and had a stroke assessment completed.
 #' 
-#' @param df <['tidy-select'][dplyr_tidy_select]> A data frame or tibble containing the dataset. Each row should represent a unique patient encounter.
+#' @param df <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> A data frame or tibble containing the dataset. Each row should represent a unique patient encounter.
 #' 
-#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column containing unique record identifiers for each encounter.
+#' @param erecord_01_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing unique record identifiers for each encounter.
 #' 
-#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> The column containing the date and time of the incident. This must be a `Date` or `POSIXct` type.
+#' @param incident_date_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing the date and time of the incident. This must be a `Date` or `POSIXct` type.
 #' 
-#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> The column containing the patient's date of birth, formatted as `Date` or `POSIXct`.
+#' @param patient_DOB_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing the patient's date of birth, formatted as `Date` or `POSIXct`.
 #' 
-#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> The column containing EMS response codes, which should include 911 response codes.
+#' @param eresponse_05_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing EMS response codes, which should include 911 response codes.
 #' 
-#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> The column containing the primary impression codes or descriptions related to the situation.
+#' @param esituation_11_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing the primary impression codes or descriptions related to the situation.
 #' 
-#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> The column containing secondary impression codes or descriptions related to the situation.
+#' @param esituation_12_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing secondary impression codes or descriptions related to the situation.
 #' 
-#' @param evitals_23_col <['tidy-select'][dplyr_tidy_select]> The column containing the Glasgow Coma Scale (GCS) score.
+#' @param evitals_23_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing the Glasgow Coma Scale (GCS) score.
 #' 
-#' @param evitals_26_col <['tidy-select'][dplyr_tidy_select]> The column containing the AVPU (alert, verbal, pain, unresponsive) scale value.
+#' @param evitals_26_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing the AVPU (alert, verbal, pain, unresponsive) scale value.
 #' 
-#' @param evitals_29_col <['tidy-select'][dplyr_tidy_select]> The column containing the stroke scale score achieved during assessment.
+#' @param evitals_29_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing the stroke scale score achieved during assessment.
 #' 
-#' @param evitals_30_col <['tidy-select'][dplyr_tidy_select]> The column containing stroke scale type descriptors (e.g., FAST, NIH, etc.).
+#' @param evitals_30_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing stroke scale type descriptors (e.g., FAST, NIH, etc.).
 #' 
 #' @param ... Additional arguments passed to `dplyr::summarize()` function for further customization of results.
 #' 
@@ -99,16 +99,16 @@
 #' 
 stroke_01 <- function(df,
                       erecord_01_col,
-                       incident_date_col,
-                       patient_DOB_col,
-                       eresponse_05_col,
-                       esituation_11_col,
-                       esituation_12_col,
-                       evitals_23_col,
-                       evitals_26_col,
-                       evitals_29_col,
-                       evitals_30_col,
-                       ...) {
+                      incident_date_col,
+                      patient_DOB_col,
+                      eresponse_05_col,
+                      esituation_11_col,
+                      esituation_12_col,
+                      evitals_23_col,
+                      evitals_26_col,
+                      evitals_29_col,
+                      evitals_30_col,
+                      ...) {
   
   # provide better error messaging if df is missing
   if (missing(df)) {
@@ -122,7 +122,7 @@ stroke_01 <- function(df,
   }
   
   # Ensure df is a data frame or tibble
-  if (!is.data.frame(df) && !is_tibble(df)) {
+  if (!is.data.frame(df) && !tibble::is_tibble(df)) {
     cli_abort(
       c(
         "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
@@ -135,10 +135,10 @@ stroke_01 <- function(df,
   incident_date <- enquo(incident_date_col)
   patient_DOB <- enquo(patient_DOB_col)
   
-  if ((!is.Date(df[[as_name(incident_date)]]) &
-       !is.POSIXct(df[[as_name(incident_date)]])) ||
-      (!is.Date(df[[as_name(patient_DOB)]]) &
-       !is.POSIXct(df[[as_name(patient_DOB)]]))) {
+  if ((!lubridate::is.Date(df[[as_name(incident_date)]]) &
+       !lubridate::is.POSIXct(df[[as_name(incident_date)]])) ||
+      (!lubridate::is.Date(df[[as_name(patient_DOB)]]) &
+       !lubridate::is.POSIXct(df[[as_name(patient_DOB)]]))) {
     
     cli_abort(
       "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
@@ -165,84 +165,181 @@ stroke_01 <- function(df,
   
   scale_values <- "F\\.A\\.S\\.T\\. Exam|Miami Emergency Neurologic Deficit \\(MEND\\)|Cincinnati|Other Stroke Scale Type|NIH|Los Angeles|RACE \\(Rapid Arterial Occlusion Evaluation\\)|Los Angeles Motor Score \\(LAMS\\)|Massachusetts"
   
-  # filter the table to get the initial population regardless of age
-  initial_population_0 <- df |>
-    
-    # create the age in years variable
-    
-    mutate(
+  ###_____________________________________________________________________________
+  # from the full dataframe with all variables
+  # create one fact table and several dimension tables
+  # to complete calculations and avoid issues due to row
+  # explosion
+  ###_____________________________________________________________________________
+  
+  core_data <- df |> 
+    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{  incident_date_col  }}, base::as.Date("1984-09-09")),
+                  PATIENT_DOB_MISSING = tidyr::replace_na({{  patient_DOB_col  }}, base::as.Date("1982-05-19")),
+                  Unique_ID = stringr::str_c({{  erecord_01_col  }},
+                                             INCIDENT_DATE_MISSING,
+                                             PATIENT_DOB_MISSING, 
+                                             sep = "-"
+                  ))
+  
+  # fact table
+  # the user should ensure that variables beyond those supplied for calculations
+  # are distinct (i.e. one value or cell per patient)
+  
+  final_data <- core_data |> 
+    dplyr::select(-c({{  eresponse_05_col  }},
+                     {{ esituation_11_col }},
+                     {{ esituation_12_col }},
+                     {{ evitals_23_col }},
+                     {{ evitals_26_col }},
+                     {{ evitals_29_col }},
+                     {{ evitals_30_col }}
+    )) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::mutate(patient_age_in_years = as.numeric(difftime(
+      time1 = {{  incident_date_col  }},
+      time2 = {{  patient_DOB_col  }},
+      units = "days"
+    )) / 365
+    )
+  
+  ###_____________________________________________________________________________
+  ### dimension tables
+  ### each dimension table is turned into a vector of unique IDs
+  ### that are then utilized on the fact table to create distinct variables
+  ### that tell if the patient had the characteristic or not for final
+  ### calculations of the numerator and filtering
+  ###_____________________________________________________________________________
+  
+  # stroke
+  
+  stroke_data1 <- core_data |> 
+    dplyr::select(Unique_ID, {{  esituation_11_col  }}) |> 
+    dplyr::filter(
       
-    # create the respiratory distress variable
-    stroke = if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
-      pattern = stroke_pattern,
-      x = .,
-      ignore.case = T
-    )),
-    
-    # create the 911 variable
-    call_911 = grepl(
-      pattern = codes_911,
-      x = {{eresponse_05_col}},
-      ignore.case = T
-    ),
-    
-    # GCS > 9
-    gcs_greater_9 = {{evitals_23_col}} <= 9,
-    
-    # AVPU not equal to Unresponsive
-    avpu_not_unresponsive = grepl(pattern = avpu_pattern, x = {{evitals_26_col}}, ignore.case = T)
-    ) |>
-    
+      grepl(
+        pattern = stroke_pattern,
+        x = {{ esituation_11_col }},
+        ignore.case = T
+      )
+      
+    ) |> 
+    distinct(Unique_ID) |> 
+    pull(Unique_ID)
+  
+  stroke_data2 <- core_data |> 
+    dplyr::select(Unique_ID, {{  esituation_12_col  }}) |> 
+    dplyr::filter(
+      
+      grepl(
+        pattern = stroke_pattern,
+        x = {{ esituation_12_col }},
+        ignore.case = T
+      )
+      
+    ) |> 
+    distinct(Unique_ID) |> 
+    pull(Unique_ID)
+  
+  # 911 calls
+  
+  call_911_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  eresponse_05_col  }}) |> 
+    dplyr::filter(
+      
+      grepl(
+        pattern = codes_911,
+        x = {{ eresponse_05_col }},
+        ignore.case = T
+      )
+      
+    ) |> 
+    distinct(Unique_ID) |> 
+    pull(Unique_ID)
+  
+  # GCS
+  
+  GCS_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  evitals_23_col  }}) |> 
+    dplyr::filter(
+      
+      {{evitals_23_col}} <= 9
+      
+    ) |> 
+    distinct(Unique_ID) |> 
+    pull(Unique_ID)
+  
+  # AVPU
+  
+  AVPU_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  evitals_26_col  }}) |> 
+    dplyr::filter(
+      
+      grepl(pattern = avpu_pattern, x = {{ evitals_26_col }}, ignore.case = T)
+      
+    ) |> 
+    distinct(Unique_ID) |> 
+    pull(Unique_ID)
+  
+  # stroke scale
+  
+  stroke_scale_data1 <- core_data |> 
+    dplyr::select(Unique_ID, {{  evitals_29_col  }}) |> 
+    dplyr::filter(
+      
+      !is.na({{evitals_29_col}}) & grepl(pattern = stroke_values, x = {{evitals_29_col}}, ignore.case = T)
+      
+    ) |> 
+    distinct(Unique_ID) |> 
+    pull(Unique_ID)
+  
+  stroke_scale_data2 <- core_data |> 
+    dplyr::select(Unique_ID, {{  evitals_30_col  }}) |> 
+    dplyr::filter(
+      
+      !is.na({{evitals_30_col}}) & grepl(pattern = scale_values, x = {{evitals_30_col}}, ignore.case = T)
+      
+    ) |> 
+    distinct(Unique_ID) |> 
+    pull(Unique_ID)
+  
+  
+  # assign variables to final data
+  
+  initial_population <- final_data |> 
+    dplyr::mutate(STROKE1 = Unique_ID %in% stroke_data1,
+                  STROKE2 = Unique_ID %in% stroke_data2,
+                  STROKE = STROKE1 | STROKE2,
+                  CALL_911 = Unique_ID %in% call_911_data,
+                  GCS = Unique_ID %in% GCS_data,
+                  AVPU = Unique_ID %in% AVPU_data,
+                  STROKE_SCALE1 = Unique_ID %in% stroke_scale_data1,
+                  STROKE_SCALE2 = Unique_ID %in% stroke_scale_data2,
+                  STROKE_SCALE = STROKE_SCALE1 | STROKE_SCALE2
+    ) |> 
     dplyr::filter(
       
       # Identify Records that have seizure documentation defined above
-      stroke,
+      STROKE,
       
       # filter down to 911 calls
-      call_911,
+      CALL_911,
       
-     # no GCS < 9 or AVPU not equal to Unresponsive 
-     !gcs_greater_9 | !avpu_not_unresponsive
+      # no GCS < 9 or AVPU not equal to Unresponsive 
+      !GCS | !AVPU
       
     )
-  
-  # continue manipulations with a separate mutate() process
-  
-  initial_population <- initial_population_0 |> 
-    mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-09-01")),
-           PATIENT_DOB_MISSING = tidyr::replace_na({{ incident_date_col }}, as.Date("1984-05-01")),
-           Unique_ID = stringr::str_c({{erecord_01_col}}, INCIDENT_DATE_MISSING, PATIENT_DOB_MISSING, sep = "-")) |> 
-    
-    # tidy stroke scale data 
-    mutate({{evitals_29_col}} := str_c({{evitals_29_col}}, collapse = ", "),
-           {{evitals_30_col}} := str_c({{evitals_30_col}}, collapse = ", "),
-           .by = Unique_ID
-           ) |> 
-    
-    # remove columns that introduce row explosion
-    select(-c({{evitals_23_col}}, {{evitals_26_col}})) |> 
-    distinct(Unique_ID, .keep_all = T) |> 
-    
-    # create the numerator variable for stroke scales
-    mutate(stroke_scale1 = !is.na({{evitals_29_col}}) & grepl(pattern = stroke_values, x = {{evitals_29_col}}, ignore.case = T),
-           stroke_scale2 = !is.na({{evitals_30_col}}) & grepl(pattern = scale_values, x = {{evitals_30_col}}, ignore.case = T),
-           stroke_scale = if_else(stroke_scale1 | stroke_scale2, 1, 0)
-           )
   
   # Initial population only
   
   # get the summary of results
   
-  # all
-  total_population <- initial_population |>
+  # summary
+  stroke.01 <- initial_population |>
     summarize_measure(measure_name = "Stroke-01",
                       population_name = "All",
-                      numerator_col = stroke_scale,
+                      numerator_col = STROKE_SCALE,
                       ...
-                      )
-  
-  # summary
-  stroke.01 <- total_population
+    )
   
   stroke.01
   

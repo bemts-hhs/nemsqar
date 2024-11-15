@@ -55,6 +55,7 @@
 #' using a pediatric restraing device among 911 requests or interfacility request.
 #'
 #' @param df <['tidy-select'][dplyr_tidy_select]> A data frame or tibble containing EMS data where each row represents an individual observation.
+#' @param `erecord_01_col` <['tidy-select'][dplyr_tidy_select]> The column containing unique record identifiers for each encounter.
 #' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column name containing the incident dates, expected to be of Date or POSIXct class.
 #' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column name containing patient birth dates, expected to be of Date or POSIXct class.
 #' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column name indicating the patient age.
