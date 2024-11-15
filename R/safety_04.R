@@ -93,6 +93,7 @@
 #' @export
 #' 
 safety_04 <- function(df,
+                      erecord_01_col,
                       incident_date_col,
                       patient_DOB_col,
                       epatient_15_col,
@@ -102,9 +103,9 @@ safety_04 <- function(df,
                       einjury_03_col,
                       eprocedures_03_col,
                       edisposition_14_col,
-                      transport_disposition_cols,
+                      transport_disposition_col,
                       ...) {
-
+  
   # provide better error messaging if df is missing
   if (missing(df)) {
     cli_abort(
@@ -187,84 +188,186 @@ safety_04 <- function(df,
   
   minor_age_units <- "days|hours|minutes"
   
-  # filter the table to get the initial population regardless of age
-  initial_population_0 <- df |>
+  ###_____________________________________________________________________________
+  # from the full dataframe with all variables
+  # create one fact table and several dimension tables
+  # to complete calculations and avoid issues due to row
+  # explosion
+  ###_____________________________________________________________________________
+  
+  core_data <- df |> 
+    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{  incident_date_col  }}, base::as.Date("1984-09-09")),
+                  PATIENT_DOB_MISSING = tidyr::replace_na({{  patient_DOB_col  }}, base::as.Date("1982-05-19")),
+                  Unique_ID = stringr::str_c({{  erecord_01_col  }},
+                                             INCIDENT_DATE_MISSING,
+                                             PATIENT_DOB_MISSING, 
+                                             sep = "-"
+                  ))
+  
+  # fact table
+  # the user should ensure that variables beyond those supplied for calculations
+  # are distinct (i.e. one value or cell per patient)
+  
+  final_data <- core_data |> 
+    dplyr::select(-c({{  eresponse_05_col  }},
+                     {{  earrest_01_col  }},
+                     {{  einjury_03_col  }},
+                     {{  eprocedures_03_col  }},
+                     {{  edisposition_14_col  }},
+                     {{  transport_disposition_col  }}
+    )) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::mutate(patient_age_in_years = as.numeric(difftime(
+      time1 = {{  incident_date_col  }},
+      time2 = {{  patient_DOB_col  }},
+      units = "days"
+    )) / 365,
     
-    # create the age in years variable
+    # system age check
+    system_age_minor1 = {{ epatient_15_col}} <= 8 & {{epatient_16_col }} == "Years",
+    system_age_minor2 = {{ epatient_15_col}} < 96 & {{epatient_16_col }} == "Months",
+    system_age_minor3 = {{ epatient_15_col}} <= 120 & grepl(pattern = minor_age_units, x = {{epatient_16_col }}, ignore.case = T),
+    system_age_minor = system_age_minor1 | system_age_minor2 | system_age_minor3,
     
-    mutate(
-      patient_age_in_years_col = as.numeric(difftime(
-        time1 = {{incident_date_col}},
-        time2 = {{patient_DOB_col}},
-        units = "days"
-      )) / 365,
-      
-      # transport variable
-      transport = if_else(if_any(
-        c({{transport_disposition_cols}}),
-        ~ grepl(
-          pattern = transport_responses,
-          x = .,
-          ignore.case = T
-        )
-      ), TRUE, FALSE),
-      
-      # interfacility variable
-      interfacility = grepl(
-        pattern = transport_code,
-        x = {{eresponse_05_col}},
-        ignore.case = T
-      ),
-      
-      # interfacility transport or otherwise transported variable
-      interfacility_or_transport = transport | interfacility,
-      
-      # cardiac arrest check
-      cardiac_arrest_check = grepl(pattern = cardiac_arrest_responses, x = {{earrest_01_col}}, ignore.case = T),
-      
-      # severe injury flag
-      trauma_triage_flag = grepl(pattern = trauma_triage_crit, x = {{einjury_03_col}}, ignore.case = T),
-      
-      # long board flag
-      long_board_flag = grepl(pattern = long_board, x = {{eprocedures_03_col}}, ignore.case = T),
-      
-      # airway procedures flag
-      airway_proc_flag = grepl(pattern = airway_procedures, x = {{eprocedures_03_col}}, ignore.case = T),
-      
-      # numerator condition - car seat
-      car_seat_check = if_else(grepl(pattern = car_seat, x = {{edisposition_14_col}}, ignore.case = T), 1, 0),
-      
-      # system age check
-      system_age_minor1 = {{epatient_15_col}} <= 8 & {{epatient_16_col}} == "Years",
-      system_age_minor2 = {{epatient_15_col}} < 96 & {{epatient_16_col}} == "Months",
-      system_age_minor3 = {{epatient_15_col}} <= 120 & grepl(pattern = minor_age_units, x = {{epatient_16_col}}, ignore.case = T),
-      system_age_minor = system_age_minor1 | system_age_minor2 | system_age_minor3,
-      
-      # calculated age check
-      calc_age_minor = patient_age_in_years_col <= 8
+    # calculated age check
+    calc_age_minor = patient_age_in_years <= 8
     )
-    
-  # get the initial population
-    initial_population <- initial_population_0 |> 
-      dplyr::filter(
+  
+  ###_____________________________________________________________________________
+  ### dimension tables
+  ### each dimension table is turned into a vector of unique IDs
+  ### that are then utilized on the fact table to create distinct variables
+  ### that tell if the patient had the characteristic or not for final
+  ### calculations of the numerator and filtering
+  ###_____________________________________________________________________________
+  
+  # transports
+  
+  transport_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  transport_disposition_col  }}) |> 
+    dplyr::filter(
+      
+      grepl(
+        pattern = transport_responses,
+        x = {{  transport_disposition_col  }},
+        ignore.case = T
+      )
+      
+    ) |> 
+    distinct(Unique_ID) |> 
+    pull(Unique_ID)
+  
+  # interfacility
+  
+  interfacility_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  eresponse_05_col  }}) |> 
+    dplyr::filter(
+      
+      grepl(
+        pattern = transport_code,
+        x = {{ eresponse_05_col }},
+        ignore.case = T
+      )
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # cardiac arrest
+  
+  cardiac_arrest_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  earrest_01_col  }}) |> 
+    dplyr::filter(
+      
+      grepl(pattern = cardiac_arrest_responses, x = {{ earrest_01_col }}, ignore.case = T)
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # severe injury
+  
+  severe_injury_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  einjury_03_col  }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::filter(
+      
+      grepl(pattern = trauma_triage_crit, x = {{ einjury_03_col }}, ignore.case = T)
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # long board
+  
+  long_board_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  eprocedures_03_col  }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::filter(
+      
+      grepl(pattern = long_board, x = {{  eprocedures_03_col  }}, ignore.case = T)
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # airway procedure
+  
+  airway_proc_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  eprocedures_03_col  }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::filter(
+      
+      grepl(pattern = airway_procedures, x = {{ eprocedures_03_col }}, ignore.case = T)
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # car seat
+  
+  car_seat_data <- core_data |> 
+    dplyr::select(Unique_ID, {{  edisposition_14_col  }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::filter(
+      
+      grepl(pattern = car_seat, x = {{ edisposition_14_col }}, ignore.case = T)
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # assign variables to final data
+  
+  initial_population <- final_data |> 
+    dplyr::mutate(TRANSPORT = Unique_ID %in% transport_data,
+                  INTERFACILITY = Unique_ID %in% interfacility_data,
+                  TRANSPORT_OR_INTERFACILITY = TRANSPORT | INTERFACILITY,
+                  CARDIAC_ARREST = Unique_ID %in% cardiac_arrest_data,
+                  SEVERE_INJURY = Unique_ID %in% severe_injury_data,
+                  LONG_BOARD = Unique_ID %in% long_board_data,
+                  AIRWAY_PROCEDURE = Unique_ID %in% airway_proc_data,
+                  CAR_SEAT = Unique_ID %in% car_seat_data
+    ) |> 
+    dplyr::filter(
       
       # filter down to age < 8 years
       system_age_minor | calc_age_minor,
       
       # NEMSIS 3.5 transports / interfacility only
-      interfacility_or_transport
+      TRANSPORT_OR_INTERFACILITY
       
-      )
-    
+    )
+  
   # Only calculate for pediatric patients < 8 yrs of age
   
   # filter peds for the exclusion criteria
   peds_pop <- initial_population |>
-    dplyr::filter(!cardiac_arrest_check &
-                    !trauma_triage_flag &
-                    !long_board_flag &
-                    !airway_proc_flag
-                  )
+    dplyr::filter(!CARDIAC_ARREST &
+                    !SEVERE_INJURY &
+                    !LONG_BOARD &
+                    !AIRWAY_PROCEDURE
+    )
   
   # get the summary of results
   
@@ -273,7 +376,7 @@ safety_04 <- function(df,
     summarize_measure(
       measure_name = "Safety-04",
       population_name = "Peds",
-      numerator_col = sum(car_seat_check, na.rm = T),
+      numerator_col = sum(CAR_SEAT, na.rm = T),
       ...
     )
   
