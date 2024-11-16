@@ -182,12 +182,11 @@ trauma_03 <- function(df,
   # pain scale time
   
   pain_scale_time_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_27_initial_col }}, {{ evitals_01_col }}) |> 
-    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::select(Unique_ID, {{ evitals_27_initial_col }}, {{ evitals_27_last_col }}, {{ evitals_01_col }}) |> 
     dplyr::filter( 
       
-      !is.na({{ evitals_01_col }})
-      
+      if_all(c({{ evitals_27_initial_col }}, {{ evitals_27_last_col }}, {{ evitals_01_col }}), ~ !is.na(.))
+
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
@@ -216,11 +215,9 @@ trauma_03 <- function(df,
                   PAIN_SCALE = Unique_ID %in% pain_scale_data
     ) |> 
     dplyr::filter(
-      INJURY, 
-      PAIN_SCALE_TIME, 
-      CALL_911,
-      PATIENT_CARE,
-      TRANSPORT
+      
+      dplyr::if_all(c(
+      INJURY, PAIN_SCALE_TIME, CALL_911, PATIENT_CARE, TRANSPORT), ~ .)
     )
   
   # Adult and Pediatric Populations
