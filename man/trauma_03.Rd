@@ -66,3 +66,12 @@ This function calculates the "Trauma-03" measure, which evaluates pain scale rea
 \note{
 This function uses \code{rlang}, \code{lubridate}, \code{dplyr}, and \code{tidyr} packages for data processing. Ensure the data frame contains valid date formats and expected column names.
 }
+\section{Features}{
+
+\itemize{
+\item Handles missing or invalid date formats with error messaging.
+\item Incorporates quasiquotation for flexible column referencing.
+\item Creates reusable dimension tables for efficient filtering and summarization.
+}
+}
+

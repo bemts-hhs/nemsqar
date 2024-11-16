@@ -77,3 +77,12 @@ response type (911), patient care disposition, and transport type.
 \item Summarizes the Trauma-01 measure for the entire population, adults, and pediatrics.
 }
 }
+\section{Features}{
+
+\itemize{
+\item Handles missing or invalid date formats with error messaging.
+\item Incorporates quasiquotation for flexible column referencing.
+\item Creates reusable dimension tables for efficient filtering and summarization.
+}
+}
+

@@ -27,7 +27,8 @@
 #' - Separately identifies adult and pediatric populations based on system and calculated age.
 #' - Summarizes the Trauma-01 measure for the entire population, adults, and pediatrics.
 #'
-#' @features 
+#' @section Features: 
+#'  
 #' - Handles missing or invalid date formats with error messaging.
 #' - Incorporates quasiquotation for flexible column referencing.
 #' - Creates reusable dimension tables for efficient filtering and summarization.

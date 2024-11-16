@@ -20,27 +20,27 @@ syncope_01(
 )
 }
 \arguments{
-\item{df}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> Main data frame containing EMS records.}
+\item{df}{<\link[=dplyr_tidy_select]{'tidy-select'}> Main data frame containing EMS records.}
 
-\item{incident_date_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> Column containing the incident date, used to calculate age.}
+\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing the incident date, used to calculate age.}
 
-\item{patient_DOB_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> Column containing the patient's date of birth.}
+\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing the patient's date of birth.}
 
-\item{epatient_15_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> Column representing the patient age (numeric).}
+\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the patient age (numeric).}
 
-\item{epatient_16_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> Column for the patient age units (e.g., "Years", "Months").}
+\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for the patient age units (e.g., "Years", "Months").}
 
-\item{eresponse_05_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> Column containing response type codes, specifically 911 codes.}
+\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing response type codes, specifically 911 codes.}
 
-\item{esituation_09_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> Column with primary symptoms associated with the patient encounter.}
+\item{esituation_09_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column with primary symptoms associated with the patient encounter.}
 
-\item{esituation_10_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> Column with other associated symptoms.}
+\item{esituation_10_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column with other associated symptoms.}
 
-\item{esituation_11_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> Column for primary impression code.}
+\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for primary impression code.}
 
-\item{esituation_12_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> Column for secondary impression codes.}
+\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for secondary impression codes.}
 
-\item{evitals_04_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> Column with ECG information if available.}
+\item{evitals_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column with ECG information if available.}
 
 \item{...}{Additional arguments passed to \code{dplyr::summarize} for grouped summaries.}
 }

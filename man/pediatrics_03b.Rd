@@ -22,25 +22,25 @@ pediatrics_03b(
 \arguments{
 \item{df}{Data frame or tibble containing EMS records.}
 
-\item{erecord_01_col}{Column for unique EMS record identifiers.}
+\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for unique EMS record identifiers.}
 
-\item{incident_date_col}{Date or POSIXct Column indicating the date of the EMS incident.}
+\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct Column indicating the date of the EMS incident.}
 
-\item{patient_DOB_col}{Date or POSIXct Column specifying patient date of birth.}
+\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct Column specifying patient date of birth.}
 
-\item{epatient_15_col}{Column giving the calculated age value.}
+\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving the calculated age value.}
 
-\item{epatient_16_col}{Column giving the provided age unit value.}
+\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving the provided age unit value.}
 
-\item{eresponse_05_col}{Column containing the EMS response codes.}
+\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing the EMS response codes.}
 
-\item{eexam_01_col}{Column containing documented weight information.}
+\item{eexam_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing documented weight information.}
 
-\item{eexam_02_col}{Another column for weight documentation, if applicable.}
+\item{eexam_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Another column for weight documentation, if applicable.}
 
-\item{emedications_03_col}{Column indicating medication administration.}
+\item{emedications_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column indicating medication administration.}
 
-\item{emedications_04_col}{Column listing medications administered.}
+\item{emedications_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column listing medications administered.}
 
 \item{...}{Additional parameters for the \code{dplyr::summarize} output.}
 }

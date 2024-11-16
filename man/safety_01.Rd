@@ -18,17 +18,17 @@ safety_01(
 \arguments{
 \item{df}{A data frame or tibble containing EMS data.}
 
-\item{incident_date_col}{Date or POSIXct column indicating the date of the incident.}
+\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct column indicating the date of the incident.}
 
-\item{patient_DOB_col}{Date or POSIXct column for the patient’s date of birth}
+\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct column for the patient’s date of birth}
 
-\item{epatient_15_col}{Column containing age.}
+\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing age.}
 
-\item{epatient_16_col}{Column for age units.}
+\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for age units.}
 
-\item{eresponse_05_col}{Column containing response mode codes (e.g., 911 response codes).}
+\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing response mode codes (e.g., 911 response codes).}
 
-\item{eresponse_24_col}{Column detailing additional response descriptors as text.}
+\item{eresponse_24_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column detailing additional response descriptors as text.}
 
 \item{...}{arguments passed on to summarize.}
 }

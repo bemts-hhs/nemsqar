@@ -22,25 +22,25 @@ respiratory_01(
 \arguments{
 \item{df}{A data frame containing incident data with each row representing an observation.}
 
-\item{erecord_01_col}{Unique Patient ID}
+\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Unique Patient ID}
 
-\item{incident_date_col}{Date or POSIXct Column name for the Incident Date field.}
+\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct Column name for the Incident Date field.}
 
-\item{patient_DOB_col}{Date or POSIXct Column name for epatient.17.}
+\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct Column name for epatient.17.}
 
-\item{epatient_15_col}{Column giving the calculated age value.}
+\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving the calculated age value.}
 
-\item{epatient_16_col}{Column giving the provided age unit value.}
+\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving the provided age unit value.}
 
-\item{eresponse_05_col}{Column name for 911 response codes (e.g., 2205001, 2205003, 2205009).}
+\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for 911 response codes (e.g., 2205001, 2205003, 2205009).}
 
-\item{esituation_11_col}{Column name for primary impression codes related to respiratory distress.}
+\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for primary impression codes related to respiratory distress.}
 
-\item{esituation_12_col}{Column name for secondary impression codes related to respiratory distress.}
+\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for secondary impression codes related to respiratory distress.}
 
-\item{evitals_12_col}{Column name for the first vital sign measurement.}
+\item{evitals_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for the first vital sign measurement.}
 
-\item{evitals_14_col}{Column name for the second vital sign measurement.}
+\item{evitals_14_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for the second vital sign measurement.}
 
 \item{...}{arguments passed to \code{dplyr::summarize()}.}
 }

@@ -20,21 +20,21 @@ safety_02(
 \arguments{
 \item{df}{A data frame where each row is an observation, and each column represents a feature.}
 
-\item{incident_date_col}{Date or POSIXct Unquoted column name representing the date of the incident.}
+\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct Unquoted column name representing the date of the incident.}
 
-\item{patient_DOB_col}{Date or POSIXct Unquoted column name for the patient's date of birth.}
+\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct Unquoted column name for the patient's date of birth.}
 
-\item{epatient_15_col}{Column giving the calculated age value.}
+\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving the calculated age value.}
 
-\item{epatient_16_col}{Column giving the provided age unit value.}
+\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving the provided age unit value.}
 
-\item{eresponse_05_col}{Column giving response codes, identifying 911 responses.}
+\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving response codes, identifying 911 responses.}
 
-\item{edisposition_18_col}{Column giving transport mode descriptors, including possible lights-and-sirens indicators.}
+\item{edisposition_18_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving transport mode descriptors, including possible lights-and-sirens indicators.}
 
-\item{edisposition_28_col}{Column giving patient evaluation and care categories for the EMS response.}
+\item{edisposition_28_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving patient evaluation and care categories for the EMS response.}
 
-\item{transport_disposition_cols}{One or more unquoted column names (such as edisposition.12, edisposition.30) containing transport disposition details.}
+\item{transport_disposition_cols}{<\link[=dplyr_tidy_select]{'tidy-select'}> One or more unquoted column names (such as edisposition.12, edisposition.30) containing transport disposition details.}
 
 \item{...}{Additional arguments for summary calculation, if needed.}
 }

@@ -21,23 +21,23 @@ respiratory_02(
 \arguments{
 \item{df}{Data frame or tibble containing EMS incident data.}
 
-\item{erecord_01_col}{Column name for eRecord.01, used to form a unique patient ID.}
+\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for eRecord.01, used to form a unique patient ID.}
 
-\item{incident_date_col}{Date or POSIXct Column name for the incident date.}
+\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct Column name for the incident date.}
 
-\item{patient_DOB_col}{Date or POSIXct Column name for the patient's date of birth.}
+\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct Column name for the patient's date of birth.}
 
-\item{epatient_15_col}{integer Column giving the calculated age value.}
+\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> integer Column giving the calculated age value.}
 
-\item{epatient_16_col}{Column giving the provided age unit value.}
+\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving the provided age unit value.}
 
-\item{eresponse_05_col}{Column name for response codes (e.g., incident type).}
+\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for response codes (e.g., incident type).}
 
-\item{evitals_12_col}{Column name for oxygen saturation (SpO2) values.}
+\item{evitals_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for oxygen saturation (SpO2) values.}
 
-\item{emedications_03_col}{Column name for medication codes.}
+\item{emedications_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for medication codes.}
 
-\item{eprocedures_03_col}{Column name for procedure codes.}
+\item{eprocedures_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for procedure codes.}
 
 \item{...}{arguments passed to \code{dplyr::summarize()}.}
 }
