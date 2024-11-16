@@ -29,15 +29,15 @@
 #'
 #'
 #' @param df  Data frame or tibble containing EMS incident data.
-#' @param erecord_01_col Column name for eRecord.01, used to form a unique patient ID.
-#' @param incident_date_col Date or POSIXct Column name for the incident date.
-#' @param patient_DOB_col Date or POSIXct Column name for the patient's date of birth.
-#' @param epatient_15_col integer Column giving the calculated age value.
-#' @param epatient_16_col Column giving the provided age unit value.
-#' @param eresponse_05_col Column name for response codes (e.g., incident type).
-#' @param evitals_12_col Column name for oxygen saturation (SpO2) values.
-#' @param emedications_03_col Column name for medication codes.
-#' @param eprocedures_03_col Column name for procedure codes.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Column name for eRecord.01, used to form a unique patient ID.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Date or POSIXct Column name for the incident date.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Date or POSIXct Column name for the patient's date of birth.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> integer Column giving the calculated age value.
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column giving the provided age unit value.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column name for response codes (e.g., incident type).
+#' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> Column name for oxygen saturation (SpO2) values.
+#' @param emedications_03_col <['tidy-select'][dplyr_tidy_select]> Column name for medication codes.
+#' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column name for procedure codes.
 #' @param ... arguments passed to `dplyr::summarize()`.
 #'
 #' @return Returns a tibble summarizing the overall and age-grouped respiratory-02 metrics, formatted for ease of interpretation.

@@ -42,16 +42,16 @@
 #'
 #'
 #' @param df Data frame or tibble containing EMS records.
-#' @param erecord_01_col Column for unique EMS record identifiers.
-#' @param incident_date_col Date or POSIXct Column indicating the date of the EMS incident.
-#' @param patient_DOB_col Date or POSIXct Column specifying patient date of birth.
-#' @param epatient_15_col Column giving the calculated age value.
-#' @param epatient_16_col Column giving the provided age unit value.
-#' @param eresponse_05_col Column containing the EMS response codes.
-#' @param eexam_01_col Column containing documented weight information.
-#' @param eexam_02_col Another column for weight documentation, if applicable.
-#' @param emedications_03_col Column indicating medication administration.
-#' @param emedications_04_col Column listing medications administered.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Column for unique EMS record identifiers.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Date or POSIXct Column indicating the date of the EMS incident.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Date or POSIXct Column specifying patient date of birth.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column giving the calculated age value.
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column giving the provided age unit value.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column containing the EMS response codes.
+#' @param eexam_01_col <['tidy-select'][dplyr_tidy_select]> Column containing documented weight information.
+#' @param eexam_02_col <['tidy-select'][dplyr_tidy_select]> Another column for weight documentation, if applicable.
+#' @param emedications_03_col <['tidy-select'][dplyr_tidy_select]> Column indicating medication administration.
+#' @param emedications_04_col <['tidy-select'][dplyr_tidy_select]> Column listing medications administered.
 #' @param ... Additional parameters for the `dplyr::summarize` output.
 #'
 #' @return A tibble summarizing results for three population groups (All, Adults, and Peds) with the following columns:

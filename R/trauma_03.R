@@ -1,24 +1,41 @@
-#' Title
+#' Trauma-03 Measure Calculation
 #'
-#' @param df 
-#' @param erecord_01_col 
-#' @param incident_date_col 
-#' @param patient_DOB_col 
-#' @param epatient_15_col 
-#' @param epatient_16_col 
-#' @param esituation_02_col 
-#' @param eresponse_05_col 
-#' @param edisposition_28_col 
-#' @param transport_disposition_col 
-#' @param evitals_27_initial_col 
-#' @param evitals_27_last_col 
-#' @param evitals_01_col 
-#' @param ... 
+#' This function calculates the "Trauma-03" measure, which evaluates pain scale reassessment for trauma patients, using a comprehensive data frame with EMS records. The function processes input data to create both fact and dimension tables, identifies eligible patients, and summarizes results for adult and pediatric populations.
 #'
-#' @return
+#' @param df A data frame or tibble containing EMS data with all relevant columns.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> The column indicating the incident date. Must be of class `Date` or similar.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> The column representing the patient's date of birth. Must be of class `Date` or similar.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> The column for patient age numeric value.
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> The column for patient age unit (e.g., "Years", "Months").
+#' @param esituation_02_col <['tidy-select'][dplyr_tidy_select]> The column containing information on the presence of injury.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> The column representing the 911 response type.
+#' @param edisposition_28_col <['tidy-select'][dplyr_tidy_select]> The column for patient care disposition details.
+#' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> The column for patient transport disposition.
+#' @param evitals_27_initial_col <['tidy-select'][dplyr_tidy_select]> The column for the initial pain scale score.
+#' @param evitals_27_last_col <['tidy-select'][dplyr_tidy_select]> The column for the last pain scale score.
+#' @param evitals_01_col <['tidy-select'][dplyr_tidy_select]> The column for the time of pain scale measurement.
+#' @param ... Additional arguments passed to helper functions for further customization.
+#'
+#' @section Features: 
+#' 
+#' - Handles missing or invalid date formats with error messaging.
+#' - Incorporates quasiquotation for flexible column referencing.
+#' - Creates reusable dimension tables for efficient filtering and summarization.
+#'
+#' @return A tibble summarizing results for three population groups (All, Adults, and Peds) with the following columns:
+#' 
+#' `pop`: Population type (All, Adults, Peds).
+#' `numerator`: Count of incidents where there was a reduction in patient pain.
+#' `denominator`: Total count of incidents.
+#' `prop`: Proportion of incidents where there was a reduction in patient pain.
+#' `prop_label`: Proportion formatted as a percentage with a specified number of
+#' decimal places.
+#'
+#' @note This function uses `rlang`, `lubridate`, `dplyr`, and `tidyr` packages for data processing. Ensure the data frame contains valid date formats and expected column names.
+#' 
 #' @export
-#'
-#' @examples
+#' 
 trauma_03 <- function(df,
                       erecord_01_col,
                       incident_date_col,
@@ -185,7 +202,7 @@ trauma_03 <- function(df,
     dplyr::select(Unique_ID, {{ evitals_27_initial_col }}, {{ evitals_27_last_col }}, {{ evitals_01_col }}) |> 
     dplyr::filter( 
       
-      if_all(c({{ evitals_27_initial_col }}, {{ evitals_27_last_col }}, {{ evitals_01_col }}), ~ !is.na(.))
+      dplyr::if_all(c({{ evitals_27_initial_col }}, {{ evitals_27_last_col }}, {{ evitals_01_col }}), ~ !is.na(.))
 
     ) |> 
     dplyr::distinct(Unique_ID) |> 
@@ -262,3 +279,4 @@ trauma_03 <- function(df,
 }
 
 
+  

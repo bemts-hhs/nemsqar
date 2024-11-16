@@ -20,27 +20,27 @@ stroke_01(
 )
 }
 \arguments{
-\item{df}{<\link[=dplyr_tidy_select]{'tidy-select'}> A data frame or tibble containing the dataset. Each row should represent a unique patient encounter.}
+\item{df}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> A data frame or tibble containing the dataset. Each row should represent a unique patient encounter.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing unique record identifiers for each encounter.}
+\item{erecord_01_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> The column containing unique record identifiers for each encounter.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the date and time of the incident. This must be a \code{Date} or \code{POSIXct} type.}
+\item{incident_date_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> The column containing the date and time of the incident. This must be a \code{Date} or \code{POSIXct} type.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the patient's date of birth, formatted as \code{Date} or \code{POSIXct}.}
+\item{patient_DOB_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> The column containing the patient's date of birth, formatted as \code{Date} or \code{POSIXct}.}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing EMS response codes, which should include 911 response codes.}
+\item{eresponse_05_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> The column containing EMS response codes, which should include 911 response codes.}
 
-\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the primary impression codes or descriptions related to the situation.}
+\item{esituation_11_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> The column containing the primary impression codes or descriptions related to the situation.}
 
-\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing secondary impression codes or descriptions related to the situation.}
+\item{esituation_12_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> The column containing secondary impression codes or descriptions related to the situation.}
 
-\item{evitals_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the Glasgow Coma Scale (GCS) score.}
+\item{evitals_23_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> The column containing the Glasgow Coma Scale (GCS) score.}
 
-\item{evitals_26_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the AVPU (alert, verbal, pain, unresponsive) scale value.}
+\item{evitals_26_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> The column containing the AVPU (alert, verbal, pain, unresponsive) scale value.}
 
-\item{evitals_29_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the stroke scale score achieved during assessment.}
+\item{evitals_29_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> The column containing the stroke scale score achieved during assessment.}
 
-\item{evitals_30_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing stroke scale type descriptors (e.g., FAST, NIH, etc.).}
+\item{evitals_30_col}{<\link[dplyr_tidy_dplyr:select]{'tidy-dplyr::select'}> The column containing stroke scale type descriptors (e.g., FAST, NIH, etc.).}
 
 \item{...}{Additional arguments passed to \code{dplyr::summarize()} function for further customization of results.}
 }
@@ -73,7 +73,7 @@ This function filters and processes EMS data to:
 This function assumes that:
 
 Data are already loaded into a data frame or tibble where each row represents
-one observation (e.g., patient) and each column is a distinct feature (field).
+one observation (e.g., patient) and each column is a dplyr::distinct feature (field).
 Alternatively, data may consist of separate datasets referenced by unique columns.
 
 Missing values in rows are represented as \code{NA}. "Not known" or "not recorded" values,

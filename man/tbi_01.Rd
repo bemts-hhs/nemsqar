@@ -60,9 +60,9 @@ tbi_01(
 A tibble summarizing results for three population groups (Adults, and Peds) with the following columns:
 
 \code{pop}: Population type (Adults, Peds).
-\code{numerator}: Count of incidents where beta-agonist medications were administered.
+\code{numerator}: Count of incidents where SP02, ETCO2, and SBP were all measured.
 \code{denominator}: Total count of incidents.
-\code{prop}: Proportion of incidents involving beta-agonist medications.
+\code{prop}: Proportion of incidents where SP02, ETCO2, and SBP were all measured.
 \code{prop_label}: Proportion formatted as a percentage with a specified number of
 decimal places.
 }

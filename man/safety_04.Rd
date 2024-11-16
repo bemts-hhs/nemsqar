@@ -6,6 +6,7 @@
 \usage{
 safety_04(
   df,
+  erecord_01_col,
   incident_date_col,
   patient_DOB_col,
   epatient_15_col,
@@ -15,7 +16,7 @@ safety_04(
   einjury_03_col,
   eprocedures_03_col,
   edisposition_14_col,
-  transport_disposition_cols,
+  transport_disposition_col,
   ...
 )
 }
@@ -40,9 +41,11 @@ safety_04(
 
 \item{edisposition_14_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for transport dispositions.}
 
-\item{transport_disposition_cols}{<\link[=dplyr_tidy_select]{'tidy-select'}> Columns for primary and secondary transport dispositions.}
-
 \item{...}{Additional arguments for flexibility in function customization.}
+
+\item{`erecord_01_col`}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing unique record identifiers for each encounter.}
+
+\item{transport_disposition_cols}{<\link[=dplyr_tidy_select]{'tidy-select'}> Columns for primary and secondary transport dispositions.}
 }
 \value{
 A data.frame summarizing results for three population groups (All,

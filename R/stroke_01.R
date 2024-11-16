@@ -44,27 +44,27 @@
 #' A summarized tibble with counts and proportions of patients of all ages
 #' who had a 911 response, were suffering from stroke, and had a stroke assessment completed.
 #' 
-#' @param df <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> A data frame or tibble containing the dataset. Each row should represent a unique patient encounter.
+#' @param df <['tidy-select'][dplyr_tidy_select]> A data frame or tibble containing the dataset. Each row should represent a unique patient encounter.
 #' 
-#' @param erecord_01_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing unique record identifiers for each encounter.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column containing unique record identifiers for each encounter.
 #' 
-#' @param incident_date_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing the date and time of the incident. This must be a `Date` or `POSIXct` type.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> The column containing the date and time of the incident. This must be a `Date` or `POSIXct` type.
 #' 
-#' @param patient_DOB_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing the patient's date of birth, formatted as `Date` or `POSIXct`.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> The column containing the patient's date of birth, formatted as `Date` or `POSIXct`.
 #' 
-#' @param eresponse_05_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing EMS response codes, which should include 911 response codes.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> The column containing EMS response codes, which should include 911 response codes.
 #' 
-#' @param esituation_11_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing the primary impression codes or descriptions related to the situation.
+#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> The column containing the primary impression codes or descriptions related to the situation.
 #' 
-#' @param esituation_12_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing secondary impression codes or descriptions related to the situation.
+#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> The column containing secondary impression codes or descriptions related to the situation.
 #' 
-#' @param evitals_23_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing the Glasgow Coma Scale (GCS) score.
+#' @param evitals_23_col <['tidy-select'][dplyr_tidy_select]> The column containing the Glasgow Coma Scale (GCS) score.
 #' 
-#' @param evitals_26_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing the AVPU (alert, verbal, pain, unresponsive) scale value.
+#' @param evitals_26_col <['tidy-select'][dplyr_tidy_select]> The column containing the AVPU (alert, verbal, pain, unresponsive) scale value.
 #' 
-#' @param evitals_29_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing the stroke scale score achieved during assessment.
+#' @param evitals_29_col <['tidy-select'][dplyr_tidy_select]> The column containing the stroke scale score achieved during assessment.
 #' 
-#' @param evitals_30_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> The column containing stroke scale type descriptors (e.g., FAST, NIH, etc.).
+#' @param evitals_30_col <['tidy-select'][dplyr_tidy_select]> The column containing stroke scale type descriptors (e.g., FAST, NIH, etc.).
 #' 
 #' @param ... Additional arguments passed to `dplyr::summarize()` function for further customization of results.
 #' 

@@ -20,12 +20,12 @@
 #'
 #'
 #' @param df A data frame or tibble containing EMS data.
-#' @param incident_date_col Date or POSIXct column indicating the date of the incident.
-#' @param patient_DOB_col Date or POSIXct column for the patient’s date of birth
-#' @param epatient_15_col Column containing age.
-#' @param epatient_16_col Column for age units.
-#' @param eresponse_05_col Column containing response mode codes (e.g., 911 response codes).
-#' @param eresponse_24_col Column detailing additional response descriptors as text.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Date or POSIXct column indicating the date of the incident.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Date or POSIXct column for the patient’s date of birth
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column containing age.
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column for age units.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column containing response mode codes (e.g., 911 response codes).
+#' @param eresponse_24_col <['tidy-select'][dplyr_tidy_select]> Column detailing additional response descriptors as text.
 #' @param ... arguments passed on to summarize.
 #'
 #' @return Returns a tibble summarizing the Safety-01 metric for all populations, adult, and pediatric groups.

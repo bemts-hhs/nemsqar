@@ -35,17 +35,17 @@
 #' (e.g., `incident_date_col`, `patient_DOB_col`) are of type `Date` or `POSIXct`, as incorrect formatting will 
 #' trigger an error message.
 #' 
-#' @param df <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Main data frame containing EMS records.
-#' @param incident_date_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column containing the incident date, used to calculate age.
-#' @param patient_DOB_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column containing the patient's date of birth.
-#' @param epatient_15_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column representing the patient age (numeric).
-#' @param epatient_16_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column for the patient age units (e.g., "Years", "Months").
-#' @param eresponse_05_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column containing response type codes, specifically 911 codes.
-#' @param esituation_09_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column with primary symptoms associated with the patient encounter.
-#' @param esituation_10_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column with other associated symptoms.
-#' @param esituation_11_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column for primary impression code.
-#' @param esituation_12_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column for secondary impression codes.
-#' @param evitals_04_col <['tidy-dplyr::select'][dplyr_tidy_dplyr::select]> Column with ECG information if available.
+#' @param df <['tidy-select'][dplyr_tidy_select]> Main data frame containing EMS records.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column containing the incident date, used to calculate age.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column containing the patient's date of birth.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient age (numeric).
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column for the patient age units (e.g., "Years", "Months").
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column containing response type codes, specifically 911 codes.
+#' @param esituation_09_col <['tidy-select'][dplyr_tidy_select]> Column with primary symptoms associated with the patient encounter.
+#' @param esituation_10_col <['tidy-select'][dplyr_tidy_select]> Column with other associated symptoms.
+#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column for primary impression code.
+#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column for secondary impression codes.
+#' @param evitals_04_col <['tidy-select'][dplyr_tidy_select]> Column with ECG information if available.
 #' @param ... Additional arguments passed to `dplyr::summarize` for grouped summaries.
 #'
 #' @return A tibble summarizing results for three population groups (Adults, and Peds) with the following columns:

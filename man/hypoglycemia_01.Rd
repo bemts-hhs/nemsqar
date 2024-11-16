@@ -54,7 +54,14 @@ hypoglycemia_01(
 \item{...}{Additional arguments for summarization, passed to the summarize function.}
 }
 \value{
-A tibble summarizing the initial population and filtered subgroups (adult, pediatric, total) with hypoglycemia events.
+A tibble summarizing results for three population groups (All, Adults, and Peds) with the following columns:
+
+\code{pop}: Population type (All, Adults, Peds).
+\code{numerator}: Count of incidents where specific hypoglycemia best practices were administered.
+\code{denominator}: Total count of incidents.
+\code{prop}: Proportion of incidents where specific hypoglycemia best practices were administered.
+\code{prop_label}: Proportion formatted as a percentage with a specified number of
+decimal places.#'
 }
 \description{
 The \code{hypoglycemia_01} function calculates the NEMSQA measure evaluating how often

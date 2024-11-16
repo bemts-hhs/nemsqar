@@ -24,16 +24,16 @@
 #' utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
 #'
 #' @param df A data frame containing incident data with each row representing an observation.
-#' @param erecord_01_col Unique Patient ID
-#' @param incident_date_col Date or POSIXct Column name for the Incident Date field.
-#' @param patient_DOB_col Date or POSIXct Column name for epatient.17.
-#' @param epatient_15_col Column giving the calculated age value.
-#' @param epatient_16_col Column giving the provided age unit value.
-#' @param eresponse_05_col Column name for 911 response codes (e.g., 2205001, 2205003, 2205009).
-#' @param esituation_11_col Column name for primary impression codes related to respiratory distress.
-#' @param esituation_12_col Column name for secondary impression codes related to respiratory distress.
-#' @param evitals_12_col Column name for the first vital sign measurement.
-#' @param evitals_14_col Column name for the second vital sign measurement.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Unique Patient ID
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Date or POSIXct Column name for the Incident Date field.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Date or POSIXct Column name for epatient.17.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column giving the calculated age value.
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column giving the provided age unit value.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column name for 911 response codes (e.g., 2205001, 2205003, 2205009).
+#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column name for primary impression codes related to respiratory distress.
+#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column name for secondary impression codes related to respiratory distress.
+#' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> Column name for the first vital sign measurement.
+#' @param evitals_14_col <['tidy-select'][dplyr_tidy_select]> Column name for the second vital sign measurement.
 #' @param ... arguments passed to `dplyr::summarize()`.
 #'
 #' @return Returns a data frame summarizing the proportion of cases with complete vital sign data, divided by population

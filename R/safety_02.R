@@ -35,14 +35,14 @@
 #' utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
 #'
 #' @param df A data frame where each row is an observation, and each column represents a feature.
-#' @param incident_date_col Date or POSIXct Unquoted column name representing the date of the incident.
-#' @param patient_DOB_col Date or POSIXct Unquoted column name for the patient's date of birth.
-#' @param epatient_15_col Column giving the calculated age value.
-#' @param epatient_16_col Column giving the provided age unit value.
-#' @param eresponse_05_col Column giving response codes, identifying 911 responses.
-#' @param edisposition_18_col Column giving transport mode descriptors, including possible lights-and-sirens indicators.
-#' @param edisposition_28_col Column giving patient evaluation and care categories for the EMS response.
-#' @param transport_disposition_cols One or more unquoted column names (such as edisposition.12, edisposition.30) containing transport disposition details.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Date or POSIXct Unquoted column name representing the date of the incident.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Date or POSIXct Unquoted column name for the patient's date of birth.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column giving the calculated age value.
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column giving the provided age unit value.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column giving response codes, identifying 911 responses.
+#' @param edisposition_18_col <['tidy-select'][dplyr_tidy_select]> Column giving transport mode descriptors, including possible lights-and-sirens indicators.
+#' @param edisposition_28_col <['tidy-select'][dplyr_tidy_select]> Column giving patient evaluation and care categories for the EMS response.
+#' @param transport_disposition_cols <['tidy-select'][dplyr_tidy_select]> One or more unquoted column names (such as edisposition.12, edisposition.30) containing transport disposition details.
 #' @param ... Additional arguments for summary calculation, if needed.
 #'
 #' @return A data frame summarizing the Safety-02 metric with calculated values for three populations:

@@ -45,7 +45,14 @@ pediatrics_03b(
 \item{...}{Additional parameters for the \code{dplyr::summarize} output.}
 }
 \value{
-A summary tibble with columns for measure name, population, numerator, denominator, and proportion.
+A tibble summarizing results for three population groups (All, Adults, and Peds) with the following columns:
+
+\code{pop}: Population type (All, Adults, Peds).
+\code{numerator}: Count of incidents where patient weight was documented.
+\code{denominator}: Total count of incidents.
+\code{prop}: Proportion of incidents where patient weight was documented.
+\code{prop_label}: Proportion formatted as a percentage with a specified number of
+decimal places.#'
 }
 \description{
 The \code{pediatrics_03b} function calculates a pediatric metric focused on EMS
