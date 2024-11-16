@@ -10,7 +10,8 @@
 #' @param eresponse_05_col 
 #' @param edisposition_28_col 
 #' @param transport_disposition_col 
-#' @param evitals_27_col 
+#' @param evitals_27_initial_col 
+#' @param evitals_27_last_col 
 #' @param evitals_01_col 
 #' @param ... 
 #'
@@ -28,7 +29,8 @@ trauma_03 <- function(df,
                       eresponse_05_col,
                       edisposition_28_col,
                       transport_disposition_col,
-                      evitals_27_col,
+                      evitals_27_initial_col,
+                      evitals_27_last_col,
                       evitals_01_col,
                       ...) {
   
@@ -74,9 +76,6 @@ trauma_03 <- function(df,
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
   
-  # avpu not values
-  avpu_values <- "Alert|3326001"
-  
   # patient care provided
   care_provided <- "4228001|Patient Evaluated and Care Provided"
   
@@ -108,12 +107,12 @@ trauma_03 <- function(df,
   
   final_data <- core_data |> 
     dplyr::select(-c({{ esituation_02_col }},
-                     {{ evitals_23_col }},
-                     {{ evitals_26_col }},
                      {{ eresponse_05_col }},
                      {{ edisposition_28_col }},
                      {{ transport_disposition_col }},
-                     {{ evitals_27_col }}
+                     {{ evitals_27_initial_col }},
+                     {{ evitals_27_last_col }},
+                     {{ evitals_01_col }}
                      
     )) |> 
     dplyr::distinct(Unique_ID, .keep_all = T) |> 
@@ -141,26 +140,7 @@ trauma_03 <- function(df,
   ### that tell if the patient had the characteristic or not for final
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
-  
-  # GCS
-  
-  GCS_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_23_col }}) |> 
-    dplyr::filter({{ evitals_23_col }} == 15) |> 
-    distinct(Unique_ID) |> 
-    pull(Unique_ID)
-  
-  # AVPU
-  
-  AVPU_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_26_col }}) |> 
-    dplyr::filter(grepl(pattern = avpu_values, 
-                        x = {{ evitals_26_col }}, 
-                        ignore.case = T)
-    ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
-  
+
   # possible injury
   
   possible_injury_data <- core_data |> 
@@ -199,14 +179,27 @@ trauma_03 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
-  # pain scale
+  # pain scale time
   
-  pain_scale_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_27_col }}) |> 
+  pain_scale_time_data <- core_data |> 
+    dplyr::select(Unique_ID, {{ evitals_27_initial_col }}, {{ evitals_01_col }}) |> 
     dplyr::distinct(Unique_ID, .keep_all = T) |> 
     dplyr::filter( 
       
-      !is.na({{ evitals_27_col }})
+      !is.na({{ evitals_01_col }})
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # pain scale change
+  
+  pain_scale_data <- core_data |> 
+    dplyr::select(Unique_ID, {{ evitals_27_initial_col }}, {{ evitals_27_last_col }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::filter( 
+      
+      {{ evitals_27_last_col }} < {{ evitals_27_initial_col }}
       
     ) |> 
     dplyr::distinct(Unique_ID) |> 
@@ -215,8 +208,7 @@ trauma_03 <- function(df,
   # assign variables to final data
   
   initial_population <- final_data |> 
-    dplyr::mutate(GCS = Unique_ID %in% GCS_data,
-                  AVPU = Unique_ID %in% AVPU_data,
+    dplyr::mutate(PAIN_SCALE_TIME = Unique_ID %in% pain_scale_time_data,
                   CALL_911 = Unique_ID %in% call_911_data,
                   TRANSPORT = Unique_ID %in% transport_data,
                   INJURY = Unique_ID %in% possible_injury_data,
@@ -225,9 +217,10 @@ trauma_03 <- function(df,
     ) |> 
     dplyr::filter(
       INJURY, 
-      (GCS | AVPU),
+      PAIN_SCALE_TIME, 
       CALL_911,
-      (PATIENT_CARE & TRANSPORT)
+      PATIENT_CARE,
+      TRANSPORT
     )
   
   # Adult and Pediatric Populations
@@ -245,28 +238,28 @@ trauma_03 <- function(df,
   # total population
   
   total_population <- initial_population |> 
-    summarize_measure(measure_name = "Trauma-01",
+    summarize_measure(measure_name = "Trauma-03",
                       population_name = "All",
                       PAIN_SCALE,
                       ...)
   
   # adults
   adult_population <- adult_pop |>
-    summarize_measure(measure_name = "Trauma-01",
+    summarize_measure(measure_name = "Trauma-03",
                       population_name = "Adult",
                       PAIN_SCALE,
                       ...)
   
   # peds
   peds_population <- peds_pop |>
-    summarize_measure(measure_name = "Trauma-01",
+    summarize_measure(measure_name = "Trauma-03",
                       population_name = "Peds",
                       PAIN_SCALE,
                       ...) 
   # summary
-  trauma.01 <- dplyr::bind_rows(total_population, adult_population, peds_population)
+  trauma.03 <- dplyr::bind_rows(total_population, adult_population, peds_population)
   
-  trauma.01
+  trauma.03
   
   
 }

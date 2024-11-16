@@ -32,7 +32,7 @@ summarize_measure <- function(data,
       pop = population_name,
       numerator = sum({{numerator_col}}, na.rm=T),
       denominator = dplyr::n(),
-      prop = sum(numerator / denominator,
+      prop = sum(numerator / denominator),
       prop_label = pretty_percent(prop,
                                   n_decimal = 0.01),
       ...
