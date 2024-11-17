@@ -18,6 +18,7 @@ trauma_03(
   evitals_27_initial_col,
   evitals_27_last_col,
   evitals_01_col,
+  evitals_27_sortorder_col,
   ...
 )
 }
@@ -47,6 +48,8 @@ trauma_03(
 \item{evitals_27_last_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for the last pain scale score.}
 
 \item{evitals_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for the time of pain scale measurement.}
+
+\item{evitals_27_sortorder_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for the sort order of pain scale measurement.}
 
 \item{...}{Additional arguments passed to helper functions for further customization.}
 }
