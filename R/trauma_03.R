@@ -15,6 +15,7 @@
 #' @param evitals_27_initial_col <['tidy-select'][dplyr_tidy_select]> The column for the initial pain scale score.
 #' @param evitals_27_last_col <['tidy-select'][dplyr_tidy_select]> The column for the last pain scale score.
 #' @param evitals_01_col <['tidy-select'][dplyr_tidy_select]> The column for the time of pain scale measurement.
+#' @param evitals_27_sortorder_col <['tidy-select'][dplyr_tidy_select]> The column for the sort order of pain scale measurement.
 #' @param ... Additional arguments passed to helper functions for further customization.
 #'
 #' @section Features: 
@@ -49,6 +50,7 @@ trauma_03 <- function(df,
                       evitals_27_initial_col,
                       evitals_27_last_col,
                       evitals_01_col,
+                      evitals_27_sortorder_col,
                       ...) {
   
   # provide better error messaging if df is missing
@@ -178,7 +180,6 @@ trauma_03 <- function(df,
   
   call_911_data <- core_data |> 
     dplyr::select(Unique_ID, {{ eresponse_05_col }}) |> 
-    dplyr::distinct(Unique_ID, .keep_all = T) |> 
     dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
@@ -187,7 +188,6 @@ trauma_03 <- function(df,
   
   transport_data <- core_data |> 
     dplyr::select(Unique_ID, {{ transport_disposition_col }}) |> 
-    dplyr::distinct(Unique_ID, .keep_all = T) |> 
     dplyr::filter( 
       
       grepl(pattern = transport_responses, x = {{ transport_disposition_col }}, ignore.case = T) 
@@ -202,8 +202,8 @@ trauma_03 <- function(df,
     dplyr::select(Unique_ID, {{ evitals_27_initial_col }}, {{ evitals_27_last_col }}, {{ evitals_01_col }}) |> 
     dplyr::filter( 
       
-      dplyr::if_all(c({{ evitals_27_initial_col }}, {{ evitals_27_last_col }}, {{ evitals_01_col }}), ~ !is.na(.))
-
+      dplyr::if_all(c({{ evitals_27_initial_col }}, {{ evitals_01_col }}), ~ !is.na(.))
+      
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
@@ -212,10 +212,21 @@ trauma_03 <- function(df,
   
   pain_scale_data <- core_data |> 
     dplyr::select(Unique_ID, {{ evitals_27_initial_col }}, {{ evitals_27_last_col }}) |> 
-    dplyr::distinct(Unique_ID, .keep_all = T) |> 
     dplyr::filter( 
       
       {{ evitals_27_last_col }} < {{ evitals_27_initial_col }}
+      
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
+  # pain scale sort order
+  
+  pain_scale_sortorder_data <- core_data |> 
+    dplyr::select(Unique_ID, {{ evitals_27_initial_col }}, {{ evitals_27_sortorder_col }}) |> 
+    dplyr::filter( 
+      
+      !is.na({{ evitals_27_initial_col }}) & {{ evitals_27_sortorder_col }} > 0
       
     ) |> 
     dplyr::distinct(Unique_ID) |> 
@@ -229,12 +240,13 @@ trauma_03 <- function(df,
                   TRANSPORT = Unique_ID %in% transport_data,
                   INJURY = Unique_ID %in% possible_injury_data,
                   PATIENT_CARE = Unique_ID %in% patient_care_data,
-                  PAIN_SCALE = Unique_ID %in% pain_scale_data
+                  PAIN_SCALE = Unique_ID %in% pain_scale_data,
+                  PAIN_SCALE_SORTORDER = Unique_ID %in% pain_scale_sortorder_data
     ) |> 
     dplyr::filter(
       
       dplyr::if_all(c(
-      INJURY, PAIN_SCALE_TIME, CALL_911, PATIENT_CARE, TRANSPORT), ~ .)
+      INJURY, PAIN_SCALE_TIME, PAIN_SCALE_SORTORDER, CALL_911, PATIENT_CARE, TRANSPORT), ~ .)
     )
   
   # Adult and Pediatric Populations
