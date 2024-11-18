@@ -7,7 +7,22 @@ trauma_04 <- function(df,
                       esituation_02_col,
                       eresponse_05_col,
                       transport_disposition_col,
-                      evitals_27_initial_col,
+                      evitals_21_col,
+                      eexam_23_col,
+                      eexam_25_col,
+                      evitals_15_col,
+                      eprocedures_03_col,
+                      evitals_12_col,
+                      evitals_06_col,
+                      evitals_10_col,
+                      evitals_06_col,
+                      einjury_03_col,
+                      eexam_16_col,
+                      eexam_20_col,
+                      einjury_04_col,
+                      einjury_09_col,
+                      eresponse_10_col,
+                      einjury_01_col,
                       evitals_27_last_col,
                       evitals_01_col,
                       evitals_27_sortorder_col,
@@ -55,11 +70,20 @@ trauma_04 <- function(df,
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
   
-  # patient care provided
-  care_provided <- "4228001|Patient Evaluated and Care Provided"
-  
   # define transports
   transport_responses <- "Transport by This EMS Unit \\(This Crew Only\\)|Transport by This EMS Unit, with a Member of Another Crew|Transport by Another EMS Unit, with a Member of This Crew|Patient Treated, Transported by this EMS Unit|Patient Treated, Transported with this EMS Crew in Another Vehicle|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Mutual Aid Tx & Transport|4212033|4230001|4230003|4230007|itDisposition\\.112\\.116|it4212\\.142|itDisposition\\.112\\.165|itDisposition\\.112\\.141|Treat / Transport BLS by this unit|itDisposition\\.112\\.142"
+  
+  # GCS motor values
+  
+  GCS_motor_values <- "no motor response|extension to pain|flexion to pain|withdrawal from pain|localizing pain|5|4|3|2|1"
+  
+  # lung assessment values
+  
+  lung_assessment_values <- "Breath Sounds-Absent|Breath Sounds-Decreased|Increased Respiratory Effort|3523001|3523003|3523011"
+  
+  # chest assessment values
+  
+  chest_assessment_values <- 
   
   # minor values
   minor_values <- "days|hours|minutes|months"
