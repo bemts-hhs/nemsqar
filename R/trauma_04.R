@@ -102,14 +102,16 @@ trauma_04 <- function(df,
     )) / 365,
     
     # system age check
-    system_age_adult = {{ epatient_15_col }} >= 18 & {{ epatient_16_col }} == "Years", 
-    system_age_minor1 = ({{ epatient_15_col }} < 18 & {{ epatient_15_col }} >= 2) & {{ epatient_16_col }} == "Years", 
-    system_age_minor2 = {{ epatient_15_col }} >= 24 & {{ epatient_16_col }} == "Months",
-    system_age_minor = system_age_minor1 | system_age_minor2, 
+    system_age_65 = {{ epatient_15_col }} >= 65 & {{ epatient_16_col }} == "Years", 
+    system_age_10_65 = ({{ epatient_15_col }} < 65 & {{ epatient_15_col }} >= 10) & {{ epatient_16_col }} == "Years", 
+    system_age_10_1 = {{ epatient_15_col }} < 10 & {{ epatient_16_col }} == "Years",
+    system_age_10_2 = {{ epatient_15_col }} < 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_10 = system_age_10_1 | system_age_10_2, 
     
     # calculated age check
-    calc_age_adult = patient_age_in_years_col >= 18, 
-    calc_age_minor = patient_age_in_years_col < 18 & patient_age_in_years_col >= 2
+    calc_age_65 = patient_age_in_years_col >= 65, 
+    calc_age_10_65 = patient_age_in_years_col < 65 & patient_age_in_years_col >= 10,
+    calc_age_10 = patient_age_in_years_col < 10
     )
   
   ###_____________________________________________________________________________
@@ -211,39 +213,62 @@ trauma_04 <- function(df,
   
   # Adult and Pediatric Populations
   
-  # filter adult
-  adult_pop <- initial_population |>
-    dplyr::filter(system_age_adult | calc_age_adult)
+  # filter older adult
+  pop_65 <- initial_population |>
+    dplyr::filter(system_age_65 | calc_age_65)
   
-  # filter peds
-  peds_pop <- initial_population |>
-    dplyr::filter(system_age_minor | calc_age_minor)
+  # filter ages 10 to 65
+  pop_10_65 <- initial_population |>
+    dplyr::filter(system_age_10_65 | calc_age_10_65)
+  
+  # filter ages 10 to 65
+  pop_10 <- initial_population |>
+    dplyr::filter(system_age_10 | calc_age_10)
   
   # summarize
   
   # total population
   
-  total_population <- initial_population |> 
-    summarize_measure(measure_name = "Trauma-03",
-                      population_name = "All",
-                      PAIN_SCALE,
-                      ...)
+  population_65 <- pop_65 |> 
+    dplyr::summarize(
+      measure = "Trauma-04",
+      pop = ">= 65 yrs old",
+      numerator = sum({{numerator_col}}, na.rm=T),
+      denominator = dplyr::n(),
+      prop = sum(numerator / denominator),
+      prop_label = pretty_percent(prop,
+                                  n_decimal = 0.01),
+      ...
+    )
   
   # adults
-  adult_population <- adult_pop |>
-    summarize_measure(measure_name = "Trauma-03",
-                      population_name = "Adult",
-                      PAIN_SCALE,
-                      ...)
+  population_10_65 <- pop_10_65 |>
+    dplyr::summarize(
+      measure = "Trauma-04",
+      pop = "10-65 yrs",
+      numerator = sum({{numerator_col}}, na.rm=T),
+      denominator = dplyr::n(),
+      prop = sum(numerator / denominator),
+      prop_label = pretty_percent(prop,
+                                  n_decimal = 0.01),
+      ...
+    )
   
   # peds
-  peds_population <- peds_pop |>
-    summarize_measure(measure_name = "Trauma-03",
-                      population_name = "Peds",
-                      PAIN_SCALE,
-                      ...) 
+  population_10 <- pop_10 |>
+    dplyr::summarize(
+      measure = "Trauma-04",
+      pop = "< 10 yrs",
+      numerator = sum({{numerator_col}}, na.rm=T),
+      denominator = dplyr::n(),
+      prop = sum(numerator / denominator),
+      prop_label = pretty_percent(prop,
+                                  n_decimal = 0.01),
+      ...
+    )
+  
   # summary
-  trauma.04 <- dplyr::bind_rows(total_population, adult_population, peds_population)
+  trauma.04 <- dplyr::bind_rows(population_65, population_10_65, population_10)
   
   trauma.04
   

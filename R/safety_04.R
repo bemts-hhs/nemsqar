@@ -376,7 +376,7 @@ safety_04 <- function(df,
   peds_population <- peds_pop |>
     summarize_measure(
       measure_name = "Safety-04",
-      population_name = "Peds",
+      population_name = "< 8 yrs",
       numerator_col = sum(CAR_SEAT, na.rm = T),
       ...
     )
