@@ -35,6 +35,8 @@
 #'
 #' @note This function uses `rlang`, `lubridate`, `dplyr`, and `tidyr` packages for data processing. Ensure the data frame contains valid date formats and expected column names.
 #' 
+#' @author Nicolas Foss, Ed.D., MS
+#' 
 #' @export
 #' 
 trauma_03 <- function(df,

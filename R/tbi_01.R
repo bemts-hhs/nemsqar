@@ -40,12 +40,8 @@
 #' @note
 #' This function relies on columns formatted as \code{Date} or \code{POSIXct} for dates and expects numeric or categorical 
 #' values for other health indicators.
-#'
-#' @importFrom dplyr mutate select filter distinct pull arrange if_else
-#' @importFrom rlang enquo as_name
-#' @importFrom tidyr replace_na
-#' @importFrom cli cli_abort
-#' @importFrom lubridate is.Date is.POSIXct
+#' 
+#' @author Nicolas Foss, Ed.D., MS
 #' 
 #' @export
 #' 

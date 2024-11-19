@@ -38,11 +38,7 @@
 #'
 #' @return Returns a data frame summarizing the proportion of cases with complete vital sign data, divided by population
 #' 
-#' #' @section Credit:
-#' 
-#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
-#' Services, Division of Public Health, Iowa HHS.  (Alyssa Green's)[https://www.linkedin.com/in/alyssa-green-1a7aa4218] original code base was 
-#' used to develop this function.
+#' @author Nicolas Foss, Ed.D., MS
 #' 
 #' @export
 #'

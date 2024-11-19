@@ -36,10 +36,7 @@
 #'
 #' @return A tibble containing mean, SD, min/max/quartiles, number of missing values, Shapiro-Wilk p-value, normality diagnosis, and optional plots.
 #' 
-#' @section Credit:
-#' 
-#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
-#' Services, Division of Public Health, Iowa HHS.#' 
+#' @author Nicolas Foss, Ed.D., MS
 #' 
 #' @export
 #'
@@ -482,6 +479,9 @@ is_it_normal <- function(df,
 #' @param ... Additional arguments passed to internal functions.
 #'
 #' @return Combined plots or tibble
+#' 
+#' @author Nicolas Foss, Ed.D., MS
+#' 
 #' @export
 #'
 compare_is_it_normal <-
@@ -1212,6 +1212,9 @@ compare_is_it_normal <-
 #' @param ... Additional arguments passed to the plot_theme.
 #'
 #' @return Comparisons
+#' 
+#' @author Nicolas Foss, Ed.D., MS
+#' 
 #' @export
 #'
 #' @examples

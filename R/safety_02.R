@@ -47,10 +47,8 @@
 #'
 #' @return A data frame summarizing the Safety-02 metric with calculated values for three populations:
 #' 
-#' @section Credit:
+#' @author Nicolas Foss, Ed.D., MS
 #' 
-#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
-#' Services, Division of Public Health, Iowa HHS.
 #' @export
 #'
 safety_02 <- function(df,

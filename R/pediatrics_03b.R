@@ -61,12 +61,9 @@
 #' `denominator`: Total count of incidents.
 #' `prop`: Proportion of incidents where patient weight was documented.
 #' `prop_label`: Proportion formatted as a percentage with a specified number of
-#' decimal places.#' 
-#' @section Credit:
+#' decimal places.
 #' 
-#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
-#' Services, Division of Public Health, Iowa HHS.  (Peter Geissert's)[https://www.linkedin.com/in/peter-geissert-ba7607ba] original code base was
-#' used to develop this function.
+#' @author Nicolas Foss, Ed.D., MS
 #' 
 #' @export
 #'

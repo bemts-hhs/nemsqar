@@ -6,10 +6,7 @@
 #'
 #' @return string containing p-value significance and p-value.
 #' 
-#' @section Credit:
-#' 
-#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
-#' Services, Division of Public Health, Iowa HHS.
+#' @author Nicolas Foss, Ed.D., MS
 #' 
 #' @export
 #'
@@ -75,10 +72,8 @@ format_p_value <- function(p_value) {
 #'
 #' @return Returns a character vector of formatted numbers.
 #' 
-#' @section Credit:
+#' @author Nicolas Foss, Ed.D., MS
 #' 
-#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
-#' Services, Division of Public Health, Iowa HHS.
 #' @export
 #'
 #' @examples
@@ -184,10 +179,7 @@ pretty_number <- function(x, n_decimal = 2, prefix = NULL, round = T) {
 #'
 #' @return string representation of percentage
 #' 
-#' @section Credit:
-#' 
-#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
-#' Services, Division of Public Health, Iowa HHS.
+#' @author Nicolas Foss, Ed.D., MS
 #' 
 #' @export
 #'

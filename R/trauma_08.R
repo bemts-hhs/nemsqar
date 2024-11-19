@@ -43,7 +43,11 @@
 #' - Ensure the input dataset contains initial vital signs for each required vital signs. 
 #' - Not values should not be used, values missing a response should be blank so R interprets those as `NA` values.
 #' - Date columns (`incident_date_col` and `patient_DOB_col`) must be properly formatted before calling this function.
-
+#' 
+#' @author Nicolas Foss, Ed.D., MS
+#' 
+#' @export
+#' 
 trauma_08 <- function(df,
                       erecord_01_col,
                       incident_date_col,

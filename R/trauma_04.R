@@ -1,35 +1,57 @@
-#' Title
+#' Trauma-04
 #'
-#' @param df 
-#' @param erecord_01_col 
-#' @param incident_date_col 
-#' @param patient_DOB_col 
-#' @param epatient_15_col 
-#' @param epatient_16_col 
-#' @param esituation_02_col 
-#' @param eresponse_05_col 
-#' @param transport_disposition_col 
-#' @param evitals_21_col 
-#' @param evitals_14_col 
-#' @param eexam_23_col 
-#' @param eexam_25_col 
-#' @param evitals_15_col 
-#' @param eprocedures_03_col 
-#' @param evitals_12_col 
-#' @param evitals_06_col 
-#' @param evitals_10_col 
-#' @param einjury_03_col 
-#' @param eexam_16_col 
-#' @param eexam_20_col 
-#' @param einjury_04_col 
-#' @param einjury_09_col 
-#' @param eresponse_10_col 
-#' @param einjury_01_col 
-#' @param ... 
+#' This function processes EMS data to generate a set of binary variables indicating whether specific trauma triage criteria are met. The output is a data frame enriched with these indicators for further analysis.  The final outcome is whether or not the EMS record documents the use of a verified trauma center levels 1-5 in the hospital capability documentation.
 #'
-#' @return
+#' @param df A data frame or tibble containing EMS data with all relevant columns.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> The column indicating the incident date. Must be of class `Date` or similar.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> The column representing the patient's date of birth. Must be of class `Date` or similar.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> The column for patient age numeric value.
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> The column for patient age unit (e.g., "Years", "Months").
+#' @param esituation_02_col <['tidy-select'][dplyr_tidy_select]> The column containing information on the presence of injury.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> The column representing the 911 response type.
+#' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> The column for patient transport disposition.
+#' @param evitals_21_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing Glasgow Coma Scale (GCS) Motor values.
+#' @param evitals_14_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing capillary refill information.
+#' @param eexam_23_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing lung assessment details.
+#' @param eexam_25_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing chest assessment details.
+#' @param evitals_15_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing respiratory effort values.
+#' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing airway management or tourniquet usage details.
+#' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing pulse oximetry values.
+#' @param evitals_06_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing systolic blood pressure (SBP) values.
+#' @param evitals_10_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing heart rate values.
+#' @param einjury_03_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing trauma triage steps 1 and 2 information.
+#' @param eexam_16_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing extremities assessment details.
+#' @param eexam_20_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing neurological assessment details.
+#' @param einjury_04_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing trauma triage steps 3 and 4 information.
+#' @param einjury_09_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing fall height information.
+#' @param eresponse_10_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing scene delay information.
+#' @param einjury_01_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing injury cause details.
+#' @param ... Additional arguments passed to helper functions for further customization.
+#'
+#' @section Features: 
+#' 
+#' - Handles missing or invalid date formats with error messaging.
+#' - Incorporates quasiquotation for flexible column referencing.
+#' - Creates reusable dimension tables for efficient filtering and summarization.
+#'
+#' @return A tibble summarizing results for three age groups (< 10 yrs, 10–65 yrs, and >= 65 yrs) with the following columns:
+#'
+#' `pop`: Population type (< 10 yrs, 10–65 yrs, >= 65 yrs).
+#' `numerator`: Count of incidents where the trauma hospital was a verified trauma center levels 1 through 5.
+#' `denominator`: Total count of incidents.
+#' `prop`: Proportion of incidents where the trauma hospital was a verified trauma center levels 1 through 5.
+#' `prop_label`: Proportion formatted as a percentage with a specified number of decimal places.
+#'
+#' @note This function uses `rlang`, `lubridate`, `dplyr`, and `tidyr` packages for data processing. Ensure the data frame contains valid date formats and expected column names.
+#' 
+#'
+#' @details The function generates individual vectors of unique IDs for each trauma triage criterion and assigns these to binary variables in the final data frame. This allows filtering and calculation of metrics such as numerators for performance measures.
+#' 
+#' @author Nicolas Foss, Ed.D., MS
+#' 
 #' @export
-#'
+#' 
 trauma_04 <- function(df,
                       erecord_01_col,
                       incident_date_col,

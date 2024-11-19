@@ -41,6 +41,8 @@
 #' `prop`: Proportion of incidents where a pain scale was administered.
 #' `prop_label`: Proportion formatted as a percentage with a specified number of
 #' decimal places.
+#' 
+#' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export
 #'

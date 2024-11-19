@@ -42,10 +42,7 @@
 #'
 #' @return Returns a tibble summarizing the overall and age-grouped respiratory-02 metrics, formatted for ease of interpretation.
 #' 
-#' @section Credit:
-#' 
-#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
-#' Services, Division of Public Health, Iowa HHS.
+#' @author Nicolas Foss, Ed.D., MS
 #' 
 #' @export
 respiratory_02 <- function(df,

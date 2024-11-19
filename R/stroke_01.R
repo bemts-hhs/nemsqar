@@ -90,10 +90,7 @@
 #' - Aggregate results by patient encounter and calculate stroke scale outcomes.
 #' - Return a summary of stroke cases by unique patient identifier, including stroke scale measurements.
 #' 
-#' @section Credit:
-#' 
-#' This function was developed by (Nicolas Foss, Ed.D., MS)[nicolas.foss@hhs.iowa.gov] at the Bureau of Emergency Medical and Trauma 
-#' Services, Division of Public Health, Iowa HHS.
+#' @author Nicolas Foss, Ed.D., MS
 #' 
 #' @export
 #' 
