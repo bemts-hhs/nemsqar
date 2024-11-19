@@ -27,10 +27,6 @@ for a NEMSQA measure.
 \details{
 Used throughout this package to calculate measure summaries.
 }
-\section{Credit}{
-
-
-This function was developed by (Samuel Kordik, BBA, BS)\link{https://www.linkedin.com/in/samuelkordik} at Dallas Fire-Rescue Office of the Medical
-Director.
+\author{
+Samuel Kordik, BBA, BS
 }
-

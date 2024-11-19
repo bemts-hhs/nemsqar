@@ -104,3 +104,6 @@ or " | ".
 }
 }
 
+\author{
+Nicolas Foss, Ed.D., MS
+}

@@ -52,7 +52,7 @@ A tibble summarizing results for three population groups (All, Adults, and Peds)
 \code{denominator}: Total count of incidents.
 \code{prop}: Proportion of incidents where patient weight was documented.
 \code{prop_label}: Proportion formatted as a percentage with a specified number of
-decimal places.#'
+decimal places.
 }
 \description{
 The \code{pediatrics_03b} function calculates a pediatric metric focused on EMS
@@ -97,11 +97,6 @@ Grouping by specific attributes (e.g., region) can be performed inside this func
 utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
 }
 
-\section{Credit}{
-
-
-This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
-Services, Division of Public Health, Iowa HHS.  (Peter Geissert's)\link{https://www.linkedin.com/in/peter-geissert-ba7607ba} original code base was
-used to develop this function.
+\author{
+Nicolas Foss, Ed.D., MS
 }
-

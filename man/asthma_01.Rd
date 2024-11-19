@@ -111,10 +111,6 @@ A summarized tibble with counts and proportions of beta-agonist treatment
 among 911 respiratory distress calls, segmented by population group.
 }
 
-\section{Credit}{
-
-
-This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
-Services, Division of Public Health, Iowa HHS.
+\author{
+Nicolas Foss, Ed.D., MS
 }
-

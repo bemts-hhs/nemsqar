@@ -46,12 +46,6 @@ respiratory_01(
 }
 \value{
 Returns a data frame summarizing the proportion of cases with complete vital sign data, divided by population
-
-#' @section Credit:
-
-This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
-Services, Division of Public Health, Iowa HHS.  (Alyssa Green's)\link{https://www.linkedin.com/in/alyssa-green-1a7aa4218} original code base was
-used to develop this function.
 }
 \description{
 The \code{respiratory_01} function filters and analyzes data related to emergency 911 respiratory distress incidents, providing summary statistics for adult and pediatric populations. This function uses specific data columns for 911 response codes, primary and secondary impressions, and vital signs to calculate the proportion of cases with complete vital signs recorded, stratified by age.
@@ -79,3 +73,6 @@ Grouping by specific attributes (e.g., region) can be performed inside this func
 utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
 }
 
+\author{
+Nicolas Foss, Ed.D., MS
+}

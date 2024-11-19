@@ -61,7 +61,7 @@ A tibble summarizing results for three population groups (All, Adults, and Peds)
 \code{denominator}: Total count of incidents.
 \code{prop}: Proportion of incidents where specific hypoglycemia best practices were administered.
 \code{prop_label}: Proportion formatted as a percentage with a specified number of
-decimal places.#'
+decimal places.
 }
 \description{
 The \code{hypoglycemia_01} function calculates the NEMSQA measure evaluating how often
@@ -98,10 +98,6 @@ utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code
 }
 }
 
-\section{Credit}{
-
-
-This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
-Services, Division of Public Health, Iowa HHS.
+\author{
+Nicolas Foss, Ed.D., MS
 }
-

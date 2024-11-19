@@ -99,3 +99,6 @@ df <- data.frame(
 compare_grouped_is_it_normal(df, x = score, group_var = group)
 
 }
+\author{
+Nicolas Foss, Ed.D., MS
+}

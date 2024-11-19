@@ -27,13 +27,6 @@ string representation with optional decimal rounding and prefix support. It
 converts numbers into a compact format using standard suffixes (e.g., "k" for
 thousand, "m" for million).
 }
-\section{Credit}{
-
-
-This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
-Services, Division of Public Health, Iowa HHS.
-}
-
 \examples{
 pretty_number(1500)
 # "1.5k"
@@ -41,4 +34,7 @@ pretty_number(1500)
 pretty_number(2500000, prefix = "$")
 # "$2.5m"
 
+}
+\author{
+Nicolas Foss, Ed.D., MS
 }

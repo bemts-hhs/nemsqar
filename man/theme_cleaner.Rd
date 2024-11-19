@@ -65,10 +65,6 @@ A \code{ggplot2} theme object.
 \description{
 A customizable ggplot2 theme function for creating polished and minimalistic plots. The \code{theme_cleaner} function offers flexible options to control various plot elements, including font styles, sizes, colors, alignment, and the visibility of axes and grid lines.
 }
-\section{Credit}{
-
-
-This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
-Services, Division of Public Health, Iowa HHS.
+\author{
+Nicolas Foss, Ed.D., MS
 }
-

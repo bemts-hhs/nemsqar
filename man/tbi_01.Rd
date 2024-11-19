@@ -84,3 +84,6 @@ The function performs data screening and processing to identify potential TBI ca
 This function relies on columns formatted as \code{Date} or \code{POSIXct} for dates and expects numeric or categorical
 values for other health indicators.
 }
+\author{
+Nicolas Foss, Ed.D., MS
+}

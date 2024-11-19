@@ -48,8 +48,7 @@ trauma_01(
 
 \item{evitals_27_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for the pain scale assessment.}
 
-\item{...}{Additional arguments passed to the \code{summarize_measure} function for custom summarization.
-#'}
+\item{...}{Additional arguments passed to the \code{summarize_measure} function for custom summarization.}
 }
 \value{
 A tibble summarizing results for three population groups (All, Adults, and Peds) with the following columns:
@@ -86,3 +85,6 @@ response type (911), patient care disposition, and transport type.
 }
 }
 
+\author{
+Nicolas Foss, Ed.D., MS
+}

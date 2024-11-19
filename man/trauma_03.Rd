@@ -78,3 +78,6 @@ This function uses \code{rlang}, \code{lubridate}, \code{dplyr}, and \code{tidyr
 }
 }
 
+\author{
+Nicolas Foss, Ed.D., MS
+}

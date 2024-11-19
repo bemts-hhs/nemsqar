@@ -15,16 +15,12 @@ string containing p-value significance and p-value.
 \description{
 Prints a prettified p value that groups on statistical significance
 }
-\section{Credit}{
-
-
-This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
-Services, Division of Public Health, Iowa HHS.
-}
-
 \examples{
 format_p_value(0.12)
 # "p > 0.05 (p = 0.12)"
 format_p_value(0.0123)
 # "p < 0.05 (p = 0.0123)"
+}
+\author{
+Nicolas Foss, Ed.D., MS
 }

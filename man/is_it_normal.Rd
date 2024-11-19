@@ -72,13 +72,6 @@ The is_it_normal function provides a comprehensive way to check whether a contin
 }
 }
 
-\section{Credit}{
-
-
-This function was developed by (Nicolas Foss, Ed.D., MS)\link{nicolas.foss@hhs.iowa.gov} at the Bureau of Emergency Medical and Trauma
-Services, Division of Public Health, Iowa HHS.#'
-}
-
 \examples{
 data(mtcars)
 # Check if 'mpg' variable is normallly distributed.
@@ -86,4 +79,7 @@ is_it_normal(mtcars, mpg)
 
 # Using a filter and custom theme
 is_it_normal(mtcars, mpg, filter1 = " > 15", filter2 = " < 100", operator = " & ", plot_theme = theme_minimal)
+}
+\author{
+Nicolas Foss, Ed.D., MS
 }
