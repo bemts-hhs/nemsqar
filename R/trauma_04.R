@@ -1,3 +1,35 @@
+#' Title
+#'
+#' @param df 
+#' @param erecord_01_col 
+#' @param incident_date_col 
+#' @param patient_DOB_col 
+#' @param epatient_15_col 
+#' @param epatient_16_col 
+#' @param esituation_02_col 
+#' @param eresponse_05_col 
+#' @param transport_disposition_col 
+#' @param evitals_21_col 
+#' @param evitals_14_col 
+#' @param eexam_23_col 
+#' @param eexam_25_col 
+#' @param evitals_15_col 
+#' @param eprocedures_03_col 
+#' @param evitals_12_col 
+#' @param evitals_06_col 
+#' @param evitals_10_col 
+#' @param einjury_03_col 
+#' @param eexam_16_col 
+#' @param eexam_20_col 
+#' @param einjury_04_col 
+#' @param einjury_09_col 
+#' @param eresponse_10_col 
+#' @param einjury_01_col 
+#' @param ... 
+#'
+#' @return
+#' @export
+#'
 trauma_04 <- function(df,
                       erecord_01_col,
                       incident_date_col,
@@ -29,8 +61,8 @@ trauma_04 <- function(df,
   if (missing(df)) {
     cli::cli_abort(
       c(
-        "No object of class {.cls data.frame} was passed to {.fn trauma_01}.",
-        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn trauma_01}."
+        "No object of class {.cls data.frame} was passed to {.fn trauma_04}.",
+        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn trauma_04}."
       )
     )
   }
@@ -211,7 +243,7 @@ trauma_04 <- function(df,
     dplyr::pull(Unique_ID)
   
   # lung assessment
-  pain_scale_time_data <- core_data |> 
+  lung_assessment_data <- core_data |> 
     dplyr::select(Unique_ID, {{ eexam_23_col }}) |> 
     dplyr::filter( 
       
@@ -277,7 +309,7 @@ trauma_04 <- function(df,
     dplyr::pull(Unique_ID)
   
   # heart rate and SBP
-  HR_SBP_data <- core_data |> 
+  HR_SBP_data_10_65_plus <- core_data |> 
     dplyr::select(Unique_ID, {{ evitals_12_col }}, {{ evitals_06_col}}) |> 
     dplyr::distinct(Unique_ID, {{ evitals_12_col }}, {{ evitals_06_col}}, .keep_all = T) |> 
     dplyr::filter( 
@@ -287,22 +319,6 @@ trauma_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
-  
-  # assign variables to final data
-  initial_population <- final_data |> 
-    dplyr::mutate(PAIN_SCALE_TIME = Unique_ID %in% pain_scale_time_data,
-                  CALL_911 = Unique_ID %in% call_911_data,
-                  TRANSPORT = Unique_ID %in% transport_data,
-                  INJURY = Unique_ID %in% possible_injury_data,
-                  PATIENT_CARE = Unique_ID %in% patient_care_data,
-                  PAIN_SCALE = Unique_ID %in% pain_scale_data,
-                  PAIN_SCALE_SORTORDER = Unique_ID %in% pain_scale_sortorder_data
-    ) |> 
-    dplyr::filter(
-      
-      dplyr::if_all(c(
-        INJURY, PAIN_SCALE_TIME, PAIN_SCALE_SORTORDER, CALL_911, PATIENT_CARE, TRANSPORT), ~ .)
-    )
   
   # trauma triage criteria steps 1 and 2 age 65+
   trauma_triage_1_2_data_65 <- core_data |> 
@@ -316,7 +332,7 @@ trauma_04 <- function(df,
     dplyr::pull(Unique_ID)
   
   # trauma triage criteria steps 1 and 2 age 10 - 65
-  trauma_triage_1_2_data_1-_65 <- core_data |> 
+  trauma_triage_1_2_data_10_65 <- core_data |> 
     dplyr::select(Unique_ID, {{ einjury_03_col }}) |> 
     dplyr::filter( 
       
@@ -438,7 +454,7 @@ trauma_04 <- function(df,
     dplyr::select(Unique_ID, SBP_age_10) |> 
     dplyr::filter( 
       
-      SBP_age_10
+      SBP_age_10 > 70
       
     ) |> 
     dplyr::distinct(Unique_ID) |> 
@@ -448,69 +464,129 @@ trauma_04 <- function(df,
   
   initial_population <- final_data |> 
     dplyr::mutate(
-    ) |> 
-    dplyr::filter(
       
-      dplyr::if_all(c(
-        INJURY, PAIN_SCALE_TIME, PAIN_SCALE_SORTORDER, CALL_911, PATIENT_CARE, TRANSPORT), ~ .)
+      GCS = Unique_ID %in% GCS_data,
+      LUNG = Unique_ID %in% lung_assessment_data,
+      CHEST = Unique_ID %in% chest_data,
+      RESPIRATORY_EFFORT = Unique_ID %in% respiratory_effort_data,
+      AIRWAY_MANAGEMENT = Unique_ID %in% airway_management_data,
+      EXTREMITIES = Unique_ID %in% extremities_assessment_data,
+      NEURO = Unique_ID %in% neurological_assessment_data,
+      TOURNIQUET = Unique_ID %in% tourniquet_data,
+      TRAUMA_TRIAGE_3_4 = Unique_ID %in% trauma_triage_3_4_data,
+      FALL_HEIGHT = Unique_ID %in% fall_height_data,
+      SCENE_DELAY = Unique_ID %in% scene_delay_data,
+      INJURY_CAUSE = Unique_ID %in% cause_of_injury_data,
+      PULSE_OXIMETRY = Unique_ID %in% pulse_oximetry_data,
+      SBP = Unique_ID %in% SBP_data,
+      SBP_10 = Unique_ID %in% SBP_data_10,
+      HR_SBP_10_65_PLUS = Unique_ID %in% HR_SBP_data_10_65_plus,
+      TRAUMA_TRIAGE_1_2_65 = Unique_ID %in% trauma_triage_1_2_data_65,
+      TRAUMA_TRIAGE_1_2_10_65 = Unique_ID %in% trauma_triage_1_2_data_10_65,
+      TRAUMA_TRIAGE_1_2_10 = Unique_ID %in% trauma_triage_1_2_data_10,
+      RESPIRATORY_RATE_10 = Unique_ID %in% respiratory_rate_data,
+      HOSPITAL_CAPABILITY = Unique_ID %in% hospital_capability_values
+      
     )
   
   # Adult and Pediatric Populations
   
   # filter older adult
   pop_65 <- initial_population |>
-    dplyr::filter(system_age_65 | calc_age_65)
+    dplyr::filter(system_age_65 | calc_age_65) |> 
+    dplyr::filter(
+      
+                    GCS | 
+                    LUNG | 
+                    CHEST | 
+                    RESPIRATORY_EFFORT | 
+                    AIRWAY_MANAGEMENT | 
+                    PULSE_OXIMETRY | 
+                    HR_SBP_10_65_PLUS | 
+                    TRAUMA_TRIAGE_1_2_10_65 | 
+                    EXTREMITIES | 
+                    NEURO | 
+                    TOURNIQUET |
+                    TRAUMA_TRIAGE_3_4 | 
+                    FALL_HEIGHT | 
+                    SCENE_DELAY | 
+                    INJURY_CAUSE
+                    
+                  )
   
   # filter ages 10 to 65
   pop_10_65 <- initial_population |>
-    dplyr::filter(system_age_10_65 | calc_age_10_65)
+    dplyr::filter(system_age_10_65 | calc_age_10_65) |> 
+    dplyr::filter(
+      
+                    GCS | 
+                    LUNG | 
+                    CHEST | 
+                    RESPIRATORY_EFFORT | 
+                    AIRWAY_MANAGEMENT | 
+                    HR_SBP_10_65_PLUS | 
+                    TRAUMA_TRIAGE_1_2_10_65 | 
+                    EXTREMITIES | 
+                    NEURO | 
+                    TOURNIQUET |
+                    TRAUMA_TRIAGE_3_4 | 
+                    FALL_HEIGHT | 
+                    SCENE_DELAY | 
+                    INJURY_CAUSE
+                    
+                  )
   
-  # filter ages 10 to 65
+  # filter ages < 10
   pop_10 <- initial_population |>
-    dplyr::filter(system_age_10 | calc_age_10)
+    dplyr::filter(system_age_10 | calc_age_10) |> 
+    dplyr::filter(
+      
+                    GCS | 
+                    RESPIRATORY_RATE_10 |
+                    LUNG | 
+                    CHEST | 
+                    RESPIRATORY_EFFORT | 
+                    AIRWAY_MANAGEMENT | 
+                    PULSE_OXIMETRY | 
+                    SBP_10 | 
+                    TRAUMA_TRIAGE_1_2_10 | 
+                    EXTREMITIES | 
+                    NEURO | 
+                    TOURNIQUET |
+                    TRAUMA_TRIAGE_3_4 | 
+                    FALL_HEIGHT | 
+                    SCENE_DELAY | 
+                    INJURY_CAUSE
+                    
+                  )
   
   # summarize
   
-  # total population
+  # older adult population
   
   population_65 <- pop_65 |> 
-    dplyr::summarize(
-      measure = "Trauma-04",
-      pop = ">= 65 yrs old",
-      numerator = sum({{numerator_col}}, na.rm=T),
-      denominator = dplyr::n(),
-      prop = sum(numerator / denominator),
-      prop_label = pretty_percent(prop,
-                                  n_decimal = 0.01),
-      ...
-    )
+    summarize_measure(measure_name = "Trauma-04",
+                      population_name = ">= 65 yrs old",
+                      numerator_col = HOSPITAL_CAPABILITY,
+                      ...
+                      )
   
-  # adults
+  # 10 to 64 population
   population_10_65 <- pop_10_65 |>
-    dplyr::summarize(
-      measure = "Trauma-04",
-      pop = "10-65 yrs",
-      numerator = sum({{numerator_col}}, na.rm=T),
-      denominator = dplyr::n(),
-      prop = sum(numerator / denominator),
-      prop_label = pretty_percent(prop,
-                                  n_decimal = 0.01),
-      ...
-    )
-  
-  # peds
+    summarize_measure(measure_name = "Trauma-04",
+                      population_name = "10-65 yrs",
+                      numerator_col = HOSPITAL_CAPABILITY,
+                      ...
+                      )
+
+  # patients < 10 yrs
   population_10 <- pop_10 |>
-    dplyr::summarize(
-      measure = "Trauma-04",
-      pop = "< 10 yrs",
-      numerator = sum({{numerator_col}}, na.rm=T),
-      denominator = dplyr::n(),
-      prop = sum(numerator / denominator),
-      prop_label = pretty_percent(prop,
-                                  n_decimal = 0.01),
-      ...
-    )
-  
+    summarize_measure(measure_name = "Trauma-04",
+                      population_name = "< 10 yrs",
+                      numerator_col = HOSPITAL_CAPABILITY,
+                      ...
+                      )
+
   # summary
   trauma.04 <- dplyr::bind_rows(population_65, population_10_65, population_10)
   

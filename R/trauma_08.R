@@ -1,64 +1,24 @@
-#' Trauma-03 Measure Calculation
-#'
-#' This function calculates the "Trauma-03" measure, which evaluates pain scale reassessment for trauma patients, using a comprehensive data frame with EMS records. The function processes input data to create both fact and dimension tables, identifies eligible patients, and summarizes results for adult and pediatric populations.
-#'
-#' @param df A data frame or tibble containing EMS data with all relevant columns.
-#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.
-#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> The column indicating the incident date. Must be of class `Date` or similar.
-#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> The column representing the patient's date of birth. Must be of class `Date` or similar.
-#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> The column for patient age numeric value.
-#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> The column for patient age unit (e.g., "Years", "Months").
-#' @param esituation_02_col <['tidy-select'][dplyr_tidy_select]> The column containing information on the presence of injury.
-#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> The column representing the 911 response type.
-#' @param edisposition_28_col <['tidy-select'][dplyr_tidy_select]> The column for patient care disposition details.
-#' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> The column for patient transport disposition.
-#' @param evitals_27_initial_col <['tidy-select'][dplyr_tidy_select]> The column for the initial pain scale score.
-#' @param evitals_27_last_col <['tidy-select'][dplyr_tidy_select]> The column for the last pain scale score.
-#' @param evitals_01_col <['tidy-select'][dplyr_tidy_select]> The column for the time of pain scale measurement.
-#' @param evitals_27_sortorder_col <['tidy-select'][dplyr_tidy_select]> The column for the sort order of pain scale measurement.
-#' @param ... Additional arguments passed to helper functions for further customization.
-#'
-#' @section Features: 
-#' 
-#' - Handles missing or invalid date formats with error messaging.
-#' - Incorporates quasiquotation for flexible column referencing.
-#' - Creates reusable dimension tables for efficient filtering and summarization.
-#'
-#' @return A tibble summarizing results for three population groups (All, Adults, and Peds) with the following columns:
-#' 
-#' `pop`: Population type (All, Adults, Peds).
-#' `numerator`: Count of incidents where there was a reduction in patient pain.
-#' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents where there was a reduction in patient pain.
-#' `prop_label`: Proportion formatted as a percentage with a specified number of
-#' decimal places.
-#'
-#' @note This function uses `rlang`, `lubridate`, `dplyr`, and `tidyr` packages for data processing. Ensure the data frame contains valid date formats and expected column names.
-#' 
-#' @export
-#' 
-trauma_03 <- function(df,
+trauma_01 <- function(df,
                       erecord_01_col,
                       incident_date_col,
                       patient_DOB_col,
                       epatient_15_col,
                       epatient_16_col,
                       esituation_02_col,
+                      evitals_23_col,
+                      evitals_26_col,
                       eresponse_05_col,
                       edisposition_28_col,
                       transport_disposition_col,
-                      evitals_27_initial_col,
-                      evitals_27_last_col,
-                      evitals_01_col,
-                      evitals_27_sortorder_col,
+                      evitals_27_col,
                       ...) {
   
   # provide better error messaging if df is missing
   if (missing(df)) {
     cli::cli_abort(
       c(
-        "No object of class {.cls data.frame} was passed to {.fn trauma_03}.",
-        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn trauma_03}."
+        "No object of class {.cls data.frame} was passed to {.fn trauma_08}.",
+        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn trauma_08}."
       )
     )
   }
@@ -95,6 +55,9 @@ trauma_03 <- function(df,
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
   
+  # avpu not values
+  avpu_values <- "Alert|3326001"
+  
   # patient care provided
   care_provided <- "4228001|Patient Evaluated and Care Provided"
   
@@ -126,12 +89,12 @@ trauma_03 <- function(df,
   
   final_data <- core_data |> 
     dplyr::select(-c({{ esituation_02_col }},
+                     {{ evitals_23_col }},
+                     {{ evitals_26_col }},
                      {{ eresponse_05_col }},
                      {{ edisposition_28_col }},
                      {{ transport_disposition_col }},
-                     {{ evitals_27_initial_col }},
-                     {{ evitals_27_last_col }},
-                     {{ evitals_01_col }}
+                     {{ evitals_27_col }}
                      
     )) |> 
     dplyr::distinct(Unique_ID, .keep_all = T) |> 
@@ -159,7 +122,26 @@ trauma_03 <- function(df,
   ### that tell if the patient had the characteristic or not for final
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
-
+  
+  # GCS
+  
+  GCS_data <- core_data |> 
+    dplyr::select(Unique_ID, {{ evitals_23_col }}) |> 
+    dplyr::filter({{ evitals_23_col }} == 15) |> 
+    distinct(Unique_ID) |> 
+    pull(Unique_ID)
+  
+  # AVPU
+  
+  AVPU_data <- core_data |> 
+    dplyr::select(Unique_ID, {{ evitals_26_col }}) |> 
+    dplyr::filter(grepl(pattern = avpu_values, 
+                        x = {{ evitals_26_col }}, 
+                        ignore.case = T)
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+  
   # possible injury
   
   possible_injury_data <- core_data |> 
@@ -180,6 +162,7 @@ trauma_03 <- function(df,
   
   call_911_data <- core_data |> 
     dplyr::select(Unique_ID, {{ eresponse_05_col }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
     dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
@@ -188,6 +171,7 @@ trauma_03 <- function(df,
   
   transport_data <- core_data |> 
     dplyr::select(Unique_ID, {{ transport_disposition_col }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
     dplyr::filter( 
       
       grepl(pattern = transport_responses, x = {{ transport_disposition_col }}, ignore.case = T) 
@@ -196,37 +180,14 @@ trauma_03 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
-  # pain scale time
-  
-  pain_scale_time_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_27_initial_col }}, {{ evitals_27_last_col }}, {{ evitals_01_col }}) |> 
-    dplyr::filter( 
-      
-      dplyr::if_all(c({{ evitals_27_initial_col }}, {{ evitals_01_col }}), ~ !is.na(.))
-      
-    ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
-  
-  # pain scale change
+  # pain scale
   
   pain_scale_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_27_initial_col }}, {{ evitals_27_last_col }}) |> 
+    dplyr::select(Unique_ID, {{ evitals_27_col }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
     dplyr::filter( 
       
-      {{ evitals_27_last_col }} < {{ evitals_27_initial_col }}
-      
-    ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
-  
-  # pain scale sort order
-  
-  pain_scale_sortorder_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_27_initial_col }}, {{ evitals_27_sortorder_col }}) |> 
-    dplyr::filter( 
-      
-      !is.na({{ evitals_27_initial_col }}) & {{ evitals_27_sortorder_col }} > 0
+      !is.na({{ evitals_27_col }})
       
     ) |> 
     dplyr::distinct(Unique_ID) |> 
@@ -235,18 +196,19 @@ trauma_03 <- function(df,
   # assign variables to final data
   
   initial_population <- final_data |> 
-    dplyr::mutate(PAIN_SCALE_TIME = Unique_ID %in% pain_scale_time_data,
+    dplyr::mutate(GCS = Unique_ID %in% GCS_data,
+                  AVPU = Unique_ID %in% AVPU_data,
                   CALL_911 = Unique_ID %in% call_911_data,
                   TRANSPORT = Unique_ID %in% transport_data,
                   INJURY = Unique_ID %in% possible_injury_data,
                   PATIENT_CARE = Unique_ID %in% patient_care_data,
-                  PAIN_SCALE = Unique_ID %in% pain_scale_data,
-                  PAIN_SCALE_SORTORDER = Unique_ID %in% pain_scale_sortorder_data
+                  PAIN_SCALE = Unique_ID %in% pain_scale_data
     ) |> 
     dplyr::filter(
-      
-      dplyr::if_all(c(
-      INJURY, PAIN_SCALE_TIME, PAIN_SCALE_SORTORDER, CALL_911, PATIENT_CARE, TRANSPORT), ~ .)
+      INJURY, 
+      (GCS | AVPU),
+      CALL_911,
+      (PATIENT_CARE & TRANSPORT)
     )
   
   # Adult and Pediatric Populations
@@ -264,31 +226,28 @@ trauma_03 <- function(df,
   # total population
   
   total_population <- initial_population |> 
-    summarize_measure(measure_name = "Trauma-03",
+    summarize_measure(measure_name = "Trauma-01",
                       population_name = "All",
                       PAIN_SCALE,
                       ...)
   
   # adults
   adult_population <- adult_pop |>
-    summarize_measure(measure_name = "Trauma-03",
+    summarize_measure(measure_name = "Trauma-01",
                       population_name = "Adult",
                       PAIN_SCALE,
                       ...)
   
   # peds
   peds_population <- peds_pop |>
-    summarize_measure(measure_name = "Trauma-03",
+    summarize_measure(measure_name = "Trauma-01",
                       population_name = "Peds",
                       PAIN_SCALE,
                       ...) 
   # summary
-  trauma.03 <- dplyr::bind_rows(total_population, adult_population, peds_population)
+  trauma.08 <- dplyr::bind_rows(total_population, adult_population, peds_population)
   
-  trauma.03
+  trauma.08
   
   
 }
-
-
-  
