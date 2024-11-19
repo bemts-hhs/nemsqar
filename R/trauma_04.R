@@ -1,6 +1,6 @@
 #' Trauma-04
 #'
-#' This function processes EMS data to generate a set of binary variables indicating whether specific trauma triage criteria are met. The output is a data frame enriched with these indicators for further analysis.  The final outcome is whether or not the EMS record documents the use of a verified trauma center levels 1-5 in the hospital capability documentation.
+#' This function processes EMS data to generate a set of binary variables indicating whether specific trauma triage criteria are met. The output #' is a data frame enriched with these indicators for further analysis.  The final outcome is whether or not the EMS record documents the use of #' a verified trauma center levels 1-5 in the hospital capability documentation.
 #'
 #' @param df A data frame or tibble containing EMS data with all relevant columns.
 #' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.
@@ -27,6 +27,7 @@
 #' @param einjury_09_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing fall height information.
 #' @param eresponse_10_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing scene delay information.
 #' @param einjury_01_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing injury cause details.
+#' @param edisposition_24_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing trauma hospital verification information.
 #' @param ... Additional arguments passed to helper functions for further customization.
 #'
 #' @section Features: 

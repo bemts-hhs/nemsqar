@@ -1,3 +1,58 @@
+#' Trauma-14
+#'
+#' This function processes EMS data to generate a set of binary variables indicating whether specific trauma triage criteria are met. The output #' is a data frame enriched with these indicators for further analysis.  The final outcome is whether or not the EMS record documents the use of #' a pre-hospital trauma activation.
+#'
+#' @param df A data frame or tibble containing EMS data with all relevant columns.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> The column indicating the incident date. Must be of class `Date` or similar.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> The column representing the patient's date of birth. Must be of class `Date` or similar.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> The column for patient age numeric value.
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> The column for patient age unit (e.g., "Years", "Months").
+#' @param esituation_02_col <['tidy-select'][dplyr_tidy_select]> The column containing information on the presence of injury.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> The column representing the 911 response type.
+#' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> The column for patient transport disposition.
+#' @param evitals_21_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing Glasgow Coma Scale (GCS) Motor values.
+#' @param evitals_14_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing capillary refill information.
+#' @param eexam_23_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing lung assessment details.
+#' @param eexam_25_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing chest assessment details.
+#' @param evitals_15_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing respiratory effort values.
+#' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing airway management or tourniquet usage details.
+#' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing pulse oximetry values.
+#' @param evitals_06_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing systolic blood pressure (SBP) values.
+#' @param evitals_10_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing heart rate values.
+#' @param einjury_03_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing trauma triage steps 1 and 2 information.
+#' @param eexam_16_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing extremities assessment details.
+#' @param eexam_20_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing neurological assessment details.
+#' @param einjury_04_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing trauma triage steps 3 and 4 information.
+#' @param einjury_09_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing fall height information.
+#' @param eresponse_10_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing scene delay information.
+#' @param einjury_01_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing injury cause details.
+#' @param edisposition_24_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing pre-hospital trauma alert information.
+#' @param ... Additional arguments passed to helper functions for further customization.
+#'
+#' @section Features: 
+#' 
+#' - Handles missing or invalid date formats with error messaging.
+#' - Incorporates quasiquotation for flexible column referencing.
+#' - Creates reusable dimension tables for efficient filtering and summarization.
+#'
+#' @return A tibble summarizing results for three age groups (< 10 yrs, 10–65 yrs, and >= 65 yrs) with the following columns:
+#'
+#' `pop`: Population type (< 10 yrs, 10–65 yrs, >= 65 yrs).
+#' `numerator`: Count of incidents where a pre-hospital trauma alert was called.
+#' `denominator`: Total count of incidents.
+#' `prop`: Proportion of incidents where a pre-hospital trauma alert was called.
+#' `prop_label`: Proportion formatted as a percentage with a specified number of decimal places.
+#'
+#' @note This function uses `rlang`, `lubridate`, `dplyr`, and `tidyr` packages for data processing. Ensure the data frame contains valid date formats and expected column names.
+#' 
+#'
+#' @details The function generates individual vectors of unique IDs for each trauma triage criterion and assigns these to binary variables in the final data frame. This allows filtering and calculation of metrics such as numerators for performance measures.
+#' 
+#' @author Nicolas Foss, Ed.D., MS
+#' 
+#' @export
+#' 
 trauma_14 <- function(df,
                       erecord_01_col,
                       incident_date_col,
@@ -114,8 +169,10 @@ trauma_14 <- function(df,
   cause_of_injury_values <- "\\b(V20|V21|V22|V23|V24|V25|V26|V27|V28|V29|V30|V31|V32|V33|V34|V35|V36|V37|V38|V39|V80|V86)\\b|Motorcycle rider injured in collision with pedestrian or animal|Motorcycle rider injured in collision with pedal cycle|Motorcycle rider injured in collision with two- or three- wheeled motor vehicle|Motorcycle rider injured in collision with car, pick-up truck or van|Motorcycle rider injured in collision with heavy transport vehicle or bus|Motorcycle rider injured in collision with railway train or railway vehicle|Motorcycle rider injured in collision with other nonmotor vehicle|Motorcycle rider injured in collision with fixed or stationary object|Motorcycle rider injured in noncollision transport accident|Motorcycle rider injured in other and unspecified transport accidents|Occupant of three-wheeled motor vehicle injured in collision with pedestrian or animal|Occupant of three-wheeled motor vehicle injured in collision with pedal cycle|Occupant of three-wheeled motor vehicle injured in collision with two- or three- wheeled motor vehicle|Occupant of three-wheeled motor vehicle injured in collision with car, pick-up truck or van|Occupant of three-wheeled motor vehicle injured in collision with heavy transport vehicle or bus|Occupant of three-wheeled motor vehicle injured in collision with railway train or railway vehicle|Occupant of three-wheeled motor vehicle injured in collision with other nonmotor vehicle|Occupant of three-wheeled motor vehicle injured in collision with fixed or stationary object|Occupant of three-wheeled motor vehicle injured in noncollision transport accident|Occupant of three-wheeled motor vehicle injured in other and unspecified transport accidents|Animal-rider or occupant of animal drawn vehicle injured in transport accident|Occupant of special all-terrain or other off-road motor vehicle, injured in transport accident"
   
   # hospital capability values 
-  hospital_capability_values <- "9908021|Trauma Center Level 1|9908023|Trauma Center Level 2|9908025|Trauma Center Level 3|9908027|Trauma Center Level 4|9908029|Trauma Center Level 5"
+  trauma_alert_values_65 <- "4224003|Yes-Adult Trauma|4224017|Yes-Trauma \\(General\\)"
   
+  # hospital capability values
+  trauma_alert_values_10_65 <- "4224003|Yes-Adult Trauma|4224017|Yes-Trauma \\(General\\)|4224011|Yes-Pediatric Trauma"
   
   # minor values
   minor_values <- "days|hours|minutes|months"
@@ -453,7 +510,8 @@ trauma_14 <- function(df,
       TRAUMA_TRIAGE_1_2_10_65 = Unique_ID %in% trauma_triage_1_2_data_10_65,
       TRAUMA_TRIAGE_1_2_10 = Unique_ID %in% trauma_triage_1_2_data_10,
       RESPIRATORY_RATE_10 = Unique_ID %in% respiratory_rate_data,
-      HOSPITAL_CAPABILITY = Unique_ID %in% hospital_capability_values
+      TRAUMA_ALERT_65 = Unique_ID %in% trauma_alert_values_65,
+      TRAUMA_ALERT_10_65 = Unique_ID %in% trauma_alert_values_10_65
       
     )
   
@@ -535,7 +593,7 @@ trauma_14 <- function(df,
   population_65 <- pop_65 |> 
     summarize_measure(measure_name = "Trauma-04",
                       population_name = ">= 65 yrs old",
-                      numerator_col = HOSPITAL_CAPABILITY,
+                      numerator_col = TRAUMA_ALERT_65,
                       ...
     )
   
@@ -543,7 +601,7 @@ trauma_14 <- function(df,
   population_10_65 <- pop_10_65 |>
     summarize_measure(measure_name = "Trauma-04",
                       population_name = "10-65 yrs",
-                      numerator_col = HOSPITAL_CAPABILITY,
+                      numerator_col = TRAUMA_ALERT_10_65,
                       ...
     )
   
@@ -551,7 +609,7 @@ trauma_14 <- function(df,
   population_10 <- pop_10 |>
     summarize_measure(measure_name = "Trauma-04",
                       population_name = "< 10 yrs",
-                      numerator_col = HOSPITAL_CAPABILITY,
+                      numerator_col = TRAUMA_ALERT_10_65,
                       ...
     )
   
