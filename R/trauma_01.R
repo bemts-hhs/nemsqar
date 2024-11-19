@@ -18,7 +18,7 @@
 #' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> Column name for transport disposition details.
 #' @param evitals_27_col <['tidy-select'][dplyr_tidy_select]> Column name for the pain scale assessment.
 #' @param ... Additional arguments passed to the `summarize_measure` function for custom summarization.
-#'#'
+#'
 #' @details The function performs the following steps:
 #' - Validates input data for proper formats and types.
 #' - Creates unique IDs for patient incidents to maintain row distinctness.
