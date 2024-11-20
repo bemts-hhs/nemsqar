@@ -1,6 +1,6 @@
 #' TTR-01 Measure Calculation
 #'
-#' This function calculates the TTR_01 measure, which evaluates the completeness of pain scale documentation for patients experiencing traumatic injury. It determines the total population, adult population, and pediatric population meeting the criteria for the TTR_01 measure. **Note:** This function assumes the input dataset contains the *initial* vital signs for respiratory rate, systolic blood pressure (SBP), and total Glasgow Coma Scale (GCS) score, respectively.
+#' This function calculates the TTR_01 measure, which evaluates the completeness of vitals documentation for patients not experiencing cardiac arrest who were also not transported during a 911 response. It determines the total population, adult population, and pediatric population meeting the criteria for the TTR_01 measure. **Note:** This function assumes the input dataset contains the *initial* vital signs for respiratory rate, systolic blood pressure (SBP), diastolic blood pressure (DBP), heart rate (HR), pulse oximetry (sp02), and total Glasgow Coma Scale (GCS) score, respectively.  Complete AVPU responses are expected.
 #'
 #' @param df A data frame or tibble containing the dataset to analyze.
 #' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> A column specifying unique patient records.
@@ -8,21 +8,24 @@
 #' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> A column indicating the patient's date of birth. Must be of class `Date` or `POSIXct`.
 #' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> A column indicating the patient’s age in numeric form.
 #' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> A column specifying the unit of patient age (e.g., "Years", "Days").
-#' @param esituation_02_col <['tidy-select'][dplyr_tidy_select]> A column containing information about the nature of the patient’s condition (e.g., injury type).
 #' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> A column specifying the type of response (e.g., 911 codes).
 #' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> A column specifying transport disposition for the patient.
-#' @param evitals_14_col <['tidy-select'][dplyr_tidy_select]> A column containing respiratory rate data from initial vital signs.
+#' @param earrest_01_col <['tidy-select'][dplyr_tidy_select]>,
 #' @param evitals_06_col <['tidy-select'][dplyr_tidy_select]> A column containing systolic blood pressure (SBP) data from initial vital signs.
+#' @param evitals_07_col <['tidy-select'][dplyr_tidy_select]> A column containing diastolic blood pressure (DBP) data from initial vital signs,
+#' @param evitals_10_col <['tidy-select'][dplyr_tidy_select]> A column containing heart rate data from initial vital signs.,
+#' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> A column containing sp02 data from the initial vital signs,
+#' @param evitals_14_col <['tidy-select'][dplyr_tidy_select]> A column containing respiratory rate data from initial vital signs.
 #' @param evitals_23_col <['tidy-select'][dplyr_tidy_select]> A column containing total Glasgow Coma Scale (GCS) scores from initial vital signs.
+#' @param evitals_26_col <['tidy-select'][dplyr_tidy_select]> A column containing alert, verbal, painful, unresponsive (AVPU) vital signs.
 #' @param ... Additional arguments passed to the `summarize_measure` function.
 #'
 #' @details The function performs the following steps:
 #' - Validates input data for proper formats and types.
 #' - Creates unique IDs for patient incidents to maintain row distinctness.
-#' - Filters records based on specific criteria, including injury status, response type (911), 
-#'   and transport type.
+#' - Filters records based on specific criteria, response type (911), non-transports, and non-cardiac arrest.
 #' - Separately identifies adult and pediatric populations based on system and calculated age.
-#' - Summarizes the TTR_01 measure for the entire population, adults, and pediatrics.
+#' - Summarizes the TTR_01 measure for adults and pediatrics.
 #'
 #' @section Features: 
 #'  
@@ -30,12 +33,12 @@
 #' - Incorporates quasiquotation for flexible column referencing.
 #' - Creates reusable dimension tables for efficient filtering and summarization.
 #'
-#' @return A tibble summarizing results for three population groups (All, Adults, and Peds) with the following columns:
+#' @return A tibble summarizing results for three population groups (Adults, and Peds) with the following columns:
 #' 
-#' `pop`: Population type (All, Adults, Peds).
-#' `numerator`: Count of incidents where the respiratory rate, SBP, and GCS vitals were taken.
+#' `pop`: Population type (Adults, Peds).
+#' `numerator`: Count of incidents where all applicable vital signs are taken.
 #' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents where the respiratory rate, SBP, and GCS vitals were taken.
+#' `prop`: Proportion of incidents where all applicable vital signs are taken.
 #' `prop_label`: Proportion formatted as a percentage with a specified number of
 #' decimal places.
 #'
@@ -48,7 +51,7 @@
 #' 
 #' @export
 #' 
-trauma_08 <- function(df,
+ttr_01 <- function(df,
                       erecord_01_col,
                       incident_date_col,
                       patient_DOB_col,
@@ -105,7 +108,15 @@ trauma_08 <- function(df,
   codes_911 <- "2205001|2205003|2205009"
   
   # define transports
-  no_transport_responses <- "4230009|patient refused transport|no transport|4230013|without transport|4212025|No Treatment/Transport Required|4212021|4212019|4212015|itDisposition\\.112\\.112|itDisposition\\.112\\.107|itDisposition\\.112\\.110|itDisposition\\.112\\.109"
+  no_transport_responses <- "4230009|patient refused transport|no transport|4230013"
+  
+  # cardiac arrest response
+  
+  cardiac_arrest_response <- "3301003|Yes, Prior to Any EMS Arrival"
+  
+  # AVPU responses
+  
+  avpu_responses <- "3326001|Alert|3326003|Verbal|3326005|Painful|3326007|Unresponsive"
   
   # minor values
   minor_values <- "days|hours|minutes|months"
@@ -180,7 +191,7 @@ trauma_08 <- function(df,
   
   # no transports
   
-  transport_data <- core_data |> 
+  no_transport_data <- core_data |> 
     dplyr::select(Unique_ID, {{ transport_disposition_col }}) |> 
     dplyr::distinct(Unique_ID, .keep_all = T) |> 
     dplyr::filter( 
@@ -191,32 +202,51 @@ trauma_08 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
-  # SBP, DBP, HR, RR, GCS, AVPU taken
+  # cardiac arrest
   
-  vitals_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_06_col }}, {{ evitals_07_col }}, {{ evitals_10_col }},
-                  {{ evitals_12_col }}, {{ evitals_14_col }}, {{ evitals_23_col }}, {{ evitals_26_col }}
-                  ) |> 
-    dplyr::distinct() |> 
+  cardiac_arrest_data <- core_data |> 
+    dplyr::select(Unique_ID, {{ earrest_01_col }}) |> 
+    dplyr::distinct(Unique_ID, .keep_all = T) |> 
     dplyr::filter( 
       
-      dplyr::if_all(c({{ evitals_06_col }}, {{ evitals_07_col }}, {{ evitals_10_col }},
-                      {{ evitals_12_col }}, {{ evitals_14_col }}, {{ evitals_23_col }}, {{ evitals_26_col }}), ~ !is.na(.))
+      !grepl(pattern = cardiac_arrest_response, x = {{ earrest_01_col }}, ignore.case = T) 
       
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  # SBP, DBP, HR, RR
+  
+  vitals_data <- core_data |> 
+    dplyr::select(Unique_ID, {{ evitals_06_col }}, {{ evitals_07_col }}, {{ evitals_10_col }},
+                  {{ evitals_12_col }}, {{ evitals_14_col }}, {{ evitals_23_col }}, {{ evitals_26_col }}
+                  ) |> 
+    dplyr::filter( 
+      
+      dplyr::if_all(
+        c({{ evitals_06_col }}, {{ evitals_07_col }}, {{ evitals_10_col }}, {{ evitals_12_col }}, {{ evitals_14_col }}), ~ !is.na(.)
+        ),
+        
+        !is.na({{ evitals_23_col }}) | 
+        
+        grepl(pattern = avpu_responses, x = {{ evitals_26_col }}, ignore.case = T)
+
+    ) |> 
+    dplyr::distinct(Unique_ID) |> 
+    dplyr::pull(Unique_ID)
+
   # assign variables to final data
   
   initial_population <- final_data |> 
     dplyr::mutate(CALL_911 = Unique_ID %in% call_911_data,
-                  NO_TRANSPORT = Unique_ID %in% transport_data,
-                  VITALS = Unique_ID %in% vitals_data
+                  NO_TRANSPORT = Unique_ID %in% no_transport_data,
+                  CARDIAC_ARREST = Unique_ID %in% cardiac_arrest_data,
+                  VITALS = Unique_ID %in% vitals_data,
     ) |> 
     dplyr::filter(
       CALL_911,
-      NO_TRANSPORT
+      NO_TRANSPORT,
+      CARDIAC_ARREST
     )
   
   # Adult and Pediatric Populations
@@ -245,9 +275,10 @@ trauma_08 <- function(df,
                       VITALS,
                       ...) 
   # summary
-  ttr.01 <- dplyr::bind_rows(total_population, adult_population, peds_population)
+  ttr.01 <- dplyr::bind_rows(adult_population, peds_population)
   
   ttr.01
   
   
 }
+
