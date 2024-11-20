@@ -112,7 +112,7 @@ ttr_01 <- function(df,
   
   # cardiac arrest response
   
-  cardiac_arrest_response <- "3301003|Yes, Prior to Any EMS Arrival"
+  cardiac_arrest_response <- "3001003|Yes, Prior to Any EMS Arrival"
   
   # AVPU responses
   
