@@ -1,83 +1,30 @@
-#' TTR-01 Measure Calculation
-#'
-#' This function calculates the TTR_01 measure, which evaluates the completeness of vitals documentation for patients not experiencing cardiac arrest who were also not transported during a 911 response. It determines the total population, adult population, and pediatric population meeting the criteria for the TTR_01 measure. **Note:** This function assumes the input dataset contains the *initial* vital signs for respiratory rate, systolic blood pressure (SBP), diastolic blood pressure (DBP), heart rate (HR), pulse oximetry (sp02), and total Glasgow Coma Scale (GCS) score, respectively.  Complete AVPU responses are expected.
-#'
-#' @param df A data frame or tibble containing the dataset to analyze.
-#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> A column specifying unique patient records.
-#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> A column indicating the incident date. Must be of class `Date` or `POSIXct`.
-#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> A column indicating the patient's date of birth. Must be of class `Date` or `POSIXct`.
-#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> A column indicating the patient’s age in numeric form.
-#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> A column specifying the unit of patient age (e.g., "Years", "Days").
-#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> A column specifying the type of response (e.g., 911 codes).
-#' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> A column specifying transport disposition for the patient.
-#' @param earrest_01_col <['tidy-select'][dplyr_tidy_select]>,
-#' @param evitals_06_col <['tidy-select'][dplyr_tidy_select]> A column containing systolic blood pressure (SBP) data from initial vital signs.
-#' @param evitals_07_col <['tidy-select'][dplyr_tidy_select]> A column containing diastolic blood pressure (DBP) data from initial vital signs,
-#' @param evitals_10_col <['tidy-select'][dplyr_tidy_select]> A column containing heart rate data from initial vital signs.,
-#' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> A column containing sp02 data from the initial vital signs,
-#' @param evitals_14_col <['tidy-select'][dplyr_tidy_select]> A column containing respiratory rate data from initial vital signs.
-#' @param evitals_23_col <['tidy-select'][dplyr_tidy_select]> A column containing total Glasgow Coma Scale (GCS) scores from initial vital signs.
-#' @param evitals_26_col <['tidy-select'][dplyr_tidy_select]> A column containing alert, verbal, painful, unresponsive (AVPU) vital signs.
-#' @param ... Additional arguments passed to the `summarize_measure` function.
-#'
-#' @details The function performs the following steps:
-#' - Validates input data for proper formats and types.
-#' - Creates unique IDs for patient incidents to maintain row distinctness.
-#' - Filters records based on specific criteria, response type (911), non-transports, and non-cardiac arrest.
-#' - Separately identifies adult and pediatric populations based on system and calculated age.
-#' - Summarizes the TTR_01 measure for adults and pediatrics.
-#'
-#' @section Features: 
-#'  
-#' - Handles missing or invalid date formats with error messaging.
-#' - Incorporates quasiquotation for flexible column referencing.
-#' - Creates reusable dimension tables for efficient filtering and summarization.
-#'
-#' @return A tibble summarizing results for three population groups (Adults, and Peds) with the following columns:
-#' 
-#' `pop`: Population type (Adults, Peds).
-#' `numerator`: Count of incidents where all applicable vital signs are taken.
-#' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents where all applicable vital signs are taken.
-#' `prop_label`: Proportion formatted as a percentage with a specified number of
-#' decimal places.
-#'
-#' @note 
-#' - Ensure the input dataset contains initial vital signs for each required vital signs. 
-#' - Not values should not be used, values missing a response should be blank so R interprets those as `NA` values.
-#' - Date columns (`incident_date_col` and `patient_DOB_col`) must be properly formatted before calling this function.
-#' 
-#' @author Nicolas Foss, Ed.D., MS
-#' 
-#' @export
-#' 
-ttr_01 <- function(df,
+airway_18 <- function(df,
                       erecord_01_col,
                       incident_date_col,
                       patient_DOB_col,
                       epatient_15_col,
                       epatient_16_col,
-                      eresponse_05_col,
-                      transport_disposition_col,
                       earrest_01_col,
+                      eresponse_05_col,
+                      evitals_01_col,
                       evitals_06_col,
-                      evitals_07_col,
-                      evitals_10_col,
                       evitals_12_col,
-                      evitals_14_col,
-                      evitals_23_col,
-                      evitals_26_col,
-                      ...
-                   ) {
+                      eprocedures_01_col,
+                      eprocedures_02_col,
+                      eprocedures_03_col,
+                      eprocedures_05_col,
+                      eprocedures_06_col,
+                      ...) {
   
   # provide better error messaging if df is missing
   if (missing(df)) {
     cli::cli_abort(
       c(
-        "No object of class {.cls data.frame} was passed to {.fn trauma_08}.",
-        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn trauma_08}."
+        "No object of class {.cls data.frame} was passed to {.fn airway_01}.",
+        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn airway_01}."
       )
     )
+    
   }
   
   # Ensure df is a data frame or tibble
@@ -98,26 +45,28 @@ ttr_01 <- function(df,
        !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
       (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
        !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
+    
     cli::cli_abort(
       "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
     )
+    
   }
   
-  # Create objects that are filter helpers throughout the function
   
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
   
-  # define transports
-  no_transport_responses <- "4230009|patient refused transport|no transport|4230013"
+  # endotracheal intubation attempts
+  endotracheal_intubation <- "673005|Indirect laryngoscopy \\(procedure\\)|49077009|Flexible fiberoptic laryngoscopy \\(procedure\\)|78121007|Direct laryngoscopy \\(procedure\\)|112798008|Insertion of endotracheal tube \\(procedure\\)|16883004|Endotracheal intubation, emergency procedure \\(procedure\\)|182682004|Emergency laryngeal intubation \\(procedure\\)|232674004|Orotracheal intubation \\(procedure\\)|232677006|Tracheal intubation using rigid bronchoscope \\(procedure\\)|232678001|Orotracheal fiberoptic intubation \\(procedure\\)|232679009|Nasotracheal intubation \\(procedure\\)|232682004|Nasotracheal fiberoptic intubation \\(procedure\\)|232680007|Nasal intubation awake \\(procedure\\)|241689008|Rapid sequence induction \\(procedure\\)|304341005|Awake intubation \\(procedure\\)|397892004|Retrograde intubation \\(procedure\\)|418613003|Tracheal intubation through a laryngeal mask airway \\(procedure\\)|429705000|Intubation, combitube \\(procedure\\)|424979004|Laryngeal mask airway insertion \\(procedure\\)|427753009|Insertion of esophageal tracheal double lumen supraglottic airway \\(procedure\\)|429161001|Insertion of endotracheal tube using laryngoscope \\(procedure\\)|450601000124103|Orotracheal intubation using bougie device \\(procedure\\)|450611000124|Insertion of Single Lumen Supraglottic Airway Device \\(procedure\\)|1141752008|Flexible video intubation laryngoscope \\(physical object\\)|285696003|Fiberoptic laryngoscope \\(physical object\\)|420311007|Flexible fiberoptic laryngoscope \\(physical object\\)|421100004|Rigid fiberoptic laryngoscope \\(physical object\\)|44738004|Laryngoscope device \\(physical object\\)|469919007|Flexible video laryngoscope \\(physical object\\)|700640001|Rigid intubation laryngoscope \\(physical object\\)|701054002|Flexible fiberoptic intubation laryngoscope \\(physical object\\)|706013009|Intubation laryngoscope \\(physical object\\)|734928009|Rigid non-bladed video intubation laryngoscope \\(physical object\\)|879788006|Channeled video intubation laryngoscope \\(physical object\\)"
   
   # cardiac arrest response
-  
   cardiac_arrest_response <- "3001003|Yes, Prior to Any EMS Arrival"
   
-  # AVPU responses
+  # waveform ETCO2
+  waveform_etco2 <- "4004019|Waveform ETCO2"
   
-  avpu_responses <- "3326001|Alert|3326003|Verbal|3326005|Painful|3326007|Unresponsive"
+  # answer yes!
+  yes_code <- "9923003|Yes"
   
   # minor values
   minor_values <- "days|hours|minutes|months"
@@ -136,23 +85,34 @@ ttr_01 <- function(df,
                                              INCIDENT_DATE_MISSING,
                                              PATIENT_DOB_MISSING, 
                                              sep = "-"
-                  ))
+                                             ),
+                  
+                  ENDOTRACHEAL_INTUBATION = grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
+                  CALL_911 = grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T),
+                  CARDIAC_ARREST = !grepl(pattern = cardiac_arrest_response, x = {{ earrest_01_col }}, ignore.case = T)
+                  
+    ) |> 
+    dplyr::filter(
+      ENDOTRACHEAL_INTUBATION,
+      CALL_911,
+      CARDIAC_ARREST
+    )
   
   # fact table
   # the user should ensure that variables beyond those supplied for calculations
   # are distinct (i.e. one value or cell per patient)
   
   final_data <- core_data |> 
-    dplyr::select(-c({{ eresponse_05_col }},
-                     {{ transport_disposition_col }},
-                     {{ earrest_01_col }},
+    dplyr::select(-c({{ earrest_01_col }},
+                     {{ eresponse_05_col }},
+                     {{ evitals_01_col }},
                      {{ evitals_06_col }},
-                     {{ evitals_07_col }},
-                     {{ evitals_10_col }},
                      {{ evitals_12_col }},
-                     {{ evitals_14_col }},
-                     {{ evitals_23_col }},
-                     {{ evitals_26_col }}
+                     {{ eprocedures_01_col }},
+                     {{ eprocedures_02_col }},
+                     {{ eprocedures_03_col }},
+                     {{ eprocedures_05_col }},
+                     {{ eprocedures_06_col }}
                      
     )) |> 
     dplyr::distinct(Unique_ID, .keep_all = T) |> 
@@ -161,16 +121,26 @@ ttr_01 <- function(df,
       time2 = {{ patient_DOB_col }},
       units = "days"
     )) / 365,
+    patient_age_in_days_col = as.numeric(difftime(
+      time1 = {{ incident_date_col }},
+      time2 = {{ patient_DOB_col }},
+      units = "days"
+    )),
     
     # system age check
     system_age_adult = {{ epatient_15_col }} >= 18 & {{ epatient_16_col }} == "Years", 
     system_age_minor1 = {{ epatient_15_col }} < 18 & {{ epatient_16_col }} == "Years", 
     system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor = system_age_minor1 | system_age_minor2, 
+    system_age_exclusion1 = {{ epatient_15_col }} < 1 & {{ epatient_16_col }} == "Days",
+    system_age_exclusion2 = {{ epatient_15_col }} < 24 & {{ epatient_16_col }} == "Hours",
+    system_age_exclusion3 = {{ epatient_15_col }} < 120 & {{ epatient_16_col }} == "Minutes",
+    system_age_exclusion = system_age_exclusion1 | system_age_exclusion2 | system_age_exclusion3,
+    system_age_minor = (system_age_minor1 | system_age_minor2) & !system_age_exclusion, 
     
     # calculated age check
-    calc_age_adult = patient_age_in_years_col >= 18, 
-    calc_age_minor = patient_age_in_years_col < 18
+    calc_age_adult = patient_age_in_years_col >= 18,
+    calc_age_exclusion = patient_age_in_days_col < 1,
+    calc_age_minor = patient_age_in_years_col < 18 & !calc_age_exclusion
     )
   
   ###_____________________________________________________________________________
@@ -221,21 +191,21 @@ ttr_01 <- function(df,
   vitals_data <- core_data |> 
     dplyr::select(Unique_ID, {{ evitals_06_col }}, {{ evitals_07_col }}, {{ evitals_10_col }},
                   {{ evitals_12_col }}, {{ evitals_14_col }}, {{ evitals_23_col }}, {{ evitals_26_col }}
-                  ) |> 
+    ) |> 
     dplyr::filter( 
       
       dplyr::if_all(
         c({{ evitals_06_col }}, {{ evitals_07_col }}, {{ evitals_10_col }}, {{ evitals_12_col }}, {{ evitals_14_col }}), ~ !is.na(.)
-        ),
-        
-        !is.na({{ evitals_23_col }}) | 
+      ),
+      
+      !is.na({{ evitals_23_col }}) | 
         
         grepl(pattern = avpu_responses, x = {{ evitals_26_col }}, ignore.case = T)
-
+      
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
-
+  
   # assign variables to final data
   
   initial_population <- final_data |> 
@@ -282,4 +252,3 @@ ttr_01 <- function(df,
   
   
 }
-
