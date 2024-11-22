@@ -71,16 +71,15 @@ airway_18 <- function(df,
     
   }
   
+  reduced_time <- function() {
+    format(Sys.time(), "%Y-%m-%d %H:%M:%S")  # Only show date and time to second
+  }
+  
   progress_bar <- cli_progress_bar("Data Preparation", total = 12, type = "tasks", clear = F,
-                                     format = "{cli::pb_name} [{cli::pb_current}/{cli::pb_total}] {cli::pb_bar} | Progress: {cli::pb_percent}% Finished at {Sys.time()}",
-                                     options = list(
-                                       bar_fill = "=",    # Fill character
-                                       bar_complete = ">", # Complete character (arrow head)
-                                       bar_incomplete = "-" # Incomplete part of the bar
-                                     )
+                                     format = "{cli::pb_name} [{cli::pb_current}/{cli::pb_total}] {cli::pb_bar} | Progress:{cli::pb_percent} Finished at {reduced_time()}"
                                      )
   
-  cli_alert("Calculating Airway-18 at {Sys.time()}")
+  cli_alert("Calculating Airway-18 at {reduced_time()}")
   
   progress_bar
   
