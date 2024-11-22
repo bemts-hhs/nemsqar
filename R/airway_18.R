@@ -85,12 +85,12 @@ airway_18 <- function(df,
   
   cli::cli_alert_info("Initiated at {reduce_date_time()}")
   
-  progress_bar <- cli_progress_bar(
+  progress_bar <- cli::cli_progress_bar(
     "Running `airway_18()`",
     total = 12,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [{cli::pb_current}/{cli::pb_total}] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: {paste0(abs(round(difftime(start_time, reduce_date_time(), units = 'secs'), digits = 2)), ' secs')}"
+    format = "{cli::pb_name} [{cli::pb_current}/{cli::pb_total}] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: {paste0(abs(round(difftime(start_time, reduce_date_time(), units = 'mins'), digits = 2)), ' mins')}"
   )
   
   progress_bar

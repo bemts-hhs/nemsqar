@@ -79,6 +79,7 @@ pediatrics_03b <- function(df,
                            emedications_03_col,
                            emedications_04_col,
                            ...) {
+  
   # provide better error messaging if df is missing
   if (missing(df)) {
     cli::cli_abort(
@@ -112,6 +113,31 @@ pediatrics_03b <- function(df,
     )
   }
   
+  reduce_date_time <- function() {
+    format(Sys.time(), "%Y-%m-%d %H:%M:%S")  # Only show date and time to second
+  }
+  
+  reduced_time <- function() {
+    format(Sys.time(), "%H:%M:%S")  # Only show date and time to second
+  }
+  
+  cli::cli_h1("Calculating Pediatrics-03b")
+  
+  start_time <- Sys.time()
+  
+  cli::cli_alert_info("Initiated at {reduce_date_time()}")
+  
+  progress_bar <- cli::cli_progress_bar(
+    "Running `pediatrics_03b()`",
+    total = 9,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [{cli::pb_current}/{cli::pb_total}] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: {paste0(abs(round(difftime(start_time, reduce_date_time(), units = 'mins'), digits = 2)), ' mins')}"
+  )
+  
+  progress_bar
+  
+  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
   
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
@@ -129,6 +155,8 @@ pediatrics_03b <- function(df,
   # explosion
   ###_____________________________________________________________________________
   
+  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
+  
   core_data <- df |> 
     dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{  incident_date_col  }}, base::as.Date("1984-09-09")),
                   PATIENT_DOB_MISSING = tidyr::replace_na({{  patient_DOB_col  }}, base::as.Date("1982-05-19")),
@@ -141,6 +169,8 @@ pediatrics_03b <- function(df,
   # fact table
   # the user should ensure that variables beyond those supplied for calculations
   # are distinct (i.e. one value or cell per patient)
+  
+  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
   
   final_data <- core_data |> 
     dplyr::select(-c({{ eresponse_05_col }},
@@ -174,6 +204,8 @@ pediatrics_03b <- function(df,
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
   
+  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
+  
   # non-weight based medications
   
   non_weight_based_meds_data <- core_data |> 
@@ -186,6 +218,8 @@ pediatrics_03b <- function(df,
     distinct(Unique_ID) |> 
     pull(Unique_ID)
   
+  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
+  
   # meds not missing
   
   meds_not_missing_data <- core_data |> 
@@ -195,6 +229,8 @@ pediatrics_03b <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
+  
   # 911 calls
   
   call_911_data <- core_data |> 
@@ -203,6 +239,8 @@ pediatrics_03b <- function(df,
     dplyr::filter(grepl(pattern = codes_911, x = {{  eresponse_05_col  }}, ignore.case = T)) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
   
   # documented weight
   
@@ -227,6 +265,8 @@ pediatrics_03b <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 8, id = progress_bar, force = T)
   
   # assign variables to final data
   
@@ -254,6 +294,8 @@ pediatrics_03b <- function(df,
       
     )
   
+  cli::cli_progress_update(set = 9, id = progress_bar, force = T)
+  
   # get the summary of results, already filtered down to the target age group for the measure
   
   # peds
@@ -262,6 +304,8 @@ pediatrics_03b <- function(df,
                       population_name = "Peds",
                       DOCUMENTED_WEIGHT,
                       ...)
+  
+  cli::cli_progress_done()
   
   # summary
   pediatrics.03b
