@@ -71,15 +71,27 @@ airway_18 <- function(df,
     
   }
   
-  reduced_time <- function() {
+  reduce_date_time <- function() {
     format(Sys.time(), "%Y-%m-%d %H:%M:%S")  # Only show date and time to second
   }
   
-  progress_bar <- cli_progress_bar("Data Preparation", total = 12, type = "tasks", clear = F,
-                                     format = "{cli::pb_name} [{cli::pb_current}/{cli::pb_total}] {cli::pb_bar} | Progress:{cli::pb_percent} Finished at {reduced_time()}"
-                                     )
+  reduced_time <- function() {
+    format(Sys.time(), "%H:%M:%S")  # Only show date and time to second
+  }
   
-  cli_alert("Calculating Airway-18 at {reduced_time()}")
+  cli::cli_h1("Calculating Airway-18")
+  
+  start_time <- Sys.time()
+  
+  cli::cli_alert_info("Initiated at {reduce_date_time()}")
+  
+  progress_bar <- cli_progress_bar(
+    "Running `airway_18()`",
+    total = 12,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [{cli::pb_current}/{cli::pb_total}] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: {paste0(abs(round(difftime(start_time, reduce_date_time(), units = 'secs'), digits = 2)), ' secs')}"
+  )
   
   progress_bar
   
@@ -320,8 +332,10 @@ airway_18 <- function(df,
   
   cli::cli_progress_update(set = 12, id = progress_bar, force = T)
   
-  airway.18
-  
   cli::cli_progress_done()
+  
+  cli::cli_h2("Airway-18 Output")
+  
+  airway.18
   
 }
