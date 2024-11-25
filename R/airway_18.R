@@ -1,3 +1,74 @@
+#' Airway-18
+#' 
+#' @description
+#' 
+#' This function processes and analyzes the dataset to calculate the "Airway-18" NEMSQA metric. 
+#' It includes cleaning and transforming several columns related to patient data, airway procedures, 
+#' and vital signs, and it returns a cleaned dataset with the relevant calculations.
+#' The final calculation is an assessment of the successful last invasive airway procedures 
+#' performed during an EMS response originating from a 911 request in which waveform capnography 
+#' is used for tube placement confirmation.
+#' 
+#' @section Data Assumptions:
+#' 
+#' #' This function assumes that:
+#' Data are already loaded. The data needs to be a data.frame or tibble.
+#'
+#' Age in years will be calculated using the patient date of birth and incident
+#' date. These fields must have valid Date or POSIXct data types.
+#'
+#' When values are missing, they are coded as NA, not the "not known"/"not
+#' recorded" values common to ImageTrend or the NEMSIS codes that correspond to
+#' "not values".
+#'
+#' For the eprocedure, eairway, and evitals fields, all responses entered can be
+#' included in `df`.  This will result in Cartesian product, but the function
+#' will performantly handle that problem.
+#' 
+#' @section Practical Tips:
+#' 
+#' Ensure data are pre-processed, with missing values coded as `NA`, before passing
+#' into the function.
+#' Prepare necessary joins (e.g., for vitals) in advance; this function does not perform joins.
+#'
+#' @param df A data frame or tibble containing the dataset to be processed.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Column name containing the unique patient record identifier.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column name containing the incident date.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column name containing the patient's date of birth.
+#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column name for patient information (exact purpose unclear).
+#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column name for patient information (exact purpose unclear).
+#' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column name for procedure codes.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column name for emergency response codes.
+#' @param eprocedures_06_col <['tidy-select'][dplyr_tidy_select]> Column name for procedure success codes.
+#' @param eprocedures_01_col <['tidy-select'][dplyr_tidy_select]> Column name for procedure times or other related data.
+#' @param eprocedures_02_col <['tidy-select'][dplyr_tidy_select]> Column name for additional procedure data.
+#' @param eairway_04_col <['tidy-select'][dplyr_tidy_select]> Column name for airway procedure data.
+#' @param eairway_02_col <['tidy-select'][dplyr_tidy_select]> Column name for airway procedure data (datetime).
+#' @param evitals_01_col <['tidy-select'][dplyr_tidy_select]> Column name for vital signs data (datetime).
+#' @param evitals_16_col <['tidy-select'][dplyr_tidy_select]> Column name for additional vital signs data.
+#' @param ... Additional arguments passed to other functions if needed.
+#'
+#' @return A tibble summarizing results for Adults and Peds with the following columns:
+#' `pop`: Population type (Adults, Peds).
+#' `numerator`: Count of incidents where waveform capnography is used for tube placement confirmation on
+#' the last successful invasive airway procedure.
+#' `denominator`: Total count of incidents.
+#' `prop`: Proportion of incidents where waveform capnography is used for tube placement confirmation on
+#' the last successful invasive airway procedure.
+#' `prop_label`: Proportion formatted as a percentage with a specified number of
+#' decimal places.
+#' 
+#' @note
+#' This function filters and processes EMS data to:
+#' - Identify the last successful airway procedure.
+#' - Filter for 911 response codes and relevant vital signs (i.e. ETCO2).
+#' - Aggregate results by patient encounter and calculate stroke scale outcomes.
+#' - Return a summary of stroke cases by unique patient identifier, including stroke scale measurements.
+#' 
+#' @author Nicolas Foss, Ed.D., MS
+#' 
+#' @export
+#' 
 airway_18 <- function(df,
                       erecord_01_col,
                       incident_date_col,
@@ -71,6 +142,9 @@ airway_18 <- function(df,
     
   }
   
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
   options(cli.progress_bar_style = "dot")
   
   options(cli.progress_bar_style = list(
@@ -78,8 +152,10 @@ airway_18 <- function(df,
     incomplete = cli::col_br_white("─")
   ))
   
+  # header
   cli::cli_h1("Calculating Airway-18")
   
+  # initiate the progress bar process
   progress_bar <- cli::cli_progress_bar(
     "Running `airway_18()`",
     total = 12,
@@ -90,6 +166,7 @@ airway_18 <- function(df,
   
   progress_bar
   
+  # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 1, id = progress_bar, force = T)
   
   # 911 codes for eresponse.05

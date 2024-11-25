@@ -154,6 +154,33 @@ safety_04 <- function(df,
     
   }
   
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # header
+  cli::cli_h1("Calculating Safety-04")
+  
+  # initiate the progress bar process
+  progress_bar <- cli::cli_progress_bar(
+    "Running `safety_04()`",
+    total = 14,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
+  
+  progress_bar
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
+  
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
   
   # transport code eresponse.05
@@ -191,6 +218,8 @@ safety_04 <- function(df,
   # explosion
   ###_____________________________________________________________________________
   
+  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
+  
   core_data <- df |> 
     dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{  incident_date_col  }}, base::as.Date("1984-09-09")),
                   PATIENT_DOB_MISSING = tidyr::replace_na({{  patient_DOB_col  }}, base::as.Date("1982-05-19")),
@@ -203,6 +232,8 @@ safety_04 <- function(df,
   # fact table
   # the user should ensure that variables beyond those supplied for calculations
   # are distinct (i.e. one value or cell per patient)
+  
+  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
   
   final_data <- core_data |> 
     dplyr::select(-c({{  eresponse_05_col  }},
@@ -237,6 +268,8 @@ safety_04 <- function(df,
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
   
+  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
+  
   # transports
   
   transport_data <- core_data |> 
@@ -252,6 +285,8 @@ safety_04 <- function(df,
     ) |> 
     distinct(Unique_ID) |> 
     pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
   
   # interfacility
   
@@ -269,6 +304,8 @@ safety_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
+  
   # cardiac arrest
   
   cardiac_arrest_data <- core_data |> 
@@ -280,6 +317,8 @@ safety_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
   
   # severe injury
   
@@ -294,6 +333,8 @@ safety_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 8, id = progress_bar, force = T)
+  
   # long board
   
   long_board_data <- core_data |> 
@@ -306,6 +347,8 @@ safety_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 9, id = progress_bar, force = T)
   
   # airway procedure
   
@@ -320,6 +363,8 @@ safety_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 10, id = progress_bar, force = T)
+  
   # car seat
   
   car_seat_data <- core_data |> 
@@ -332,6 +377,8 @@ safety_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 11, id = progress_bar, force = T)
   
   # assign variables to final data
   
@@ -357,6 +404,8 @@ safety_04 <- function(df,
   
   # Only calculate for pediatric patients < 8 yrs of age
   
+  cli::cli_progress_update(set = 12, id = progress_bar, force = T)
+  
   # filter peds for the exclusion criteria
   peds_pop <- initial_population |>
     dplyr::filter(!CARDIAC_ARREST &
@@ -367,6 +416,8 @@ safety_04 <- function(df,
   
   # get the summary of results
   
+  cli::cli_progress_update(set = 13, id = progress_bar, force = T)
+  
   # peds
   peds_population <- peds_pop |>
     summarize_measure(
@@ -376,8 +427,12 @@ safety_04 <- function(df,
       ...
     )
   
+  cli::cli_progress_update(set = 14, id = progress_bar, force = T)
+  
   # summary
   safety.04 <- peds_population
+  
+  cli::cli_progress_done()
   
   safety.04
   

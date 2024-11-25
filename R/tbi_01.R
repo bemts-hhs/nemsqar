@@ -2,6 +2,16 @@
 #'
 #' This function screens for potential traumatic brain injury (TBI) cases based on specific criteria
 #' in a patient dataset. It produces a subset of the data with calculated variables for TBI identification.
+#' 
+#' @section Data Assumptions:
+#' 
+#' - Date columns are already formatted as `Date` or `POSIXct`.
+#' - `esituation_12_col` is a list column with all values entered for a 
+#' specific record separated by commas.
+#' - `evitals_23_col` is the lowest GCS score.
+#' - `evitals_26_col` contains all AVPU responses entered.
+#' - `evitals_12_col`, `evitals_16_col`, and `evitals_06_col` can be all the values entered for these
+#' fields, or the initial value for each.  The latter will probably work best.
 #'
 #' @param df A data frame or tibble containing the patient data.
 #' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Column name in \code{df} with the patient’s unique record ID.
@@ -97,6 +107,32 @@ tbi_01 <- function(df,
     )
   }
   
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # header
+  cli::cli_h1("Calculating TBI-01")
+  
+  # initiate the progress bar process
+  progress_bar <- cli::cli_progress_bar(
+    "Running `tbi_01()`",
+    total = 16,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
+  
+  progress_bar
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
   
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
   
@@ -123,6 +159,8 @@ tbi_01 <- function(df,
   # explosion
   ###_____________________________________________________________________________
   
+  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
+  
   core_data <- df |> 
   dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, base::as.Date("1984-09-09")),
          PATIENT_DOB_MISSING = tidyr::replace_na({{ patient_DOB_col }}, base::as.Date("1982-05-19")),
@@ -136,6 +174,8 @@ tbi_01 <- function(df,
 # the user should ensure that variables beyond those supplied for calculations
 # are distinct (i.e. one value or cell per patient)
 
+cli::cli_progress_update(set = 3, id = progress_bar, force = T)
+  
 final_data <- core_data |> 
   dplyr::select(-c({{ eresponse_05_col }}, 
                    {{ evitals_23_col }},
@@ -173,6 +213,8 @@ final_data <- core_data |>
 ### calculations of the numerator and filtering
 ###_____________________________________________________________________________
 
+cli::cli_progress_update(set = 4, id = progress_bar, force = T)
+
 # GCS
 
 GCS_data <- core_data |> 
@@ -180,6 +222,8 @@ GCS_data <- core_data |>
   dplyr::filter({{ evitals_23_col }} < 15) |> 
   distinct(Unique_ID) |> 
   pull(Unique_ID)
+
+cli::cli_progress_update(set = 5, id = progress_bar, force = T)
 
 # AVPU
 
@@ -192,30 +236,22 @@ AVPU_data <- core_data |>
   dplyr::distinct(Unique_ID) |> 
   dplyr::pull(Unique_ID)
 
-# sp02
+cli::cli_progress_update(set = 6, id = progress_bar, force = T)
 
-sp02_data <- core_data |> 
-  dplyr::select(Unique_ID, {{ evitals_12_col }}) |> 
-  dplyr::filter(!is.na({{ evitals_12_col }})) |> 
+# vitals
+
+vitals_data <- core_data |> 
+  dplyr::select(Unique_ID, {{ evitals_12_col }}, {{ evitals_06_col }}, {{ evitals_16_col }}) |> 
+  dplyr::distinct() |> 
+  dplyr::filter(
+    
+    dplyr::if_all(c({{ evitals_12_col }}, {{ evitals_06_col }}, {{ evitals_16_col }}), ~ !is.na(.))
+    
+  ) |> 
   dplyr::distinct(Unique_ID) |> 
   dplyr::pull(Unique_ID)
 
-# ETCO2
-
-etco2_data <- core_data |> 
-  dplyr::select(Unique_ID, {{ evitals_16_col }}) |> 
-  dplyr::filter(!is.na({{ evitals_16_col }})) |> 
-  dplyr::distinct(Unique_ID) |> 
-  dplyr::pull(Unique_ID)
-
-# SBP
-
-sbp_data <- core_data |> 
-  dplyr::select(Unique_ID, {{ evitals_06_col }}) |> 
-  dplyr::filter(!is.na({{ evitals_06_col }})) |> 
-  dplyr::distinct(Unique_ID, .keep_all = T) |> 
-  dplyr::arrange(Unique_ID) |> 
-  dplyr::pull(Unique_ID)
+cli::cli_progress_update(set = 7, id = progress_bar, force = T)
 
 # provider impression 1
 
@@ -230,6 +266,8 @@ provider_impression_data1 <- core_data |>
   dplyr::distinct(Unique_ID) |> 
   dplyr::pull(Unique_ID)
 
+cli::cli_progress_update(set = 8, id = progress_bar, force = T)
+
 # provider impression 2
 
 provider_impression_data2 <- core_data |> 
@@ -243,6 +281,8 @@ provider_impression_data2 <- core_data |>
   dplyr::distinct(Unique_ID) |> 
   dplyr::pull(Unique_ID)
 
+cli::cli_progress_update(set = 9, id = progress_bar, force = T)
+
 # 911 calls
 
 call_911_data <- core_data |> 
@@ -251,6 +291,8 @@ call_911_data <- core_data |>
   dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)) |> 
   dplyr::distinct(Unique_ID) |> 
   dplyr::pull(Unique_ID)
+
+cli::cli_progress_update(set = 10, id = progress_bar, force = T)
 
 # transports
 
@@ -265,6 +307,8 @@ call_911_data <- core_data |>
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
 
+  cli::cli_progress_update(set = 11, id = progress_bar, force = T)
+  
 # assign variables to final data
 
   initial_population <- final_data |> 
@@ -275,29 +319,32 @@ call_911_data <- core_data |>
          PROVIDER_IMPRESSION = PROVIDER_IMPRESSION1 | PROVIDER_IMPRESSION2,
          CALL_911 = Unique_ID %in% call_911_data,
          TRANSPORT = Unique_ID %in% transport_data,
-         PULSE_OXIMETRY = Unique_ID %in% sp02_data,
-         ETCO2 = Unique_ID %in% etco2_data,
-         SBP = Unique_ID %in% sbp_data,
-         VITALS_CHECK = if_else(PULSE_OXIMETRY & ETCO2 & SBP, 1, 0)
+         VITALS_CHECK = Unique_ID %in% vitals_data
          ) |> 
   dplyr::filter(
-    GCS | AVPU,
-      PROVIDER_IMPRESSION,
-    CALL_911,
-    TRANSPORT
+    (GCS | AVPU) & 
+      PROVIDER_IMPRESSION & 
+      CALL_911 & 
+      TRANSPORT
   )
   
 # Adult and Pediatric Populations
 
+  cli::cli_progress_update(set = 12, id = progress_bar, force = T)
+  
 # filter adult
 adult_pop <- initial_population |>
   dplyr::filter(system_age_adult | calc_age_adult)
+
+cli::cli_progress_update(set = 13, id = progress_bar, force = T)
 
 # filter peds
 peds_pop <- initial_population |>
   dplyr::filter(system_age_minor | calc_age_minor)
 
 # summarize
+
+cli::cli_progress_update(set = 14, id = progress_bar, force = T)
 
 # adults
 adult_population <- adult_pop |>
@@ -306,14 +353,21 @@ adult_population <- adult_pop |>
                     VITALS_CHECK,
                     ...)
 
+cli::cli_progress_update(set = 15, id = progress_bar, force = T)
+
 # peds
 peds_population <- peds_pop |>
   summarize_measure(measure_name = "TBI-01",
                     population_name = "Peds",
                     VITALS_CHECK,
                     ...) 
+
+cli::cli_progress_update(set = 16, id = progress_bar, force = T)
+
 # summary
 tbi.01 <- dplyr::bind_rows(adult_population, peds_population)
+
+cli::cli_progress_done()
 
 tbi.01
   

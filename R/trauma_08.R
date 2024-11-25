@@ -1,6 +1,10 @@
 #' Trauma-08 Measure Calculation
 #'
 #' This function calculates the Trauma-08 measure, which evaluates the completeness of pain scale documentation for patients experiencing traumatic injury. It determines the total population, adult population, and pediatric population meeting the criteria for the Trauma-08 measure. **Note:** This function assumes the input dataset contains the *initial* vital signs for respiratory rate, systolic blood pressure (SBP), and total Glasgow Coma Scale (GCS) score, respectively.
+#' 
+#' @section Data Assumptions:
+#' 
+#' - All vital signs are the initial vital signs.
 #'
 #' @param df A data frame or tibble containing the dataset to analyze.
 #' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> A column specifying unique patient records.
@@ -95,6 +99,32 @@ trauma_08 <- function(df,
     )
   }
   
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # header
+  cli::cli_h1("Calculating Trauma-08")
+  
+  # initiate the progress bar process
+  progress_bar <- cli::cli_progress_bar(
+    "Running `trauma_08()`",
+    total = 14,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
+  
+  progress_bar
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
   
   # Create objects that are filter helpers throughout the function
   
@@ -117,6 +147,8 @@ trauma_08 <- function(df,
   # explosion
   ###_____________________________________________________________________________
   
+  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
+  
   core_data <- df |> 
     dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, base::as.Date("1984-09-09")),
                   PATIENT_DOB_MISSING = tidyr::replace_na({{ patient_DOB_col }}, base::as.Date("1982-05-19")),
@@ -129,6 +161,8 @@ trauma_08 <- function(df,
   # fact table
   # the user should ensure that variables beyond those supplied for calculations
   # are distinct (i.e. one value or cell per patient)
+  
+  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
   
   final_data <- core_data |> 
     dplyr::select(-c({{ esituation_02_col }},
@@ -165,6 +199,8 @@ trauma_08 <- function(df,
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
   
+  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
+  
   # possible injury
   
   possible_injury_data <- core_data |> 
@@ -172,6 +208,8 @@ trauma_08 <- function(df,
     dplyr::filter(grepl(pattern = possible_injury, x = {{ esituation_02_col }}, ignore.case = T)) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
   
   # 911 calls
   
@@ -181,6 +219,8 @@ trauma_08 <- function(df,
     dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
   
   # transports
   
@@ -195,6 +235,8 @@ trauma_08 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
+  
   # pain scale
   
   vitals_data <- core_data |> 
@@ -207,6 +249,8 @@ trauma_08 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 8, id = progress_bar, force = T)
   
   # assign variables to final data
   
@@ -224,15 +268,21 @@ trauma_08 <- function(df,
   
   # Adult and Pediatric Populations
   
+  cli::cli_progress_update(set = 9, id = progress_bar, force = T)
+  
   # filter adult
   adult_pop <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
+  
+  cli::cli_progress_update(set = 10, id = progress_bar, force = T)
   
   # filter peds
   peds_pop <- initial_population |>
     dplyr::filter(system_age_minor | calc_age_minor)
   
   # summarize
+  
+  cli::cli_progress_update(set = 11, id = progress_bar, force = T)
   
   # total population
   
@@ -242,6 +292,8 @@ trauma_08 <- function(df,
                       VITALS,
                       ...)
   
+  cli::cli_progress_update(set = 12, id = progress_bar, force = T)
+  
   # adults
   adult_population <- adult_pop |>
     summarize_measure(measure_name = "Trauma-08",
@@ -249,14 +301,21 @@ trauma_08 <- function(df,
                       VITALS,
                       ...)
   
+  cli::cli_progress_update(set = 13, id = progress_bar, force = T)
+  
   # peds
   peds_population <- peds_pop |>
     summarize_measure(measure_name = "Trauma-08",
                       population_name = "Peds",
                       VITALS,
                       ...) 
+  
+  cli::cli_progress_update(set = 14, id = progress_bar, force = T)
+  
   # summary
   trauma.08 <- dplyr::bind_rows(total_population, adult_population, peds_population)
+  
+  cli::cli_progress_done()
   
   trauma.08
   

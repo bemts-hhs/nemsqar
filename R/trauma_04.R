@@ -1,6 +1,20 @@
 #' Trauma-04
 #'
 #' This function processes EMS data to generate a set of binary variables indicating whether specific trauma triage criteria are met. The output #' is a data frame enriched with these indicators for further analysis.  The final outcome is whether or not the EMS record documents the use of #' a verified trauma center levels 1-5 in the hospital capability documentation.
+#' 
+#' @section Data Assumptions:
+#' 
+#' - All vitals columns contain the full list of values entered for each record and columns.
+#' - Each eexam field is a list column containing all values entered per record
+#' that are also comma (or otherwise) separated.
+#' - The trauma triage fields are list columns containing all values entered per record
+#' that are also comma (or otherwise) separated.
+#' - `einjury_01_col` is a list column containing all values entered per record
+#' that are also comma (or otherwise) separated.
+#' - `eresponse_10_col` is a list column containing all values entered per record
+#' that are also comma (or otherwise) separated.
+#' - `eprocedures_03_col` is a list column containing all values entered per record
+#' that are also comma (or otherwise) separated.
 #'
 #' @param df A data frame or tibble containing EMS data with all relevant columns.
 #' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.
@@ -46,7 +60,6 @@
 #'
 #' @note This function uses `rlang`, `lubridate`, `dplyr`, and `tidyr` packages for data processing. Ensure the data frame contains valid date formats and expected column names.
 #' 
-#'
 #' @details The function generates individual vectors of unique IDs for each trauma triage criterion and assigns these to binary variables in the final data frame. This allows filtering and calculation of metrics such as numerators for performance measures.
 #' 
 #' @author Nicolas Foss, Ed.D., MS
@@ -113,6 +126,32 @@ trauma_04 <- function(df,
     )
   }
   
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # header
+  cli::cli_h1("Calculating Trauma-04")
+  
+  # initiate the progress bar process
+  progress_bar <- cli::cli_progress_bar(
+    "Running `trauma_04()`",
+    total = 30,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
+  
+  progress_bar
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
   
   # Create objects that are filter helpers throughout the function
   
@@ -182,6 +221,8 @@ trauma_04 <- function(df,
   # explosion
   ###_____________________________________________________________________________
   
+  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
+  
   core_data <- df |> 
     dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, base::as.Date("1984-09-09")),
                   PATIENT_DOB_MISSING = tidyr::replace_na({{ patient_DOB_col }}, base::as.Date("1982-05-19")),
@@ -194,6 +235,8 @@ trauma_04 <- function(df,
   # fact table
   # the user should ensure that variables beyond those supplied for calculations
   # are distinct (i.e. one value or cell per patient)
+  
+  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
   
   final_data <- core_data |> 
     dplyr::select(-c({{ erecord_01_col }},
@@ -258,12 +301,16 @@ trauma_04 <- function(df,
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
   
+  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
+  
   # GCS 
   GCS_data <- core_data |> 
     dplyr::select(Unique_ID, {{ evitals_21_col }}) |> 
     dplyr::filter(grepl(pattern = care_provided, x = {{ evitals_21_col }}, ignore.case = T)) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
   
   # lung assessment
   lung_assessment_data <- core_data |> 
@@ -276,6 +323,8 @@ trauma_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
+  
   # chest assessment
   chest_data <- core_data |> 
     dplyr::select(Unique_ID, {{ eexam_25_col }}) |> 
@@ -286,6 +335,8 @@ trauma_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
   
   # respiratory effort
   respiratory_effort_data <- core_data |> 
@@ -298,6 +349,8 @@ trauma_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
+  
   # airway management
   airway_management_data <- core_data |> 
     dplyr::select(Unique_ID, {{ eprocedures_03_col }}) |> 
@@ -308,6 +361,8 @@ trauma_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 8, id = progress_bar, force = T)
   
   # pulse oximetry
   pulse_oximetry_data <- core_data |> 
@@ -320,6 +375,8 @@ trauma_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 9, id = progress_bar, force = T)
+  
   # SBP
   SBP_data <- core_data |> 
     dplyr::select(Unique_ID, {{ evitals_06_col }}) |> 
@@ -330,6 +387,8 @@ trauma_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 10, id = progress_bar, force = T)
   
   # heart rate and SBP
   HR_SBP_data_10_65_plus <- core_data |> 
@@ -343,6 +402,8 @@ trauma_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 11, id = progress_bar, force = T)
+  
   # trauma triage criteria steps 1 and 2 age 65+
   trauma_triage_1_2_data_65 <- core_data |> 
     dplyr::select(Unique_ID, {{ einjury_03_col }}) |> 
@@ -353,6 +414,8 @@ trauma_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 12, id = progress_bar, force = T)
   
   # trauma triage criteria steps 1 and 2 age 10 - 65
   trauma_triage_1_2_data_10_65 <- core_data |> 
@@ -365,6 +428,8 @@ trauma_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 13, id = progress_bar, force = T)
+  
   # trauma triage criteria steps 1 and 2 age < 10
   trauma_triage_1_2_data_10 <- core_data |> 
     dplyr::select(Unique_ID, {{ einjury_03_col }}) |> 
@@ -376,6 +441,8 @@ trauma_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 14, id = progress_bar, force = T)
+  
   # extremities assessment
   extremities_assessment_data <- core_data |> 
     dplyr::select(Unique_ID, {{ eexam_16_col }}) |> 
@@ -386,6 +453,8 @@ trauma_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 15, id = progress_bar, force = T)
   
   # neurological assessment
   
@@ -399,6 +468,8 @@ trauma_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 16, id = progress_bar, force = T)
+  
   # tourniquet 
   
   tourniquet_data <- core_data |> 
@@ -410,6 +481,8 @@ trauma_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 17, id = progress_bar, force = T)
   
   # trauma triage criteria steps 3 and 4
   
@@ -423,6 +496,8 @@ trauma_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 18, id = progress_bar, force = T)
+  
   # fall height
   
   fall_height_data <- core_data |> 
@@ -434,6 +509,8 @@ trauma_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 19, id = progress_bar, force = T)
   
   # scene delay
   
@@ -447,6 +524,8 @@ trauma_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 20, id = progress_bar, force = T)
+  
   # cause of injury
   
   cause_of_injury_data <- core_data |> 
@@ -458,6 +537,8 @@ trauma_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 21, id = progress_bar, force = T)
   
   # respiratory rate for < 10 yrs population
   
@@ -471,6 +552,8 @@ trauma_04 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  cli::cli_progress_update(set = 22, id = progress_bar, force = T)
+  
   # SBP for age < 10 yrs
   
   SBP_data_10 <- core_data |> 
@@ -482,6 +565,8 @@ trauma_04 <- function(df,
     ) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 23, id = progress_bar, force = T)
   
   # assign variables to final data
   
@@ -514,6 +599,8 @@ trauma_04 <- function(df,
   
   # Adult and Pediatric Populations
   
+  cli::cli_progress_update(set = 24, id = progress_bar, force = T)
+  
   # filter older adult
   pop_65 <- initial_population |>
     dplyr::filter(system_age_65 | calc_age_65) |> 
@@ -537,6 +624,8 @@ trauma_04 <- function(df,
                     
                   )
   
+  cli::cli_progress_update(set = 25, id = progress_bar, force = T)
+  
   # filter ages 10 to 65
   pop_10_65 <- initial_population |>
     dplyr::filter(system_age_10_65 | calc_age_10_65) |> 
@@ -558,6 +647,8 @@ trauma_04 <- function(df,
                     INJURY_CAUSE
                     
                   )
+  
+  cli::cli_progress_update(set = 26, id = progress_bar, force = T)
   
   # filter ages < 10
   pop_10 <- initial_population |>
@@ -585,6 +676,8 @@ trauma_04 <- function(df,
   
   # summarize
   
+  cli::cli_progress_update(set = 27, id = progress_bar, force = T)
+  
   # older adult population
   
   population_65 <- pop_65 |> 
@@ -594,6 +687,8 @@ trauma_04 <- function(df,
                       ...
                       )
   
+  cli::cli_progress_update(set = 28, id = progress_bar, force = T)
+  
   # 10 to 64 population
   population_10_65 <- pop_10_65 |>
     summarize_measure(measure_name = "Trauma-04",
@@ -602,6 +697,8 @@ trauma_04 <- function(df,
                       ...
                       )
 
+  cli::cli_progress_update(set = 29, id = progress_bar, force = T)
+  
   # patients < 10 yrs
   population_10 <- pop_10 |>
     summarize_measure(measure_name = "Trauma-04",
@@ -610,8 +707,12 @@ trauma_04 <- function(df,
                       ...
                       )
 
+  cli::cli_progress_update(set = 30, id = progress_bar, force = T)
+  
   # summary
   trauma.04 <- dplyr::bind_rows(population_65, population_10_65, population_10)
+  
+  cli::cli_progress_done()
   
   trauma.04
   

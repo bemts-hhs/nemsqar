@@ -123,8 +123,34 @@ asthma_01 <- function(df,
     )
 
   }
-
-
+  
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # header
+  cli::cli_h1("Calculating Asthma-01")
+  
+  # initiate the progress bar process
+  progress_bar <- cli::cli_progress_bar(
+    "Running `asthma_01()`",
+    total = 5,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
+  
+  progress_bar
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
+  
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
 
@@ -134,6 +160,8 @@ asthma_01 <- function(df,
   # codes for asthma or acute bronchospasm
   asthma_codes <- "\\b(?:J45|J98.01)\\b"
 
+  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
+  
   # filter the table to get the initial population ages >= 2 years
   initial_population <- df |>
 
@@ -168,17 +196,24 @@ asthma_01 <- function(df,
       ignore.case = TRUE
     ), 1, 0))
 
+  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
+  
   # Adult and Pediatric Populations
 
   # filter adult
   adult_pop <- initial_population |>
     dplyr::filter(patient_age_in_years_col >= 18)
 
+  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
+  
   # filter peds
   peds_pop <- initial_population |>
     dplyr::filter(patient_age_in_years_col < 18, patient_age_in_years_col >= 2)
 
   # get the summary of results
+  
+  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
+  
   # summary
   asthma.01 <- results_summarize(total_population = initial_population,
                                  adult_population = adult_pop,
@@ -187,6 +222,7 @@ asthma_01 <- function(df,
                                  numerator_col = beta_agonist_check,
                                  ...)
 
+  cli::cli_progress_done()
 
   asthma.01
 

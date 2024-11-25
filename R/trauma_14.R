@@ -1,6 +1,20 @@
 #' Trauma-14
 #'
 #' This function processes EMS data to generate a set of binary variables indicating whether specific trauma triage criteria are met. The output #' is a data frame enriched with these indicators for further analysis.  The final outcome is whether or not the EMS record documents the use of #' a pre-hospital trauma activation.
+#' 
+#' @section Data Assumptions:
+#' 
+#' - All vitals columns contain the full list of values entered for each record and columns.
+#' - Each eexam field is a list column containing all values entered per record
+#' that are also comma (or otherwise) separated.
+#' - The trauma triage fields are list columns containing all values entered per record
+#' that are also comma (or otherwise) separated.
+#' - `einjury_01_col` is a list column containing all values entered per record
+#' that are also comma (or otherwise) separated.
+#' - `eresponse_10_col` is a list column containing all values entered per record
+#' that are also comma (or otherwise) separated.
+#' - `eprocedures_03_col` is a list column containing all values entered per record
+#' that are also comma (or otherwise) separated.
 #'
 #' @param df A data frame or tibble containing EMS data with all relevant columns.
 #' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.

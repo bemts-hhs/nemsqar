@@ -112,6 +112,32 @@ hypoglycemia_01 <- function(df,
     
   }
   
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # header
+  cli::cli_h1("Calculating Hypoglycemia-01")
+  
+  # initiate the progress bar process
+  progress_bar <- cli::cli_progress_bar(
+    "Running `hypoglycemia_01()`",
+    total = 14,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
+  
+  progress_bar
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
   
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
   
@@ -147,6 +173,9 @@ hypoglycemia_01 <- function(df,
   # explosion
   ###_____________________________________________________________________________
   
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
+  
   core_data <- df |> 
     dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{  incident_date_col  }}, base::as.Date("1984-09-09")),
                   PATIENT_DOB_MISSING = tidyr::replace_na({{  patient_DOB_col  }}, base::as.Date("1982-05-19")),
@@ -159,6 +188,9 @@ hypoglycemia_01 <- function(df,
   # fact table
   # the user should ensure that variables beyond those supplied for calculations
   # are distinct (i.e. one value or cell per patient)
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
   
   final_data <- core_data |> 
     dplyr::select(-c({{  eresponse_05_col  }},
@@ -205,6 +237,9 @@ hypoglycemia_01 <- function(df,
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
   
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
+  
   # altered mental status
   
   altered_data1 <- core_data |> 
@@ -227,6 +262,9 @@ hypoglycemia_01 <- function(df,
     distinct(Unique_ID) |> 
     pull(Unique_ID)
   
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
+  
   # AVPU
   
   AVPU_data <- core_data |> 
@@ -236,6 +274,9 @@ hypoglycemia_01 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
+  
   # GCS
   
   GCS_data <- core_data |> 
@@ -243,6 +284,9 @@ hypoglycemia_01 <- function(df,
     dplyr::filter({{ evitals_23_cl }} < 15) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
   
   # diabetes data
   
@@ -266,6 +310,9 @@ hypoglycemia_01 <- function(df,
     distinct(Unique_ID) |> 
     pull(Unique_ID)
   
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 8, id = progress_bar, force = T)
+  
   # blood glucose
   
   blood_glucose_data <- core_data |> 
@@ -273,6 +320,9 @@ hypoglycemia_01 <- function(df,
     dplyr::filter({{ evitals_18_col }} < 60) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 9, id = progress_bar, force = T)
   
   # 911 calls
   
@@ -282,6 +332,9 @@ hypoglycemia_01 <- function(df,
     dplyr::filter(grepl(pattern = codes_911, x = {{  eresponse_05_col  }}, ignore.case = T)) |> 
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 10, id = progress_bar, force = T)
   
   # correct treatment
   
@@ -315,6 +368,9 @@ hypoglycemia_01 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 11, id = progress_bar, force = T)
+  
   # assign variables to final data
   
   initial_population <- final_data |> 
@@ -346,15 +402,24 @@ hypoglycemia_01 <- function(df,
   
   # Adult and Pediatric Populations
   
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 12, id = progress_bar, force = T)
+  
   # filter adult
   adult_pop <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 13, id = progress_bar, force = T)
   
   # filter peds
   peds_pop <- initial_population |>
     dplyr::filter(system_age_minor | calc_age_minor)
   
   # summarize
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 14, id = progress_bar, force = T)
   
   # summary
   hypoglycemia.01  <- results_summarize(total_population = initial_population,
@@ -363,6 +428,8 @@ hypoglycemia_01 <- function(df,
                                         measure_name = "Hypoglycemia-01",
                                         numerator_col = TREATMENT,
                                         ...)
+  
+  cli::cli_progress_done()
   
   hypoglycemia.01
   

@@ -76,13 +76,42 @@ safety_01 <- function(df,
     )
   }
 
-
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # header
+  cli::cli_h1("Calculating Safety-01")
+  
+  # initiate the progress bar process
+  progress_bar <- cli::cli_progress_bar(
+    "Running `safety_01()`",
+    total = 10,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
+  
+  progress_bar
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
+  
+  
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
 
   # get codes as a regex to find lights and siren responses
   no_lights_and_sirens <- "No Lights or Sirens|2224019"
 
+  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
+  
   # filter the table to get the initial population regardless of age
   initial_population <- df |>
     # create the age in years variable
@@ -122,16 +151,22 @@ safety_01 <- function(df,
 
   # Adult and Pediatric Populations
 
+  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
+  
   # filter adult
   adult_pop <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
 
+  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
+  
   # filter peds
   peds_pop <- initial_population |>
     dplyr::filter(system_age_minor | calc_age_minor)
 
   # get the summary of results
 
+  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
+  
   # all
   total_population <- initial_population |>
     summarize_measure(measure_name = "Safety-01",
@@ -139,6 +174,8 @@ safety_01 <- function(df,
                       no_ls_check,
                       ...)
 
+  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
+  
   # adults
   adult_population <- adult_pop |>
     summarize_measure(measure_name = "Safety-01",
@@ -146,6 +183,8 @@ safety_01 <- function(df,
                       no_ls_check,
                       ...)
 
+  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
+  
   # peds
   peds_population <- peds_pop |>
     summarize_measure(measure_name = "Safety-01",
@@ -153,8 +192,13 @@ safety_01 <- function(df,
                       no_ls_check,
                       ...)
 
+  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
+  
   # summary
   safety.01 <- dplyr::bind_rows(adult_population, peds_population, total_population)
 
+  cli::cli_progress_done()
+  
   safety.01
+  
 }

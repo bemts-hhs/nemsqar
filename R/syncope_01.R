@@ -110,6 +110,33 @@ syncope_01 <- function(df,
     
   }
   
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # header
+  cli::cli_h1("Calculating Syncope-01")
+  
+  # initiate the progress bar process
+  progress_bar <- cli::cli_progress_bar(
+    "Running `syncope_01()`",
+    total = 7,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
+  
+  progress_bar
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
+  
   # dplyr::filter incident data for 911 response codes and the corresponding primary/secondary impressions
   # dplyr::filter down the primary / other associated symptoms
   
@@ -126,6 +153,8 @@ syncope_01 <- function(df,
   
   minor_values <- "days|hours|minutes|months"
 
+  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
+  
   # dplyr::filter the table to get the initial population regardless of age
   initial_population <- df |>
     
@@ -186,15 +215,21 @@ syncope_01 <- function(df,
 
   # Adult and Pediatric Populations
   
+  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
+  
   # dplyr::filter adult
   adult_pop <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
+  
+  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
   
   # dplyr::filter peds
   peds_pop <- initial_population |>
     dplyr::filter(system_age_minor | calc_age_minor)
   
   # get the summary of results
+  
+  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
   
   # adults
   adult_population <- adult_pop |>
@@ -203,14 +238,21 @@ syncope_01 <- function(df,
                       ecg_present,
                       ...)
   
+  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
+  
   # peds
   peds_population <- peds_pop |>
     summarize_measure(measure_name = "Syncope-01",
                       population_name = "Peds",
                       ecg_present,
                       ...)
+  
+  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
+  
   # summary
   syncope.01 <- dplyr::bind_rows(adult_population, peds_population)
+  
+  cli::cli_progress_done()
   
   syncope.01
   

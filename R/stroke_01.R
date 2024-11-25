@@ -33,39 +33,23 @@
 #' Grouping by specific attributes (e.g., region) can be performed inside this function by
 #' utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
 #' 
-#' #' @section Practical Tips:
+#' @section Practical Tips:
 #' 
 #' Ensure data are pre-processed, with missing values coded as `NA`, before passing
 #' into the function.
 #' Prepare necessary joins (e.g., for vitals) in advance; this function does not perform joins.
 #' 
-#' @section Value:
-#' 
-#' A summarized tibble with counts and proportions of patients of all ages
-#' who had a 911 response, were suffering from stroke, and had a stroke assessment completed.
-#' 
 #' @param df <['tidy-select'][dplyr_tidy_select]> A data frame or tibble containing the dataset. Each row should represent a unique patient encounter.
-#' 
 #' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column containing unique record identifiers for each encounter.
-#' 
 #' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> The column containing the date and time of the incident. This must be a `Date` or `POSIXct` type.
-#' 
 #' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> The column containing the patient's date of birth, formatted as `Date` or `POSIXct`.
-#' 
 #' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> The column containing EMS response codes, which should include 911 response codes.
-#' 
 #' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> The column containing the primary impression codes or descriptions related to the situation.
-#' 
 #' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> The column containing secondary impression codes or descriptions related to the situation.
-#' 
 #' @param evitals_23_col <['tidy-select'][dplyr_tidy_select]> The column containing the Glasgow Coma Scale (GCS) score.
-#' 
 #' @param evitals_26_col <['tidy-select'][dplyr_tidy_select]> The column containing the AVPU (alert, verbal, pain, unresponsive) scale value.
-#' 
 #' @param evitals_29_col <['tidy-select'][dplyr_tidy_select]> The column containing the stroke scale score achieved during assessment.
-#' 
 #' @param evitals_30_col <['tidy-select'][dplyr_tidy_select]> The column containing stroke scale type descriptors (e.g., FAST, NIH, etc.).
-#' 
 #' @param ... Additional arguments passed to `dplyr::summarize()` function for further customization of results.
 #' 
 #' @section Features:
@@ -143,6 +127,9 @@ stroke_01 <- function(df,
     
   }
   
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
   options(cli.progress_bar_style = "dot")
   
   options(cli.progress_bar_style = list(
@@ -150,8 +137,10 @@ stroke_01 <- function(df,
     incomplete = cli::col_br_white("─")
   ))
   
+  # header
   cli::cli_h1("Calculating Stroke-01")
   
+  # initiate the progress bar process
   progress_bar <- cli::cli_progress_bar(
     "Running `stroke_01()`",
     total = 10,
@@ -162,6 +151,7 @@ stroke_01 <- function(df,
   
   progress_bar
   
+  # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 1, id = progress_bar, force = T)
   
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
@@ -235,7 +225,6 @@ stroke_01 <- function(df,
   cli::cli_progress_update(set = 4, id = progress_bar, force = T)
   
   # stroke
-  
   stroke_data1 <- core_data |> 
     dplyr::select(Unique_ID, {{  esituation_11_col  }}) |> 
     dplyr::filter(
@@ -267,7 +256,6 @@ stroke_01 <- function(df,
   cli::cli_progress_update(set = 5, id = progress_bar, force = T)
   
   # 911 calls
-  
   call_911_data <- core_data |> 
     dplyr::select(Unique_ID, {{  eresponse_05_col  }}) |> 
     dplyr::filter(
@@ -285,7 +273,6 @@ stroke_01 <- function(df,
   cli::cli_progress_update(set = 6, id = progress_bar, force = T)
   
   # GCS
-  
   GCS_data <- core_data |> 
     dplyr::select(Unique_ID, {{  evitals_23_col  }}) |> 
     dplyr::filter(
@@ -299,7 +286,6 @@ stroke_01 <- function(df,
   cli::cli_progress_update(set = 7, id = progress_bar, force = T)
   
   # AVPU
-  
   AVPU_data <- core_data |> 
     dplyr::select(Unique_ID, {{  evitals_26_col  }}) |> 
     dplyr::filter(
@@ -313,7 +299,6 @@ stroke_01 <- function(df,
   cli::cli_progress_update(set = 8, id = progress_bar, force = T)
   
   # stroke scale
-  
   stroke_scale_data1 <- core_data |> 
     dplyr::select(Unique_ID, {{  evitals_29_col  }}) |> 
     dplyr::filter(
@@ -337,7 +322,6 @@ stroke_01 <- function(df,
   cli::cli_progress_update(set = 9, id = progress_bar, force = T)
   
   # assign variables to final data
-  
   initial_population <- final_data |> 
     dplyr::mutate(STROKE1 = Unique_ID %in% stroke_data1,
                   STROKE2 = Unique_ID %in% stroke_data2,

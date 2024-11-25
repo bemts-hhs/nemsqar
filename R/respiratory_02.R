@@ -90,6 +90,32 @@ respiratory_02 <- function(df,
     )
   }
   
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # header
+  cli::cli_h1("Calculating Respiratory-02")
+  
+  # initiate the progress bar process
+  progress_bar <- cli::cli_progress_bar(
+    "Running `respiratory_02()`",
+    total = 12,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
+  
+  progress_bar
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
   
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009"
@@ -110,6 +136,8 @@ respiratory_02 <- function(df,
   # explosion
   ###_____________________________________________________________________________
   
+  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
+  
   core_data <- df |> 
     dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, base::as.Date("1984-09-09")),
                   PATIENT_DOB_MISSING = tidyr::replace_na({{ patient_DOB_col }}, base::as.Date("1982-05-19")),
@@ -122,6 +150,8 @@ respiratory_02 <- function(df,
   # fact table
   # the user should ensure that variables beyond those supplied for calculations
   # are distinct (i.e. one value or cell per patient)
+  
+  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
   
   final_data <- core_data |> 
     dplyr::select(-c({{ eresponse_05_col }},
@@ -163,8 +193,9 @@ respiratory_02 <- function(df,
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
   
-  # pulse oximetry
+  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
   
+  # pulse oximetry
   pulse_oximetry_data <- core_data |> 
     dplyr::select(Unique_ID, {{ evitals_12_col }}) |> 
     dplyr::filter(
@@ -175,8 +206,9 @@ respiratory_02 <- function(df,
     distinct(Unique_ID) |> 
     pull(Unique_ID)
   
-  # vitals check
+  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
   
+  # vitals check
   oxygen_med_data <- core_data |> 
     dplyr::select(Unique_ID, {{ emedications_03_col }}) |> 
     dplyr::filter(
@@ -199,8 +231,9 @@ respiratory_02 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
-  # 911 calls
+  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
   
+  # 911 calls
   call_911_data <- core_data |> 
     dplyr::select(Unique_ID, {{ eresponse_05_col }}) |> 
     dplyr::distinct(Unique_ID, .keep_all = T) |> 
@@ -208,8 +241,9 @@ respiratory_02 <- function(df,
     dplyr::distinct(Unique_ID) |> 
     dplyr::pull(Unique_ID)
   
-  # assign variables to final data
+  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
   
+  # assign variables to final data
   initial_population <- final_data |> 
     dplyr::mutate(PULSE_OXIMETRY = Unique_ID %in% pulse_oximetry_data,
                   OXYGEN1 = Unique_ID %in% oxygen_med_data,
@@ -225,6 +259,8 @@ respiratory_02 <- function(df,
       
     )
   
+  cli::cli_progress_update(set = 8, id = progress_bar, force = T)
+  
   # get population 1 for respiratory-02, peds
   respiratory_02_peds <- initial_population |>
     dplyr::filter(
@@ -233,9 +269,13 @@ respiratory_02 <- function(df,
       
     )
   
+  cli::cli_progress_update(set = 9, id = progress_bar, force = T)
+  
   # get population 2 for respiratory-02, adults
   respiratory_02_adults <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
+  
+  cli::cli_progress_update(set = 10, id = progress_bar, force = T)
   
   # calculations for peds
   peds_calculation <- respiratory_02_peds |>
@@ -249,6 +289,8 @@ respiratory_02 <- function(df,
       ...
     )
   
+  cli::cli_progress_update(set = 11, id = progress_bar, force = T)
+  
   # calculations for adults
   adults_calculation <- respiratory_02_adults |>
     dplyr::summarize(
@@ -261,8 +303,12 @@ respiratory_02 <- function(df,
       ...
     )
   
+  cli::cli_progress_update(set = 12, id = progress_bar, force = T)
+  
   # bind rows of calculations for final table
   respiratory.02 <- dplyr::bind_rows(peds_calculation, adults_calculation)
+  
+  cli::cli_progress_done()
   
   respiratory.02
   
