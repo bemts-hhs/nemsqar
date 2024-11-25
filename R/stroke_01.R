@@ -143,6 +143,27 @@ stroke_01 <- function(df,
     
   }
   
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  cli::cli_h1("Calculating Stroke-01")
+  
+  progress_bar <- cli::cli_progress_bar(
+    "Running `stroke_01()`",
+    total = 10,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
+  
+  progress_bar
+  
+  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
+  
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
   
   # 911 codes for eresponse.05
@@ -169,6 +190,8 @@ stroke_01 <- function(df,
   # explosion
   ###_____________________________________________________________________________
   
+  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
+  
   core_data <- df |> 
     dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{  incident_date_col  }}, base::as.Date("1984-09-09")),
                   PATIENT_DOB_MISSING = tidyr::replace_na({{  patient_DOB_col  }}, base::as.Date("1982-05-19")),
@@ -181,6 +204,8 @@ stroke_01 <- function(df,
   # fact table
   # the user should ensure that variables beyond those supplied for calculations
   # are distinct (i.e. one value or cell per patient)
+  
+  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
   
   final_data <- core_data |> 
     dplyr::select(-c({{  eresponse_05_col  }},
@@ -206,6 +231,8 @@ stroke_01 <- function(df,
   ### that tell if the patient had the characteristic or not for final
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
+  
+  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
   
   # stroke
   
@@ -237,6 +264,8 @@ stroke_01 <- function(df,
     distinct(Unique_ID) |> 
     pull(Unique_ID)
   
+  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
+  
   # 911 calls
   
   call_911_data <- core_data |> 
@@ -253,6 +282,8 @@ stroke_01 <- function(df,
     distinct(Unique_ID) |> 
     pull(Unique_ID)
   
+  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
+  
   # GCS
   
   GCS_data <- core_data |> 
@@ -265,6 +296,8 @@ stroke_01 <- function(df,
     distinct(Unique_ID) |> 
     pull(Unique_ID)
   
+  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
+  
   # AVPU
   
   AVPU_data <- core_data |> 
@@ -276,6 +309,8 @@ stroke_01 <- function(df,
     ) |> 
     distinct(Unique_ID) |> 
     pull(Unique_ID)
+  
+  cli::cli_progress_update(set = 8, id = progress_bar, force = T)
   
   # stroke scale
   
@@ -299,6 +334,7 @@ stroke_01 <- function(df,
     distinct(Unique_ID) |> 
     pull(Unique_ID)
   
+  cli::cli_progress_update(set = 9, id = progress_bar, force = T)
   
   # assign variables to final data
   
@@ -328,6 +364,8 @@ stroke_01 <- function(df,
   
   # Initial population only
   
+  cli::cli_progress_update(set = 10, id = progress_bar, force = T)
+  
   # get the summary of results
   
   # summary
@@ -337,6 +375,8 @@ stroke_01 <- function(df,
                       numerator_col = STROKE_SCALE,
                       ...
     )
+  
+  cli::cli_progress_done()
   
   stroke.01
   

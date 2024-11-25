@@ -113,26 +113,21 @@ pediatrics_03b <- function(df,
     )
   }
   
-  reduce_date_time <- function() {
-    format(Sys.time(), "%Y-%m-%d %H:%M:%S")  # Only show date and time to second
-  }
+  options(cli.progress_bar_style = "dot")
   
-  reduced_time <- function() {
-    format(Sys.time(), "%H:%M:%S")  # Only show date and time to second
-  }
-  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+
   cli::cli_h1("Calculating Pediatrics-03b")
-  
-  start_time <- Sys.time()
-  
-  cli::cli_alert_info("Initiated at {reduce_date_time()}")
   
   progress_bar <- cli::cli_progress_bar(
     "Running `pediatrics_03b()`",
     total = 9,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [{cli::pb_current}/{cli::pb_total}] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: {paste0(abs(round(difftime(start_time, reduce_date_time(), units = 'mins'), digits = 2)), ' mins')}"
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
   
   progress_bar
