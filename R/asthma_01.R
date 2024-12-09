@@ -52,6 +52,7 @@
 #'
 #' @param df A data.frame or tibble containing EMS data where each row represents
 #' an observation, and columns represent features.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.
 #' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column that
 #' contains the incident date.
 #' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column that
@@ -80,6 +81,7 @@
 #' @export
 #'
 asthma_01 <- function(df,
+                      erecord_01_col,
                       incident_date_col,
                       patient_DOB_col,
                       eresponse_05_col,

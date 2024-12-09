@@ -41,7 +41,7 @@
 #' @param einjury_09_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing fall height information.
 #' @param eresponse_10_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing scene delay information.
 #' @param einjury_01_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing injury cause details.
-#' @param edisposition_24_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing pre-hospital trauma alert information.
+#' @param edisposition_23_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing pre-hospital trauma alert information.
 #' @param ... Additional arguments passed to helper functions for further customization.
 #'
 #' @section Features: 
@@ -92,6 +92,7 @@ trauma_14 <- function(df,
                       einjury_09_col,
                       eresponse_10_col,
                       einjury_01_col,
+                      edisposition_23_col,
                       ...) {
   
   # provide better error messaging if df is missing
@@ -198,20 +199,11 @@ trauma_14 <- function(df,
   # explosion
   ###_____________________________________________________________________________
   
-  core_data <- df |> 
-    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, base::as.Date("1984-09-09")),
-                  PATIENT_DOB_MISSING = tidyr::replace_na({{ patient_DOB_col }}, base::as.Date("1982-05-19")),
-                  Unique_ID = stringr::str_c({{ erecord_01_col }},
-                                             INCIDENT_DATE_MISSING,
-                                             PATIENT_DOB_MISSING, 
-                                             sep = "-"
-                  ))
-  
   # fact table
   # the user should ensure that variables beyond those supplied for calculations
   # are distinct (i.e. one value or cell per patient)
   
-  final_data <- core_data |> 
+  final_data <- df |> 
     dplyr::select(-c({{ erecord_01_col }},
                      {{ incident_date_col }},
                      {{ patient_DOB_col }},
@@ -239,7 +231,7 @@ trauma_14 <- function(df,
                      
                      
     )) |> 
-    dplyr::distinct(Unique_ID, .keep_all = T) |> 
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |> 
     dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
       time1 = {{ incident_date_col }},
       time2 = {{ patient_DOB_col }},
@@ -275,257 +267,281 @@ trauma_14 <- function(df,
   ###_____________________________________________________________________________
   
   # GCS 
-  GCS_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_21_col }}) |> 
+  GCS_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ evitals_21_col }}) |> 
     dplyr::filter(grepl(pattern = care_provided, x = {{ evitals_21_col }}, ignore.case = T)) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # lung assessment
-  lung_assessment_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ eexam_23_col }}) |> 
+  lung_assessment_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ eexam_23_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = lung_assessment_values, x = {{ eexam_23_col }}, ignore.case = T)
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # chest assessment
-  chest_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ eexam_25_col }}) |> 
+  chest_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ eexam_25_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = chest_assessment_values, x = {{ eexam_25_col }})
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # respiratory effort
-  respiratory_effort_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_15_col }}) |> 
+  respiratory_effort_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ evitals_15_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = respiratory_effort_values, x = {{ evitals_15_col }}, ignore.case = T)
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # airway management
-  airway_management_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ eprocedures_03_col }}) |> 
+  airway_management_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = airway_management_values, x = {{ eprocedures_03_col }}, ignore.case = T)
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # pulse oximetry
-  pulse_oximetry_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_12_col }}) |> 
+  pulse_oximetry_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}) |> 
     dplyr::filter( 
       
       {{ evitals_12_col }} < 90
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # SBP
-  SBP_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_06_col }}) |> 
+  SBP_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |> 
     dplyr::filter( 
       
       {{ evitals_06_col }} < 110
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # heart rate and SBP
-  HR_SBP_data_10_65_plus <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_12_col }}, {{ evitals_06_col}}) |> 
-    dplyr::distinct(Unique_ID, {{ evitals_12_col }}, {{ evitals_06_col}}, .keep_all = T) |> 
+  HR_SBP_data_10_65_plus <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}, {{ evitals_06_col}}) |> 
+    dplyr::distinct({{ erecord_01_col }}, {{ evitals_12_col }}, {{ evitals_06_col}}, .keep_all = T) |> 
     dplyr::filter( 
       
       {{ evitals_10_col }} > {{ evitals_06_col}}
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # trauma triage criteria steps 1 and 2 age 65+
-  trauma_triage_1_2_data_65 <- core_data |> 
-    dplyr::select(Unique_ID, {{ einjury_03_col }}) |> 
+  trauma_triage_1_2_data_65 <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = trauma_triage_1_2_values_65, x = {{ einjury_03_col }}, ignore.case = T)
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # trauma triage criteria steps 1 and 2 age 10 - 65
-  trauma_triage_1_2_data_10_65 <- core_data |> 
-    dplyr::select(Unique_ID, {{ einjury_03_col }}) |> 
+  trauma_triage_1_2_data_10_65 <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = trauma_triage_1_2_values_10_65, x = {{ einjury_03_col }}, ignore.case = T)
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # trauma triage criteria steps 1 and 2 age < 10
-  trauma_triage_1_2_data_10 <- core_data |> 
-    dplyr::select(Unique_ID, {{ einjury_03_col }}) |> 
+  trauma_triage_1_2_data_10 <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = trauma_triage_1_2_values_10, x = {{ einjury_03_col }}, ignore.case = T)
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # extremities assessment
-  extremities_assessment_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ eexam_16_col }}) |> 
+  extremities_assessment_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ eexam_16_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = extremities_assessment_values, x = {{ eexam_16_col }}, ignore.case = T)
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # neurological assessment
   
-  neurological_assessment_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ eexam_20_col }}) |> 
+  neurological_assessment_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ eexam_20_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = neurological_assessment_values, x = {{ eexam_20_col }}, ignore.case = T)
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # tourniquet 
   
-  tourniquet_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ eprocedures_03_col }}) |> 
+  tourniquet_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = tourniquet_values, x = {{ eprocedures_03_col }}, ignore.case = T)
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # trauma triage criteria steps 3 and 4
   
-  trauma_triage_3_4_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ einjury_04_col }}) |> 
+  trauma_triage_3_4_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ einjury_04_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = trauma_triage_3_4_values, x = {{ einjury_04_col }}, ignore.case = T)
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # fall height
   
-  fall_height_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ einjury_09_col }}) |> 
+  fall_height_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ einjury_09_col }}) |> 
     dplyr::filter( 
       
       {{ einjury_09_col }} > 10
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # scene delay
   
-  scene_delay_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ eresponse_10_col }}) |> 
+  scene_delay_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ eresponse_10_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = scene_delay_values, x = {{ eresponse_10_col }}, ignore.case = T)
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # cause of injury
   
-  cause_of_injury_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ einjury_01_col }}) |> 
+  cause_of_injury_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ einjury_01_col }}) |> 
     dplyr::filter( 
       
       grepl(pattern = cause_of_injury_values, x = {{ einjury_01_col }}, ignore.case = T)
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # respiratory rate for < 10 yrs population
   
-  respiratory_rate_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_14_col }}) |> 
+  respiratory_rate_data <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ evitals_14_col }}) |> 
     dplyr::filter( 
       
       {{ evitals_14_col }} < 10 | {{ evitals_14_col }} > 29
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # SBP for age < 10 yrs
   
-  SBP_data_10 <- core_data |> 
-    dplyr::select(Unique_ID, SBP_age_10) |> 
+  SBP_data_10 <- df |> 
+    dplyr::select({{ erecord_01_col }}, SBP_age_10) |> 
     dplyr::filter( 
       
       SBP_age_10 > 70
       
     ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
+  
+  # trauma alert >= 65 years
+  
+  trauma_alert_65 <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ edisposition_23_col }}) |> 
+    dplyr::filter( 
+      
+      grepl(pattern = trauma_alert_values_65, x = {{ edisposition_23_col }})
+      
+    ) |> 
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
+  
+  # trauma alert > 10 and < 65 years
+  
+  trauma_alert_10_65 <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ edisposition_23_col }}) |> 
+    dplyr::filter( 
+      
+      grepl(pattern = trauma_alert_values_10_65, x = {{ edisposition_23_col }})
+      
+    ) |> 
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # assign variables to final data
   
   initial_population <- final_data |> 
     dplyr::mutate(
       
-      GCS = Unique_ID %in% GCS_data,
-      LUNG = Unique_ID %in% lung_assessment_data,
-      CHEST = Unique_ID %in% chest_data,
-      RESPIRATORY_EFFORT = Unique_ID %in% respiratory_effort_data,
-      AIRWAY_MANAGEMENT = Unique_ID %in% airway_management_data,
-      EXTREMITIES = Unique_ID %in% extremities_assessment_data,
-      NEURO = Unique_ID %in% neurological_assessment_data,
-      TOURNIQUET = Unique_ID %in% tourniquet_data,
-      TRAUMA_TRIAGE_3_4 = Unique_ID %in% trauma_triage_3_4_data,
-      FALL_HEIGHT = Unique_ID %in% fall_height_data,
-      SCENE_DELAY = Unique_ID %in% scene_delay_data,
-      INJURY_CAUSE = Unique_ID %in% cause_of_injury_data,
-      PULSE_OXIMETRY = Unique_ID %in% pulse_oximetry_data,
-      SBP = Unique_ID %in% SBP_data,
-      SBP_10 = Unique_ID %in% SBP_data_10,
-      HR_SBP_10_65_PLUS = Unique_ID %in% HR_SBP_data_10_65_plus,
-      TRAUMA_TRIAGE_1_2_65 = Unique_ID %in% trauma_triage_1_2_data_65,
-      TRAUMA_TRIAGE_1_2_10_65 = Unique_ID %in% trauma_triage_1_2_data_10_65,
-      TRAUMA_TRIAGE_1_2_10 = Unique_ID %in% trauma_triage_1_2_data_10,
-      RESPIRATORY_RATE_10 = Unique_ID %in% respiratory_rate_data,
-      TRAUMA_ALERT_65 = Unique_ID %in% trauma_alert_values_65,
-      TRAUMA_ALERT_10_65 = Unique_ID %in% trauma_alert_values_10_65
+      GCS = {{ erecord_01_col }} %in% GCS_data,
+      LUNG = {{ erecord_01_col }} %in% lung_assessment_data,
+      CHEST = {{ erecord_01_col }} %in% chest_data,
+      RESPIRATORY_EFFORT = {{ erecord_01_col }} %in% respiratory_effort_data,
+      AIRWAY_MANAGEMENT = {{ erecord_01_col }} %in% airway_management_data,
+      EXTREMITIES = {{ erecord_01_col }} %in% extremities_assessment_data,
+      NEURO = {{ erecord_01_col }} %in% neurological_assessment_data,
+      TOURNIQUET = {{ erecord_01_col }} %in% tourniquet_data,
+      TRAUMA_TRIAGE_3_4 = {{ erecord_01_col }} %in% trauma_triage_3_4_data,
+      FALL_HEIGHT = {{ erecord_01_col }} %in% fall_height_data,
+      SCENE_DELAY = {{ erecord_01_col }} %in% scene_delay_data,
+      INJURY_CAUSE = {{ erecord_01_col }} %in% cause_of_injury_data,
+      PULSE_OXIMETRY = {{ erecord_01_col }} %in% pulse_oximetry_data,
+      SBP = {{ erecord_01_col }} %in% SBP_data,
+      SBP_10 = {{ erecord_01_col }} %in% SBP_data_10,
+      HR_SBP_10_65_PLUS = {{ erecord_01_col }} %in% HR_SBP_data_10_65_plus,
+      TRAUMA_TRIAGE_1_2_65 = {{ erecord_01_col }} %in% trauma_triage_1_2_data_65,
+      TRAUMA_TRIAGE_1_2_10_65 = {{ erecord_01_col }} %in% trauma_triage_1_2_data_10_65,
+      TRAUMA_TRIAGE_1_2_10 = {{ erecord_01_col }} %in% trauma_triage_1_2_data_10,
+      RESPIRATORY_RATE_10 = {{ erecord_01_col }} %in% respiratory_rate_data,
+      TRAUMA_ALERT_65 = {{ erecord_01_col }} %in% trauma_alert_65,
+      TRAUMA_ALERT_10_65 = {{ erecord_01_col }} %in% trauma_alert_10_65
       
     )
   
