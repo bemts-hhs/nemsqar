@@ -196,7 +196,8 @@ asthma_01 <- function(df,
       pattern = beta_agonist,
       x = {{ emedications_03_col }},
       ignore.case = TRUE
-    ), 1, 0))
+    ), 1, 0)) |> 
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = T)
 
   cli::cli_progress_update(set = 3, id = progress_bar, force = T)
   
