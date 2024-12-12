@@ -69,6 +69,18 @@ This function calculates the "Trauma-03" measure, which evaluates pain scale rea
 \note{
 This function uses \code{rlang}, \code{lubridate}, \code{dplyr}, and \code{tidyr} packages for data processing. Ensure the data frame contains valid date formats and expected column names.
 }
+\section{Data Assumptions}{
+
+\itemize{
+\item \code{evitals_27_initial_col} is the first pain scale score.
+\item \code{evitals_27_last_col} is the final pain scale score.
+\item \code{evitals_01_col} contains all vital measurement times, even those not corresponding
+to the pain scale.
+\item \code{evitals_27_sortorder_col} a system-assigned sort order of the pain scale measurement, likely
+contains all sort order assignments for initial, last, and all pain scale measurements in between.
+}
+}
+
 \section{Features}{
 
 \itemize{

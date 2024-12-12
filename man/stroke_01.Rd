@@ -96,19 +96,14 @@ be completed prior to calling this function.
 
 Grouping by specific attributes (e.g., region) can be performed inside this function by
 utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
+}
 
-#' @section Practical Tips:
+\section{Practical Tips}{
+
 
 Ensure data are pre-processed, with missing values coded as \code{NA}, before passing
 into the function.
 Prepare necessary joins (e.g., for vitals) in advance; this function does not perform joins.
-}
-
-\section{Value}{
-
-
-A summarized tibble with counts and proportions of patients of all ages
-who had a 911 response, were suffering from stroke, and had a stroke assessment completed.
 }
 
 \section{Features}{

@@ -30,6 +30,7 @@ trauma_14(
   einjury_09_col,
   eresponse_10_col,
   einjury_01_col,
+  edisposition_23_col,
   ...
 )
 }
@@ -84,9 +85,9 @@ trauma_14(
 
 \item{einjury_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing injury cause details.}
 
-\item{...}{Additional arguments passed to helper functions for further customization.}
+\item{edisposition_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing pre-hospital trauma alert information.}
 
-\item{edisposition_24_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing pre-hospital trauma alert information.}
+\item{...}{Additional arguments passed to helper functions for further customization.}
 }
 \value{
 A tibble summarizing results for three age groups (< 10 yrs, 10–65 yrs, and >= 65 yrs) with the following columns:
@@ -106,6 +107,23 @@ The function generates individual vectors of unique IDs for each trauma triage c
 \note{
 This function uses \code{rlang}, \code{lubridate}, \code{dplyr}, and \code{tidyr} packages for data processing. Ensure the data frame contains valid date formats and expected column names.
 }
+\section{Data Assumptions}{
+
+\itemize{
+\item All vitals columns contain the full list of values entered for each record and columns.
+\item Each eexam field is a list column containing all values entered per record
+that are also comma (or otherwise) separated.
+\item The trauma triage fields are list columns containing all values entered per record
+that are also comma (or otherwise) separated.
+\item \code{einjury_01_col} is a list column containing all values entered per record
+that are also comma (or otherwise) separated.
+\item \code{eresponse_10_col} is a list column containing all values entered per record
+that are also comma (or otherwise) separated.
+\item \code{eprocedures_03_col} is a list column containing all values entered per record
+that are also comma (or otherwise) separated.
+}
+}
+
 \section{Features}{
 
 \itemize{

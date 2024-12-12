@@ -84,6 +84,19 @@ The function performs data screening and processing to identify potential TBI ca
 This function relies on columns formatted as \code{Date} or \code{POSIXct} for dates and expects numeric or categorical
 values for other health indicators.
 }
+\section{Data Assumptions}{
+
+\itemize{
+\item Date columns are already formatted as \code{Date} or \code{POSIXct}.
+\item \code{esituation_12_col} is a list column with all values entered for a
+specific record separated by commas.
+\item \code{evitals_23_col} is the lowest GCS score.
+\item \code{evitals_26_col} contains all AVPU responses entered.
+\item \code{evitals_12_col}, \code{evitals_16_col}, and \code{evitals_06_col} can be all the values entered for these
+fields, or the initial value for each.  The latter will probably work best.
+}
+}
+
 \author{
 Nicolas Foss, Ed.D., MS
 }

@@ -76,6 +76,15 @@ response type (911), patient care disposition, and transport type.
 \item Summarizes the Trauma-01 measure for the entire population, adults, and pediatrics.
 }
 }
+\section{Data Assumptions}{
+
+\itemize{
+\item \code{evitals_23_col} is the highest GCS total score.
+\item \code{evitals_26_col} contains all the AVPU responses for all records.
+\item \code{evitals_27_col} is the initial pain scale score.
+}
+}
+
 \section{Features}{
 
 \itemize{

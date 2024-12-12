@@ -106,6 +106,23 @@ The function generates individual vectors of unique IDs for each trauma triage c
 \note{
 This function uses \code{rlang}, \code{lubridate}, \code{dplyr}, and \code{tidyr} packages for data processing. Ensure the data frame contains valid date formats and expected column names.
 }
+\section{Data Assumptions}{
+
+\itemize{
+\item All vitals columns contain the full list of values entered for each record and columns.
+\item Each eexam field is a list column containing all values entered per record
+that are also comma (or otherwise) separated.
+\item The trauma triage fields are list columns containing all values entered per record
+that are also comma (or otherwise) separated.
+\item \code{einjury_01_col} is a list column containing all values entered per record
+that are also comma (or otherwise) separated.
+\item \code{eresponse_10_col} is a list column containing all values entered per record
+that are also comma (or otherwise) separated.
+\item \code{eprocedures_03_col} is a list column containing all values entered per record
+that are also comma (or otherwise) separated.
+}
+}
+
 \section{Features}{
 
 \itemize{

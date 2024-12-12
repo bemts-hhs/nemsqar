@@ -5,7 +5,13 @@
 \title{Hypoglycemia-01}
 \usage{
 hypoglycemia_01(
-  df,
+  df = NULL,
+  patient_scene_table = NULL,
+  response_table = NULL,
+  situation_table = NULL,
+  vitals_table = NULL,
+  medications_table = NULL,
+  procedures_table = NULL,
   erecord_01_col,
   incident_date_col,
   patient_DOB_col,
@@ -24,6 +30,18 @@ hypoglycemia_01(
 }
 \arguments{
 \item{df}{A data frame or tibble containing emergency response records.}
+
+\item{patient_scene_table}{A data.frame or tibble containing at least epatient and escene fields as a fact table.}
+
+\item{response_table}{A data.frame or tibble containing at least the eresponse fields needed for this measure's calculations.}
+
+\item{situation_table}{A data.frame or tibble containing at least the esituation fields needed for this measure's calculations.}
+
+\item{vitals_table}{A data.frame or tibble containing at least the evitals fields needed for this measure's calculations.}
+
+\item{medications_table}{A data.frame or tibble containing at least the emedications fields needed for this measure's calculations.}
+
+\item{procedures_table}{A data.frame or tibble containing at least the eprocedures fields needed for this measure's calculations.}
 
 \item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the unique record identifier.}
 
