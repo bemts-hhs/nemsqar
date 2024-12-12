@@ -30,9 +30,13 @@
 #' - Grouping by specific attributes (e.g., region) can be performed inside this function by
 #'   utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
 #'
-#'
-#'
 #' @param df A data frame or tibble containing emergency response records.
+#' @param patient_scene_table A data.frame or tibble containing at least epatient and escene fields as a fact table.
+#' @param response_table A data.frame or tibble containing at least the eresponse fields needed for this measure's calculations.
+#' @param situation_table A data.frame or tibble containing at least the esituation fields needed for this measure's calculations.
+#' @param vitals_table A data.frame or tibble containing at least the evitals fields needed for this measure's calculations.
+#' @param medications_table A data.frame or tibble containing at least the emedications fields needed for this measure's calculations.
+#' @param procedures_table A data.frame or tibble containing at least the eprocedures fields needed for this measure's calculations.
 #' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Column representing the unique record identifier.
 #' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> POSIXct or Date column representing the date of the incident.
 #' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> POSIXct or Date column representing the patient's date of birth.
@@ -60,7 +64,13 @@
 #' @author Nicolas Foss, Ed.D., MS
 #' 
 #' @export
-hypoglycemia_01 <- function(df,
+hypoglycemia_01 <- function(df = NULL,
+                            patient_scene_table = NULL,
+                            response_table = NULL,
+                            situation_table = NULL,
+                            vitals_table = NULL,
+                            medications_table = NULL,
+                            procedures_table = NULL,
                             erecord_01_col,
                             incident_date_col,
                             patient_DOB_col,
@@ -76,17 +86,216 @@ hypoglycemia_01 <- function(df,
                             eprocedures_03_col,
                             ...) {
   
-  # provide better error messaging if df is missing
-  if (missing(df)) {
-    cli::cli_abort(
-      c(
-        "No object of class {.cls data.frame} was passed to {.fn respiratory_01}.",
-        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn respiratory_01}."
-      )
-    )
+  if(
+    
+    any(
+      !is.null(patient_scene_table), 
+      !is.null(response_table), 
+      !is.null(situation_table),
+      !is.null(vitals_table), 
+      !is.null(medications_table),
+      !is.null(procedures_table)
+    ) 
+    
+    &&
+    
+    !is.null(df)
+    
+  ) {
+    
+    cli::cli_abort("{.fn hypoglycemia_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all three of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all three table arguments.")
     
   }
   
+  # ensure all *_col arguments are fulfilled
+  if(
+    
+    any(
+      
+      missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
+      missing(eresponse_05_col),
+      missing(esituation_11_col),
+      missing(esituation_12_col),
+      missing(evitals_18_col),
+      missing(evitals_23_cl),
+      missing(evitals_26_col),
+      missing(emedications_03_col),
+      missing(eprocedures_03_col)
+    )
+    
+  ) {
+    
+    cli::cli_abort("One or more of the *_col arguments is missing.  Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn hypoglycemia_01}.")
+    
+  }
+  
+  if(
+    
+    all(
+      is.null(patient_scene_table), 
+      is.null(response_table), 
+      is.null(situation_table),
+      is.null(vitals_table), 
+      is.null(medications_table),
+      is.null(procedures_table)
+    )
+    
+    && is.null(df)
+    
+  ) {
+    
+    cli::cli_abort("{.fn hypoglycemia_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all six of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all six table arguments.")
+    
+  }
+  
+  # utilize applicable tables to analyze the data for the measure
+  if(
+    all(
+      !is.null(patient_scene_table), 
+      !is.null(response_table), 
+      !is.null(situation_table),
+      !is.null(vitals_table), 
+      !is.null(medications_table),
+      !is.null(procedures_table)
+    ) 
+    
+    && is.null(df)
+    
+  ) {
+    
+    # Ensure df is a data frame or tibble
+    if (
+      
+      any(!(is.data.frame(patient_scene_table) && tibble::is_tibble(patient_scene_table)) ||
+          
+          !(is.data.frame(response_table) && tibble::is_tibble(response_table)) || 
+          
+          !(is.data.frame(situation_table) && tibble::is_tibble(situation_table)) ||
+          
+          !(is.data.frame(vitals_table) && tibble::is_tibble(vitals_table)) ||
+          
+          !(is.data.frame(medications_table) && tibble::is_tibble(medications_table)) ||
+          
+          !(is.data.frame(procedures_table) && tibble::is_tibble(procedures_table))
+          
+          )
+        
+        ) {
+      
+      cli::cli_abort(
+        c(
+          "An object of class {.cls data.frame} or {.cls tibble} is required for each of the *_table arguments."
+        )
+      )
+    }
+    
+    
+  # use quasiquotation on the date variables to check format
+  incident_date <- rlang::enquo(incident_date_col)
+  patient_DOB <- rlang::enquo(patient_DOB_col)
+  
+  if ((!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
+       !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])) ||
+      (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_DOB)]]) &
+       !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_DOB)]]))) {
+    
+    cli::cli_abort(
+      "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+    )
+    
+  }
+
+    # options for the progress bar
+    # a green dot for progress
+    # a white line for note done yet
+    options(cli.progress_bar_style = "dot")
+    
+    options(cli.progress_bar_style = list(
+      complete = cli::col_green("●"),
+      incomplete = cli::col_br_white("─")
+    ))
+    
+    # header
+    cli::cli_h1("Hypoglycemia-01")
+    
+    # initiate the progress bar process
+    progress_bar_main <- cli::cli_progress_bar(
+      "Running `hypoglycemia_01()`",
+      total = 5,
+      type = "tasks",
+      clear = F,
+      format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]\n"
+    )
+    
+    # header
+    cli::cli_h2("Gathering Records for Hypoglycemia-01")
+    
+    # gather the population of interest
+    hypoglycemia_01_populations <- hypoglycemia_01_population(
+                           patient_scene_table = patient_scene_table,
+                           response_table = response_table,
+                           situation_table = situation_table,
+                           vitals_table = vitals_table,
+                           medications_table = medications_table,
+                           procedures_table = procedures_table,
+                           erecord_01_col = {{ erecord_01_col }},
+                           incident_date_col = {{ incident_date_col }},
+                           patient_DOB_col = {{ patient_DOB_col}},
+                           epatient_15_col = {{ epatient_15_col}},
+                           epatient_16_col = {{ epatient_16_col }},
+                           eresponse_05_col = {{ eresponse_05_col }},
+                           esituation_11_col = {{ esituation_11_col }},
+                           esituation_12_col = {{ esituation_12_col }},
+                           evitals_18_col = {{ evitals_18_col }},
+                           evitals_23_cl = {{ evitals_23_cl }},
+                           evitals_26_col = {{ evitals_26_col }},
+                           emedications_03_col = {{ emedications_03_col }},
+                           eprocedures_03_col = {{ eprocedures_03_col }}
+                           )
+
+    # create a separator
+    cli::cli_text("\n")
+    
+    # header for calculations
+    cli::cli_h2("Calculating Hypoglycemia-01")
+    
+    # initiate the progress bar
+    progress_bar_main
+    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
+
+    # summary
+    asthma.01 <- results_summarize(total_population = hypoglycemia_01_populations$initial_population,
+                                   adult_population = hypoglycemia_01_populations$adults,
+                                   peds_population = hypoglycemia_01_populations$peds,
+                                   measure_name = "Hypoglycemia-01",
+                                   numerator_col = TREATMENT,
+                                   ...)
+    
+    
+    cli::cli_progress_done(id = progress_bar_main)
+    
+    return(asthma.01)
+    
+  } else if(
+    
+    all(
+      is.null(patient_scene_table), 
+      is.null(response_table), 
+      is.null(situation_table),
+      is.null(vitals_table), 
+      is.null(medications_table),
+      is.null(procedures_table)
+    )
+    
+    && !is.null(df)
+  )
+    
   # Ensure df is a data frame or tibble
   if (!is.data.frame(df) && !tibble::is_tibble(df)) {
     cli::cli_abort(
@@ -126,311 +335,58 @@ hypoglycemia_01 <- function(df,
   cli::cli_h1("Calculating Hypoglycemia-01")
   
   # initiate the progress bar process
-  progress_bar <- cli::cli_progress_bar(
+  progress_bar_main <- cli::cli_progress_bar(
     "Running `hypoglycemia_01()`",
-    total = 14,
+    total = 1,
     type = "tasks",
     clear = F,
     format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
   
-  progress_bar
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
-  
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
-  
-  # 911 codes for eresponse.05
-  codes_911 <- "2205001|2205003|2205009"
-  
-  # get codes as a regex to filter primary/secondary impression fields
-  hypoglycemia_treatment_codes <- "4832|4850|377980|376937|372326|237653|260258|309778|1795610|1795477|1794567|1165823|1165822|1165819"
-  
-  # hypoglycemia procedures
-  
-  hypoglycemia_procedure_codes <- "225285007|710925007"
-  
-  # code(s) for altered mental status
-  altered_mental_status <- "\\b(?:R41.82)\\b|Altered Mental Status, unspecified"
-  
-  # codes for diabetes via primary and secondary impression
-  
-  diabetes_codes <- "\\b(?:E13.64|E16.2)\\b|Other specified diabetes mellitus with hypoglycemia|Hypoglycemia, unspecified"
-  
-  # AVPU responses
-  
-  avpu_responses <- "Unresponsive|Verbal|Painful|3326003|3326005|3326007"
-  
-  # days, hours, minutes, months
-  
-  minor_values <- "days|hours|minutes|months"
-  
-  ###_____________________________________________________________________________
-  # from the full dataframe with all variables
-  # create one fact table and several dimension tables
-  # to complete calculations and avoid issues due to row
-  # explosion
-  ###_____________________________________________________________________________
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
-  
-  core_data <- df |> 
-    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{  incident_date_col  }}, base::as.Date("1984-09-09")),
-                  PATIENT_DOB_MISSING = tidyr::replace_na({{  patient_DOB_col  }}, base::as.Date("1982-05-19")),
-                  Unique_ID = stringr::str_c({{  erecord_01_col  }},
-                                             INCIDENT_DATE_MISSING,
-                                             PATIENT_DOB_MISSING, 
-                                             sep = "-"
-                  ))
-  
-  # fact table
-  # the user should ensure that variables beyond those supplied for calculations
-  # are distinct (i.e. one value or cell per patient)
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
-  
-  final_data <- core_data |> 
-    dplyr::select(-c({{  eresponse_05_col  }},
-                     {{  esituation_11_col  }},
-                     {{  esituation_12_col }},
-                     {{  evitals_18_col  }},
-                     {{  evitals_23_cl  }},
-                     {{  evitals_26_col  }},
-                     {{  emedications_03_col  }},
-                     {{  eprocedures_03_col  }}
-                     
-    )) |> 
-    dplyr::distinct(Unique_ID, .keep_all = T) |> 
-    dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
-      time1 = {{  incident_date_col  }},
-      time2 = {{  patient_DOB_col  }},
-      units = "days"
-    )) / 365,
-    patient_age_in_days_col = as.numeric(difftime(
-      time1 = {{ incident_date_col }},
-      time2 = {{ patient_DOB_col }},
-      units = "days"
-    )),
+    # header
+    cli::cli_h2("Gathering Records for Hypoglycemia-01")
     
-    # system age check
-    system_age_adult = {{  epatient_15_col }} >= 18 & {{ epatient_16_col  }} == "Years", 
-    system_age_minor1 = {{  epatient_15_col }} < 18  & {{ epatient_16_col  }} == "Years", 
-    system_age_minor2 = !is.na({{ epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col }}, ignore.case = T),
-    system_age_minor3 = !({{ epatient_15_col}} < 1 & {{epatient_16_col }} == "Days") &
-      !({{ epatient_15_col}} < 24 & {{epatient_16_col }} == "Hours") &
-      !({{ epatient_15_col}} < 120 & {{epatient_16_col }} == "Minutes"),
-    system_age_minor = (system_age_minor1 | system_age_minor2) & system_age_minor3, 
+    # gather the population of interest
+    hypoglycemia_01_populations <- hypoglycemia_01_population(
+                                                  df = df,
+                                                  erecord_01_col = {{ erecord_01_col }},
+                                                  incident_date_col = {{ incident_date_col }},
+                                                  patient_DOB_col = {{ patient_DOB_col}},
+                                                  epatient_15_col = {{ epatient_15_col}},
+                                                  epatient_16_col = {{ epatient_16_col }},
+                                                  eresponse_05_col = {{ eresponse_05_col }},
+                                                  esituation_11_col = {{ esituation_11_col }},
+                                                  esituation_12_col = {{ esituation_12_col }},
+                                                  evitals_18_col = {{ evitals_18_col }},
+                                                  evitals_23_cl = {{ evitals_23_cl }},
+                                                  evitals_26_col = {{ evitals_26_col }},
+                                                  emedications_03_col = {{ emedications_03_col }},
+                                                  eprocedures_03_col = {{ eprocedures_03_col }}
+                                                  )
     
-    # calculated age check
-    calc_age_adult = patient_age_in_years_col >= 18, 
-    calc_age_minor = patient_age_in_years_col < 18 & patient_age_in_days_col >= 1
-    )
-  
-  ###_____________________________________________________________________________
-  ### dimension tables
-  ### each dimension table is turned into a vector of unique IDs
-  ### that are then utilized on the fact table to create distinct variables
-  ### that tell if the patient had the characteristic or not for final
-  ### calculations of the numerator and filtering
-  ###_____________________________________________________________________________
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
-  
-  # altered mental status
-  
-  altered_data1 <- core_data |> 
-    dplyr::select(Unique_ID, {{  esituation_11_col  }}) |> 
-    dplyr::filter(grepl(
-      pattern =  altered_mental_status,
-      x = {{ esituation_11_col }},
-      ignore.case = T
-    )) |> 
-    distinct(Unique_ID) |> 
-    pull(Unique_ID)
-  
-  altered_data2 <- core_data |> 
-    dplyr::select(Unique_ID, {{  esituation_12_col  }}) |> 
-    dplyr::filter(grepl(
-      pattern =  altered_mental_status,
-      x = {{ esituation_12_col }},
-      ignore.case = T
-    )) |> 
-    distinct(Unique_ID) |> 
-    pull(Unique_ID)
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
-  
-  # AVPU
-  
-  AVPU_data <- core_data |> 
-    dplyr::select(Unique_ID, {{  evitals_26_col  }}) |> 
-    dplyr::filter(grepl(pattern = avpu_responses, x = {{ evitals_26_col }}, ignore.case = T)
-    ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
-  
-  # GCS
-  
-  GCS_data <- core_data |> 
-    dplyr::select(Unique_ID, {{  evitals_23_cl  }}) |> 
-    dplyr::filter({{ evitals_23_cl }} < 15) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
-  
-  # diabetes data
-  
-  diabetes_data1 <- core_data |> 
-    dplyr::select(Unique_ID, {{  esituation_11_col  }}) |> 
-    dplyr::filter(grepl(
-      pattern =  diabetes_codes,
-      x = {{ esituation_11_col }},
-      ignore.case = T
-    )) |> 
-    distinct(Unique_ID) |> 
-    pull(Unique_ID)
-  
-  diabetes_data2 <- core_data |> 
-    dplyr::select(Unique_ID, {{  esituation_12_col  }}) |> 
-    dplyr::filter(grepl(
-      pattern =  diabetes_codes,
-      x = {{ esituation_12_col }},
-      ignore.case = T
-    )) |> 
-    distinct(Unique_ID) |> 
-    pull(Unique_ID)
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 8, id = progress_bar, force = T)
-  
-  # blood glucose
-  
-  blood_glucose_data <- core_data |> 
-    dplyr::select(Unique_ID, {{  evitals_18_col  }}) |> 
-    dplyr::filter({{ evitals_18_col }} < 60) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 9, id = progress_bar, force = T)
-  
-  # 911 calls
-  
-  call_911_data <- core_data |> 
-    dplyr::select(Unique_ID, {{  eresponse_05_col  }}) |> 
-    dplyr::distinct(Unique_ID, .keep_all = T) |> 
-    dplyr::filter(grepl(pattern = codes_911, x = {{  eresponse_05_col  }}, ignore.case = T)) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 10, id = progress_bar, force = T)
-  
-  # correct treatment
-  
-  correct_treatment_data1 <- core_data |> 
-    dplyr::select(Unique_ID, {{  emedications_03_col  }}) |> 
-    dplyr::distinct(Unique_ID, .keep_all = T) |> 
-    dplyr::filter( 
-      
-      grepl(
-        pattern = hypoglycemia_treatment_codes,
-        x = {{ emedications_03_col }},
-        ignore.case = TRUE
-      )
-      
-    ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
-  
-  correct_treatment_data2 <- core_data |> 
-    dplyr::select(Unique_ID, {{  eprocedures_03_col  }}) |> 
-    dplyr::distinct(Unique_ID, .keep_all = T) |> 
-    dplyr::filter( 
-      
-      grepl(
-        pattern = hypoglycemia_treatment_codes,
-        x = {{ eprocedures_03_col }},
-        ignore.case = TRUE
-      )
-      
-    ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 11, id = progress_bar, force = T)
-  
-  # assign variables to final data
-  
-  initial_population <- final_data |> 
-    dplyr::mutate(GCS = Unique_ID %in% GCS_data,
-                  AVPU = Unique_ID %in% AVPU_data,
-                  CALL_911 = Unique_ID %in% call_911_data,
-                  ALTERED1 = Unique_ID %in% altered_data1,
-                  ALTERED2 = Unique_ID %in% altered_data2,
-                  ALTERED = ALTERED1 | ALTERED2,
-                  DIABETES1 = Unique_ID %in% diabetes_data1,
-                  DIABETES2 = Unique_ID %in% diabetes_data2,
-                  DIABETES = DIABETES1 | DIABETES2,
-                  BLOOD_GLUCOSE = Unique_ID %in% blood_glucose_data,
-                  TREATMENT1 = Unique_ID %in% correct_treatment_data1,
-                  TREATMENT2 = Unique_ID %in% correct_treatment_data2,
-                  TREATMENT = TREATMENT1 | TREATMENT2
-    ) |> 
-    dplyr::filter(
-      
-      (DIABETES & (GCS | AVPU)) |
-        
-        (ALTERED & BLOOD_GLUCOSE) & 
-        
-        CALL_911,
-      
-      system_age_minor3
-      
-    )
-  
-  # Adult and Pediatric Populations
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 12, id = progress_bar, force = T)
-  
-  # filter adult
-  adult_pop <- initial_population |>
-    dplyr::filter(system_age_adult | calc_age_adult)
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 13, id = progress_bar, force = T)
-  
-  # filter peds
-  peds_pop <- initial_population |>
-    dplyr::filter(system_age_minor | calc_age_minor)
-  
-  # summarize
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 14, id = progress_bar, force = T)
-  
-  # summary
-  hypoglycemia.01  <- results_summarize(total_population = initial_population,
-                                        adult_population = adult_pop,
-                                        peds_population = peds_pop,
-                                        measure_name = "Hypoglycemia-01",
-                                        numerator_col = TREATMENT,
-                                        ...)
-  
-  cli::cli_progress_done()
-  
-  hypoglycemia.01
+    # create a separator
+    cli::cli_text("\n")
+    
+    # header for calculations
+    cli::cli_h2("Calculating Hypoglycemia-01")
+    
+    # initiate the progress bar
+    progress_bar_main
+    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
+
+    # summary
+    asthma.01 <- results_summarize(total_population = hypoglycemia_01_populations$initial_population,
+                                   adult_population = hypoglycemia_01_populations$adults,
+                                   peds_population = hypoglycemia_01_populations$peds,
+                                   measure_name = "Hypoglycemia-01",
+                                   numerator_col = TREATMENT,
+                                   ...)
+    
+    
+    cli::cli_progress_done(id = progress_bar_main)
+    
+    return(asthma.01)
   
 }
