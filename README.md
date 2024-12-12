@@ -83,7 +83,7 @@ after creating a free user profile.
 |----|----|----|----|----|
 | Airway-01 | Percentage of EMS responses from a 911 request with successful advanced airway placement on first attempt without hypotension or hypoxia in peri-intubation period. | Outcome | Clinical Process – Effectiveness | 🔧 |
 | Airway-05 | Percentage of intubation procedures from a 911 request in which adequate patient oxygen levels were achieved prior to intubation. | Process | Patient Safety | 🔧 |
-| Airway-18 | Percentage of successful advanced airway procedures from a 911 request in which waveform capnography is used for confirmation and monitoring. | Process | Clinical Process – Effectiveness | 🔧 |
+| Airway-18 | Percentage of successful advanced airway procedures from a 911 request in which waveform capnography is used for confirmation and monitoring. | Process | Clinical Process – Effectiveness | ✔️ |
 | Asthma-01 | Percentage of EMS responses from a 911 request for asthma patients receiving an aerosolized beta agonist. | Process | Clinical Process – Effectiveness | ✔️ |
 | Hypoglycemia-01 | Percentage of EMS responses from a 911 request for symptomatic hypoglycemia patients who receive treatment to correct hypoglycemia. | Process | Clinical Process – Effectiveness | ✔️ |
 | Respiratory-01 | Percentage of EMS responses from a 911 request for respiratory distress patients with a respiratory assessment. | Process | Clinical Process – Effectiveness | ✔️ |
@@ -96,12 +96,12 @@ after creating a free user profile.
 | Stroke-01 | Percentage of EMS responses from a 911 request for suspected stroke patients who had a stroke assessment. | Process | Clinical Process – Effectiveness | ✔️ |
 | Syncope-01 | Percentage of EMS responses from a 911 request for syncope patients with a 12-lead (or greater) ECG performed. | Process | Clinical Process – Effectiveness | :wrench: |
 | TBI-01 | Percentage of EMS transports from a 911 request for suspected TBI patients with documented oxygen level, ETCO2, and systolic BP. | Process | Clinical Process – Effectiveness | :wrench: |
-| Trauma-01 | Percentage of EMS responses from a 911 request for injury patients assessed for pain. | Process | Patient Experience | 🔧 |
-| Trauma-03 | Percentage of EMS transports from a 911 request for patients whose pain score decreased during EMS encounter. | Outcome | Patient Experience | 🔧 |
-| Trauma-04 | Percentage of EMS responses from a 911 request for patients meeting CDC trauma criteria transported to a trauma center. | Process | Clinical Process – Effectiveness | 🔧 |
-| Trauma-08 | Percentage of EMS transports from a 911 request for trauma patients with documented GCS, systolic BP, and respiratory rate. | Process | Clinical Process – Effectiveness | 🔧 |
-| Trauma-14 | Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert. | Process | Clinical Process – Effectiveness | 🔧 |
-| TTR-01 | Percentage of EMS responses from a 911 request for non-transported patients with documented vital signs. | Process | Clinical Process – Effectiveness | 🔧 |
+| Trauma-01 | Percentage of EMS responses from a 911 request for injury patients assessed for pain. | Process | Patient Experience | ✔️ |
+| Trauma-03 | Percentage of EMS transports from a 911 request for patients whose pain score decreased during EMS encounter. | Outcome | Patient Experience | ✔️ |
+| Trauma-04 | Percentage of EMS responses from a 911 request for patients meeting CDC trauma criteria transported to a trauma center. | Process | Clinical Process – Effectiveness | ✔️ |
+| Trauma-08 | Percentage of EMS transports from a 911 request for trauma patients with documented GCS, systolic BP, and respiratory rate. | Process | Clinical Process – Effectiveness | ✔️ |
+| Trauma-14 | Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert. | Process | Clinical Process – Effectiveness | ✔️ |
+| TTR-01 | Percentage of EMS responses from a 911 request for non-transported patients with documented vital signs. | Process | Clinical Process – Effectiveness | ✔️ |
 
 ------------------------------------------------------------------------
 
@@ -139,7 +139,7 @@ access.
   - contributions: maintainer, code
   - contact: nicolas.foss at hhs.iowa.gov
   - work: Epidemiologist at Bureau of Emergency Medical and Trauma
-    Services \> Iowa HHS
+    Services, Division of Public Health, Iowa HHS
 - [Samuel Kordik, BBA, BS,
   NREMT](https://www.linkedin.com/in/samuelkordik)
   - contributions: maintainer, code
@@ -148,7 +148,7 @@ access.
     Director
 - [Peter Geissert, MPH,
   MS](https://www.linkedin.com/in/peter-geissert-ba7607ba)
-  - contributions: nemsqar project conceptualization, code
+  - contributions: nemsqar project conceptualization, consultation
   - contact: PETER.GEISSERT at oha.oregon.gov
   - work: EMS & Trauma Informatics Research Analyst at Oregon EMS &
     Trauma Systems, Public Health Division
