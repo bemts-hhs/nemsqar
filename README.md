@@ -70,7 +70,7 @@ The National EMS Quality Alliance (NEMSQA) Measure Set includes a comprehensive 
 | Trauma-03          | Percentage of EMS transports from a 911 request for patients whose pain score decreased during EMS encounter.                    | Outcome  | Patient Experience                   | ✔️         |
 | Trauma-04          | Percentage of EMS responses from a 911 request for patients meeting CDC trauma criteria transported to a trauma center.          | Process  | Clinical Process – Effectiveness     | ✔️                   |
 | Trauma-08          | Percentage of EMS transports from a 911 request for trauma patients with documented GCS, systolic BP, and respiratory rate.      | Process  | Clinical Process – Effectiveness     | ✔️                   |
-| Trauma-14          | Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert. | Process  | Clinical Process – Effectiveness | 🔧                   |
+| Trauma-14          | Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert. | Process  | Clinical Process – Effectiveness | ✔️                   |
 | TTR-01             | Percentage of EMS responses from a 911 request for non-transported patients with documented vital signs.                          | Process  | Clinical Process – Effectiveness     | ✔️                   |
 
 ---
