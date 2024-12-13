@@ -84,8 +84,8 @@ asthma_01_population <- function(df = NULL,
                                  situation_table = NULL,
                                  medications_table = NULL,
                                  erecord_01_col,
-                                 incident_date_col,
-                                 patient_DOB_col,
+                                 incident_date_col = NULL,
+                                 patient_DOB_col = NULL,
                                  epatient_15_col,
                                  epatient_16_col,
                                  eresponse_05_col,
@@ -157,13 +157,42 @@ asthma_01_population <- function(df = NULL,
   }
   
   # 911 codes for eresponse.05
-  codes_911 <- "2205001|2205003|2205009"
+  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
   
   # get codes as a regex to filter primary/secondary impression fields
-  beta_agonist <- "albuterol|ipratropium|levalbuterol|metaproterenol"
+  beta_agonist <- "435|7688|214199|237159|487066|1154062|1163444|1649559|1165719|2108209|2108252|albuterol|ipratropium|levalbuterol|metaproterenol"
   
   # codes for asthma or acute bronchospasm
-  asthma_codes <- "\\b(?:J45|J98.01)\\b"
+  asthma_codes <- "\\b(?:J45|J98.01)\\b|^asthma.*|acute bronchospasm"
+  
+  year_values <- "2516009|years"
+  
+  day_values <- "days|2516001"
+  
+  hour_values <- "hours|2516003"
+  
+  minute_values <- "minutes|2516005"
+  
+  month_values <- "months|2516007"
+  
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # initiate the progress bar process
+  progress_bar_population <- cli::cli_progress_bar(
+    "Running `asthma_01_population()`",
+    total = 10,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
   
   # utilize applicable tables to analyze the data for the measure
   if(
@@ -190,6 +219,15 @@ asthma_01_population <- function(df = NULL,
       
     }
     
+    # only check the date columns if they are in fact passed
+    if(
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    )
+      
+      {
     # use quasiquotation on the date variables to check format
     incident_date <- rlang::enquo(incident_date_col)
     patient_DOB <- rlang::enquo(patient_DOB_col)
@@ -202,27 +240,9 @@ asthma_01_population <- function(df = NULL,
       cli::cli_abort(
         "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
       )
-      
-    }
     
-    # options for the progress bar
-    # a green dot for progress
-    # a white line for note done yet
-    options(cli.progress_bar_style = "dot")
-    
-    options(cli.progress_bar_style = list(
-      complete = cli::col_green("●"),
-      incomplete = cli::col_br_white("─")
-    ))
-    
-    # initiate the progress bar process
-    progress_bar_population <- cli::cli_progress_bar(
-      "Running `asthma_01_population()`",
-      total = 10,
-      type = "tasks",
-      clear = F,
-      format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
-    )
+      }
+  }
     
     progress_bar_population
     
@@ -237,6 +257,12 @@ asthma_01_population <- function(df = NULL,
     
     # progress update, these will be repeated throughout the script
     
+    if(all(
+      
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    )) {
+      
     # filter the table to get the initial population ages >= 2 years
     final_data <- patient_scene_table |>
       
@@ -248,9 +274,9 @@ asthma_01_population <- function(df = NULL,
       )) / 365,
       
       # system age check
-      system_age_adult = {{  epatient_15_col }} >= 18 & {{ epatient_16_col  }} == "Years", 
-      system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & {{ epatient_16_col  }} == "Years", 
-      system_age_minor2 = {{ epatient_15_col}} >= 24 & {{epatient_16_col }} == "Months",
+      system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T), 
+      system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T), 
+      system_age_minor2 = {{ epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col}}, ignore.case = T),
       system_age_minor = system_age_minor1 | system_age_minor2, 
       
       # calculated age check
@@ -259,6 +285,32 @@ asthma_01_population <- function(df = NULL,
       
       ) |> 
       dplyr::distinct({{ erecord_01_col }}, .keep_all = T)
+    
+    } else if(
+      
+      all(
+        is.null(incident_date_col), 
+        is.null(patient_DOB_col)
+      )) {
+      
+      # filter the table to get the initial population ages >= 2 years
+      final_data <- patient_scene_table |>
+        
+        # create the age in years variable
+        dplyr::mutate(
+        
+        # system age check
+        system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T), 
+        system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T), 
+        system_age_minor2 = {{ epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col}}, ignore.case = T),
+        system_age_minor = system_age_minor1 | system_age_minor2
+        
+
+        ) |> 
+        dplyr::distinct({{ erecord_01_col }}, .keep_all = T)
+      
+      
+    }
     
     ###_____________________________________________________________________________
     ### dimension tables
@@ -340,6 +392,17 @@ asthma_01_population <- function(df = NULL,
     
     cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
     
+    if(
+      
+      # use the system generated and calculated ages
+      
+      all(
+        
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        
+      )) {
+      
     # filter adult
     adult_pop <- initial_population |>
       dplyr::filter(calc_age_adult | system_age_adult)
@@ -350,6 +413,28 @@ asthma_01_population <- function(df = NULL,
     peds_pop <- initial_population |>
       dplyr::filter(system_age_minor | calc_age_minor)
     
+    } else if(
+      
+      # only use the system generated values
+      
+      all(
+        is.null(incident_date_col), 
+        is.null(patient_DOB_col)
+      )) {
+    
+      # filter adult
+      adult_pop <- initial_population |>
+        dplyr::filter(system_age_adult)
+      
+      cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+      
+      # filter peds
+      peds_pop <- initial_population |>
+        dplyr::filter(system_age_minor)
+      
+      
+    }
+    
     cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
 
     # summarize counts for populations filtered
@@ -357,8 +442,8 @@ asthma_01_population <- function(df = NULL,
       filter = c("911 calls", 
                  "Asthma cases", 
                  "Beta agonist cases",
-                 "Adults",
-                 "Peds", 
+                 "Adults denominator",
+                 "Peds denominator", 
                  "Initial population",
                  "Total dataset"
       ),
@@ -410,6 +495,16 @@ asthma_01_population <- function(df = NULL,
       )
     }
     
+    # only check the date columns if they are in fact passed
+    if(
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) 
+      
+      {
+    
     # use quasiquotation on the date variables to check format
     incident_date <- rlang::enquo(incident_date_col)
     patient_DOB <- rlang::enquo(patient_DOB_col)
@@ -424,25 +519,7 @@ asthma_01_population <- function(df = NULL,
       )
       
     }
-    
-    # options for the progress bar
-    # a green dot for progress
-    # a white line for note done yet
-    options(cli.progress_bar_style = "dot")
-    
-    options(cli.progress_bar_style = list(
-      complete = cli::col_green("●"),
-      incomplete = cli::col_br_white("─")
-    ))
-    
-    # initiate the progress bar process
-    progress_bar_population <- cli::cli_progress_bar(
-      "Running `asthma_01_population()`",
-      total = 10,
-      type = "tasks",
-      clear = F,
-      format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
-    )
+  }
     
     progress_bar_population
     
@@ -460,6 +537,17 @@ asthma_01_population <- function(df = NULL,
     # the user should ensure that variables beyond those supplied for calculations
     # are distinct (i.e. one value or cell per patient)
     
+    if(
+      
+      # use the system generated and calculated ages
+      
+      all(
+        
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        
+      )) {
+      
     # filter the table to get the total dataset with identified categories
     final_data <- df |>
       dplyr::select(-c({{  eresponse_05_col  }},
@@ -478,9 +566,9 @@ asthma_01_population <- function(df = NULL,
       )) / 365,
       
       # system age check
-      system_age_adult = {{  epatient_15_col }} >= 18 & {{ epatient_16_col  }} == "Years", 
-      system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & {{ epatient_16_col  }} == "Years", 
-      system_age_minor2 = {{ epatient_15_col}} >= 24 & {{epatient_16_col }} == "Months",
+      system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T), 
+      system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T), 
+      system_age_minor2 = {{ epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col}}, ignore.case = T),
       system_age_minor = system_age_minor1 | system_age_minor2, 
       
       # calculated age check
@@ -489,6 +577,38 @@ asthma_01_population <- function(df = NULL,
       
       )
     
+  } else if(
+  
+  # only use the system generated values
+  
+  all(
+    is.null(incident_date_col), 
+    is.null(patient_DOB_col)
+  )) {
+  
+  # filter the table to get the total dataset with identified categories
+    final_data <- df |>
+      dplyr::select(-c({{  eresponse_05_col  }},
+                       {{  esituation_11_col  }},
+                       {{  esituation_12_col }},
+                       {{  emedications_03_col  }}
+
+      )) |> 
+      distinct({{ erecord_01_col }}, .keep_all = T) |> 
+      # create the age in years variable
+      
+      dplyr::mutate(
+      
+      # system age check
+      system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T), 
+      system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T), 
+      system_age_minor2 = {{ epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col}}, ignore.case = T),
+      system_age_minor = system_age_minor1 | system_age_minor2
+      
+      )
+  
+  }
+      
     ###_____________________________________________________________________________
     ### dimension tables
     ### each dimension table is turned into a vector of unique IDs
@@ -565,6 +685,17 @@ asthma_01_population <- function(df = NULL,
     
     cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
     
+    if(
+      
+      # use the system generated and calculated ages
+      
+      all(
+        
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        
+      )) {
+      
     # filter adult
     adult_pop <- initial_population |>
       dplyr::filter(calc_age_adult | system_age_adult)
@@ -575,6 +706,27 @@ asthma_01_population <- function(df = NULL,
     peds_pop <- initial_population |>
       dplyr::filter(system_age_minor | calc_age_minor)
     
+    } else if(
+      
+      # only use the system generated values
+      
+      all(
+        is.null(incident_date_col), 
+        is.null(patient_DOB_col)
+      )) {
+      
+      # filter adult
+      adult_pop <- initial_population |>
+        dplyr::filter(system_age_adult)
+      
+      cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+      
+      # filter peds
+      peds_pop <- initial_population |>
+        dplyr::filter(system_age_minor)
+      
+    }
+      
     cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
 
     # summarize counts for populations filtered
@@ -582,8 +734,8 @@ asthma_01_population <- function(df = NULL,
       filter = c("911 calls", 
                  "Asthma cases", 
                  "Beta agonist cases",
-                 "Adults",
-                 "Peds", 
+                 "Adults denominator",
+                 "Peds denominator", 
                  "Initial population",
                  "Total dataset"
       ),

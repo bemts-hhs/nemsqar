@@ -11,9 +11,7 @@
 #' @section Data Assumptions:
 #'
 #' This function assumes that:
-#' Data are already loaded. The data needs to be a data.frame or tibble where each row is
-#' one observation (patient) and each is a feature (field) or distinct datasets
-#' that can be references as unique columns.
+#' Data are already loaded. The data need to be a data.frame or tibble.
 #'
 #' Age in years will be calculated using the patient date of birth and incident
 #' date. These fields must have valid Date or POSIXct data types.
@@ -88,8 +86,8 @@ asthma_01 <- function(df = NULL,
                       situation_table = NULL,
                       medications_table = NULL,
                       erecord_01_col,
-                      incident_date_col,
-                      patient_DOB_col,
+                      incident_date_col = NULL,
+                      patient_DOB_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       eresponse_05_col,
@@ -159,6 +157,24 @@ asthma_01 <- function(df = NULL,
     
   }
   
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # initiate the progress bar process
+  progress_bar_main <- cli::cli_progress_bar(
+    "Running `asthma_01()`",
+    total = 1,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]\n"
+  )
   
   # utilize applicable tables to analyze the data for the measure
   if(
@@ -192,42 +208,33 @@ asthma_01 <- function(df = NULL,
       )
     }
     
-    # use quasiquotation on the date variables to check format
-    incident_date <- rlang::enquo(incident_date_col)
-    patient_DOB <- rlang::enquo(patient_DOB_col)
-    
-    if ((!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
-         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])) ||
-        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_DOB)]]) &
-         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_DOB)]]))) {
-      
-      cli::cli_abort(
-        "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+    # only check the date columns if they are in fact passed
+    if(
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
+    )
       
+    {
+      # use quasiquotation on the date variables to check format
+      incident_date <- rlang::enquo(incident_date_col)
+      patient_DOB <- rlang::enquo(patient_DOB_col)
+      
+      if ((!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
+           !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])) ||
+          (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_DOB)]]) &
+           !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_DOB)]]))) {
+        
+        cli::cli_abort(
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+        )
+        
+      }
     }
-    
-    # options for the progress bar
-    # a green dot for progress
-    # a white line for note done yet
-    options(cli.progress_bar_style = "dot")
-    
-    options(cli.progress_bar_style = list(
-      complete = cli::col_green("●"),
-      incomplete = cli::col_br_white("─")
-    ))
     
     # header
     cli::cli_h1("Asthma-01")
-    
-    # initiate the progress bar process
-    progress_bar_main <- cli::cli_progress_bar(
-      "Running `asthma_01()`",
-      total = 1,
-      type = "tasks",
-      clear = F,
-      format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]\n"
-    )
     
     # header
     cli::cli_h2("Gathering Records for Asthma-01")
@@ -288,42 +295,34 @@ asthma_01 <- function(df = NULL,
       )
     }
     
-    # use quasiquotation on the date variables to check format
-    incident_date <- rlang::enquo(incident_date_col)
-    patient_DOB <- rlang::enquo(patient_DOB_col)
-    
-    if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-         !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-        (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
-         !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
-      
-      cli::cli_abort(
-        "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+    # only check the date columns if they are in fact passed
+    if(
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
+    ) 
       
+    {
+      
+      # use quasiquotation on the date variables to check format
+      incident_date <- rlang::enquo(incident_date_col)
+      patient_DOB <- rlang::enquo(patient_DOB_col)
+      
+      if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
+           !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
+          (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
+           !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
+        
+        cli::cli_abort(
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+        )
+        
+      }
     }
-    
-    # options for the progress bar
-    # a green dot for progress
-    # a white line for note done yet
-    options(cli.progress_bar_style = "dot")
-    
-    options(cli.progress_bar_style = list(
-      complete = cli::col_green("●"),
-      incomplete = cli::col_br_white("─")
-    ))
     
     # header
     cli::cli_h1("Asthma-01")
-    
-    # initiate the progress bar process
-    progress_bar_main <- cli::cli_progress_bar(
-      "Running `asthma_01()`",
-      total = 1,
-      type = "tasks",
-      clear = F,
-      format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]\n"
-    )
     
     # header
     cli::cli_h2("Gathering Records for Asthma-01")

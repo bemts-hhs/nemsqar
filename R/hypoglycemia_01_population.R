@@ -1,5 +1,39 @@
 #' Hypoglycemia-01 Populations
 #'
+#' The `hypoglycemia_01_population` ilters data down to the target populations for Hypoglycemia-01, and categorizes 
+#' records to identify needed information for the calculations.
+#'
+#' Identifies key categories related to diabetes/hypoglycemia incidents in an EMS dataset,
+#' specifically focusing on cases where 911 was called for diabetes/hypoglycemia distress,
+#' certain medications were administered, and a weight is taken. This function segments the data
+#' into pediatric populations, computing the proportion of cases that have a documented weight.
+#'
+#' @section Data Assumptions:
+#' The `df` argument and each `*_table` argument should be a dataframe or tibble, with the following assumptions:
+#' - The data are already loaded.
+#' - The function will calculate an age in years using the incident date and the patient DOB.
+#' - The incident date and the patient DOB are `Date` or `POSIXct` data types.
+#' - Any missing values are encoded as `NA`, not the "Not Known"/"Not Recorded" text values
+#'   or NEMSIS "not value" codes commonly reported by ePCR vendors.
+#' - The vitals field may be the full list of values for each field or the lowest estimated
+#'   eVitals.18 (must include the "Low Blood Glucose" flag) and lowest estimated patient AVPU
+#'   in eVitals.2.
+#' - The function assumes that the primary and secondary impression fields (eSituation.11
+#'   and eSituation.12) have the ICD-10 codes in them. The test description can be present,
+#'   too, for reference.
+#' - The function assumes that the eResponse.05 fields have the NEMSIS codes in them,
+#'   although text can be also be present for reference.
+#' - The function assumes that the eMedications_03 and eProcedures_03 fields contain
+#'   all medications/procedures and that it contains the text description of the
+#'   generic name of the medication. The codes can be included for reference, but will
+#'   not be checked. ALL medications and procedures are in one field per record, as either
+#'   a list column or a comma-separated list.
+#' - The eSituation.12 (Secondary Impression) field is best as a list column of the secondary
+#'   impressions. No joining is done.
+#' - Any joins to get vitals, etc., will need to be done outside the function.
+#' - Grouping by specific attributes (e.g., region) can be performed inside this function by
+#'   utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
+#'
 #' @param df A data frame or tibble containing emergency response records.
 #' @param patient_scene_table A data.frame or tibble containing only epatient and escene fields as a fact table.
 #' @param response_table A data.frame or tibble containing only the eresponse fields needed for this measure's calculations.
@@ -9,9 +43,9 @@
 #' @param procedures_table A data.frame or tibble containing only the eprocedures fields needed for this measure's calculations.
 #' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.
 #' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains the incident date.
+#' contains the incident date. This defaults to `NULL` as it is optional in case not available due to PII restrictions.
 #' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains the patient's date of birth.
+#' contains the patient's date of birth. This defaults to `NULL` as it is optional in case not available due to PII restrictions.
 #' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's numeric age agnostic of unit.
 #' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's age unit ("Years", "Months", "Days", "Hours", or "Minute").
 #' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column that
@@ -45,8 +79,8 @@ hypoglycemia_01_population <- function(df = NULL,
                             medications_table = NULL,
                             procedures_table = NULL,
                             erecord_01_col,
-                            incident_date_col,
-                            patient_DOB_col,
+                            incident_date_col = NULL,
+                            patient_DOB_col = NULL,
                             epatient_15_col,
                             epatient_16_col,
                             eresponse_05_col,
@@ -127,17 +161,16 @@ hypoglycemia_01_population <- function(df = NULL,
     
   }
   
-  
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
   # 911 codes for eresponse.05
-  codes_911 <- "2205001|2205003|2205009"
+  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
   
   # get codes as a regex to filter primary/secondary impression fields
-  hypoglycemia_treatment_codes <- "4832|4850|377980|376937|372326|237653|260258|309778|1795610|1795477|1794567|1165823|1165822|1165819"
+  hypoglycemia_treatment_codes <- "4832|4850|377980|376937|372326|237653|260258|309778|1795610|1795477|1794567|1165823|1165822|1165819|Glucagon|Glucose|Glucose Oral Gel|Glucose Injectable Solution|Glucose Chewable Tablet|Glucose 500 MG/ML Injectable Solution|Glucose 250 MG/ML Injectable Solution|Glucose 50 MG/ML Injectable Solution|250 ML Glucose 50 MG/ML Injection|500 ML Glucose 100 MG ML Injection|Glucose Injection|Glucose Oral Product|Glucose Oral Liquid Product|Glucose Injectable Product"
   
   # hypoglycemia procedures
   
-  hypoglycemia_procedure_codes <- "225285007|710925007"
+  hypoglycemia_procedure_codes <- "710925007|225285007|Provision of food|Giving oral fluid"
   
   # code(s) for altered mental status
   altered_mental_status <- "\\b(?:R41.82)\\b|Altered Mental Status, unspecified"
@@ -152,8 +185,36 @@ hypoglycemia_01_population <- function(df = NULL,
   
   # days, hours, minutes, months
   
-  minor_values <- "days|hours|minutes|months"
+  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
   
+  year_values <- "2516009|years"
+  
+  day_values <- "days|2516001"
+  
+  hour_values <- "hours|2516003"
+  
+  minute_values <- "minutes|2516005"
+  
+  month_values <- "months|2516007"
+  
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # initiate the progress bar process
+  progress_bar_population <- cli::cli_progress_bar(
+    "Running `hypoglycemia_01_population()`",
+    total = 17,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
   
   # utilize applicable tables to analyze the data for the measure
   if(
@@ -168,14 +229,31 @@ hypoglycemia_01_population <- function(df = NULL,
     
   ) {
     
-    # initiate the progress bar process
-    progress_bar_population <- cli::cli_progress_bar(
-      "Running `hypoglycemia_01_population()`",
-      total = 17,
-      type = "tasks",
-      clear = F,
-      format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
-    )
+    # Only check the date columns if they are in fact passed
+    if (
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) {
+      # Use quasiquotation on the date variables to check format
+      incident_date <- rlang::enquo(incident_date_col)
+      patient_DOB <- rlang::enquo(patient_DOB_col)
+      
+      # Convert quosures to names and check the column classes
+      incident_date_name <- rlang::as_name(incident_date)
+      patient_DOB_name <- rlang::as_name(patient_DOB)
+      
+      if ((!lubridate::is.Date(patient_scene_table[[incident_date_name]]) &
+           !lubridate::is.POSIXct(patient_scene_table[[incident_date_name]])) ||
+          (!lubridate::is.Date(patient_scene_table[[patient_DOB_name]]) &
+           !lubridate::is.POSIXct(patient_scene_table[[patient_DOB_name]]))) {
+        
+        cli::cli_abort(
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class. Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or a similar class."
+        )
+      }
+    }
     
     progress_bar_population
     
@@ -190,6 +268,13 @@ hypoglycemia_01_population <- function(df = NULL,
     
     # progress update, these will be repeated throughout the script
     
+    if (
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) {
+      
     # filter the table to get the initial population
     final_data <- patient_scene_table |> 
       dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |> 
@@ -205,18 +290,44 @@ hypoglycemia_01_population <- function(df = NULL,
       )),
       
       # system age check
-      system_age_adult = {{  epatient_15_col }} >= 18 & {{ epatient_16_col  }} == "Years", 
-      system_age_minor1 = {{  epatient_15_col }} < 18  & {{ epatient_16_col  }} == "Years", 
+      system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col  }}, ignore.case = T), 
+      system_age_minor1 = {{  epatient_15_col }} < 18  & grepl(pattern = year_values, x = {{ epatient_16_col  }}, ignore.case = T), 
       system_age_minor2 = !is.na({{ epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col }}, ignore.case = T),
-      system_age_minor3 = !({{ epatient_15_col}} < 1 & {{epatient_16_col }} == "Days") &
-        !({{ epatient_15_col}} < 24 & {{epatient_16_col }} == "Hours") &
-        !({{ epatient_15_col}} < 120 & {{epatient_16_col }} == "Minutes"),
+      system_age_minor3 = !({{ epatient_15_col}} < 1 & grepl(pattern = day_values, x = {{ epatient_16_col  }}, ignore.case = T)) &
+        !({{ epatient_15_col}} < 24 & grepl(pattern = hour_values, x = {{ epatient_16_col  }}, ignore.case = T)) &
+        !({{ epatient_15_col}} < 120 & grepl(pattern = minute_values, x = {{ epatient_16_col  }}, ignore.case = T)),
       system_age_minor = (system_age_minor1 | system_age_minor2) & system_age_minor3, 
       
       # calculated age check
       calc_age_adult = patient_age_in_years_col >= 18, 
       calc_age_minor = patient_age_in_years_col < 18 & patient_age_in_days_col >= 1
       )
+      
+    } else if(
+      
+      all(
+        is.null(incident_date_col), 
+        is.null(patient_DOB_col)
+      )) 
+      
+      {
+      
+      final_data <- patient_scene_table |> 
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |> 
+      dplyr::mutate(
+      
+      # system age check
+      system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col  }}, ignore.case = T), 
+      system_age_minor1 = {{  epatient_15_col }} < 18  & grepl(pattern = year_values, x = {{ epatient_16_col  }}, ignore.case = T), 
+      system_age_minor2 = !is.na({{ epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col }}, ignore.case = T),
+      system_age_minor3 = !({{ epatient_15_col}} < 1 & grepl(pattern = day_values, x = {{ epatient_16_col  }}, ignore.case = T)) &
+        !({{ epatient_15_col}} < 24 & grepl(pattern = hour_values, x = {{ epatient_16_col  }}, ignore.case = T)) &
+        !({{ epatient_15_col}} < 120 & grepl(pattern = minute_values, x = {{ epatient_16_col  }}, ignore.case = T)),
+      system_age_minor = (system_age_minor1 | system_age_minor2) & system_age_minor3
+      
+      )
+      
+    }
     
     ###_____________________________________________________________________________
     ### dimension tables
@@ -412,6 +523,16 @@ hypoglycemia_01_population <- function(df = NULL,
   # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
   
+  if(
+    
+    # use the system generated and calculated ages
+    
+    all(
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    )
+  ) {
+    
   # filter adult
   adult_pop <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
@@ -422,6 +543,31 @@ hypoglycemia_01_population <- function(df = NULL,
   # filter peds
   peds_pop <- initial_population |>
     dplyr::filter(system_age_minor | calc_age_minor)
+  
+  } else if(
+    
+    # only use the system generated values
+    
+    all(
+      is.null(incident_date_col),
+      is.null(patient_DOB_col)
+    )
+    
+  ) {
+    
+    # filter adult
+    adult_pop <- initial_population |>
+      dplyr::filter(system_age_adult)
+    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 15, id = progress_bar_population, force = T)
+    
+    # filter peds
+    peds_pop <- initial_population |>
+      dplyr::filter(system_age_minor)
+    
+    
+  }
   
   # summarize
   
@@ -492,40 +638,32 @@ hypoglycemia_01_population <- function(df = NULL,
     )
   }
   
-  # use quasiquotation on the date variables to check format
-  incident_date <- rlang::enquo(incident_date_col)
-  patient_DOB <- rlang::enquo(patient_DOB_col)
-  
-  if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-       !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-      (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
-       !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
+    # only check the date columns if they are in fact passed
+    if(
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) 
+      
+    {
+      
+      # use quasiquotation on the date variables to check format
+      incident_date <- rlang::enquo(incident_date_col)
+      patient_DOB <- rlang::enquo(patient_DOB_col)
+      
+      if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
+           !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
+          (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
+           !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
+        
+        cli::cli_abort(
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+        )
+        
+      }
+    }
     
-    cli::cli_abort(
-      "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
-    )
-    
-  }
-  
-  # options for the progress bar
-  # a green dot for progress
-  # a white line for note done yet
-  options(cli.progress_bar_style = "dot")
-  
-  options(cli.progress_bar_style = list(
-    complete = cli::col_green("●"),
-    incomplete = cli::col_br_white("─")
-  ))
-  
-  # initiate the progress bar process
-  progress_bar_population <- cli::cli_progress_bar(
-    "Running `hypoglycemia_01_population()`",
-    total = 17,
-    type = "tasks",
-    clear = F,
-    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
-  )
-  
   progress_bar_population
   
   # progress update, these will be repeated throughout the script
@@ -542,6 +680,12 @@ hypoglycemia_01_population <- function(df = NULL,
   # the user should ensure that variables beyond those supplied for calculations
   # are distinct (i.e. one value or cell per patient)
   
+  if(all(
+    
+    !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+    !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+  )) {
+    
   final_data <- df |> 
     dplyr::select(-c({{  eresponse_05_col  }},
                      {{  esituation_11_col  }},
@@ -566,18 +710,52 @@ hypoglycemia_01_population <- function(df = NULL,
     )),
     
     # system age check
-    system_age_adult = {{  epatient_15_col }} >= 18 & {{ epatient_16_col  }} == "Years", 
-    system_age_minor1 = {{  epatient_15_col }} < 18  & {{ epatient_16_col  }} == "Years", 
+    system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T), 
+    system_age_minor1 = {{  epatient_15_col }} < 18  & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T), 
     system_age_minor2 = !is.na({{ epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col }}, ignore.case = T),
-    system_age_minor3 = !({{ epatient_15_col}} < 1 & {{epatient_16_col }} == "Days") &
-      !({{ epatient_15_col}} < 24 & {{epatient_16_col }} == "Hours") &
-      !({{ epatient_15_col}} < 120 & {{epatient_16_col }} == "Minutes"),
+    system_age_minor3 = !({{ epatient_15_col}} < 1 & grepl(pattern = day_values, x = {{ epatient_16_col}}, ignore.case = T)) &
+      !({{ epatient_15_col}} < 24 & grepl(pattern = hour_values, x = {{ epatient_16_col}}, ignore.case = T)) &
+      !({{ epatient_15_col}} < 120 & grepl(pattern = minute_values, x = {{ epatient_16_col}}, ignore.case = T)),
     system_age_minor = (system_age_minor1 | system_age_minor2) & system_age_minor3, 
     
     # calculated age check
     calc_age_adult = patient_age_in_years_col >= 18, 
     calc_age_minor = patient_age_in_years_col < 18 & patient_age_in_days_col >= 1
     )
+  
+  } else if(
+    
+    all(
+      is.null(incident_date_col), 
+      is.null(patient_DOB_col)
+    )) {
+    
+    final_data <- df |> 
+    dplyr::select(-c({{  eresponse_05_col  }},
+                     {{  esituation_11_col  }},
+                     {{  esituation_12_col }},
+                     {{  evitals_18_col  }},
+                     {{  evitals_23_cl  }},
+                     {{  evitals_26_col  }},
+                     {{  emedications_03_col  }},
+                     {{  eprocedures_03_col  }}
+                     
+    )) |> 
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |> 
+    dplyr::mutate(
+    
+    # system age check
+    system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T), 
+    system_age_minor1 = {{  epatient_15_col }} < 18  & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T), 
+    system_age_minor2 = !is.na({{ epatient_15_col}}) & grepl(pattern = minor_values, x = {{epatient_16_col }}, ignore.case = T),
+    system_age_minor3 = !({{ epatient_15_col}} < 1 & grepl(pattern = day_values, x = {{ epatient_16_col}}, ignore.case = T)) &
+      !({{ epatient_15_col}} < 24 & grepl(pattern = hour_values, x = {{ epatient_16_col}}, ignore.case = T)) &
+      !({{ epatient_15_col}} < 120 & grepl(pattern = minute_values, x = {{ epatient_16_col}}, ignore.case = T)),
+    system_age_minor = (system_age_minor1 | system_age_minor2) & system_age_minor3
+    
+    )
+    
+  }
   
   ###_____________________________________________________________________________
   ### dimension tables
@@ -775,6 +953,17 @@ hypoglycemia_01_population <- function(df = NULL,
   # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
   
+  if(
+    
+    # use the system generated and calculated ages
+    
+    all(
+    
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      
+  )) {
+    
   # filter adult
   adult_pop <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
@@ -785,6 +974,28 @@ hypoglycemia_01_population <- function(df = NULL,
   # filter peds
   peds_pop <- initial_population |>
     dplyr::filter(system_age_minor | calc_age_minor)
+  
+  } else if(
+    
+    # only use the system generated values
+    
+    all(
+      is.null(incident_date_col), 
+      is.null(patient_DOB_col)
+    )) {
+    
+    # filter adult
+    adult_pop <- initial_population |>
+      dplyr::filter(system_age_adult)
+    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 15, id = progress_bar_population, force = T)
+    
+    # filter peds
+    peds_pop <- initial_population |>
+      dplyr::filter(system_age_minor)
+
+  }
   
   # summarize
   
@@ -829,3 +1040,4 @@ hypoglycemia_01_population <- function(df = NULL,
   }
   
 }
+

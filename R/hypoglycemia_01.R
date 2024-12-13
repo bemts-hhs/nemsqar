@@ -38,8 +38,10 @@
 #' @param medications_table A data.frame or tibble containing at least the emedications fields needed for this measure's calculations.
 #' @param procedures_table A data.frame or tibble containing at least the eprocedures fields needed for this measure's calculations.
 #' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Column representing the unique record identifier.
-#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> POSIXct or Date column representing the date of the incident.
-#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> POSIXct or Date column representing the patient's date of birth.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column that
+#' contains the incident date. This defaults to `NULL` as it is optional in case not available due to PII restrictions.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column that
+#' contains the patient's date of birth. This defaults to `NULL` as it is optional in case not available due to PII restrictions.
 #' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's numeric age agnostic of unit.
 #' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's age unit ("Years", "Months", "Days", "Hours", or "Minute").
 #' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column containing response type codes.
@@ -72,8 +74,8 @@ hypoglycemia_01 <- function(df = NULL,
                             medications_table = NULL,
                             procedures_table = NULL,
                             erecord_01_col,
-                            incident_date_col,
-                            patient_DOB_col,
+                            incident_date_col = NULL,
+                            patient_DOB_col = NULL,
                             epatient_15_col,
                             epatient_16_col,
                             eresponse_05_col,
@@ -132,6 +134,25 @@ hypoglycemia_01 <- function(df = NULL,
     cli::cli_abort("One or more of the *_col arguments is missing.  Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn hypoglycemia_01}.")
     
   }
+  
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+  
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("●"),
+    incomplete = cli::col_br_white("─")
+  ))
+  
+  # initiate the progress bar process
+  progress_bar_main <- cli::cli_progress_bar(
+    "Running `hypoglycemia_01()`",
+    total = 1,
+    type = "tasks",
+    clear = F,
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+  )
   
   if(
     
@@ -193,43 +214,34 @@ hypoglycemia_01 <- function(df = NULL,
       )
     }
     
-    
-  # use quasiquotation on the date variables to check format
-  incident_date <- rlang::enquo(incident_date_col)
-  patient_DOB <- rlang::enquo(patient_DOB_col)
-  
-  if ((!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
-       !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])) ||
-      (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_DOB)]]) &
-       !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_DOB)]]))) {
-    
-    cli::cli_abort(
-      "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
-    )
-    
-  }
-
-    # options for the progress bar
-    # a green dot for progress
-    # a white line for note done yet
-    options(cli.progress_bar_style = "dot")
-    
-    options(cli.progress_bar_style = list(
-      complete = cli::col_green("●"),
-      incomplete = cli::col_br_white("─")
-    ))
+    # Only check the date columns if they are in fact passed
+    if (
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) {
+      # Use quasiquotation on the date variables to check format
+      incident_date <- rlang::enquo(incident_date_col)
+      patient_DOB <- rlang::enquo(patient_DOB_col)
+      
+      # Convert quosures to names and check the column classes
+      incident_date_name <- rlang::as_name(incident_date)
+      patient_DOB_name <- rlang::as_name(patient_DOB)
+      
+      if ((!lubridate::is.Date(patient_scene_table[[incident_date_name]]) &
+           !lubridate::is.POSIXct(patient_scene_table[[incident_date_name]])) ||
+          (!lubridate::is.Date(patient_scene_table[[patient_DOB_name]]) &
+           !lubridate::is.POSIXct(patient_scene_table[[patient_DOB_name]]))) {
+        
+        cli::cli_abort(
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class. Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or a similar class."
+        )
+      }
+    }
     
     # header
     cli::cli_h1("Hypoglycemia-01")
-    
-    # initiate the progress bar process
-    progress_bar_main <- cli::cli_progress_bar(
-      "Running `hypoglycemia_01()`",
-      total = 5,
-      type = "tasks",
-      clear = F,
-      format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]\n"
-    )
     
     # header
     cli::cli_h2("Gathering Records for Hypoglycemia-01")
@@ -266,21 +278,21 @@ hypoglycemia_01 <- function(df = NULL,
     # initiate the progress bar
     progress_bar_main
     
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
 
     # summary
-    asthma.01 <- results_summarize(total_population = hypoglycemia_01_populations$initial_population,
+    hypoglycemia.01 <- results_summarize(total_population = hypoglycemia_01_populations$initial_population,
                                    adult_population = hypoglycemia_01_populations$adults,
                                    peds_population = hypoglycemia_01_populations$peds,
                                    measure_name = "Hypoglycemia-01",
                                    numerator_col = TREATMENT,
                                    ...)
     
-    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
+
     cli::cli_progress_done(id = progress_bar_main)
     
-    return(asthma.01)
+    return(hypoglycemia.01)
     
   } else if(
     
@@ -306,42 +318,35 @@ hypoglycemia_01 <- function(df = NULL,
     )
   }
   
-  # use quasiquotation on the date variables to check format
-  incident_date <- rlang::enquo(incident_date_col)
-  patient_DOB <- rlang::enquo(patient_DOB_col)
-  
-  if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-       !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-      (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
-       !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
-    
-    cli::cli_abort(
-      "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+  # only check the date columns if they are in fact passed
+  if(
+    all(
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
+  ) 
     
+  {
+    
+    # use quasiquotation on the date variables to check format
+    incident_date <- rlang::enquo(incident_date_col)
+    patient_DOB <- rlang::enquo(patient_DOB_col)
+    
+    if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
+         !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
+        (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
+         !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
+      
+      cli::cli_abort(
+        "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+      )
+      
+    }
   }
   
-  # options for the progress bar
-  # a green dot for progress
-  # a white line for note done yet
-  options(cli.progress_bar_style = "dot")
-  
-  options(cli.progress_bar_style = list(
-    complete = cli::col_green("●"),
-    incomplete = cli::col_br_white("─")
-  ))
   
   # header
   cli::cli_h1("Calculating Hypoglycemia-01")
-  
-  # initiate the progress bar process
-  progress_bar_main <- cli::cli_progress_bar(
-    "Running `hypoglycemia_01()`",
-    total = 1,
-    type = "tasks",
-    clear = F,
-    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
-  )
   
     # header
     cli::cli_h2("Gathering Records for Hypoglycemia-01")
@@ -373,20 +378,19 @@ hypoglycemia_01 <- function(df = NULL,
     # initiate the progress bar
     progress_bar_main
     
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
-
     # summary
-    asthma.01 <- results_summarize(total_population = hypoglycemia_01_populations$initial_population,
+    hypoglycemia.01 <- results_summarize(total_population = hypoglycemia_01_populations$initial_population,
                                    adult_population = hypoglycemia_01_populations$adults,
                                    peds_population = hypoglycemia_01_populations$peds,
                                    measure_name = "Hypoglycemia-01",
                                    numerator_col = TREATMENT,
                                    ...)
     
-    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
+
     cli::cli_progress_done(id = progress_bar_main)
     
-    return(asthma.01)
+    return(hypoglycemia.01)
   
 }
