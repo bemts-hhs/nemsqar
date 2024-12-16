@@ -344,7 +344,7 @@ pediatrics_03b_population <- function(df = NULL,
       
       # documented weight 1
       
-      documented_weight_data1 <- core_data |> 
+      documented_weight_data1 <- exam_table |> 
         dplyr::select({{ erecord_01_col }}, {{  eexam_01_col  }}) |> 
         dplyr::distinct() |> 
         dplyr::filter( 
@@ -358,7 +358,7 @@ pediatrics_03b_population <- function(df = NULL,
       cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
       
       # documented weight 2
-      documented_weight_data2 <- core_data |> 
+      documented_weight_data2 <- exam_table |> 
         dplyr::select({{ erecord_01_col }}, {{  eexam_02_col  }}) |> 
         dplyr::distinct() |> 
         dplyr::filter( 
@@ -636,7 +636,7 @@ pediatrics_03b_population <- function(df = NULL,
         dplyr::select({{ erecord_01_col }}, {{  emedications_03_col  }}) |> 
         dplyr::distinct() |> 
         dplyr::filter(!is.na({{ emedications_03_col }})
-        ) |> 
+                      ) |> 
         dplyr::distinct({{ erecord_01_col }}) |> 
         dplyr::pull({{ erecord_01_col }})
       
