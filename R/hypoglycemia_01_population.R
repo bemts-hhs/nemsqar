@@ -266,8 +266,6 @@ hypoglycemia_01_population <- function(df = NULL,
     # are distinct (i.e. one value or cell per patient)
     ###_____________________________________________________________________________
     
-    # progress update, these will be repeated throughout the script
-    
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),

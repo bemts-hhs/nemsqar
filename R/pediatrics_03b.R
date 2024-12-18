@@ -161,7 +161,7 @@ pediatrics_03b <- function(df = NULL,
   
   progress_bar_main <- cli::cli_progress_bar(
     "Running `pediatrics_03b()`",
-    total = 1,
+    total = 2,
     type = "tasks",
     clear = F,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
@@ -228,10 +228,19 @@ pediatrics_03b <- function(df = NULL,
       }
     }
   
+  # header
   cli::cli_h1("Pediatrics-03b")
   
+  # initiate the progress bar
+  progress_bar_main
+  
+  # header
   cli::cli_h2("Gathering Records for Pediatrics-03b")
   
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
+  
+  # gather the population of interest
   pediatrics03b_populations <- pediatrics_03b_population(patient_scene_table = patient_scene_table,
                                                          response_table = response_table,
                                                          exam_table = exam_table,
@@ -254,8 +263,8 @@ pediatrics_03b <- function(df = NULL,
   # header for calculations
   cli::cli_h2("Calculating Pediatrics-03b")
   
-  # initiate the progress bar
-  progress_bar_main
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
   
   # summary
   pediatrics.03b <- summarize_measure(data = pediatrics03b_populations$initial_population,
@@ -264,10 +273,10 @@ pediatrics_03b <- function(df = NULL,
                                  numerator_col = DOCUMENTED_WEIGHT,
                                  ...)
   
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
-  
   cli::cli_progress_done(id = progress_bar_main)
+  
+  # create a separator
+  cli::cli_text("\n")
   
   return(pediatrics.03b)
   
@@ -324,10 +333,18 @@ pediatrics_03b <- function(df = NULL,
       }
     }
   
-  cli::cli_h1("Pediatrics-03b")
-  
-  cli::cli_h2("Gathering Records for Pediatrics-03b")
-  
+    # header
+    cli::cli_h1("Pediatrics-03b")
+    
+    # initiate the progress bar
+    progress_bar_main
+    
+    # header
+    cli::cli_h2("Gathering Records for Pediatrics-03b")
+    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
+    
   pediatrics03b_populations <- pediatrics_03b_population(df = df,
                                                          erecord_01_col = {{ erecord_01_col }},
                                                          incident_date_col = {{ incident_date_col }},
@@ -347,23 +364,23 @@ pediatrics_03b <- function(df = NULL,
   # header for calculations
   cli::cli_h2("Calculating Pediatrics-03b")
   
-  # initiate the progress bar
-  progress_bar_main
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
   
   # summary
   pediatrics.03b <- summarize_measure(data = pediatrics03b_populations$initial_population,
-                                 measure_name = "Pediatrics-03b",
-                                 population_name = "Peds",
-                                 numerator_col = DOCUMENTED_WEIGHT,
-                                 ...)
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
+                                      measure_name = "Pediatrics-03b",
+                                      population_name = "Peds",
+                                      numerator_col = DOCUMENTED_WEIGHT,
+                                      ...)
   
   cli::cli_progress_done(id = progress_bar_main)
   
+  # create a separator
+  cli::cli_text("\n")
+  
   return(pediatrics.03b)
-    
+  
   }
   
 }

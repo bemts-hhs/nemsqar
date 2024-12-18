@@ -24,6 +24,10 @@
 #' utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
 #'
 #' @param df A data frame containing incident data with each row representing an observation.
+#' @param patient_scene_table A data.frame or tibble containing at least epatient and escene fields as a fact table.
+#' @param response_table A data.frame or tibble containing at least the eresponse fields needed for this measure's calculations.
+#' @param situation_table A data.frame or tibble containing at least the esituation fields needed for this measure's calculations.
+#' @param vitals_table A data.frame or tibble containing at least the evitals fields needed for this measure's calculations.
 #' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Unique Patient ID
 #' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Date or POSIXct Column name for the Incident Date field.
 #' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Date or POSIXct Column name for epatient.17.
@@ -42,10 +46,14 @@
 #' 
 #' @export
 #'
-respiratory_01 <- function(df,
+respiratory_01 <- function(df = NULL,
+                           patient_scene_table = NULL,
+                           response_table = NULL,
+                           situation_table = NULL,
+                           vitals_table = NULL,
                            erecord_01_col,
-                           incident_date_col,
-                           patient_DOB_col,
+                           incident_date_col = NULL,
+                           patient_DOB_col = NULL,
                            epatient_15_col,
                            epatient_16_col,
                            eresponse_05_col,
@@ -56,37 +64,63 @@ respiratory_01 <- function(df,
                            ...) {
   
   
-  # provide better error messaging if df is missing
-  if (missing(df)) {
-    cli::cli_abort(
-      c(
-        "No object of class {.cls data.frame} was passed to {.fn respiratory_01}.",
-        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn respiratory_01}."
-      )
-    )
+  if(
+    
+    any(
+      !is.null(patient_scene_table), 
+      !is.null(response_table), 
+      !is.null(situation_table),
+      !is.null(vitals_table)
+    ) 
+    
+    &&
+    
+    !is.null(df)
+    
+  ) {
+    
+    cli::cli_abort("{.fn respiratory_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all three of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all three table arguments.")
+    
   }
   
-  # Ensure df is a data frame or tibble
-  if (!is.data.frame(df) && !tibble::is_tibble(df)) {
-    cli::cli_abort(
-      c(
-        "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-        "i" = "The passed object is of class {.val {class(df)}}."
-      )
+  # ensure all *_col arguments are fulfilled
+  if(
+    
+    any(
+      
+      missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
+      missing(eresponse_05_col),
+      missing(esituation_11_col),
+      missing(esituation_12_col),
+      missing(evitals_12_col),
+      missing(evitals_14_col)
     )
+    
+  ) {
+    
+    cli::cli_abort("One or more of the *_col arguments is missing.  Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn respiratory_01}.")
+    
   }
   
-  # use quasiquotation on the date variables to check format
-  incident_date <- rlang::enquo(incident_date_col)
-  patient_DOB <- rlang::enquo(patient_DOB_col)
-  
-  if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-       !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-      (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
-       !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
-    cli::cli_abort(
-      "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+  if(
+    
+    all(
+      is.null(patient_scene_table), 
+      is.null(response_table), 
+      is.null(situation_table),
+      is.null(vitals_table)
     )
+    
+    && is.null(df)
+    
+  ) {
+    
+    cli::cli_abort("{.fn respiratory_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all six of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all six table arguments.")
+    
   }
   
   # options for the progress bar
@@ -99,212 +133,236 @@ respiratory_01 <- function(df,
     incomplete = cli::col_br_white("─")
   ))
   
-  # header
-  cli::cli_h1("Calculating Respiratory-01")
-  
   # initiate the progress bar process
-  progress_bar <- cli::cli_progress_bar(
+  progress_bar_main <- cli::cli_progress_bar(
     "Running `respiratory_01()`",
-    total = 12,
+    total = 2,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
   
-  progress_bar
+  # utilize applicable tables to analyze the data for the measure
+  if(
+    all(
+      !is.null(patient_scene_table), 
+      !is.null(response_table), 
+      !is.null(situation_table),
+      !is.null(vitals_table)
+    ) 
+    
+    && is.null(df)
+    
+  ) {
+    
+    # Ensure df is a data frame or tibble
+    if (
+      
+      any(!(is.data.frame(patient_scene_table) && tibble::is_tibble(patient_scene_table)) ||
+          
+          !(is.data.frame(response_table) && tibble::is_tibble(response_table)) || 
+          
+          !(is.data.frame(situation_table) && tibble::is_tibble(situation_table)) ||
+          
+          !(is.data.frame(vitals_table) && tibble::is_tibble(vitals_table))
+          
+      )
+      
+    ) {
+      
+      cli::cli_abort(
+        c(
+          "An object of class {.cls data.frame} or {.cls tibble} is required for each of the *_table arguments."
+        )
+      )
+    }
+    
+    # Only check the date columns if they are in fact passed
+    if (
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) {
+      # Use quasiquotation on the date variables to check format
+      incident_date <- rlang::enquo(incident_date_col)
+      patient_DOB <- rlang::enquo(patient_DOB_col)
+      
+      # Convert quosures to names and check the column classes
+      incident_date_name <- rlang::as_name(incident_date)
+      patient_DOB_name <- rlang::as_name(patient_DOB)
+      
+      if ((!lubridate::is.Date(patient_scene_table[[incident_date_name]]) &
+           !lubridate::is.POSIXct(patient_scene_table[[incident_date_name]])) ||
+          (!lubridate::is.Date(patient_scene_table[[patient_DOB_name]]) &
+           !lubridate::is.POSIXct(patient_scene_table[[patient_DOB_name]]))) {
+        
+        cli::cli_abort(
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class. Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or a similar class."
+        )
+      }
+    }
+    
+  # header
+  cli::cli_h1("Respiratory-01")
+  
+  # initiate the progress bar
+  progress_bar_main
+  
+  # header
+  cli::cli_h2("Gathering Records for Respiratory-01")
   
   # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
+  cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
   
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
+  # gather the population of interest
+  respiratory_01_populations <- respiratory_01_population(
+                           patient_scene_table = patient_scene_table,
+                           response_table = response_table,
+                           situation_table = situation_table,
+                           vitals_table = vitals_table,
+                           erecord_01_col = {{ erecord_01_col }},
+                           incident_date_col = {{ incident_date_col }},
+                           patient_DOB_col = {{ patient_DOB_col}},
+                           epatient_15_col = {{ epatient_15_col}},
+                           epatient_16_col = {{ epatient_16_col }},
+                           eresponse_05_col = {{ eresponse_05_col }},
+                           esituation_11_col = {{ esituation_11_col }},
+                           esituation_12_col = {{ esituation_12_col }},
+                           evitals_12_col = {{ evitals_12_col }},
+                           evitals_14_col = {{ evitals_14_col }}
+                           )
   
-  # 911 codes for eresponse.05
-  codes_911 <- "2205001|2205003|2205009"
-  
-  # get codes as a regex to filter primary impression fields
-  resp_codes <- "\\b(?:I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9)\\b"
-  
-  # minor values
-  minor_values <- "days|hours|minutes|months"
-  
-  ###_____________________________________________________________________________
-  # from the full dataframe with all variables
-  # create one fact table and several dimension tables
-  # to complete calculations and avoid issues due to row
-  # explosion
-  ###_____________________________________________________________________________
-  
-  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
-  
-  core_data <- df |> 
-    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, base::as.Date("1984-09-09")),
-                  PATIENT_DOB_MISSING = tidyr::replace_na({{ patient_DOB_col }}, base::as.Date("1982-05-19")),
-                  Unique_ID = stringr::str_c({{ erecord_01_col }},
-                                             INCIDENT_DATE_MISSING,
-                                             PATIENT_DOB_MISSING, 
-                                             sep = "-"
-                  ))
-  
-  # fact table
-  # the user should ensure that variables beyond those supplied for calculations
-  # are distinct (i.e. one value or cell per patient)
-  
-  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
-  
-  final_data <- core_data |> 
-    dplyr::select(-c({{ eresponse_05_col }},
-                     {{ esituation_11_col }},
-                     {{ esituation_12_col }},
-                     {{ evitals_12_col }},
-                     {{ evitals_14_col }}
-    )) |> 
-    dplyr::distinct(Unique_ID, .keep_all = T) |> 
-    dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
-      time1 = {{ incident_date_col }},
-      time2 = {{ patient_DOB_col }},
-      units = "days"
-    )) / 365,
+    # create a separator
+    cli::cli_text("\n")
     
-    # system age checks
-    system_age_adult = {{ epatient_15_col }} >= 18 & {{ epatient_16_col }} == "Years",
-    system_age_minor1 = {{ epatient_15_col }} < 18 & {{ epatient_16_col }} == "Years",
-    system_age_minor2 = !is.na({{ epatient_15_col }}) & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor = system_age_minor1 | system_age_minor2,
+    # header for calculations
+    cli::cli_h2("Calculating Respiratory-01")
     
-    # calculated age checks
-    calc_age_adult = patient_age_in_years_col >= 18,
-    calc_age_minor = patient_age_in_years_col < 18
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
+    
+    # summary
+    respiratory.01 <- results_summarize(total_population = respiratory_01_populations$initial_population,
+                                   adult_population = respiratory_01_populations$adults,
+                                   peds_population = respiratory_01_populations$peds,
+                                   measure_name = "Respiratory-01",
+                                   numerator_col = VITALS_CHECK,
+                                   ...)
+    
+
+    cli::cli_progress_done(id = progress_bar_main)
+    
+    # create a separator
+    cli::cli_text("\n")
+    
+    return(respiratory.01)
+  
+  } else if(
+    
+    all(
+      is.null(patient_scene_table), 
+      is.null(response_table), 
+      is.null(situation_table),
+      is.null(vitals_table)
     )
+    
+    && !is.null(df)
+    
+  ) 
   
-  ###_____________________________________________________________________________
-  ### dimension tables
-  ### each dimension table is turned into a vector of unique IDs
-  ### that are then utilized on the fact table to create distinct variables
-  ### that tell if the patient had the characteristic or not for final
-  ### calculations of the numerator and filtering
-  ###_____________________________________________________________________________
+  # utilize a dataframe to analyze the data for the measure analytics
   
-  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
-  
-  # respiratory distress
-  
-  respiratory_distress_data1 <- core_data |> 
-    dplyr::select(Unique_ID, {{ esituation_11_col }}) |> 
-    dplyr::filter(grepl(pattern = resp_codes, x = {{ esituation_11_col }}, ignore.case = T)) |> 
-    distinct(Unique_ID) |> 
-    pull(Unique_ID)
-  
-  respiratory_distress_data2 <- core_data |> 
-    dplyr::select(Unique_ID, {{ esituation_12_col }}) |> 
-    dplyr::filter(grepl(pattern = resp_codes, x = {{ esituation_12_col }}, ignore.case = T)) |> 
-    distinct(Unique_ID) |> 
-    pull(Unique_ID)
-  
-  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
-  
-  # vitals check
-  
-  vitals_check1 <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_12_col }}) |> 
-    dplyr::filter(
+  {
+    
+    # Ensure df is a data frame or tibble
+    if (!is.data.frame(df) && !tibble::is_tibble(df)) {
+      cli::cli_abort(
+        c(
+          "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
+          "i" = "The passed object is of class {.val {class(df)}}."
+        )
+      )
+    }
+    
+    # only check the date columns if they are in fact passed
+    if(
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) 
       
-      !is.na({{ evitals_12_col }})
+    {
       
-    ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
-  
-  vitals_check2 <- core_data |> 
-    dplyr::select(Unique_ID, {{ evitals_14_col }}) |> 
-    dplyr::filter(
+      # use quasiquotation on the date variables to check format
+      incident_date <- rlang::enquo(incident_date_col)
+      patient_DOB <- rlang::enquo(patient_DOB_col)
       
-      !is.na({{ evitals_14_col }})
-      
-    ) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
-  
-  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
-  
-  # 911 calls
-  
-  call_911_data <- core_data |> 
-    dplyr::select(Unique_ID, {{ eresponse_05_col }}) |> 
-    dplyr::distinct(Unique_ID, .keep_all = T) |> 
-    dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)) |> 
-    dplyr::distinct(Unique_ID) |> 
-    dplyr::pull(Unique_ID)
-  
-  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
-  
-  # assign variables to final data
-  
-  initial_population <- final_data |> 
-    dplyr::mutate(RESPIRATORY_DISTRESS1 = Unique_ID %in% respiratory_distress_data1,
-                  RESPIRATORY_DISTRESS2 = Unique_ID %in% respiratory_distress_data2,
-                  RESPIRATORY_DISTRESS = RESPIRATORY_DISTRESS1 | RESPIRATORY_DISTRESS2,
-                  CALL_911 = Unique_ID %in% call_911_data,
-                  VITALS_CHECK1 = Unique_ID %in% vitals_check1,
-                  VITALS_CHECK2 = Unique_ID %in% vitals_check2,
-                  VITALS_CHECK = VITALS_CHECK1 & VITALS_CHECK2
-    ) |> 
-    dplyr::filter(
-      
-      RESPIRATORY_DISTRESS,
-      
-      CALL_911
+      if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
+           !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
+          (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
+           !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
+        
+        cli::cli_abort(
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+        )
+        
+      }
+    }
+    
+    # header
+    cli::cli_h1("Respiratory-01")
+    
+    # initiate the progress bar
+    progress_bar_main
+    
+    # header
+    cli::cli_h2("Gathering Records for Respiratory-01")
+    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
+    
+    # gather the population of interest
+    respiratory_01_populations <- respiratory_01_population(
+      df = df,
+      erecord_01_col = {{ erecord_01_col }},
+      incident_date_col = {{ incident_date_col }},
+      patient_DOB_col = {{ patient_DOB_col}},
+      epatient_15_col = {{ epatient_15_col}},
+      epatient_16_col = {{ epatient_16_col }},
+      eresponse_05_col = {{ eresponse_05_col }},
+      esituation_11_col = {{ esituation_11_col }},
+      esituation_12_col = {{ esituation_12_col }},
+      evitals_12_col = {{ evitals_12_col }},
+      evitals_14_col = {{ evitals_14_col }}
     )
-  
-  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
-  
-  # Adult and Pediatric Populations
-  
-  # filter adult
-  adult_pop <- initial_population |>
-    dplyr::filter(system_age_adult | calc_age_adult)
-  
-  cli::cli_progress_update(set = 8, id = progress_bar, force = T)
-  
-  # filter peds
-  peds_pop <- initial_population |>
-    dplyr::filter(system_age_minor | calc_age_minor)
-  
-  # get the summary of results
-  
-  cli::cli_progress_update(set = 9, id = progress_bar, force = T)
-  
-  # all
-  total_population <- initial_population |>
-    summarize_measure(measure_name = "Respiratory-01",
-                      population_name = "All",
-                      VITALS_CHECK,
-                      ...)
-  
-  cli::cli_progress_update(set = 10, id = progress_bar, force = T)
-  
-  # adults
-  adult_population <- adult_pop |>
-    summarize_measure(measure_name = "Respiratory-01",
-                      population_name = "Adults",
-                      VITALS_CHECK,
-                      ...)
-  
-  cli::cli_progress_update(set = 11, id = progress_bar, force = T)
-  
-  # peds
-  peds_population <- peds_pop |>
-    summarize_measure(measure_name = "Respiratory-01",
-                      population_name = "Peds",
-                      VITALS_CHECK,
-                      ...)
-  
-  cli::cli_progress_update(set = 12, id = progress_bar, force = T)
-  
-  # summary
-  resp_01 <- dplyr::bind_rows(adult_population, peds_population, total_population)
-  
-  cli::cli_progress_done()
-  
-  resp_01
+    
+    # create a separator
+    cli::cli_text("\n")
+    
+    # header for calculations
+    cli::cli_h2("Calculating Respiratory-01")
+    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
+    
+    # summary
+    respiratory.01 <- results_summarize(total_population = respiratory_01_populations$initial_population,
+                                        adult_population = respiratory_01_populations$adults,
+                                        peds_population = respiratory_01_populations$peds,
+                                        measure_name = "Respiratory-01",
+                                        numerator_col = VITALS_CHECK,
+                                        ...)
+    
+    
+    cli::cli_progress_done(id = progress_bar_main)
+    
+    # create a separator
+    cli::cli_text("\n")
+    
+    return(respiratory.01)
+    
+  }
   
 }

@@ -1,6 +1,6 @@
 #' Respiratory-02 Calculation
 #'
-#' The `respiratory_02` function calculates metrics for pediatric and adult
+#' The `respiratory_02_population` function calculates metrics for pediatric and adult
 #' respiratory populations based on pre-defined criteria, such as low oxygen
 #' saturation and specific medication or procedure codes. It returns a summary
 #' table of the overall, pediatric, and adult populations, showing counts and
@@ -68,38 +68,109 @@ respiratory_02 <- function(df = NULL,
                            eprocedures_03_col,
                            ...) {
   
-  # provide better error messaging if df is missing
-  if (missing(df)) {
-    cli::cli_abort(
-      c(
-        "No object of class {.cls data.frame} was passed to {.fn respiratory_01}.",
-        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn respiratory_01}."
-      )
-    )
+  # ensure that not all table arguments AND the df argument are fulfilled
+  # user only passes df or all table arguments
+  if(
+    
+    any(
+      !is.null(patient_scene_table), 
+      !is.null(response_table), 
+      !is.null(situation_table),
+      !is.null(vitals_table), 
+      !is.null(medications_table),
+      !is.null(procedures_table)
+    ) 
+    
+    &&
+    
+    !is.null(df)
+    
+  ) {
+    
+    cli::cli_abort("{.fn hypoglycemia_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all three of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all three table arguments.")
+    
   }
   
-  # Ensure df is a data frame or tibble
-  if (!is.data.frame(df) && !tibble::is_tibble(df)) {
-    cli::cli_abort(
-      c(
-        "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-        "i" = "The passed object is of class {.val {class(df)}}."
-      )
+  # ensure that df or all table arguments are fulfilled
+  if(
+    
+    all(
+      is.null(patient_scene_table), 
+      is.null(response_table), 
+      is.null(situation_table),
+      is.null(vitals_table), 
+      is.null(medications_table),
+      is.null(procedures_table)
     )
+    
+    && is.null(df)
+  ) {
+    
+    cli::cli_abort("{.fn hypoglycemia_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all six of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all six table arguments.")
+    
   }
   
-  # use quasiquotation on the date variables to check format
-  incident_date <- rlang::enquo(incident_date_col)
-  patient_DOB <- rlang::enquo(patient_DOB_col)
-  
-  if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-       !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-      (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
-       !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
-    cli::cli_abort(
-      "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+  # ensure all *_col arguments are fulfilled
+  if(
+    
+    any(
+      
+      missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
+      missing(eresponse_05_col),
+      missing(esituation_11_col),
+      missing(esituation_12_col),
+      missing(evitals_18_col),
+      missing(evitals_23_cl),
+      missing(evitals_26_col),
+      missing(emedications_03_col),
+      missing(eprocedures_03_col)
     )
+    
+  ) {
+    
+    cli::cli_abort("One or more of the *_col arguments is missing.  Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn hypoglycemia_01_population}.")
+    
   }
+  
+  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
+  # 911 codes for eresponse.05
+  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
+  
+  # get codes as a regex to filter primary/secondary impression fields
+  hypoglycemia_treatment_codes <- "4832|4850|377980|376937|372326|237653|260258|309778|1795610|1795477|1794567|1165823|1165822|1165819|Glucagon|Glucose|Glucose Oral Gel|Glucose Injectable Solution|Glucose Chewable Tablet|Glucose 500 MG/ML Injectable Solution|Glucose 250 MG/ML Injectable Solution|Glucose 50 MG/ML Injectable Solution|250 ML Glucose 50 MG/ML Injection|500 ML Glucose 100 MG ML Injection|Glucose Injection|Glucose Oral Product|Glucose Oral Liquid Product|Glucose Injectable Product"
+  
+  # hypoglycemia procedures
+  
+  hypoglycemia_procedure_codes <- "710925007|225285007|Provision of food|Giving oral fluid"
+  
+  # code(s) for altered mental status
+  altered_mental_status <- "\\b(?:R41.82)\\b|Altered Mental Status, unspecified"
+  
+  # codes for diabetes via primary and secondary impression
+  
+  diabetes_codes <- "\\b(?:E13.64|E16.2)\\b|Other specified diabetes mellitus with hypoglycemia|Hypoglycemia, unspecified"
+  
+  # AVPU responses
+  
+  avpu_responses <- "Unresponsive|Verbal|Painful|3326003|3326005|3326007"
+  
+  # days, hours, minutes, months
+  
+  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
+  
+  year_values <- "2516009|years"
+  
+  day_values <- "days|2516001"
+  
+  hour_values <- "hours|2516003"
+  
+  minute_values <- "minutes|2516005"
+  
+  month_values <- "months|2516007"
   
   # options for the progress bar
   # a green dot for progress
@@ -111,25 +182,18 @@ respiratory_02 <- function(df = NULL,
     incomplete = cli::col_br_white("─")
   ))
   
-  # header
-  cli::cli_h1("Calculating Respiratory-02")
-  
   # initiate the progress bar process
-  progress_bar <- cli::cli_progress_bar(
-    "Running `respiratory_02()`",
-    total = 12,
+  progress_bar_population <- cli::cli_progress_bar(
+    "Running `hypoglycemia_01_population()`",
+    total = 17,
     type = "tasks",
     clear = F,
     format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
   
-  progress_bar
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
-  
+  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
   # 911 codes for eresponse.05
-  codes_911 <- "2205001|2205003|2205009"
+  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
   
   # minor values
   minor_values <- "days|hours|minutes|months"
@@ -146,17 +210,6 @@ respiratory_02 <- function(df = NULL,
   # to complete calculations and avoid issues due to row
   # explosion
   ###_____________________________________________________________________________
-  
-  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
-  
-  core_data <- df |> 
-    dplyr::mutate(INCIDENT_DATE_MISSING = tidyr::replace_na({{ incident_date_col }}, base::as.Date("1984-09-09")),
-                  PATIENT_DOB_MISSING = tidyr::replace_na({{ patient_DOB_col }}, base::as.Date("1982-05-19")),
-                  Unique_ID = stringr::str_c({{ erecord_01_col }},
-                                             INCIDENT_DATE_MISSING,
-                                             PATIENT_DOB_MISSING, 
-                                             sep = "-"
-                  ))
   
   # fact table
   # the user should ensure that variables beyond those supplied for calculations
@@ -273,7 +326,7 @@ respiratory_02 <- function(df = NULL,
   cli::cli_progress_update(set = 8, id = progress_bar, force = T)
   
   # get population 1 for respiratory-02, peds
-  respiratory_02_peds <- initial_population |>
+  respiratory_02_population_peds <- initial_population |>
     dplyr::filter(
       
       (system_age_minor & !system_age_minor_exclusion) | calc_age_minor
@@ -283,13 +336,13 @@ respiratory_02 <- function(df = NULL,
   cli::cli_progress_update(set = 9, id = progress_bar, force = T)
   
   # get population 2 for respiratory-02, adults
-  respiratory_02_adults <- initial_population |>
+  respiratory_02_population_adults <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
   
   cli::cli_progress_update(set = 10, id = progress_bar, force = T)
   
   # calculations for peds
-  peds_calculation <- respiratory_02_peds |>
+  peds_calculation <- respiratory_02_population_peds |>
     dplyr::summarize(
       measure = "Respiratory-02",
       pop = "Peds",
@@ -303,7 +356,7 @@ respiratory_02 <- function(df = NULL,
   cli::cli_progress_update(set = 11, id = progress_bar, force = T)
   
   # calculations for adults
-  adults_calculation <- respiratory_02_adults |>
+  adults_calculation <- respiratory_02_population_adults |>
     dplyr::summarize(
       measure = "Respiratory-02",
       pop = "Adults",

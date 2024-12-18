@@ -170,7 +170,7 @@ asthma_01 <- function(df = NULL,
   # initiate the progress bar process
   progress_bar_main <- cli::cli_progress_bar(
     "Running `asthma_01()`",
-    total = 1,
+    total = 2,
     type = "tasks",
     clear = F,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]\n"
@@ -236,8 +236,14 @@ asthma_01 <- function(df = NULL,
     # header
     cli::cli_h1("Asthma-01")
     
+    # initiate the progress bar
+    progress_bar_main
+
     # header
     cli::cli_h2("Gathering Records for Asthma-01")
+    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
     
     # gather the population of interest
     asthma_01_populations <- asthma_01_population(patient_scene_table = patient_scene_table,
@@ -261,8 +267,8 @@ asthma_01 <- function(df = NULL,
     # header for calculations
     cli::cli_h2("Calculating Asthma-01")
     
-    # initiate the progress bar
-    progress_bar_main
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
     
     # summary
     asthma.01 <- results_summarize(total_population = asthma_01_populations$initial_population,
@@ -272,10 +278,10 @@ asthma_01 <- function(df = NULL,
                                    numerator_col = beta_agonist_check,
                                    ...)
     
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
-    
     cli::cli_progress_done(id = progress_bar_main)
+    
+    # create a separator
+    cli::cli_text("\n")
     
     return(asthma.01)
     
@@ -324,8 +330,14 @@ asthma_01 <- function(df = NULL,
     # header
     cli::cli_h1("Asthma-01")
     
+    # initiate the progress bar
+    progress_bar_main
+    
     # header
     cli::cli_h2("Gathering Records for Asthma-01")
+    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
     
     # gather the population of interest
     asthma_01_populations <- asthma_01_population(df = df,
@@ -350,8 +362,8 @@ asthma_01 <- function(df = NULL,
     # header for calculations
     cli::cli_h2("Calculating Asthma-01")
     
-    # initiate the progress bar
-    progress_bar_main
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
     
     # summary
     asthma.01 <- results_summarize(total_population = asthma_01_populations$initial_population,
@@ -361,10 +373,10 @@ asthma_01 <- function(df = NULL,
                                    numerator_col = beta_agonist_check,
                                    ...)
     
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
-    
     cli::cli_progress_done(id = progress_bar_main)
+    
+    # create a separator
+    cli::cli_text("\n")
     
     return(asthma.01)
     

@@ -148,7 +148,7 @@ hypoglycemia_01 <- function(df = NULL,
   # initiate the progress bar process
   progress_bar_main <- cli::cli_progress_bar(
     "Running `hypoglycemia_01()`",
-    total = 1,
+    total = 2,
     type = "tasks",
     clear = F,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
@@ -243,8 +243,14 @@ hypoglycemia_01 <- function(df = NULL,
     # header
     cli::cli_h1("Hypoglycemia-01")
     
+    # initiate the progress bar
+    progress_bar_main
+    
     # header
     cli::cli_h2("Gathering Records for Hypoglycemia-01")
+    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
     
     # gather the population of interest
     hypoglycemia_01_populations <- hypoglycemia_01_population(
@@ -275,9 +281,8 @@ hypoglycemia_01 <- function(df = NULL,
     # header for calculations
     cli::cli_h2("Calculating Hypoglycemia-01")
     
-    # initiate the progress bar
-    progress_bar_main
-    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
 
     # summary
     hypoglycemia.01 <- results_summarize(total_population = hypoglycemia_01_populations$initial_population,
@@ -286,9 +291,6 @@ hypoglycemia_01 <- function(df = NULL,
                                    measure_name = "Hypoglycemia-01",
                                    numerator_col = TREATMENT,
                                    ...)
-    
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
 
     cli::cli_progress_done(id = progress_bar_main)
     
@@ -346,11 +348,17 @@ hypoglycemia_01 <- function(df = NULL,
   
   
   # header
-  cli::cli_h1("Calculating Hypoglycemia-01")
+  cli::cli_h1("Hypoglycemia-01")
   
-    # header
-    cli::cli_h2("Gathering Records for Hypoglycemia-01")
-    
+  # initiate the progress bar
+  progress_bar_main
+  
+  # header
+  cli::cli_h2("Gathering Records for Hypoglycemia-01")
+  
+  # progress update, these will be repeated throughout the script
+  cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
+  
     # gather the population of interest
     hypoglycemia_01_populations <- hypoglycemia_01_population(
                                                   df = df,
@@ -375,22 +383,21 @@ hypoglycemia_01 <- function(df = NULL,
     # header for calculations
     cli::cli_h2("Calculating Hypoglycemia-01")
     
-    # initiate the progress bar
-    progress_bar_main
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
     
     # summary
     hypoglycemia.01 <- results_summarize(total_population = hypoglycemia_01_populations$initial_population,
-                                   adult_population = hypoglycemia_01_populations$adults,
-                                   peds_population = hypoglycemia_01_populations$peds,
-                                   measure_name = "Hypoglycemia-01",
-                                   numerator_col = TREATMENT,
-                                   ...)
+                                         adult_population = hypoglycemia_01_populations$adults,
+                                         peds_population = hypoglycemia_01_populations$peds,
+                                         measure_name = "Hypoglycemia-01",
+                                         numerator_col = TREATMENT,
+                                         ...)
     
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
-
     cli::cli_progress_done(id = progress_bar_main)
     
-    return(hypoglycemia.01)
-  
+    # create a separator
+    cli::cli_text("\n")
+    
+    return(hypoglycemia.01)  
 }
