@@ -113,7 +113,6 @@ trauma_14_population <- function(df = NULL,
       !is.null(response_table), 
       !is.null(situation_table),
       !is.null(vitals_table), 
-      !is.null(medications_table),
       !is.null(procedures_table),
       !is.null(exam_table),
       !is.null(injury_table),
@@ -134,7 +133,6 @@ trauma_14_population <- function(df = NULL,
       is.null(response_table), 
       is.null(situation_table),
       is.null(vitals_table), 
-      is.null(medications_table),
       is.null(procedures_table),
       is.null(exam_table),
       is.null(injury_table),
@@ -262,7 +260,7 @@ trauma_14_population <- function(df = NULL,
   cause_of_injury_values <- "(?:V20|V21|V22|V23|V24|V25|V26|V27|V28|V29|V30|V31|V32|V33|V34|V35|V36|V37|V38|V39|V80|V86)|Motorcycle rider injured in collision with pedestrian or animal|Motorcycle rider injured in collision with pedal cycle|Motorcycle rider injured in collision with two- or three- wheeled motor vehicle|Motorcycle rider injured in collision with car, pick-up truck or van|Motorcycle rider injured in collision with heavy transport vehicle or bus|Motorcycle rider injured in collision with railway train or railway vehicle|Motorcycle rider injured in collision with other nonmotor vehicle|Motorcycle rider injured in collision with fixed or stationary object|Motorcycle rider injured in noncollision transport accident|Motorcycle rider injured in other and unspecified transport accidents|Occupant of three-wheeled motor vehicle injured in collision with pedestrian or animal|Occupant of three-wheeled motor vehicle injured in collision with pedal cycle|Occupant of three-wheeled motor vehicle injured in collision with two- or three- wheeled motor vehicle|Occupant of three-wheeled motor vehicle injured in collision with car, pick-up truck or van|Occupant of three-wheeled motor vehicle injured in collision with heavy transport vehicle or bus|Occupant of three-wheeled motor vehicle injured in collision with railway train or railway vehicle|Occupant of three-wheeled motor vehicle injured in collision with other nonmotor vehicle|Occupant of three-wheeled motor vehicle injured in collision with fixed or stationary object|Occupant of three-wheeled motor vehicle injured in noncollision transport accident|Occupant of three-wheeled motor vehicle injured in other and unspecified transport accidents|Animal-rider or occupant of animal drawn vehicle injured in transport accident|Occupant of special all-terrain or other off-road motor vehicle, injured in transport accident"
   
   # hospital capability values 
-  trauma_alert_values_65 <- "4224003|Yes-Adult Trauma|4224017|Yes-Trauma \\(General\\)"
+  trauma_alert_values_65 <- "4224003|Yes-Adult Trauma|4224017|Yes-Trauma"
   
   # hospital capability values
   trauma_alert_values_10_64 <- "4224003|Yes-Adult Trauma|4224017|Yes-Trauma \\(General\\)|4224011|Yes-Pediatric Trauma"
@@ -287,7 +285,6 @@ trauma_14_population <- function(df = NULL,
       !is.null(response_table), 
       !is.null(situation_table),
       !is.null(vitals_table), 
-      !is.null(medications_table),
       !is.null(procedures_table),
       !is.null(exam_table),
       !is.null(injury_table),
@@ -307,8 +304,6 @@ trauma_14_population <- function(df = NULL,
         !(is.data.frame(situation_table) && tibble::is_tibble(situation_table)) ||
         
         !(is.data.frame(vitals_table) && tibble::is_tibble(vitals_table)) ||
-        
-        !(is.data.frame(medications_table) && tibble::is_tibble(medications_table)) ||
         
         !(is.data.frame(procedures_table) && tibble::is_tibble(procedures_table)) ||
         
@@ -980,7 +975,7 @@ trauma_14_population <- function(df = NULL,
           AIRWAY_MANAGEMENT | 
           PULSE_OXIMETRY | 
           HR_SBP_10_65_PLUS | 
-          TRAUMA_TRIAGE_1_2_10_64 | 
+          TRAUMA_TRIAGE_1_2_65 | 
           EXTREMITIES | 
           NEURO | 
           TOURNIQUET |
@@ -1136,7 +1131,6 @@ trauma_14_population <- function(df = NULL,
       is.null(response_table), 
       is.null(situation_table),
       is.null(vitals_table), 
-      is.null(medications_table),
       is.null(procedures_table),
       is.null(exam_table),
       is.null(injury_table),
@@ -1862,7 +1856,7 @@ trauma_14_population <- function(df = NULL,
           AIRWAY_MANAGEMENT | 
           PULSE_OXIMETRY | 
           HR_SBP_10_65_PLUS | 
-          TRAUMA_TRIAGE_1_2_10_64 | 
+          TRAUMA_TRIAGE_1_2_65 | 
           EXTREMITIES | 
           NEURO | 
           TOURNIQUET |

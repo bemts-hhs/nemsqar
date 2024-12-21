@@ -20,7 +20,6 @@
 #' @param patient_scene_table A data.frame or tibble containing only epatient and escene fields as a fact table.
 #' @param response_table A data.frame or tibble containing only the eresponse fields needed for this measure's calculations.
 #' @param situation_table A data.frame or tibble containing only the esituation fields needed for this measure's calculations.
-#' @param medications_table A data.frame or tibble containing only the emedications fields needed for this measure's calculations.
 #' @param vitals_table A data.frame or tibble containing only the evitals fields needed for this measure's calculations.
 #' @param exam_table A data.frame or tibble containing only the eexam fields needed for this measure's calculations.
 #' @param procedures_table A data.frame or tibble containing only the eprocedures fields needed for this measure's calculations.
@@ -66,7 +65,6 @@ trauma_04_population <- function(df = NULL,
                       patient_scene_table = NULL,
                       response_table = NULL,
                       situation_table = NULL,
-                      medications_table = NULL,
                       vitals_table = NULL,
                       exam_table = NULL,
                       procedures_table = NULL,
@@ -108,7 +106,6 @@ trauma_04_population <- function(df = NULL,
       !is.null(response_table), 
       !is.null(situation_table),
       !is.null(vitals_table), 
-      !is.null(medications_table),
       !is.null(procedures_table),
       !is.null(exam_table),
       !is.null(injury_table),
@@ -129,7 +126,6 @@ trauma_04_population <- function(df = NULL,
       is.null(response_table), 
       is.null(situation_table),
       is.null(vitals_table), 
-      is.null(medications_table),
       is.null(procedures_table),
       is.null(exam_table),
       is.null(injury_table),
@@ -278,7 +274,6 @@ trauma_04_population <- function(df = NULL,
       !is.null(response_table), 
       !is.null(situation_table),
       !is.null(vitals_table), 
-      !is.null(medications_table),
       !is.null(procedures_table),
       !is.null(exam_table),
       !is.null(injury_table),
@@ -298,8 +293,6 @@ trauma_04_population <- function(df = NULL,
         !(is.data.frame(situation_table) && tibble::is_tibble(situation_table)) ||
         
         !(is.data.frame(vitals_table) && tibble::is_tibble(vitals_table)) ||
-        
-        !(is.data.frame(medications_table) && tibble::is_tibble(medications_table)) ||
         
         !(is.data.frame(procedures_table) && tibble::is_tibble(procedures_table)) ||
         
@@ -1037,7 +1030,7 @@ trauma_04_population <- function(df = NULL,
                "(SBP + (Pt. Age * 2)) >= 70 ages < 10 yrs",
                "Heart rate greater than SBP ages >= 10 yrs",
                "Met trauma triage criteria 1-2 ages 65+ yrs",
-               "Met trauma triage criteria 1-2 ages 10-65 yrs",
+               "Met trauma triage criteria 1-2 ages 10-64 yrs",
                "Met trauma triage criteria 1-2 ages < 10 yrs",
                "Motor function abnormal/weakness or sensation absent",
                "Hemiplegia left/right, weakness left/right",
@@ -1108,7 +1101,6 @@ trauma_04_population <- function(df = NULL,
       is.null(response_table), 
       is.null(situation_table),
       is.null(vitals_table), 
-      is.null(medications_table),
       is.null(procedures_table),
       is.null(exam_table),
       is.null(injury_table),
@@ -1819,7 +1811,7 @@ trauma_04_population <- function(df = NULL,
           AIRWAY_MANAGEMENT | 
           PULSE_OXIMETRY | 
           HR_SBP_10_65_PLUS | 
-          TRAUMA_TRIAGE_1_2_10_64 | 
+          TRAUMA_TRIAGE_1_2_65 | 
           EXTREMITIES | 
           NEURO | 
           TOURNIQUET |
@@ -1902,7 +1894,7 @@ trauma_04_population <- function(df = NULL,
                "(SBP + (Pt. Age * 2)) >= 70 ages < 10 yrs",
                "Heart rate greater than SBP ages >= 10 yrs",
                "Met trauma triage criteria 1-2 ages 65+ yrs",
-               "Met trauma triage criteria 1-2 ages 10-65 yrs",
+               "Met trauma triage criteria 1-2 ages 10-64 yrs",
                "Met trauma triage criteria 1-2 ages < 10 yrs",
                "Motor function abnormal/weakness or sensation absent",
                "Hemiplegia left/right, weakness left/right",

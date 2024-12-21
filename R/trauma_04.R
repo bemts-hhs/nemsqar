@@ -20,7 +20,6 @@
 #' @param patient_scene_table A data.frame or tibble containing only epatient and escene fields as a fact table.
 #' @param response_table A data.frame or tibble containing only the eresponse fields needed for this measure's calculations.
 #' @param situation_table A data.frame or tibble containing only the esituation fields needed for this measure's calculations.
-#' @param medications_table A data.frame or tibble containing only the emedications fields needed for this measure's calculations.
 #' @param vitals_table A data.frame or tibble containing only the evitals fields needed for this measure's calculations.
 #' @param exam_table A data.frame or tibble containing only the eexam fields needed for this measure's calculations.
 #' @param procedures_table A data.frame or tibble containing only the eprocedures fields needed for this measure's calculations.
@@ -75,7 +74,6 @@ trauma_04 <- function(df = NULL,
                       patient_scene_table = NULL,
                       response_table = NULL,
                       situation_table = NULL,
-                      medications_table = NULL,
                       vitals_table = NULL,
                       exam_table = NULL,
                       procedures_table = NULL,
@@ -118,7 +116,6 @@ trauma_04 <- function(df = NULL,
       !is.null(response_table), 
       !is.null(situation_table),
       !is.null(vitals_table), 
-      !is.null(medications_table),
       !is.null(procedures_table),
       !is.null(exam_table),
       !is.null(injury_table),
@@ -139,7 +136,6 @@ trauma_04 <- function(df = NULL,
       is.null(response_table), 
       is.null(situation_table),
       is.null(vitals_table), 
-      is.null(medications_table),
       is.null(procedures_table),
       is.null(exam_table),
       is.null(injury_table),
@@ -216,7 +212,6 @@ trauma_04 <- function(df = NULL,
       !is.null(response_table), 
       !is.null(situation_table),
       !is.null(vitals_table), 
-      !is.null(medications_table),
       !is.null(procedures_table),
       !is.null(exam_table),
       !is.null(injury_table),
@@ -236,8 +231,6 @@ trauma_04 <- function(df = NULL,
         !(is.data.frame(situation_table) && tibble::is_tibble(situation_table)) ||
         
         !(is.data.frame(vitals_table) && tibble::is_tibble(vitals_table)) ||
-        
-        !(is.data.frame(medications_table) && tibble::is_tibble(medications_table)) ||
         
         !(is.data.frame(procedures_table) && tibble::is_tibble(procedures_table)) ||
         
@@ -301,7 +294,6 @@ trauma_04 <- function(df = NULL,
       patient_scene_table = patient_scene_table,
       response_table = response_table,
       situation_table = situation_table,
-      medications_table = medications_table,
       vitals_table = vitals_table,
       exam_table = exam_table,
       procedures_table = procedures_table,
@@ -355,7 +347,7 @@ trauma_04 <- function(df = NULL,
     cli::cli_progress_update(set = 3, id = progress_bar_main, force = T)
     
     # 10 to 64 population
-    population_10_65 <- trauma_04_populations$population_10_64 |>
+    population_10_64 <- trauma_04_populations$population_10_64 |>
       summarize_measure(
         measure_name = "Trauma-04",
         population_name = "10-64 yrs",
@@ -377,7 +369,7 @@ trauma_04 <- function(df = NULL,
     cli::cli_progress_update(set = 5, id = progress_bar_main, force = T)
     
     # summary
-    trauma.04 <- dplyr::bind_rows(population_65, population_10_65, population_10)
+    trauma.04 <- dplyr::bind_rows(population_65, population_10_64, population_10)
     
     cli::cli_progress_done()
     
@@ -393,7 +385,6 @@ trauma_04 <- function(df = NULL,
       is.null(response_table), 
       is.null(situation_table),
       is.null(vitals_table), 
-      is.null(medications_table),
       is.null(procedures_table),
       is.null(exam_table),
       is.null(injury_table),
@@ -500,7 +491,7 @@ trauma_04 <- function(df = NULL,
     cli::cli_progress_update(set = 3, id = progress_bar_main, force = T)
     
     # 10 to 64 population
-    population_10_65 <- trauma_04_populations$population_10_65 |>
+    population_10_64 <- trauma_04_populations$population_10_64 |>
       summarize_measure(
         measure_name = "Trauma-04",
         population_name = "10-64 yrs",
@@ -522,7 +513,7 @@ trauma_04 <- function(df = NULL,
     cli::cli_progress_update(set = 5, id = progress_bar_main, force = T)
     
     # summary
-    trauma.04 <- dplyr::bind_rows(population_65, population_10_65, population_10)
+    trauma.04 <- dplyr::bind_rows(population_65, population_10_64, population_10)
     
     cli::cli_progress_done()
     
