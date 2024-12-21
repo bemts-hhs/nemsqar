@@ -13,8 +13,8 @@ hypoglycemia_01_population(
   medications_table = NULL,
   procedures_table = NULL,
   erecord_01_col,
-  incident_date_col,
-  patient_DOB_col,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
   epatient_15_col,
   epatient_16_col,
   eresponse_05_col,
@@ -45,10 +45,10 @@ hypoglycemia_01_population(
 \item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column representing the EMS record unique identifier.}
 
 \item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that
-contains the incident date.}
+contains the incident date. This defaults to \code{NULL} as it is optional in case not available due to PII restrictions.}
 
 \item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that
-contains the patient's date of birth.}
+contains the patient's date of birth. This defaults to \code{NULL} as it is optional in case not available due to PII restrictions.}
 
 \item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the patient's numeric age agnostic of unit.}
 
@@ -83,8 +83,45 @@ contains all eMedications.03 values as a single comma-separated list.}
 }
 }
 \description{
-Hypoglycemia-01 Populations
+The \code{hypoglycemia_01_population} ilters data down to the target populations for Hypoglycemia-01, and categorizes
+records to identify needed information for the calculations.
 }
+\details{
+Identifies key categories related to diabetes/hypoglycemia incidents in an EMS dataset,
+specifically focusing on cases where 911 was called for diabetes/hypoglycemia distress,
+certain medications were administered, and a weight is taken. This function segments the data
+into pediatric populations, computing the proportion of cases that have a documented weight.
+}
+\section{Data Assumptions}{
+
+The \code{df} argument and each \verb{*_table} argument should be a dataframe or tibble, with the following assumptions:
+\itemize{
+\item The data are already loaded.
+\item The function will calculate an age in years using the incident date and the patient DOB.
+\item The incident date and the patient DOB are \code{Date} or \code{POSIXct} data types.
+\item Any missing values are encoded as \code{NA}, not the "Not Known"/"Not Recorded" text values
+or NEMSIS "not value" codes commonly reported by ePCR vendors.
+\item The vitals field may be the full list of values for each field or the lowest estimated
+eVitals.18 (must include the "Low Blood Glucose" flag) and lowest estimated patient AVPU
+in eVitals.2.
+\item The function assumes that the primary and secondary impression fields (eSituation.11
+and eSituation.12) have the ICD-10 codes in them. The test description can be present,
+too, for reference.
+\item The function assumes that the eResponse.05 fields have the NEMSIS codes in them,
+although text can be also be present for reference.
+\item The function assumes that the eMedications_03 and eProcedures_03 fields contain
+all medications/procedures and that it contains the text description of the
+generic name of the medication. The codes can be included for reference, but will
+not be checked. ALL medications and procedures are in one field per record, as either
+a list column or a comma-separated list.
+\item The eSituation.12 (Secondary Impression) field is best as a list column of the secondary
+impressions. No joining is done.
+\item Any joins to get vitals, etc., will need to be done outside the function.
+\item Grouping by specific attributes (e.g., region) can be performed inside this function by
+utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
+}
+}
+
 \author{
 Nicolas Foss, Ed.D., MS
 }

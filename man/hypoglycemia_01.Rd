@@ -13,8 +13,8 @@ hypoglycemia_01(
   medications_table = NULL,
   procedures_table = NULL,
   erecord_01_col,
-  incident_date_col,
-  patient_DOB_col,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
   epatient_15_col,
   epatient_16_col,
   eresponse_05_col,
@@ -45,9 +45,11 @@ hypoglycemia_01(
 
 \item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the unique record identifier.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> POSIXct or Date column representing the date of the incident.}
+\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that
+contains the incident date. This defaults to \code{NULL} as it is optional in case not available due to PII restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> POSIXct or Date column representing the patient's date of birth.}
+\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that
+contains the patient's date of birth. This defaults to \code{NULL} as it is optional in case not available due to PII restrictions.}
 
 \item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the patient's numeric age agnostic of unit.}
 

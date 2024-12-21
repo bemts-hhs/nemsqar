@@ -11,8 +11,8 @@ asthma_01(
   situation_table = NULL,
   medications_table = NULL,
   erecord_01_col,
-  incident_date_col,
-  patient_DOB_col,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
   epatient_15_col,
   epatient_16_col,
   eresponse_05_col,
@@ -84,9 +84,7 @@ received beta-agonist treatment.
 
 
 This function assumes that:
-Data are already loaded. The data needs to be a data.frame or tibble where each row is
-one observation (patient) and each is a feature (field) or distinct datasets
-that can be references as unique columns.
+Data are already loaded. The data need to be a data.frame or tibble.
 
 Age in years will be calculated using the patient date of birth and incident
 date. These fields must have valid Date or POSIXct data types.

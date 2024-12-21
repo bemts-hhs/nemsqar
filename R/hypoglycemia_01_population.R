@@ -242,7 +242,7 @@ hypoglycemia_01_population <- function(df = NULL,
           
           !(is.data.frame(medications_table) && tibble::is_tibble(medications_table)) ||
           
-          !(is.data.frame(procedures_table) && tibble::is_tibble(procedures_table)) ||
+          !(is.data.frame(procedures_table) && tibble::is_tibble(procedures_table))
           
       )
       

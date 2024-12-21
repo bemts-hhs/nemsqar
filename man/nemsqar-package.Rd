@@ -23,7 +23,6 @@ Useful links:
 
 Authors:
 \itemize{
-  \item Peter Geissert \email{PETER.GEISSERT@oha.oregon.gov}
   \item Alyssa Green \email{awhim@nemsqa.org}
   \item Samuel Kordik \email{samuel.kordik@utsouthwestern.edu} (\href{https://orcid.org/0000-0003-4230-1154}{ORCID})
 }
