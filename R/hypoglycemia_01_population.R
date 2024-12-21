@@ -112,7 +112,7 @@ hypoglycemia_01_population <- function(df = NULL,
     
   ) {
     
-    cli::cli_abort("{.fn hypoglycemia_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all three of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all three table arguments.")
+    cli::cli_abort("{.fn hypoglycemia_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments.")
     
   }
   
@@ -131,7 +131,7 @@ hypoglycemia_01_population <- function(df = NULL,
     && is.null(df)
   ) {
     
-    cli::cli_abort("{.fn hypoglycemia_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all six of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all six table arguments.")
+    cli::cli_abort("{.fn hypoglycemia_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments.")
     
   }
   
@@ -173,11 +173,11 @@ hypoglycemia_01_population <- function(df = NULL,
   hypoglycemia_procedure_codes <- "710925007|225285007|Provision of food|Giving oral fluid"
   
   # code(s) for altered mental status
-  altered_mental_status <- "\\b(?:R41.82)\\b|Altered Mental Status, unspecified"
+  altered_mental_status <- "R41.82|Altered Mental Status, unspecified"
   
   # codes for diabetes via primary and secondary impression
   
-  diabetes_codes <- "\\b(?:E13.64|E16.2)\\b|Other specified diabetes mellitus with hypoglycemia|Hypoglycemia, unspecified"
+  diabetes_codes <- "(?:E13.64|E16.2)|Other specified diabetes mellitus with hypoglycemia|Hypoglycemia, unspecified"
   
   # AVPU responses
   
@@ -213,7 +213,7 @@ hypoglycemia_01_population <- function(df = NULL,
     total = 17,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
   
   # utilize applicable tables to analyze the data for the measure
@@ -228,6 +228,33 @@ hypoglycemia_01_population <- function(df = NULL,
     ) && is.null(df)
     
   ) {
+    
+    # Ensure df is a data frame or tibble
+    if (
+      
+      any(!(is.data.frame(patient_scene_table) && tibble::is_tibble(patient_scene_table)) ||
+          
+          !(is.data.frame(response_table) && tibble::is_tibble(response_table)) || 
+          
+          !(is.data.frame(situation_table) && tibble::is_tibble(situation_table)) ||
+          
+          !(is.data.frame(vitals_table) && tibble::is_tibble(vitals_table)) ||
+          
+          !(is.data.frame(medications_table) && tibble::is_tibble(medications_table)) ||
+          
+          !(is.data.frame(procedures_table) && tibble::is_tibble(procedures_table)) ||
+          
+      )
+      
+    ) {
+      
+      cli::cli_abort(
+        c(
+          "An object of class {.cls data.frame} or {.cls tibble} is required for each of the *_table arguments."
+        )
+      )
+    }
+    
     
     # Only check the date columns if they are in fact passed
     if (

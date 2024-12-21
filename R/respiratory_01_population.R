@@ -40,7 +40,6 @@
 #' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column name for secondary impression codes related to respiratory distress.
 #' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> Column name for the first vital sign measurement.
 #' @param evitals_14_col <['tidy-select'][dplyr_tidy_select]> Column name for the second vital sign measurement.
-#' @param ... arguments passed to `dplyr::summarize()`.
 #'
 #' @return Returns a data frame summarizing the proportion of cases with complete vital sign data, divided by population
 #' 
@@ -62,8 +61,8 @@ respiratory_01_population <- function(df = NULL,
                                       esituation_11_col,
                                       esituation_12_col,
                                       evitals_12_col,
-                                      evitals_14_col,
-                                      ...) {
+                                      evitals_14_col
+                                      ) {
   
   
   if(
@@ -81,7 +80,7 @@ respiratory_01_population <- function(df = NULL,
     
   ) {
     
-    cli::cli_abort("{.fn respiratory_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all three of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all three table arguments.")
+    cli::cli_abort("{.fn respiratory_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments.")
     
   }
   
@@ -121,7 +120,7 @@ respiratory_01_population <- function(df = NULL,
     
   ) {
     
-    cli::cli_abort("{.fn respiratory_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all six of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all six table arguments.")
+    cli::cli_abort("{.fn respiratory_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments.")
     
   }
   
@@ -141,7 +140,7 @@ respiratory_01_population <- function(df = NULL,
     total = 13,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
   
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
@@ -150,7 +149,7 @@ respiratory_01_population <- function(df = NULL,
   codes_911 <- "2205001|2205003|2205009"
   
   # get codes as a regex to filter primary impression fields
-  resp_codes <- "\\b(?:I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9)\\b"
+  resp_codes <- "(?:I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9)"
   
   # days, hours, minutes, months
   

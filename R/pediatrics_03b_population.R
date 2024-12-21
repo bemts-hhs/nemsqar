@@ -46,7 +46,6 @@
 #' @param eexam_02_col <['tidy-select'][dplyr_tidy_select]> Another column for weight documentation, if applicable.
 #' @param emedications_03_col <['tidy-select'][dplyr_tidy_select]> Column indicating medication administration.
 #' @param emedications_04_col <['tidy-select'][dplyr_tidy_select]> Column listing medications administered.
-#' @param ... Additional parameters for the `dplyr::summarize` output.
 #'
 #' @return
 #' #' A list that contains the following:
@@ -72,8 +71,8 @@ pediatrics_03b_population <- function(df = NULL,
                            eexam_01_col,
                            eexam_02_col,
                            emedications_03_col,
-                           emedications_04_col,
-                           ...) {
+                           emedications_04_col
+                           ) {
   
   if(
     
@@ -90,7 +89,7 @@ pediatrics_03b_population <- function(df = NULL,
     
   ) {
     
-    cli::cli_abort("{.fn pediatrics_03b_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all three of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all three table arguments.")
+    cli::cli_abort("{.fn pediatrics_03b_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments.")
     
   }
   
@@ -130,7 +129,7 @@ pediatrics_03b_population <- function(df = NULL,
     
   ) {
     
-    cli::cli_abort("{.fn pediatrics_03b_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all six of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all six table arguments.")
+    cli::cli_abort("{.fn pediatrics_03b_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments.")
     
   }
   

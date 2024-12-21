@@ -111,7 +111,7 @@ asthma_01_population <- function(df = NULL,
     
   ) {
     
-    cli::cli_abort("{.fn asthma_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all four table arguments.")
+    cli::cli_abort("{.fn asthma_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments.")
     
   }
 
@@ -130,7 +130,7 @@ asthma_01_population <- function(df = NULL,
     
   ) {
     
-    cli::cli_abort("{.fn asthma_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all three table arguments.")
+    cli::cli_abort("{.fn asthma_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments.")
     
   }
   
@@ -163,7 +163,7 @@ asthma_01_population <- function(df = NULL,
   beta_agonist <- "435|7688|214199|237159|487066|1154062|1163444|1649559|1165719|2108209|2108252|albuterol|ipratropium|levalbuterol|metaproterenol"
   
   # codes for asthma or acute bronchospasm
-  asthma_codes <- "\\b(?:J45|J98.01)\\b|^asthma.*|acute bronchospasm"
+  asthma_codes <- "(?:J45|J98.01)|^asthma.*|acute bronchospasm"
   
   year_values <- "2516009|years"
   
