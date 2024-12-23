@@ -34,7 +34,7 @@
 #' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> The column representing the 911 response type.
 #' @param eresponse_10_col <['tidy-select'][dplyr_tidy_select]> Column name containing scene delay information.
 #' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> The column for patient transport disposition.
-#' @param edisposition_23_col <['tidy-select'][dplyr_tidy_select]> Column name containing pre-hospital trauma alert information.
+#' @param edisposition_24_col <['tidy-select'][dplyr_tidy_select]> Column name containing pre-hospital trauma alert information.
 #' @param evitals_06_col <['tidy-select'][dplyr_tidy_select]> Column name containing systolic blood pressure (SBP) values.
 #' @param evitals_10_col <['tidy-select'][dplyr_tidy_select]> Column name containing heart rate values.
 #' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> Column name containing pulse oximetry values.
@@ -88,7 +88,7 @@ trauma_14 <- function(df = NULL,
                       eresponse_05_col,
                       eresponse_10_col,
                       transport_disposition_col,
-                      edisposition_23_col,
+                      edisposition_24_col,
                       evitals_06_col,
                       evitals_10_col,
                       evitals_12_col,
@@ -161,7 +161,7 @@ trauma_14 <- function(df = NULL,
       missing(eresponse_05_col),
       missing(eresponse_10_col),
       missing(transport_disposition_col),
-      missing(edisposition_23_col),
+      missing(edisposition_24_col),
       missing(evitals_06_col),
       missing(evitals_10_col),
       missing(evitals_12_col),
@@ -308,7 +308,7 @@ trauma_14 <- function(df = NULL,
       eresponse_05_col = {{ eresponse_05_col }},
       eresponse_10_col = {{ eresponse_10_col }},
       transport_disposition_col = {{ transport_disposition_col }},
-      edisposition_23_col = {{ edisposition_23_col }},
+      edisposition_24_col = {{ edisposition_24_col }},
       evitals_06_col = {{ evitals_06_col }},
       evitals_10_col = {{ evitals_10_col }},
       evitals_12_col = {{ evitals_12_col }},
@@ -452,7 +452,7 @@ trauma_14 <- function(df = NULL,
       eresponse_05_col = {{ eresponse_05_col }},
       eresponse_10_col = {{ eresponse_10_col }},
       transport_disposition_col = {{ transport_disposition_col }},
-      edisposition_23_col = {{ edisposition_23_col }},
+      edisposition_24_col = {{ edisposition_24_col }},
       evitals_06_col = {{ evitals_06_col }},
       evitals_10_col = {{ evitals_10_col }},
       evitals_12_col = {{ evitals_12_col }},

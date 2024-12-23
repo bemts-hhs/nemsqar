@@ -32,24 +32,24 @@
 #' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> The column for patient age unit (e.g., "Years", "Months").
 #' @param esituation_02_col <['tidy-select'][dplyr_tidy_select]> The column containing information on the presence of injury.
 #' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> The column representing the 911 response type.
-#' @param eresponse_10_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing scene delay information.
+#' @param eresponse_10_col <['tidy-select'][dplyr_tidy_select]> Column name containing scene delay information.
 #' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> The column for patient transport disposition.
-#' @param edisposition_23_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing pre-hospital trauma alert information.
-#' @param evitals_06_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing systolic blood pressure (SBP) values.
-#' @param evitals_10_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing heart rate values.
-#' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing pulse oximetry values.
-#' @param evitals_14_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing capillary refill information.
-#' @param evitals_15_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing respiratory effort values.
-#' @param evitals_21_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing Glasgow Coma Scale (GCS) Motor values.
-#' @param eexam_16_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing extremities assessment details.
-#' @param eexam_20_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing neurological assessment details.
-#' @param eexam_23_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing lung assessment details.
-#' @param eexam_25_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing chest assessment details.
-#' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing airway management or tourniquet usage details.
-#' @param einjury_01_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing injury cause details.
-#' @param einjury_03_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing trauma triage steps 1 and 2 information.
-#' @param einjury_04_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing trauma triage steps 3 and 4 information.
-#' @param einjury_09_col <['tidy-select'][dplyr_tidy_select]> Column name in `df` containing fall height information.
+#' @param edisposition_24_col <['tidy-select'][dplyr_tidy_select]> Column name containing pre-hospital trauma alert information.
+#' @param evitals_06_col <['tidy-select'][dplyr_tidy_select]> Column name containing systolic blood pressure (SBP) values.
+#' @param evitals_10_col <['tidy-select'][dplyr_tidy_select]> Column name containing heart rate values.
+#' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> Column name containing pulse oximetry values.
+#' @param evitals_14_col <['tidy-select'][dplyr_tidy_select]> Column name containing capillary refill information.
+#' @param evitals_15_col <['tidy-select'][dplyr_tidy_select]> Column name containing respiratory effort values.
+#' @param evitals_21_col <['tidy-select'][dplyr_tidy_select]> Column name containing Glasgow Coma Scale (GCS) Motor values.
+#' @param eexam_16_col <['tidy-select'][dplyr_tidy_select]> Column name containing extremities assessment details.
+#' @param eexam_20_col <['tidy-select'][dplyr_tidy_select]> Column name containing neurological assessment details.
+#' @param eexam_23_col <['tidy-select'][dplyr_tidy_select]> Column name containing lung assessment details.
+#' @param eexam_25_col <['tidy-select'][dplyr_tidy_select]> Column name containing chest assessment details.
+#' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column name containing airway management or tourniquet usage details.
+#' @param einjury_01_col <['tidy-select'][dplyr_tidy_select]> Column name containing injury cause details.
+#' @param einjury_03_col <['tidy-select'][dplyr_tidy_select]> Column name containing trauma triage steps 1 and 2 information.
+#' @param einjury_04_col <['tidy-select'][dplyr_tidy_select]> Column name containing trauma triage steps 3 and 4 information.
+#' @param einjury_09_col <['tidy-select'][dplyr_tidy_select]> Column name containing fall height information.
 #' @param ... Additional arguments passed to helper functions for further customization.
 #'
 #' @section Features: 
@@ -86,7 +86,7 @@ trauma_14_population <- function(df = NULL,
                       eresponse_05_col,
                       eresponse_10_col,
                       transport_disposition_col,
-                      edisposition_23_col,
+                      edisposition_24_col,
                       evitals_06_col,
                       evitals_10_col,
                       evitals_12_col,
@@ -159,7 +159,7 @@ trauma_14_population <- function(df = NULL,
       missing(eresponse_05_col),
       missing(eresponse_10_col),
       missing(transport_disposition_col),
-      missing(edisposition_23_col),
+      missing(edisposition_24_col),
       missing(evitals_06_col),
       missing(evitals_10_col),
       missing(evitals_12_col),
@@ -795,11 +795,11 @@ trauma_14_population <- function(df = NULL,
   
   # trauma alert >= 65 years
   trauma_alert_65 <- disposition_table |> 
-    dplyr::select({{ erecord_01_col }}, {{ edisposition_23_col }}) |> 
+    dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |> 
     dplyr::distinct() |> 
     dplyr::filter( 
       
-      grepl(pattern = trauma_alert_values_65, x = {{ edisposition_23_col }})
+      grepl(pattern = trauma_alert_values_65, x = {{ edisposition_24_col }})
       
     ) |> 
     dplyr::distinct({{ erecord_01_col }}) |> 
@@ -809,11 +809,11 @@ trauma_14_population <- function(df = NULL,
   
   # trauma alert > 10 and < 65 years
   trauma_alert_10_64 <- disposition_table |> 
-    dplyr::select({{ erecord_01_col }}, {{ edisposition_23_col }}) |> 
+    dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |> 
     dplyr::distinct() |> 
     dplyr::filter( 
       
-      grepl(pattern = trauma_alert_values_10_64, x = {{ edisposition_23_col }})
+      grepl(pattern = trauma_alert_values_10_64, x = {{ edisposition_24_col }})
       
     ) |> 
     dplyr::distinct({{ erecord_01_col }}) |> 
@@ -1207,7 +1207,7 @@ trauma_14_population <- function(df = NULL,
       {{ eresponse_05_col }},
       {{ eresponse_10_col }},
       {{ transport_disposition_col }},
-      {{ edisposition_23_col }},
+      {{ edisposition_24_col }},
       {{ evitals_06_col }},
       {{ evitals_10_col }},
       {{ evitals_12_col }},
@@ -1263,7 +1263,7 @@ trauma_14_population <- function(df = NULL,
         {{ eresponse_05_col }},
         {{ eresponse_10_col }},
         {{ transport_disposition_col }},
-        {{ edisposition_23_col }},
+        {{ edisposition_24_col }},
         {{ evitals_06_col }},
         {{ evitals_10_col }},
         {{ evitals_12_col }},
@@ -1678,10 +1678,10 @@ trauma_14_population <- function(df = NULL,
   
   # trauma alert >= 65 years
   trauma_alert_65 <- df |> 
-    dplyr::select({{ erecord_01_col }}, {{ edisposition_23_col }}) |> 
+    dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |> 
     dplyr::filter( 
       
-      grepl(pattern = trauma_alert_values_65, x = {{ edisposition_23_col }})
+      grepl(pattern = trauma_alert_values_65, x = {{ edisposition_24_col }})
       
     ) |> 
     dplyr::distinct({{ erecord_01_col }}) |> 
@@ -1691,10 +1691,10 @@ trauma_14_population <- function(df = NULL,
   
   # trauma alert > 10 and < 65 years
   trauma_alert_10_64 <- df |> 
-    dplyr::select({{ erecord_01_col }}, {{ edisposition_23_col }}) |> 
+    dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |> 
     dplyr::filter( 
       
-      grepl(pattern = trauma_alert_values_10_64, x = {{ edisposition_23_col }})
+      grepl(pattern = trauma_alert_values_10_64, x = {{ edisposition_24_col }})
       
     ) |> 
     dplyr::distinct({{ erecord_01_col }}) |> 

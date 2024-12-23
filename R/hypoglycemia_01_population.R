@@ -1,6 +1,6 @@
 #' Hypoglycemia-01 Populations
 #'
-#' The `hypoglycemia_01_population` ilters data down to the target populations for Hypoglycemia-01, and categorizes 
+#' The `hypoglycemia_01_population` filters data down to the target populations for Hypoglycemia-01, and categorizes 
 #' records to identify needed information for the calculations.
 #'
 #' Identifies key categories related to diabetes/hypoglycemia incidents in an EMS dataset,
