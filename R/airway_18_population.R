@@ -20,6 +20,9 @@
 #' For the eprocedure, eairway, and evitals fields, all responses entered can be
 #' included in `df` or the `*_table` arguments.
 #' 
+#' The date time fields from eprocedures.01, eairway.02, and evitals.01 must be date time
+#' objects or the function will fail.
+#' 
 #' @section Practical Tips:
 #' 
 #' Ensure data are pre-processed, with missing values coded as `NA`, before passing
@@ -185,7 +188,7 @@ airway_18_population <- function(df = NULL,
   # Initialize the progress bar
   progress_bar_population <- cli::cli_progress_bar(
     "Running `airway_18_population()`",
-    total = 14,
+    total = 16,
     type = "tasks",
     clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
@@ -381,21 +384,21 @@ airway_18_population <- function(df = NULL,
   # returning `NA` values within eprocedures_01_col.  This is expected as 
   # in some cases a date/time is not entered, which is a data entry issue but expected
   # we will not get any of the expected warning output flagging these cases
-  last_procedures_data <- suppressWarnings(
+  
+  # last procedures 1
+  last_procedures_data1 <- suppressWarnings(
     
     procedures_table |> 
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}, {{ eprocedures_02_col }}, {{ eprocedures_03_col }}, {{ eprocedures_05_col }}, {{ eprocedures_06_col }}) |> 
+    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}, {{ eprocedures_05_col }}, {{ eprocedures_06_col }}) |> 
     dplyr::distinct() |> 
-    dplyr::filter(grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T)) |> 
+    dplyr::filter(
+      
+      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T)
+      
+      ) |> 
     dplyr::filter( 
       
       {{ eprocedures_05_col }} == max({{ eprocedures_05_col }}, na.rm = T),
-      
-      grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T),
-      
-      !is.na({{ eprocedures_01_col }}), 
-      
-      !grepl(pattern = yes_code, x = {{ eprocedures_02_col }}, ignore.case = T),
       
       .by = {{ erecord_01_col }}
       
@@ -406,6 +409,88 @@ airway_18_population <- function(df = NULL,
   )
   
   cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
+  
+  # last procedures 2
+  last_procedures_data2 <- suppressWarnings(
+    
+    procedures_table |> 
+    dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}, {{ eprocedures_02_col }}) |> 
+    dplyr::distinct() |> 
+    dplyr::filter( 
+      
+      !is.na({{ eprocedures_01_col }}), 
+      
+      !grepl(pattern = yes_code, x = {{ eprocedures_02_col }}, ignore.case = T)
+      
+    ) |> 
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
+    
+  )
+  
+  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+  
+  # get last successful invasive procedures
+  last_procedures_data <- intersect(last_procedures_data1, last_procedures_data2)
+  
+  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+  
+  # numerator 1
+  numerator_data1 <- suppressWarnings(
+    airway_table |> 
+    dplyr::select({{ erecord_01_col }}, {{ eairway_02_col}}, {{ eairway_04_col }}
+                  ) |> 
+    dplyr::distinct() |> 
+    dplyr::left_join(procedures_table |> dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}) |> dplyr::distinct(),
+                     by = rlang::as_name(rlang::enquo(erecord_01_col))
+                     ) |> 
+    dplyr::distinct() |> 
+    dplyr::filter( 
+      
+      grepl(pattern = waveform_etco2, x = {{ eairway_04_col }}, ignore.case = T),
+      
+      !is.na({{ eairway_02_col }}),
+      
+      {{ eairway_02_col }} > {{ eprocedures_01_col }} 
+      
+    ) |> 
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
+
+    )
+  
+  # numerator 2
+  numerator_data2 <- suppressWarnings(
+    procedures_table |> 
+    dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}) |> 
+    dplyr::distinct() |> 
+    dplyr::left_join(vitals_table |> dplyr::select({{ erecord_01_col }}, {{ evitals_01_col }}, {{ evitals_16_col }}) |> dplyr::distinct(),
+                     by = rlang::as_name(rlang::enquo(erecord_01_col))
+                     ) |> 
+    dplyr::distinct() |> 
+    dplyr::filter( 
+      
+     ( {{ evitals_01_col }} > {{ eprocedures_01_col }} ) & 
+       
+       {{ evitals_16_col }} >= 5
+        
+    ) |> 
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
+
+    )
+  
+  # numerator 3
+  numerator_data3 <- vitals_table |> 
+    dplyr::select({{ erecord_01_col }}, {{ evitals_16_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter( 
+      
+        {{ evitals_16_col }} >= 5
+      
+    ) |> 
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # numerator calculation part 1
   waveform_ETCO2_data <- airway_table |> 
@@ -421,7 +506,7 @@ airway_18_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}) |> 
     dplyr::pull({{ erecord_01_col }})
   
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
   
   # numerator calculation part 2
   airway_procedure_time_data <- suppressWarnings(
@@ -450,7 +535,7 @@ airway_18_population <- function(df = NULL,
   
     )
   
-  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
   
   # numerator calculation part 3
   vitals_procedures_time_etco2_data <- suppressWarnings(
@@ -477,7 +562,7 @@ airway_18_population <- function(df = NULL,
     
   )
   
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
   
   # assign variables to final data
   computing_population <- final_data |> 
@@ -488,10 +573,13 @@ airway_18_population <- function(df = NULL,
                   WAVEFORM_ETCO2 = {{ erecord_01_col }} %in% waveform_ETCO2_data,
                   AIRWAY_PROCEDURE_TIME = {{ erecord_01_col }} %in% airway_procedure_time_data,
                   VITALS_PROCEDURE_TIME_ETCO2 = {{ erecord_01_col }} %in% vitals_procedures_time_etco2_data,
-                  NUMERATOR = WAVEFORM_ETCO2 & AIRWAY_PROCEDURE_TIME & VITALS_PROCEDURE_TIME_ETCO2
+                  NUMERATOR1 = {{ erecord_01_col }} %in% numerator_data1,
+                  NUMERATOR2 = {{ erecord_01_col }} %in% numerator_data2,
+                  NUMERATOR3 = {{ erecord_01_col }} %in% numerator_data3,
+                  NUMERATOR = NUMERATOR1 & NUMERATOR2
                   ) 
   
-  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 12, id = progress_bar_population, force = T)
   
   # get the initial population
   initial_population <- computing_population |> 
@@ -503,7 +591,7 @@ airway_18_population <- function(df = NULL,
       
     )
   
-  cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 13, id = progress_bar_population, force = T)
   
   # Adult and Pediatric Populations
   
@@ -520,7 +608,7 @@ airway_18_population <- function(df = NULL,
                   LAST_SUCCESSFUL_PROCEDURE
                   )
   
-  cli::cli_progress_update(set = 12, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
   
   # filter peds
   peds_pop <- initial_population |>
@@ -541,7 +629,7 @@ airway_18_population <- function(df = NULL,
                     LAST_SUCCESSFUL_PROCEDURE
                     )
     
-    cli::cli_progress_update(set = 12, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
     
     # filter peds
     peds_pop <- initial_population |>
@@ -553,14 +641,18 @@ airway_18_population <- function(df = NULL,
   
   # summarize
   
-  cli::cli_progress_update(set = 13, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 15, id = progress_bar_population, force = T)
   
   # summarize counts for populations filtered
     filter_counts <- tibble::tibble(
       filter = c("Invasive airway procedures", 
-                 "Successful procedures", 
+                 "Successful invasive airway procedures", 
                  "911 calls",
                  "Last successful invasive airway procedures",
+                 "Waveform ETCO2 used",
+                 "Airway device placement confirmed after airway procedure",
+                 "Vitals taken after airway procedure where waveform ETCO2 >= 5",
+                 "Waveform ETCO2 >= 5",
                  "Last successful invasive airway procedures with waveform ETCO2",
                  "Adults denominator",
                  "Peds denominator", 
@@ -571,6 +663,10 @@ airway_18_population <- function(df = NULL,
         sum(computing_population$SUCCESSFUL_PROCEDURE, na.rm = T),
         sum(computing_population$CALL_911, na.rm = T),
         sum(computing_population$LAST_SUCCESSFUL_PROCEDURE, na.rm = T),
+        sum(computing_population$WAVEFORM_ETCO2, na.rm = T),
+        sum(computing_population$AIRWAY_PROCEDURE_TIME, na.rm = T),
+        sum(computing_population$VITALS_PROCEDURE_TIME_ETCO2, na.rm = T),
+        sum(computing_population$NUMERATOR3),
         sum(computing_population$NUMERATOR, na.rm = T),
         nrow(adult_pop),
         nrow(peds_pop),
@@ -580,7 +676,7 @@ airway_18_population <- function(df = NULL,
     
     # get the populations of interest
     
-    cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 16, id = progress_bar_population, force = T)
     
     # gather data into a list for multi-use output
     airway.18.population <- list(
@@ -802,22 +898,21 @@ airway_18_population <- function(df = NULL,
   # returning `NA` values within eprocedures_01_col.  This is expected as 
   # in some cases a date/time is not entered, which is a data entry issue but expected
   # we will not get any of the expected warning output flagging these cases
-  last_procedures_data <- suppressWarnings(
+  
+  # last procedures 1
+  last_procedures_data1 <- suppressWarnings(
     
     df |> 
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}, {{ eprocedures_02_col }}, {{ eprocedures_03_col }}, {{ eprocedures_05_col }}, {{ eprocedures_06_col }}) |> 
+    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}, {{ eprocedures_05_col }}, {{ eprocedures_06_col }}) |> 
     dplyr::distinct() |> 
+    dplyr::filter(
+      
+      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T)
+      
+      ) |> 
     dplyr::filter( 
       
-      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
-      
       {{ eprocedures_05_col }} == max({{ eprocedures_05_col }}, na.rm = T),
-      
-      grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T),
-      
-      !is.na({{ eprocedures_01_col }}), 
-      
-      !grepl(pattern = yes_code, x = {{ eprocedures_02_col }}, ignore.case = T),
       
       .by = {{ erecord_01_col }}
       
@@ -828,6 +923,80 @@ airway_18_population <- function(df = NULL,
   )
   
   cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
+  
+  # last procedures 2
+  last_procedures_data2 <- suppressWarnings(
+    
+    df |> 
+    dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}, {{ eprocedures_02_col }}) |> 
+    dplyr::distinct() |> 
+    dplyr::filter( 
+      
+      !is.na({{ eprocedures_01_col }}), 
+      
+      !grepl(pattern = yes_code, x = {{ eprocedures_02_col }}, ignore.case = T)
+      
+    ) |> 
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
+    
+  )
+  
+  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+  
+  # get last successful invasive procedures
+  last_procedures_data <- intersect(last_procedures_data1, last_procedures_data2)
+  
+  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+  
+  # numerator 1
+  numerator_data1 <- suppressWarnings(
+    df |> 
+    dplyr::select({{ erecord_01_col }}, {{ eairway_02_col}}, {{ eairway_04_col }}, {{ eprocedures_01_col }}
+                  ) |> 
+    dplyr::distinct() |> 
+    dplyr::filter( 
+      
+      grepl(pattern = waveform_etco2, x = {{ eairway_04_col }}, ignore.case = T),
+      
+      !is.na({{ eairway_02_col }}),
+      
+      {{ eairway_02_col }} > {{ eprocedures_01_col }} 
+      
+    ) |> 
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
+
+    )
+  
+  # numerator 2
+  numerator_data2 <- suppressWarnings(
+    df |> 
+    dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}, {{ evitals_01_col }}, {{ evitals_16_col }}) |> 
+    dplyr::distinct() |> 
+    dplyr::filter( 
+      
+    (  {{ evitals_01_col }} > {{ eprocedures_01_col }} ) & 
+      
+      {{ evitals_16_col }} >= 5
+        
+    ) |> 
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
+
+    )
+  
+  # numerator 3
+  numerator_data3 <- df |> 
+    dplyr::select({{ erecord_01_col }}, {{ evitals_16_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter( 
+      
+        {{ evitals_16_col }} >= 5
+      
+    ) |> 
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # numerator calculation part 1
   waveform_ETCO2_data <- df |> 
@@ -843,10 +1012,12 @@ airway_18_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}) |> 
     dplyr::pull({{ erecord_01_col }})
   
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
   
   # numerator calculation part 2
-  airway_procedure_time_data <- df |> 
+  airway_procedure_time_data <- suppressWarnings(
+    
+    df |> 
     dplyr::select({{ erecord_01_col }}, {{ eairway_02_col }}, {{ eprocedures_01_col }}
     ) |> 
     dplyr::distinct() |> 
@@ -861,10 +1032,13 @@ airway_18_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}) |> 
     dplyr::pull({{ erecord_01_col }})
   
-  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+    )
+  
+  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
   
   # numerator calculation part 3
-  vitals_procedures_time_etco2_data <- df |> 
+  vitals_procedures_time_etco2_data <- suppressWarnings(
+    df |> 
     dplyr::select({{ erecord_01_col }}, {{ evitals_01_col }}, {{ evitals_16_col }}, {{ eprocedures_01_col }}
     ) |> 
     dplyr::distinct() |> 
@@ -877,8 +1051,10 @@ airway_18_population <- function(df = NULL,
     ) |> 
     dplyr::distinct({{ erecord_01_col }}) |> 
     dplyr::pull({{ erecord_01_col }})
+    
+  )
   
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
   
   # assign variables to final data
   computing_population <- final_data |> 
@@ -889,10 +1065,13 @@ airway_18_population <- function(df = NULL,
                   WAVEFORM_ETCO2 = {{ erecord_01_col }} %in% waveform_ETCO2_data,
                   AIRWAY_PROCEDURE_TIME = {{ erecord_01_col }} %in% airway_procedure_time_data,
                   VITALS_PROCEDURE_TIME_ETCO2 = {{ erecord_01_col }} %in% vitals_procedures_time_etco2_data,
-                  NUMERATOR = WAVEFORM_ETCO2 & AIRWAY_PROCEDURE_TIME & VITALS_PROCEDURE_TIME_ETCO2
+                  NUMERATOR1 = {{ erecord_01_col }} %in% numerator_data1,
+                  NUMERATOR2 = {{ erecord_01_col }} %in% numerator_data2,
+                  NUMERATOR3 = {{ erecord_01_col }} %in% numerator_data3,
+                  NUMERATOR = NUMERATOR1 & NUMERATOR2
                   ) 
   
-  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 12, id = progress_bar_population, force = T)
   
   # get the initial population
   initial_population <- computing_population |> 
@@ -904,7 +1083,7 @@ airway_18_population <- function(df = NULL,
       
     )
   
-  cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 13, id = progress_bar_population, force = T)
   
   # Adult and Pediatric Populations
   
@@ -917,13 +1096,17 @@ airway_18_population <- function(df = NULL,
     
   # filter adult
   adult_pop <- initial_population |>
-    dplyr::filter(system_age_adult | calc_age_adult)
+    dplyr::filter(system_age_adult | calc_age_adult,
+                  LAST_SUCCESSFUL_PROCEDURE
+                  )
   
-  cli::cli_progress_update(set = 12, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
   
   # filter peds
   peds_pop <- initial_population |>
-    dplyr::filter(system_age_minor | calc_age_minor)
+    dplyr::filter(system_age_minor | calc_age_minor,
+                  LAST_SUCCESSFUL_PROCEDURE
+                  )
   
   } else if(
     
@@ -934,19 +1117,23 @@ airway_18_population <- function(df = NULL,
     
     # filter adult
     adult_pop <- initial_population |>
-      dplyr::filter(system_age_adult)
+      dplyr::filter(system_age_adult,
+                    LAST_SUCCESSFUL_PROCEDURE
+                    )
     
-    cli::cli_progress_update(set = 12, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
     
     # filter peds
     peds_pop <- initial_population |>
-      dplyr::filter(system_age_minor)
+      dplyr::filter(system_age_minor,
+                    LAST_SUCCESSFUL_PROCEDURE
+                    )
     
   }
   
   # summarize
   
-  cli::cli_progress_update(set = 13, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 15, id = progress_bar_population, force = T)
   
   # summarize counts for populations filtered
     filter_counts <- tibble::tibble(
@@ -954,6 +1141,10 @@ airway_18_population <- function(df = NULL,
                  "Successful invasive airway procedures", 
                  "911 calls",
                  "Last successful invasive airway procedures",
+                 "Waveform ETCO2 used",
+                 "Airway device placement confirmed after airway procedure",
+                 "Vitals taken after airway procedurewith waveform ETCO2 >= 5",
+                 "Waveform ETCO2 >= 5",
                  "Last successful invasive airway procedures with waveform ETCO2",
                  "Adults denominator",
                  "Peds denominator", 
@@ -964,6 +1155,10 @@ airway_18_population <- function(df = NULL,
         sum(computing_population$SUCCESSFUL_PROCEDURE, na.rm = T),
         sum(computing_population$CALL_911, na.rm = T),
         sum(computing_population$LAST_SUCCESSFUL_PROCEDURE, na.rm = T),
+        sum(computing_population$WAVEFORM_ETCO2, na.rm = T),
+        sum(computing_population$AIRWAY_PROCEDURE_TIME, na.rm = T),
+        sum(computing_population$VITALS_PROCEDURE_TIME_ETCO2, na.rm = T),
+        sum(computing_population$NUMERATOR3),
         sum(computing_population$NUMERATOR, na.rm = T),
         nrow(adult_pop),
         nrow(peds_pop),
@@ -973,7 +1168,7 @@ airway_18_population <- function(df = NULL,
     
     # get the populations of interest
     
-    cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 16, id = progress_bar_population, force = T)
     
     # gather data into a list for multi-use output
     airway.18.population <- list(

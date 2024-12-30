@@ -169,7 +169,7 @@ airway_18 <- function(df = NULL,
   # initiate the progress bar process
   progress_bar_main <- cli::cli_progress_bar(
     "Running `airway_18()`",
-    total = 3,
+    total = 4,
     type = "tasks",
     clear = F,
     format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
@@ -300,7 +300,7 @@ airway_18 <- function(df = NULL,
                         NUMERATOR,
                         ...)
     
-    cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 3, id = progress_bar_main, force = T)
     
     # peds
     peds_population <- airway_18_populations$peds |>
@@ -308,6 +308,11 @@ airway_18 <- function(df = NULL,
                         population_name = "Peds",
                         NUMERATOR,
                         ...) 
+    
+    cli::cli_progress_update(set = 4, id = progress_bar_main, force = T)
+    
+    # union
+    airway.18 <- bind_rows(adult_population, peds_population)
     
     cli::cli_progress_done(id = progress_bar_main)
     
@@ -427,7 +432,7 @@ airway_18 <- function(df = NULL,
                         NUMERATOR,
                         ...)
     
-    cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 3, id = progress_bar_main, force = T)
     
     # peds
     peds_population <- airway_18_populations$peds |>
@@ -435,6 +440,11 @@ airway_18 <- function(df = NULL,
                         population_name = "Peds",
                         NUMERATOR,
                         ...) 
+    
+    cli::cli_progress_update(set = 4, id = progress_bar_main, force = T)
+    
+    # union
+    airway.18 <- bind_rows(adult_population, peds_population)
     
     cli::cli_progress_done(id = progress_bar_main)
     
