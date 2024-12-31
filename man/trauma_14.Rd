@@ -23,7 +23,7 @@ trauma_14(
   eresponse_05_col,
   eresponse_10_col,
   transport_disposition_col,
-  edisposition_23_col,
+  edisposition_24_col,
   evitals_06_col,
   evitals_10_col,
   evitals_12_col,
@@ -79,7 +79,7 @@ trauma_14(
 
 \item{transport_disposition_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for patient transport disposition.}
 
-\item{edisposition_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing pre-hospital trauma alert information.}
+\item{edisposition_24_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing pre-hospital trauma alert information.}
 
 \item{evitals_06_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing systolic blood pressure (SBP) values.}
 

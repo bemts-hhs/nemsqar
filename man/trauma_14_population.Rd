@@ -23,7 +23,7 @@ trauma_14_population(
   eresponse_05_col,
   eresponse_10_col,
   transport_disposition_col,
-  edisposition_23_col,
+  edisposition_24_col,
   evitals_06_col,
   evitals_10_col,
   evitals_12_col,
@@ -75,41 +75,41 @@ trauma_14_population(
 
 \item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column representing the 911 response type.}
 
-\item{eresponse_10_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing scene delay information.}
+\item{eresponse_10_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing scene delay information.}
 
 \item{transport_disposition_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for patient transport disposition.}
 
-\item{edisposition_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing pre-hospital trauma alert information.}
+\item{edisposition_24_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing pre-hospital trauma alert information.}
 
-\item{evitals_06_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing systolic blood pressure (SBP) values.}
+\item{evitals_06_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing systolic blood pressure (SBP) values.}
 
-\item{evitals_10_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing heart rate values.}
+\item{evitals_10_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing heart rate values.}
 
-\item{evitals_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing pulse oximetry values.}
+\item{evitals_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing pulse oximetry values.}
 
-\item{evitals_14_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing capillary refill information.}
+\item{evitals_14_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing capillary refill information.}
 
-\item{evitals_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing respiratory effort values.}
+\item{evitals_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing respiratory effort values.}
 
-\item{evitals_21_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing Glasgow Coma Scale (GCS) Motor values.}
+\item{evitals_21_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing Glasgow Coma Scale (GCS) Motor values.}
 
-\item{eexam_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing extremities assessment details.}
+\item{eexam_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing extremities assessment details.}
 
-\item{eexam_20_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing neurological assessment details.}
+\item{eexam_20_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing neurological assessment details.}
 
-\item{eexam_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing lung assessment details.}
+\item{eexam_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing lung assessment details.}
 
-\item{eexam_25_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing chest assessment details.}
+\item{eexam_25_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing chest assessment details.}
 
-\item{eprocedures_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing airway management or tourniquet usage details.}
+\item{eprocedures_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing airway management or tourniquet usage details.}
 
-\item{einjury_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing injury cause details.}
+\item{einjury_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing injury cause details.}
 
-\item{einjury_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing trauma triage steps 1 and 2 information.}
+\item{einjury_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing trauma triage steps 1 and 2 information.}
 
-\item{einjury_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing trauma triage steps 3 and 4 information.}
+\item{einjury_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing trauma triage steps 3 and 4 information.}
 
-\item{einjury_09_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} containing fall height information.}
+\item{einjury_09_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing fall height information.}
 
 \item{...}{Additional arguments passed to helper functions for further customization.}
 }

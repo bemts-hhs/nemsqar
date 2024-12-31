@@ -83,7 +83,7 @@ contains all eMedications.03 values as a single comma-separated list.}
 }
 }
 \description{
-The \code{hypoglycemia_01_population} ilters data down to the target populations for Hypoglycemia-01, and categorizes
+The \code{hypoglycemia_01_population} filters data down to the target populations for Hypoglycemia-01, and categorizes
 records to identify needed information for the calculations.
 }
 \details{

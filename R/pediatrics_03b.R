@@ -90,6 +90,17 @@ pediatrics_03b <- function(df = NULL,
                            emedications_04_col,
                            ...) {
 
+  if(all(
+    !is.null(patient_scene_table), 
+    !is.null(response_table), 
+    !is.null(exam_table),
+    !is.null(medications_table)
+  )
+  
+  && is.null(df)
+  
+  ) {
+    
   # header
   cli::cli_h1("Pediatrics-03b")
   
@@ -131,7 +142,7 @@ pediatrics_03b <- function(df = NULL,
   
   return(pediatrics.03b)
   
-  }else if(
+  } else if(
     
     all(
       is.null(patient_scene_table), 
