@@ -88,91 +88,6 @@ hypoglycemia_01 <- function(df = NULL,
                             eprocedures_03_col,
                             ...) {
   
-  if(
-    
-    any(
-      !is.null(patient_scene_table), 
-      !is.null(response_table), 
-      !is.null(situation_table),
-      !is.null(vitals_table), 
-      !is.null(medications_table),
-      !is.null(procedures_table)
-    ) 
-    
-    &&
-    
-    !is.null(df)
-    
-  ) {
-    
-    cli::cli_abort("{.fn hypoglycemia_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments.")
-    
-  }
-  
-  # ensure all *_col arguments are fulfilled
-  if(
-    
-    any(
-      
-      missing(erecord_01_col),
-      missing(incident_date_col),
-      missing(patient_DOB_col),
-      missing(epatient_15_col),
-      missing(epatient_16_col),
-      missing(eresponse_05_col),
-      missing(esituation_11_col),
-      missing(esituation_12_col),
-      missing(evitals_18_col),
-      missing(evitals_23_cl),
-      missing(evitals_26_col),
-      missing(emedications_03_col),
-      missing(eprocedures_03_col)
-    )
-    
-  ) {
-    
-    cli::cli_abort("One or more of the *_col arguments is missing.  Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn hypoglycemia_01}.")
-    
-  }
-  
-  # options for the progress bar
-  # a green dot for progress
-  # a white line for note done yet
-  options(cli.progress_bar_style = "dot")
-  
-  options(cli.progress_bar_style = list(
-    complete = cli::col_green("●"),
-    incomplete = cli::col_br_white("─")
-  ))
-  
-  # initiate the progress bar process
-  progress_bar_main <- cli::cli_progress_bar(
-    "Running `hypoglycemia_01()`",
-    total = 2,
-    type = "tasks",
-    clear = F,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
-  )
-  
-  if(
-    
-    all(
-      is.null(patient_scene_table), 
-      is.null(response_table), 
-      is.null(situation_table),
-      is.null(vitals_table), 
-      is.null(medications_table),
-      is.null(procedures_table)
-    )
-    
-    && is.null(df)
-    
-  ) {
-    
-    cli::cli_abort("{.fn hypoglycemia_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments.")
-    
-  }
-  
   # utilize applicable tables to analyze the data for the measure
   if(
     all(
@@ -188,69 +103,11 @@ hypoglycemia_01 <- function(df = NULL,
     
   ) {
     
-    # Ensure df is a data frame or tibble
-    if (
-      
-      any(!(is.data.frame(patient_scene_table) && tibble::is_tibble(patient_scene_table)) ||
-          
-          !(is.data.frame(response_table) && tibble::is_tibble(response_table)) || 
-          
-          !(is.data.frame(situation_table) && tibble::is_tibble(situation_table)) ||
-          
-          !(is.data.frame(vitals_table) && tibble::is_tibble(vitals_table)) ||
-          
-          !(is.data.frame(medications_table) && tibble::is_tibble(medications_table)) ||
-          
-          !(is.data.frame(procedures_table) && tibble::is_tibble(procedures_table))
-          
-          )
-        
-        ) {
-      
-      cli::cli_abort(
-        c(
-          "An object of class {.cls data.frame} or {.cls tibble} is required for each of the *_table arguments."
-        )
-      )
-    }
-    
-    # Only check the date columns if they are in fact passed
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      # Use quasiquotation on the date variables to check format
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_DOB <- rlang::enquo(patient_DOB_col)
-      
-      # Convert quosures to names and check the column classes
-      incident_date_name <- rlang::as_name(incident_date)
-      patient_DOB_name <- rlang::as_name(patient_DOB)
-      
-      if ((!lubridate::is.Date(patient_scene_table[[incident_date_name]]) &
-           !lubridate::is.POSIXct(patient_scene_table[[incident_date_name]])) ||
-          (!lubridate::is.Date(patient_scene_table[[patient_DOB_name]]) &
-           !lubridate::is.POSIXct(patient_scene_table[[patient_DOB_name]]))) {
-        
-        cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class. Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or a similar class."
-        )
-      }
-    }
-    
     # header
     cli::cli_h1("Hypoglycemia-01")
     
-    # initiate the progress bar
-    progress_bar_main
-    
     # header
     cli::cli_h2("Gathering Records for Hypoglycemia-01")
-    
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
     
     # gather the population of interest
     hypoglycemia_01_populations <- hypoglycemia_01_population(
@@ -281,20 +138,18 @@ hypoglycemia_01 <- function(df = NULL,
     # header for calculations
     cli::cli_h2("Calculating Hypoglycemia-01")
     
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
-
     # summary
     hypoglycemia.01 <- results_summarize(total_population = hypoglycemia_01_populations$initial_population,
-                                   adult_population = hypoglycemia_01_populations$adults,
-                                   peds_population = hypoglycemia_01_populations$peds,
-                                   measure_name = "Hypoglycemia-01",
-                                   numerator_col = TREATMENT,
-                                   ...)
-
-    cli::cli_progress_done(id = progress_bar_main)
+                                         adult_population = hypoglycemia_01_populations$adults,
+                                         peds_population = hypoglycemia_01_populations$peds,
+                                         measure_name = "Hypoglycemia-01",
+                                         numerator_col = TREATMENT,
+                                         ...)
     
-    return(hypoglycemia.01)
+    # create a separator
+    cli::cli_text("\n")
+    
+    return(hypoglycemia.01)  
     
   } else if(
     
@@ -310,54 +165,11 @@ hypoglycemia_01 <- function(df = NULL,
     && !is.null(df)
   )
     
-  # Ensure df is a data frame or tibble
-  if (!is.data.frame(df) && !tibble::is_tibble(df)) {
-    cli::cli_abort(
-      c(
-        "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-        "i" = "The passed object is of class {.val {class(df)}}."
-      )
-    )
-  }
-  
-  # only check the date columns if they are in fact passed
-  if(
-    all(
-      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-    )
-  ) 
-    
-  {
-    
-    # use quasiquotation on the date variables to check format
-    incident_date <- rlang::enquo(incident_date_col)
-    patient_DOB <- rlang::enquo(patient_DOB_col)
-    
-    if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-         !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-        (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
-         !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
-      
-      cli::cli_abort(
-        "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
-      )
-      
-    }
-  }
-  
-  
   # header
   cli::cli_h1("Hypoglycemia-01")
   
-  # initiate the progress bar
-  progress_bar_main
-  
   # header
   cli::cli_h2("Gathering Records for Hypoglycemia-01")
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
   
     # gather the population of interest
     hypoglycemia_01_populations <- hypoglycemia_01_population(
@@ -382,10 +194,7 @@ hypoglycemia_01 <- function(df = NULL,
     
     # header for calculations
     cli::cli_h2("Calculating Hypoglycemia-01")
-    
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
-    
+
     # summary
     hypoglycemia.01 <- results_summarize(total_population = hypoglycemia_01_populations$initial_population,
                                          adult_population = hypoglycemia_01_populations$adults,
@@ -393,8 +202,6 @@ hypoglycemia_01 <- function(df = NULL,
                                          measure_name = "Hypoglycemia-01",
                                          numerator_col = TREATMENT,
                                          ...)
-    
-    cli::cli_progress_done(id = progress_bar_main)
     
     # create a separator
     cli::cli_text("\n")

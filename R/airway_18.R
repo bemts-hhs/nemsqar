@@ -97,84 +97,7 @@ airway_18 <- function(df = NULL,
                       evitals_01_col,
                       evitals_16_col,
                       ...) {
-  
-  # Ensure that not all table arguments AND the df argument are fulfilled
-  # User must pass either `df` or all table arguments, but not both
-  
-  if (
-    any(
-      !is.null(patient_scene_table),
-      !is.null(procedures_table),
-      !is.null(vitals_table),
-      !is.null(airway_table),
-      !is.null(response_table)
-    ) &&
-    !is.null(df)
-  ) {
-    cli::cli_abort("{.fn airway_18} requires either a {.cls data.frame} or {.cls tibble} passed to the {.var df} argument, or all table arguments to be fulfilled. Please choose one approach.")
-  }
-  
-  # Ensure that df or all table arguments are fulfilled
-  
-  if (
-    all(
-      is.null(patient_scene_table),
-      is.null(procedures_table),
-      is.null(vitals_table),
-      is.null(airway_table),
-      is.null(response_table)
-    ) &&
-    is.null(df)
-  ) {
-    cli::cli_abort("{.fn airway_18} requires either a {.cls data.frame} or {.cls tibble} passed to the {.var df} argument, or all table arguments to be fulfilled. Please choose one approach.")
-  }
-  
-  # Ensure all *_col arguments are fulfilled
-  
-  if (
-    any(
-      missing(erecord_01_col),
-      missing(incident_date_col),
-      missing(patient_DOB_col),
-      missing(epatient_15_col),
-      missing(epatient_16_col),
-      missing(eresponse_05_col),
-      missing(eprocedures_01_col),
-      missing(eprocedures_02_col),
-      missing(eprocedures_03_col),
-      missing(eprocedures_05_col),
-      missing(eprocedures_06_col),
-      missing(eairway_02_col),
-      missing(eairway_04_col),
-      missing(evitals_01_col),
-      missing(evitals_16_col)
-    )
-  ) {
-    cli::cli_abort("One or more of the *_col arguments is missing. Please ensure you pass an unquoted column to each of the *_col arguments to run {.fn airway_18}.")
-  }
-  
-  # options for the progress bar
-  # a green dot for progress
-  # a white line for note done yet
-  options(cli.progress_bar_style = "dot")
-  
-  options(cli.progress_bar_style = list(
-    complete = cli::col_green("●"),
-    incomplete = cli::col_br_white("─")
-  ))
-  
-  # header
-  cli::cli_h1("Calculating Airway-18")
-  
-  # initiate the progress bar process
-  progress_bar_main <- cli::cli_progress_bar(
-    "Running `airway_18()`",
-    total = 4,
-    type = "tasks",
-    clear = F,
-    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
-  )
-  
+
   # utilize applicable tables to analyze the data for the measure
   if (
     all(
@@ -187,78 +110,11 @@ airway_18 <- function(df = NULL,
     
   ) {
     
-    # Ensure all tables are of class `data.frame` or `tibble`
-    if (
-      
-      !all(
-        is.data.frame(patient_scene_table) || tibble::is_tibble(patient_scene_table),
-        is.data.frame(procedures_table) || tibble::is_tibble(procedures_table),
-        is.data.frame(vitals_table) || tibble::is_tibble(vitals_table),
-        is.data.frame(airway_table) || tibble::is_tibble(airway_table),
-        is.data.frame(response_table) || tibble::is_tibble(response_table)
-      )
-      
-    ) {
-      
-      cli::cli_abort(
-        "One or more of the tables passed to {.fn airway_18_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
-      )
-      
-    }
-    
-    # Validate date columns if provided
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_DOB <- rlang::enquo(patient_DOB_col)
-      
-      if (
-        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
-         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])) ||
-        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_DOB)]]) &
-         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_DOB)]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
-        )
-      }
-    }
-    
-    
-    # Use quasiquotation on the vitals, airway, and procedures datetime fields
-    airway_datetime <- rlang::enquo(eairway_02_col)
-    vitals_datetime <- rlang::enquo(evitals_01_col)
-    procedures_datetime <- rlang::enquo(eprocedures_01_col)
-    
-    # Validate the datetime fields in the patient_scene_table
-    if ((!lubridate::is.Date(airway_table[[rlang::as_name(airway_datetime)]]) &
-         !lubridate::is.POSIXct(airway_table[[rlang::as_name(airway_datetime)]])) ||
-        (!lubridate::is.Date(vitals_table[[rlang::as_name(vitals_datetime)]]) &
-         !lubridate::is.POSIXct(vitals_table[[rlang::as_name(vitals_datetime)]])) ||
-        (!lubridate::is.Date(procedures_table[[rlang::as_name(procedures_datetime)]]) &
-         !lubridate::is.POSIXct(procedures_table[[rlang::as_name(procedures_datetime)]]))) {
-      
-      cli::cli_abort(
-        "For the variables {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
-      )
-    }
-    
-    
     # header
     cli::cli_h1("Airway-18")
     
-    # initiate the progress bar
-    progress_bar_main
-    
     # header
     cli::cli_h2("Gathering Records for Airway-18")
-    
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
     
     # gather the population of interest
     airway_18_populations <- airway_18_population(patient_scene_table = patient_scene_table,
@@ -270,7 +126,7 @@ airway_18 <- function(df = NULL,
                                                   incident_date_col = {{ incident_date_col }},
                                                   patient_DOB_col = {{ patient_DOB_col }},
                                                   epatient_15_col = {{ epatient_15_col }},
-                                                  epatient_16_col = {{ epatient_15_col }},
+                                                  epatient_16_col = {{ epatient_16_col }},
                                                   eresponse_05_col = {{ eresponse_05_col }},
                                                   eprocedures_01_col = {{ eprocedures_01_col }},
                                                   eprocedures_02_col = {{ eprocedures_02_col }},
@@ -288,10 +144,7 @@ airway_18 <- function(df = NULL,
     
     # header for calculations
     cli::cli_h2("Calculating Airway-18")
-    
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
-    
+
     # summary
     # adults
     adult_population <- airway_18_populations$adults |>
@@ -300,8 +153,6 @@ airway_18 <- function(df = NULL,
                         NUMERATOR,
                         ...)
     
-    cli::cli_progress_update(set = 3, id = progress_bar_main, force = T)
-    
     # peds
     peds_population <- airway_18_populations$peds |>
       summarize_measure(measure_name = "Airway-18",
@@ -309,19 +160,15 @@ airway_18 <- function(df = NULL,
                         NUMERATOR,
                         ...) 
     
-    cli::cli_progress_update(set = 4, id = progress_bar_main, force = T)
-    
     # union
     airway.18 <- bind_rows(adult_population, peds_population)
-    
-    cli::cli_progress_done(id = progress_bar_main)
     
     # create a separator
     cli::cli_text("\n")
     
     return(airway.18)
     
-  }else if(
+  } else if(
     all(
       is.null(patient_scene_table),
       is.null(procedures_table),
@@ -333,68 +180,12 @@ airway_18 <- function(df = NULL,
     # utilize a dataframe to analyze the data for the measure analytics
     
   ) {
-    
-    # Ensure df is a data frame or tibble
-    if (!is.data.frame(df) && !tibble::is_tibble(df)) {
-      cli::cli_abort(
-        c(
-          "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-          "i" = "The passed object is of class {.val {class(df)}}."
-        )
-      )
-    }
-    
-    # Validate date columns if provided
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_DOB <- rlang::enquo(patient_DOB_col)
-      
-      if (
-        (!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-         !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-        (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
-         !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
-        )
-      }
-    }
-    
-      # Use quasiquotation on the vitals, airway, and procedures datetime fields
-      airway_datetime <- rlang::enquo(eairway_02_col)
-      vitals_datetime <- rlang::enquo(evitals_01_col)
-      procedures_datetime <- rlang::enquo(eprocedures_01_col)
-      
-      # Validate the datetime fields in the df
-      if ((!lubridate::is.Date(df[[rlang::as_name(airway_datetime)]]) &
-           !lubridate::is.POSIXct(df[[rlang::as_name(airway_datetime)]])) ||
-          (!lubridate::is.Date(df[[rlang::as_name(vitals_datetime)]]) &
-           !lubridate::is.POSIXct(df[[rlang::as_name(vitals_datetime)]])) ||
-          (!lubridate::is.Date(df[[rlang::as_name(procedures_datetime)]]) &
-           !lubridate::is.POSIXct(df[[rlang::as_name(procedures_datetime)]]))) {
-        
-        cli::cli_abort(
-          "For the variables {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
-        )
-      }
   
     # header
     cli::cli_h1("Airway-18")
     
-    # initiate the progress bar
-    progress_bar_main
-    
     # header
     cli::cli_h2("Gathering Records for Airway-18")
-    
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
     
     # gather the population of interest
     airway_18_populations <- airway_18_population(df = df,
@@ -402,7 +193,7 @@ airway_18 <- function(df = NULL,
                                                   incident_date_col = {{ incident_date_col }},
                                                   patient_DOB_col = {{ patient_DOB_col }},
                                                   epatient_15_col = {{ epatient_15_col }},
-                                                  epatient_16_col = {{ epatient_15_col }},
+                                                  epatient_16_col = {{ epatient_16_col }},
                                                   eresponse_05_col = {{ eresponse_05_col }},
                                                   eprocedures_01_col = {{ eprocedures_01_col }},
                                                   eprocedures_02_col = {{ eprocedures_02_col }},
@@ -420,10 +211,7 @@ airway_18 <- function(df = NULL,
     
     # header for calculations
     cli::cli_h2("Calculating Airway-18")
-    
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
-    
+
     # summary
     # adults
     adult_population <- airway_18_populations$adults |>
@@ -432,22 +220,16 @@ airway_18 <- function(df = NULL,
                         NUMERATOR,
                         ...)
     
-    cli::cli_progress_update(set = 3, id = progress_bar_main, force = T)
-    
     # peds
     peds_population <- airway_18_populations$peds |>
       summarize_measure(measure_name = "Airway-18",
                         population_name = "Peds",
                         NUMERATOR,
                         ...) 
-    
-    cli::cli_progress_update(set = 4, id = progress_bar_main, force = T)
-    
+
     # union
     airway.18 <- bind_rows(adult_population, peds_population)
-    
-    cli::cli_progress_done(id = progress_bar_main)
-    
+
     # create a separator
     cli::cli_text("\n")
     

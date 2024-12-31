@@ -27,9 +27,9 @@ summarize_measure <- function(data,
     dplyr::summarize(
       measure = measure_name,
       pop = population_name,
-      numerator = sum({{numerator_col}}, na.rm=T),
+      numerator = sum({{numerator_col}}, na.rm = T),
       denominator = dplyr::n(),
-      prop = sum(numerator / denominator),
+      prop = sum(numerator / denominator, na.rm = T),
       prop_label = pretty_percent(prop,
                                   n_decimal = 0.01),
       ...

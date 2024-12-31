@@ -89,156 +89,12 @@ pediatrics_03b <- function(df = NULL,
                            emedications_03_col,
                            emedications_04_col,
                            ...) {
-  
-  if(
-    
-    any(
-      !is.null(patient_scene_table), 
-      !is.null(response_table), 
-      !is.null(exam_table),
-      !is.null(medications_table)
-    ) 
-    
-    &&
-    
-    !is.null(df)
-    
-  ) {
-    
-    cli::cli_abort("{.fn pediatrics_03b_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all three of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all three table arguments.")
-    
-  }
-  
-  # ensure all *_col arguments are fulfilled
-  if(
-    
-    any(
-      
-      missing(erecord_01_col),
-      missing(incident_date_col),
-      missing(patient_DOB_col),
-      missing(epatient_15_col),
-      missing(epatient_16_col),
-      missing(eresponse_05_col),
-      missing(eexam_01_col),
-      missing(eexam_02_col),
-      missing(emedications_03_col),
-      missing(emedications_04_col)
-    )
-    
-  ) {
-    
-    cli::cli_abort("One or more of the *_col arguments is missing.  Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn pediatrics_03b_population}.")
-    
-  }
-  
-  if(
-    
-    all(
-      is.null(patient_scene_table), 
-      is.null(response_table), 
-      is.null(exam_table),
-      is.null(medications_table)
-    )
-    
-    && is.null(df)
-    
-  ) {
-    
-    cli::cli_abort("{.fn pediatrics_03b_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all six of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all six table arguments.")
-    
-  }
-  
-  # options for the progress bar
-  # a green dot for progress
-  # a white line for note done yet
-  options(cli.progress_bar_style = "dot")
-  
-  options(cli.progress_bar_style = list(
-    complete = cli::col_green("●"),
-    incomplete = cli::col_br_white("─")
-  ))
-  
-  progress_bar_main <- cli::cli_progress_bar(
-    "Running `pediatrics_03b()`",
-    total = 2,
-    type = "tasks",
-    clear = F,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
-  )
-  
-  # utilize applicable tables to analyze the data for the measure
-  if(
-    all(
-      !is.null(patient_scene_table), 
-      !is.null(response_table), 
-      !is.null(exam_table),
-      !is.null(medications_table)
-    ) 
-    
-    && is.null(df)
-    
-  ) {
-    
-    # Ensure df is a data frame or tibble
-    if (
-      
-      any(!(is.data.frame(patient_scene_table) && tibble::is_tibble(patient_scene_table)) ||
-          
-          !(is.data.frame(response_table) && tibble::is_tibble(response_table)) || 
-          
-          !(is.data.frame(exam_table) && tibble::is_tibble(exam_table)) ||
-          
-          !(is.data.frame(medications_table) && tibble::is_tibble(medications_table))
-          
-      )
-      
-    ) {
-      
-      cli::cli_abort(
-        c(
-          "An object of class {.cls data.frame} or {.cls tibble} is required for each of the *_table arguments."
-        )
-      )
-    }
-    
-    # Only check the date columns if they are in fact passed
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      # Use quasiquotation on the date variables to check format
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_DOB <- rlang::enquo(patient_DOB_col)
-      
-      # Convert quosures to names and check the column classes
-      incident_date_name <- rlang::as_name(incident_date)
-      patient_DOB_name <- rlang::as_name(patient_DOB)
-      
-      if ((!lubridate::is.Date(patient_scene_table[[incident_date_name]]) &
-           !lubridate::is.POSIXct(patient_scene_table[[incident_date_name]])) ||
-          (!lubridate::is.Date(patient_scene_table[[patient_DOB_name]]) &
-           !lubridate::is.POSIXct(patient_scene_table[[patient_DOB_name]]))) {
-        
-        cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class. Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or a similar class."
-        )
-      }
-    }
-  
+
   # header
   cli::cli_h1("Pediatrics-03b")
   
-  # initiate the progress bar
-  progress_bar_main
-  
   # header
   cli::cli_h2("Gathering Records for Pediatrics-03b")
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
   
   # gather the population of interest
   pediatrics03b_populations <- pediatrics_03b_population(patient_scene_table = patient_scene_table,
@@ -262,18 +118,13 @@ pediatrics_03b <- function(df = NULL,
   
   # header for calculations
   cli::cli_h2("Calculating Pediatrics-03b")
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
-  
+
   # summary
   pediatrics.03b <- summarize_measure(data = pediatrics03b_populations$initial_population,
-                                 measure_name = "Pediatrics-03b",
-                                 population_name = "Peds",
-                                 numerator_col = DOCUMENTED_WEIGHT,
-                                 ...)
-  
-  cli::cli_progress_done(id = progress_bar_main)
+                                      measure_name = "Pediatrics-03b",
+                                      population_name = "Peds",
+                                      numerator_col = DOCUMENTED_WEIGHT,
+                                      ...)
   
   # create a separator
   cli::cli_text("\n")
@@ -297,53 +148,11 @@ pediatrics_03b <- function(df = NULL,
   
   {
     
-    # Ensure df is a data frame or tibble
-    if (!is.data.frame(df) && !tibble::is_tibble(df)) {
-      cli::cli_abort(
-        c(
-          "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-          "i" = "The passed object is of class {.val {class(df)}}."
-        )
-      )
-    }
-    
-    # Only check the date columns if they are in fact passed
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      # Use quasiquotation on the date variables to check format
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_DOB <- rlang::enquo(patient_DOB_col)
-      
-      # Convert quosures to names and check the column classes
-      incident_date_name <- rlang::as_name(incident_date)
-      patient_DOB_name <- rlang::as_name(patient_DOB)
-      
-      if ((!lubridate::is.Date(df[[incident_date_name]]) &
-           !lubridate::is.POSIXct(df[[incident_date_name]])) ||
-          (!lubridate::is.Date(df[[patient_DOB_name]]) &
-           !lubridate::is.POSIXct(df[[patient_DOB_name]]))) {
-        
-        cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class. Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or a similar class."
-        )
-      }
-    }
-  
     # header
     cli::cli_h1("Pediatrics-03b")
     
-    # initiate the progress bar
-    progress_bar_main
-    
     # header
     cli::cli_h2("Gathering Records for Pediatrics-03b")
-    
-    # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_main, force = T)
     
   pediatrics03b_populations <- pediatrics_03b_population(df = df,
                                                          erecord_01_col = {{ erecord_01_col }},
@@ -363,19 +172,14 @@ pediatrics_03b <- function(df = NULL,
   
   # header for calculations
   cli::cli_h2("Calculating Pediatrics-03b")
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 2, id = progress_bar_main, force = T)
-  
+
   # summary
   pediatrics.03b <- summarize_measure(data = pediatrics03b_populations$initial_population,
                                       measure_name = "Pediatrics-03b",
                                       population_name = "Peds",
                                       numerator_col = DOCUMENTED_WEIGHT,
                                       ...)
-  
-  cli::cli_progress_done(id = progress_bar_main)
-  
+
   # create a separator
   cli::cli_text("\n")
   

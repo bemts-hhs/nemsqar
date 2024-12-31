@@ -51,22 +51,11 @@
 #' @param evitals_16_col <['tidy-select'][dplyr_tidy_select]> Column name for additional vital signs data.
 #' @param ... Additional arguments passed to other functions if needed.
 #'
-#' @return A tibble summarizing results for Adults and Peds with the following columns:
-#' `pop`: Population type (Adults, Peds).
-#' `numerator`: Count of incidents where waveform capnography is used for tube placement confirmation on
-#' the last successful invasive airway procedure.
-#' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents where waveform capnography is used for tube placement confirmation on
-#' the last successful invasive airway procedure.
-#' `prop_label`: Proportion formatted as a percentage with a specified number of
-#' decimal places.
-#' 
-#' @note
-#' This function filters and processes EMS data to:
-#' - Identify the last successful airway procedure.
-#' - Filter for 911 response codes and relevant vital signs (i.e. ETCO2).
-#' - Aggregate results by patient encounter and calculate stroke scale outcomes.
-#' - Return a summary of stroke cases by unique patient identifier, including stroke scale measurements.
+#' @return
+#' #' A list that contains the following:
+#' * a tibble with counts for each filtering step,
+#' * a tibble for each population of interest
+#' * a tibble for the initial population 
 #' 
 #' @author Nicolas Foss, Ed.D., MS
 #' 
@@ -339,11 +328,13 @@ airway_18_population <- function(df = NULL,
   
   # endotracheal intubation
   intubation_data <- procedures_table |> 
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |> 
+    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}, {{ eprocedures_06_col}}) |> 
     dplyr::distinct() |> 
     dplyr::filter(
       
-      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T)
+      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
+        
+        grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T)
       
       ) |> 
     dplyr::distinct({{ erecord_01_col }}) |> 
@@ -393,7 +384,9 @@ airway_18_population <- function(df = NULL,
     dplyr::distinct() |> 
     dplyr::filter(
       
-      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T)
+      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
+      
+      grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T)
       
       ) |> 
     dplyr::filter( 
@@ -586,7 +579,6 @@ airway_18_population <- function(df = NULL,
     dplyr::filter(
       
       ENDOTRACHEAL_INTUBATION,
-      SUCCESSFUL_PROCEDURE,
       CALL_911
       
     )
@@ -853,11 +845,13 @@ airway_18_population <- function(df = NULL,
   
   # endotracheal intubation
   intubation_data <- df |> 
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |> 
+    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}, {{ eprocedures_06_col }}) |> 
     dplyr::distinct() |> 
     dplyr::filter(
       
-      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T)
+      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
+      
+      grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T)
       
       ) |> 
     dplyr::distinct({{ erecord_01_col }}) |> 
@@ -907,7 +901,9 @@ airway_18_population <- function(df = NULL,
     dplyr::distinct() |> 
     dplyr::filter(
       
-      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T)
+      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
+      
+      grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T)
       
       ) |> 
     dplyr::filter( 
@@ -1078,7 +1074,6 @@ airway_18_population <- function(df = NULL,
     dplyr::filter(
       
       ENDOTRACHEAL_INTUBATION,
-      SUCCESSFUL_PROCEDURE,
       CALL_911
       
     )
