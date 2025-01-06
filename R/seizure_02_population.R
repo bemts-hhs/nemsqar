@@ -1,10 +1,13 @@
-#' Seizure-02 Calculation
+#' Seizure-02 Populations
 #'
-#' Calculates the NEMSQA Seizure-02 Measure.
-#' 
-#' Calculates age-based seizure metrics for a dataset. This function filters data 
-#' for patients based on incident information, diagnoses, and administered medications 
-#' to assess adherence to Seizure-02 metrics.
+#' Filters data down to the target populations for Seizure-02, and categorizes 
+#' records to identify needed information for the calculations.
+#'
+#' Identifies key categories related to asthma-related incidents in an EMS dataset,
+#' specifically focusing on cases where 911 was called for respiratory distress,
+#' and certain medications were administered. This function segments the data by
+#' age into adult and pediatric populations, computing the proportion of cases that
+#' received beta-agonist treatment.
 #' 
 #' @section Data Assumptions:
 #'
@@ -100,40 +103,51 @@ seizure_02 <- function(df = NULL,
                        emedications_03_col,
                        ...) {
 
-  # provide better error messaging if df is missing
-  if (missing(df)) {
-    cli_abort(
-      c(
-        "No object of class {.cls data.frame} was passed to {.fn seizure_02}.",
-        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn seizure_02}."
-      )
-    )
-    
+  # Ensure that not all table arguments AND the df argument are fulfilled
+  # User must pass either `df` or all table arguments, but not both
+  
+  if (
+    any(
+      !is.null(patient_scene_table),
+      !is.null(medications_table),
+      !is.null(situation_table),
+      !is.null(response_table)
+    ) &&
+    !is.null(df)
+  ) {
+    cli::cli_abort("{.fn seizure_02_population} requires either a {.cls data.frame} or {.cls tibble} passed to the {.var df} argument, or all table arguments to be fulfilled. Please choose one approach.")
   }
   
-  # Ensure df is a data frame or tibble
-  if (!is.data.frame(df) && !is_tibble(df)) {
-    cli_abort(
-      c(
-        "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-        "i" = "The passed object is of class {.val {class(df)}}."
-      )
-    )
+  # Ensure that df or all table arguments are fulfilled
+  
+  if (
+    all(
+      is.null(patient_scene_table),
+      is.null(medications_table),
+      is.null(situation_table),
+      is.null(response_table)
+    ) &&
+    is.null(df)
+  ) {
+    cli::cli_abort("{.fn seizure_02_population} requires either a {.cls data.frame} or {.cls tibble} passed to the {.var df} argument, or all table arguments to be fulfilled. Please choose one approach.")
   }
   
-  # use quasiquotation on the date variables to check format
-  incident_date <- enquo(incident_date_col)
-  patient_DOB <- enquo(patient_DOB_col)
+  # Ensure all *_col arguments are fulfilled
   
-  if ((!is.Date(df[[as_name(incident_date)]]) &
-       !is.POSIXct(df[[as_name(incident_date)]])) ||
-      (!is.Date(df[[as_name(patient_DOB)]]) &
-       !is.POSIXct(df[[as_name(patient_DOB)]]))) {
-    
-    cli_abort(
-      "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+  if (
+    any(
+      missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
+      missing(eresponse_05_col),
+      missing(esituation_11_col),
+      missing(esituation_12_col),
+      missing(emedications_03_col)
     )
-    
+  ) {
+    cli::cli_abort("One or more of the *_col arguments is missing. Please ensure you pass an unquoted column to each of the *_col arguments to run {.fn seizure_02_population}.")
   }
   
   # options for the progress bar
@@ -146,22 +160,16 @@ seizure_02 <- function(df = NULL,
     incomplete = cli::col_br_white("─")
   ))
   
-  # header
-  cli::cli_h1("Calculating Seizure-02")
-  
   # initiate the progress bar process
-  progress_bar <- cli::cli_progress_bar(
+  progress_bar_population <- cli::cli_progress_bar(
     "Running `seizure_02()`",
     total = 8,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
   
-  progress_bar
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
+  progress_bar_population
   
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
   
@@ -188,11 +196,76 @@ seizure_02 <- function(df = NULL,
   
   month_values <- "months|2516007"
   
-  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
+  # utilize applicable tables to analyze the data for the measure
+  if (
+    any(
+      !is.null(patient_scene_table),
+      !is.null(medications_table),
+      !is.null(situation_table),
+      !is.null(response_table)
+    ) &&
+    is.null(df)
+  ) {
   
+    # Ensure all tables are of class `data.frame` or `tibble`
+    if (
+      
+      !all(
+        is.data.frame(patient_scene_table) || tibble::is_tibble(patient_scene_table),
+        is.data.frame(medications_table) || tibble::is_tibble(medications_table),
+        is.data.frame(situation_table) || tibble::is_tibble(situation_table),
+        is.data.frame(response_table) || tibble::is_tibble(response_table)
+      )
+      
+    ) {
+      
+      cli::cli_abort(
+        "One or more of the tables passed to {.fn seizure_02_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
+      )
+      
+    }
+    
+    # Validate date columns if provided
+    if (
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) {
+      incident_date <- rlang::enquo(incident_date_col)
+      patient_DOB <- rlang::enquo(patient_DOB_col)
+      
+      if (
+        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
+         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])) ||
+        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_DOB)]]) &
+         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_DOB)]]))
+      ) {
+        cli::cli_abort(
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+        )
+      }
+    }
+    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
+    
+  ###_____________________________________________________________________________
+  # fact table
+  # the user should ensure that variables beyond those supplied for calculations
+  # are distinct (i.e. one value or cell per patient)
+  ###_____________________________________________________________________________
+
+    if (
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) {
+    
   # filter the table to get the initial population regardless of age
-  initial_population <- df |>
-  
+  final_data <- patient_scene_table |>
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |> 
     # create the age in years variable
     
     mutate(patient_age_in_years_col = as.numeric(difftime(
@@ -201,19 +274,6 @@ seizure_02 <- function(df = NULL,
       units = "days"
     )) / 365,
     
-    # create the respiratory distress variable
-    seizure = if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
-      pattern = epilepsy_pattern,
-      x = .,
-      ignore.case = T
-    )),
-    
-    # create the 911 variable
-    call_911 = grepl(
-      pattern = codes_911,
-      x = {{eresponse_05_col}},
-      ignore.case = T
-    ),
     
     # system age checks
     system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
@@ -224,31 +284,90 @@ seizure_02 <- function(df = NULL,
     # calculated age checks
     calc_age_adult = patient_age_in_years_col >= 18,
     calc_age_minor = patient_age_in_years_col < 18 & patient_age_in_years_col >= 2
-    ) |>
     
-    dplyr::filter(
+    )
+  
+    } else if(
       
-      # Identify Records that have seizure documentation defined above
-      seizure,
+      all(
+        is.null(incident_date_col), 
+        is.null(patient_DOB_col)
+      )) {
       
-      # filter down to 911 calls
-      call_911
-      
-    ) |>
+  # filter the table to get the initial population regardless of age
+  final_data <- patient_scene_table |>
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |> 
+    mutate(
     
-    # check to see if target meds were passed
-    mutate(meds_check = if_else(grepl(pattern = medication_pattern, x = {{emedications_03_col}}, ignore.case = T), 1, 0)
-           )
+    # system age checks
+    system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_minor = system_age_minor1 | system_age_minor2
+    
+    )
+      
+    }
+    
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
+    
+  ###_____________________________________________________________________________
+  ### dimension tables
+  ### each dimension table is turned into a vector of unique IDs
+  ### that are then utilized on the fact table to create distinct variables
+  ### that tell if the patient had the characteristic or not for final
+  ### calculations of the numerator and filtering
+  ###_____________________________________________________________________________
+  
+    # START HERE, USE THE CODE BELOW TO FINISH THE DIMENSION 
+    # TABLE OBJECTS
+    
+    # 911 calls
+    call_911_data <- response_table |> 
+      dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |> 
+      dplyr::distinct() |> 
+      dplyr::filter(
+        
+        grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)
+        
+      ) |> 
+      dplyr::distinct({{ erecord_01_col }}) |> 
+      pull({{ erecord_01_col }})
+
+    
+    # create the respiratory distress variable
+#    seizure = if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
+#      pattern = epilepsy_pattern,
+#      x = .,
+#      ignore.case = T
+#    )),
+    
+#    |>
+      
+#      dplyr::filter(
+        
+        # Identify Records that have seizure documentation defined above
+#        seizure,
+        
+        # filter down to 911 calls
+#        call_911
+        
+#      ) |>
+      
+      # check to see if target meds were passed
+#      mutate(meds_check = if_else(grepl(pattern = medication_pattern, x = {{emedications_03_col}}, ignore.case = T), 1, 0)
+#      )
   
   # Adult and Pediatric Populations
   
-  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
+  cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
   
   # filter adult
   adult_pop <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
   
-  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
+  cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
   
   # filter peds
   peds_pop <- initial_population |>
@@ -256,7 +375,7 @@ seizure_02 <- function(df = NULL,
   
   # get the summary of results
   
-  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
+  cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
   
   # all
   total_population <- initial_population |>
@@ -267,7 +386,7 @@ seizure_02 <- function(df = NULL,
       ...
     )
   
-  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
+  cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
   
   # adults
   adult_population <- adult_pop |>
@@ -278,7 +397,7 @@ seizure_02 <- function(df = NULL,
       ...
     )
   
-  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
+  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
   
   # peds
   peds_population <- peds_pop |>
@@ -289,7 +408,7 @@ seizure_02 <- function(df = NULL,
       ...
     )
   
-  cli::cli_progress_update(set = 8, id = progress_bar, force = T)
+  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
   
   # summary
   seizure.02 <- bind_rows(adult_population, peds_population, total_population)

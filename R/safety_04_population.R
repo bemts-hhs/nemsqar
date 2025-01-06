@@ -322,8 +322,8 @@ safety_04_population <- function(df = NULL,
     )
     
   ) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
   
@@ -630,8 +630,8 @@ safety_04_population <- function(df = NULL,
       )
       
     ) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
   

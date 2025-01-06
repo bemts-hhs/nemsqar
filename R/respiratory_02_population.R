@@ -342,8 +342,8 @@ respiratory_02_population <- function(df = NULL,
       {{ evitals_12_col }} < 90
       
     ) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
   
@@ -665,8 +665,8 @@ respiratory_02_population <- function(df = NULL,
       {{ evitals_12_col }} < 90
       
     ) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
   

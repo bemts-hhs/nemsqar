@@ -389,8 +389,8 @@ hypoglycemia_01_population <- function(df = NULL,
       x = {{ esituation_12_col }},
       ignore.case = T
     )) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
@@ -427,8 +427,8 @@ hypoglycemia_01_population <- function(df = NULL,
       x = {{ esituation_11_col }},
       ignore.case = T
     )) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
@@ -442,8 +442,8 @@ hypoglycemia_01_population <- function(df = NULL,
       x = {{ esituation_12_col }},
       ignore.case = T
     )) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
@@ -802,8 +802,8 @@ hypoglycemia_01_population <- function(df = NULL,
       x = {{ esituation_11_col }},
       ignore.case = T
     )) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
@@ -817,8 +817,8 @@ hypoglycemia_01_population <- function(df = NULL,
       x = {{ esituation_12_col }},
       ignore.case = T
     )) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
@@ -855,8 +855,8 @@ hypoglycemia_01_population <- function(df = NULL,
       x = {{ esituation_11_col }},
       ignore.case = T
     )) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
@@ -870,8 +870,8 @@ hypoglycemia_01_population <- function(df = NULL,
       x = {{ esituation_12_col }},
       ignore.case = T
     )) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
@@ -952,7 +952,7 @@ hypoglycemia_01_population <- function(df = NULL,
                   TREATMENT2 = {{ erecord_01_col }} %in% correct_treatment_data2,
                   TREATMENT = TREATMENT1 | TREATMENT2
                   ) |> 
-    distinct({{ erecord_01_col }}, .keep_all = T)
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = T)
   
   # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 13, id = progress_bar_population, force = T)
@@ -971,7 +971,7 @@ hypoglycemia_01_population <- function(df = NULL,
       system_age_minor3
       
     ) |> 
-    distinct({{ erecord_01_col }}, .keep_all = T)
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = T)
   
   # Adult and Pediatric Populations
   

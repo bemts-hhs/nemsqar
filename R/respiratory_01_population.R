@@ -303,8 +303,8 @@ respiratory_01_population <- function(df = NULL,
     dplyr::select({{ erecord_01_col }}, {{ esituation_11_col }}) |> 
     dplyr::distinct() |> 
     dplyr::filter(grepl(pattern = resp_codes, x = {{ esituation_11_col }}, ignore.case = T)) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
   
@@ -313,8 +313,8 @@ respiratory_01_population <- function(df = NULL,
     dplyr::select({{ erecord_01_col }}, {{ esituation_12_col }}) |> 
     dplyr::distinct() |> 
     dplyr::filter(grepl(pattern = resp_codes, x = {{ esituation_12_col }}, ignore.case = T)) |> 
-    distinct({{ erecord_01_col }}) |> 
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |> 
+    dplyr::pull({{ erecord_01_col }})
   
   cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
   
@@ -611,8 +611,8 @@ respiratory_01_population <- function(df = NULL,
       dplyr::select({{ erecord_01_col }}, {{ esituation_11_col }}) |> 
       dplyr::distinct() |> 
       dplyr::filter(grepl(pattern = resp_codes, x = {{ esituation_11_col }}, ignore.case = T)) |> 
-      distinct({{ erecord_01_col }}) |> 
-      pull({{ erecord_01_col }})
+      dplyr::distinct({{ erecord_01_col }}) |> 
+      dplyr::pull({{ erecord_01_col }})
     
     cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
     
@@ -621,8 +621,8 @@ respiratory_01_population <- function(df = NULL,
       dplyr::select({{ erecord_01_col }}, {{ esituation_12_col }}) |> 
       dplyr::distinct() |> 
       dplyr::filter(grepl(pattern = resp_codes, x = {{ esituation_12_col }}, ignore.case = T)) |> 
-      distinct({{ erecord_01_col }}) |> 
-      pull({{ erecord_01_col }})
+      dplyr::distinct({{ erecord_01_col }}) |> 
+      dplyr::pull({{ erecord_01_col }})
     
     cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
     

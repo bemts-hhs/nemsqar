@@ -351,8 +351,8 @@ airway_18_population <- function(df = NULL,
         grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)
         
       ) |> 
-      distinct({{ erecord_01_col }}) |> 
-      pull({{ erecord_01_col }})
+      dplyr::distinct({{ erecord_01_col }}) |> 
+      dplyr::pull({{ erecord_01_col }})
   
     cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
     
@@ -868,8 +868,8 @@ airway_18_population <- function(df = NULL,
         grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)
         
       ) |> 
-      distinct({{ erecord_01_col }}) |> 
-      pull({{ erecord_01_col }})
+      dplyr::distinct({{ erecord_01_col }}) |> 
+      dplyr::pull({{ erecord_01_col }})
   
     cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
     
