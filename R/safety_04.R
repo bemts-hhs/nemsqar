@@ -127,6 +127,9 @@ safety_04 <- function(df = NULL,
     
   ) {
     
+    # Start timing the function execution
+    start_time <- Sys.time()
+    
     # header
     cli::cli_h1("Safety-04")
     
@@ -170,6 +173,26 @@ safety_04 <- function(df = NULL,
     # create a separator
     cli::cli_text("\n")
     
+    # Calculate and display the runtime
+    end_time <- Sys.time()
+    run_time_secs <- difftime(end_time, start_time, units = "secs")
+    run_time_secs <- as.numeric(run_time_secs)
+    
+    if (run_time_secs >= 60) {
+      
+      run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      
+    } else {
+      
+      run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      
+    }
+    
+    # create a separator
+    cli::cli_text("\n")
+    
     return(safety.04)
     
   } else if(
@@ -186,6 +209,9 @@ safety_04 <- function(df = NULL,
     # utilize a dataframe to analyze the data for the measure analytics
     
   ) {
+    
+    # Start timing the function execution
+    start_time <- Sys.time()
     
     # header
     cli::cli_h1("Safety-04")
@@ -221,6 +247,26 @@ safety_04 <- function(df = NULL,
                         numerator_col = CAR_SEAT,
                         ...
                         )
+    
+    # create a separator
+    cli::cli_text("\n")
+    
+    # Calculate and display the runtime
+    end_time <- Sys.time()
+    run_time_secs <- difftime(end_time, start_time, units = "secs")
+    run_time_secs <- as.numeric(run_time_secs)
+    
+    if (run_time_secs >= 60) {
+      
+      run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      
+    } else {
+      
+      run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      
+    }
     
     # create a separator
     cli::cli_text("\n")

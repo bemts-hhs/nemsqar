@@ -25,6 +25,8 @@
 #' included in `df`.  This will result in Cartesian product, but the function
 #' will performantly handle that problem.
 #' 
+#' The eAirway fields are optional in this function in case a user does not have access to those fields.
+#' 
 #' @section Practical Tips:
 #' 
 #' Ensure data are pre-processed, with missing values coded as `NA`, before passing
@@ -48,8 +50,8 @@
 #' @param eprocedures_05_col <['tidy-select'][dplyr_tidy_select]> Column name for number of procedure attempts.
 #' @param eprocedures_01_col <['tidy-select'][dplyr_tidy_select]> Column name for procedure times or other related data.
 #' @param eprocedures_02_col <['tidy-select'][dplyr_tidy_select]> Column name for additional procedure data.
-#' @param eairway_04_col <['tidy-select'][dplyr_tidy_select]> Column name for airway procedure data.
-#' @param eairway_02_col <['tidy-select'][dplyr_tidy_select]> Column name for airway procedure data (datetime).
+#' @param eairway_04_col <['tidy-select'][dplyr_tidy_select]> Column name for airway procedure data. Default is `NULL`.
+#' @param eairway_02_col <['tidy-select'][dplyr_tidy_select]> Column name for airway procedure data (datetime). Default is `NULL`.
 #' @param evitals_01_col <['tidy-select'][dplyr_tidy_select]> Column name for vital signs data (datetime).
 #' @param evitals_16_col <['tidy-select'][dplyr_tidy_select]> Column name for additional vital signs data.
 #' @param ... Additional arguments passed to other functions if needed.
@@ -92,8 +94,8 @@ airway_18 <- function(df = NULL,
                       eprocedures_03_col,
                       eprocedures_05_col,
                       eprocedures_06_col,
-                      eairway_02_col,
-                      eairway_04_col,
+                      eairway_02_col = NULL,
+                      eairway_04_col = NULL,
                       evitals_01_col,
                       evitals_16_col,
                       ...) {
@@ -112,6 +114,9 @@ airway_18 <- function(df = NULL,
     
     # header
     cli::cli_h1("Airway-18")
+    
+    # Start timing the function execution
+    start_time <- Sys.time()
     
     # header
     cli::cli_h2("Gathering Records for Airway-18")
@@ -166,6 +171,26 @@ airway_18 <- function(df = NULL,
     # create a separator
     cli::cli_text("\n")
     
+    # Calculate and display the runtime
+    end_time <- Sys.time()
+    run_time_secs <- difftime(end_time, start_time, units = "secs")
+    run_time_secs <- as.numeric(run_time_secs)
+    
+    if (run_time_secs >= 60) {
+      
+      run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      
+    } else {
+      
+      run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      
+    }
+    
+    # create a separator
+    cli::cli_text("\n")
+    
     return(airway.18)
     
   } else if(
@@ -181,6 +206,9 @@ airway_18 <- function(df = NULL,
     
   ) {
   
+    # Start timing the function execution
+    start_time <- Sys.time()
+    
     # header
     cli::cli_h1("Airway-18")
     
@@ -230,6 +258,26 @@ airway_18 <- function(df = NULL,
     # union
     airway.18 <- bind_rows(adult_population, peds_population)
 
+    # create a separator
+    cli::cli_text("\n")
+    
+    # Calculate and display the runtime
+    end_time <- Sys.time()
+    run_time_secs <- difftime(end_time, start_time, units = "secs")
+    run_time_secs <- as.numeric(run_time_secs)
+    
+    if (run_time_secs >= 60) {
+      
+      run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      
+    } else {
+      
+      run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      
+    }
+    
     # create a separator
     cli::cli_text("\n")
     

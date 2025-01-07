@@ -60,6 +60,7 @@
 #' @param response_table A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is `NULL`.
 #' @param situation_table A data.frame or tibble containing only the esituation fields needed for this measure's calculations. Default is `NULL`.
 #' @param medications_table A data.frame or tibble containing only the emedications fields needed for this measure's calculations. Default is `NULL`.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column containing unique record identifiers for each encounter.
 #' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column name representing the incident date as `Date` or `POSIXct.`
 #' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column name representing the patient's date of birth as `Date` or `POSIXct.`
 #' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column name for patient age in numeric form.
@@ -100,203 +101,155 @@ seizure_02 <- function(df = NULL,
                        emedications_03_col,
                        ...) {
 
-  # provide better error messaging if df is missing
-  if (missing(df)) {
-    cli_abort(
-      c(
-        "No object of class {.cls data.frame} was passed to {.fn seizure_02}.",
-        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn seizure_02}."
-      )
-    )
+  # utilize applicable tables to analyze the data for the measure
+  if (
+    any(
+      !is.null(patient_scene_table),
+      !is.null(medications_table),
+      !is.null(situation_table),
+      !is.null(response_table)
+    ) &&
+    is.null(df)
+  ) {
+    
+    # Start timing the function execution
+    start_time <- Sys.time()
+    
+    # header
+    cli::cli_h1("Seizure-02")
+    
+    # header
+    cli::cli_h2("Gathering Records for Seizure-02")
+    
+    # gather the population of interest
+    seizure_02_populations <- seizure_02_population(patient_scene_table = patient_scene_table,
+                                                    response_table = response_table,
+                                                    situation_table = situation_table,
+                                                    medications_table = medications_table,
+                                                    erecord_01_col = {{ erecord_01_col }},
+                                                    incident_date_col = {{ incident_date_col }},
+                                                    patient_DOB_col = {{ patient_DOB_col }},
+                                                    epatient_15_col = {{ epatient_15_col }},
+                                                    epatient_16_col = {{ epatient_16_col }},
+                                                    eresponse_05_col = {{ eresponse_05_col }},
+                                                    esituation_11_col = {{ esituation_11_col }},
+                                                    esituation_12_col = {{ esituation_12_col }},
+                                                    emedications_03_col = {{ emedications_03_col }}
+                                                    )
+    
+  # create a separator
+  cli::cli_text("\n")
+    
+  # header for calculations
+  cli::cli_h2("Calculating Seizure-02")
+    
+  # summarize
+  seizure.02 <- results_summarize(total_population = seizure_02_populations$initial_population,
+                                  adult_population = seizure_02_populations$adults,
+                                  peds_population = seizure_02_populations$peds,
+                                  measure_name = "Seizure-02",
+                                  numerator_col = BENZO_MED,
+                                  ...
+                                  )
+    
+  # create a separator
+  cli::cli_text("\n")
+  
+  # Calculate and display the runtime
+  end_time <- Sys.time()
+  run_time_secs <- difftime(end_time, start_time, units = "secs")
+  run_time_secs <- as.numeric(run_time_secs)
+  
+  if (run_time_secs >= 60) {
+    
+    run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+    cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+    
+  } else {
+    
+    run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+    cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
     
   }
   
-  # Ensure df is a data frame or tibble
-  if (!is.data.frame(df) && !is_tibble(df)) {
-    cli_abort(
-      c(
-        "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-        "i" = "The passed object is of class {.val {class(df)}}."
-      )
-    )
+  # create a separator
+  cli::cli_text("\n")
+  
+  return(seizure.02)
+  
+  } else if (
+    any(
+      is.null(patient_scene_table),
+      is.null(medications_table),
+      is.null(situation_table),
+      is.null(response_table)
+    ) &&
+    !is.null(df)
+  ) {
+    
+    # Start timing the function execution
+    start_time <- Sys.time()
+    
+    # header
+    cli::cli_h1("Seizure-02")
+    
+    # header
+    cli::cli_h2("Gathering Records for Seizure-02")
+    
+    # gather the population of interest
+    seizure_02_populations <- seizure_02_population(df = df,
+                                                    erecord_01_col = {{ erecord_01_col }},
+                                                    incident_date_col = {{ incident_date_col }},
+                                                    patient_DOB_col = {{ patient_DOB_col }},
+                                                    epatient_15_col = {{ epatient_15_col }},
+                                                    epatient_16_col = {{ epatient_16_col }},
+                                                    eresponse_05_col = {{ eresponse_05_col }},
+                                                    esituation_11_col = {{ esituation_11_col }},
+                                                    esituation_12_col = {{ esituation_12_col }},
+                                                    emedications_03_col = {{ emedications_03_col }}
+                                                    )
+    
+  # create a separator
+  cli::cli_text("\n")
+    
+  # header for calculations
+  cli::cli_h2("Calculating Seizure-02")
+    
+  # summarize
+  seizure.02 <- results_summarize(total_population = seizure_02_populations$initial_population,
+                                  adult_population = seizure_02_populations$adults,
+                                  peds_population = seizure_02_populations$peds,
+                                  measure_name = "Seizure-02",
+                                  numerator_col = BENZO_MED,
+                                  ...
+                                  )
+    
+  # create a separator
+  cli::cli_text("\n")
+  
+  # Calculate and display the runtime
+  end_time <- Sys.time()
+  run_time_secs <- difftime(end_time, start_time, units = "secs")
+  run_time_secs <- as.numeric(run_time_secs)
+  
+  if (run_time_secs >= 60) {
+    
+    run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+    cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+    
+  } else {
+    
+    run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+    cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+    
   }
   
-  # use quasiquotation on the date variables to check format
-  incident_date <- enquo(incident_date_col)
-  patient_DOB <- enquo(patient_DOB_col)
+  # create a separator
+  cli::cli_text("\n")
   
-  if ((!is.Date(df[[as_name(incident_date)]]) &
-       !is.POSIXct(df[[as_name(incident_date)]])) ||
-      (!is.Date(df[[as_name(patient_DOB)]]) &
-       !is.POSIXct(df[[as_name(patient_DOB)]]))) {
-    
-    cli_abort(
-      "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
-    )
+  return(seizure.02)
+
     
   }
-  
-  # options for the progress bar
-  # a green dot for progress
-  # a white line for note done yet
-  options(cli.progress_bar_style = "dot")
-  
-  options(cli.progress_bar_style = list(
-    complete = cli::col_green("●"),
-    incomplete = cli::col_br_white("─")
-  ))
-  
-  # header
-  cli::cli_h1("Calculating Seizure-02")
-  
-  # initiate the progress bar process
-  progress_bar <- cli::cli_progress_bar(
-    "Running `seizure_02()`",
-    total = 8,
-    type = "tasks",
-    clear = F,
-    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
-  )
-  
-  progress_bar
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
-  
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
-  
-  # 911 codes for eresponse.05
-  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
-  
-  # get codes as a regex to filter primary/secondary impression fields
-  epilepsy_pattern <- "epilepsy.*?with status epilepticus|\\b(?:G40\\.\\d{1,3})\\b"
-  
-  # medication values for seizure_02
-  
-  medication_pattern = "3322|6960|203128|6470|diazepam|midazolam|midazolam hydrochloride|lorazepam"
-  
-  # minor values
-  minor_values <- "days|hours|minutes|months"
-  
-  year_values <- "2516009|years"
-  
-  day_values <- "days|2516001"
-  
-  hour_values <- "hours|2516003"
-  
-  minute_values <- "minutes|2516005"
-  
-  month_values <- "months|2516007"
-  
-  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
-  
-  # filter the table to get the initial population regardless of age
-  initial_population <- df |>
-  
-    # create the age in years variable
-    
-    mutate(patient_age_in_years_col = as.numeric(difftime(
-      time1 = {{incident_date_col}},
-      time2 = {{patient_DOB_col}},
-      units = "days"
-    )) / 365,
-    
-    # create the respiratory distress variable
-    seizure = if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
-      pattern = epilepsy_pattern,
-      x = .,
-      ignore.case = T
-    )),
-    
-    # create the 911 variable
-    call_911 = grepl(
-      pattern = codes_911,
-      x = {{eresponse_05_col}},
-      ignore.case = T
-    ),
-    
-    # system age checks
-    system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor = system_age_minor1 | system_age_minor2,
-    
-    # calculated age checks
-    calc_age_adult = patient_age_in_years_col >= 18,
-    calc_age_minor = patient_age_in_years_col < 18 & patient_age_in_years_col >= 2
-    ) |>
-    
-    dplyr::filter(
-      
-      # Identify Records that have seizure documentation defined above
-      seizure,
-      
-      # filter down to 911 calls
-      call_911
-      
-    ) |>
-    
-    # check to see if target meds were passed
-    mutate(meds_check = if_else(grepl(pattern = medication_pattern, x = {{emedications_03_col}}, ignore.case = T), 1, 0)
-           )
-  
-  # Adult and Pediatric Populations
-  
-  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
-  
-  # filter adult
-  adult_pop <- initial_population |>
-    dplyr::filter(system_age_adult | calc_age_adult)
-  
-  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
-  
-  # filter peds
-  peds_pop <- initial_population |>
-    dplyr::filter(system_age_minor | calc_age_minor)
-  
-  # get the summary of results
-  
-  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
-  
-  # all
-  total_population <- initial_population |>
-    summarize_measure(
-      measure_name = "Seizure-02",
-      population_name = "All",
-      numerator_col = meds_check,
-      ...
-    )
-  
-  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
-  
-  # adults
-  adult_population <- adult_pop |>
-    summarize_measure(
-      measure_name = "Seizure-02",
-      population_name = "Adults",
-      numerator_col = meds_check,
-      ...
-    )
-  
-  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
-  
-  # peds
-  peds_population <- peds_pop |>
-    summarize_measure(
-      measure_name = "Seizure-02",
-      population_name = "Peds",
-      numerator_col = meds_check,
-      ...
-    )
-  
-  cli::cli_progress_update(set = 8, id = progress_bar, force = T)
-  
-  # summary
-  seizure.02 <- bind_rows(adult_population, peds_population, total_population)
-  
-  cli::cli_progress_done()
-  
-  seizure.02
-  
   
 }

@@ -1,4 +1,4 @@
-#' Syncope-01:
+#' Syncope-01 Calculation
 #' 
 #' The `syncope_01` function processes EMS dataset to identify potential syncope (fainting) cases
 #' based on specific criteria and calculates related ECG measures. This function dplyr::filters data for 
@@ -36,7 +36,12 @@
 #' trigger an error message.
 #' 
 #' @param df <['tidy-select'][dplyr_tidy_select]> Main data frame containing EMS records.
+#' @param patient_scene_table A data frame or tibble containing only epatient and escene fields as a fact table. Default is `NULL`.
+#' @param response_table A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is `NULL`.
+#' @param situation_table A data.frame or tibble containing only the esituation fields needed for this measure's calculations. Default is `NULL`.
+#' @param vitals_table A data.frame or tibble containing only the evitals fields needed for this measure's calculations. Default is `NULL`.
 #' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column containing the incident date, used to calculate age.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column containing unique record identifiers for each encounter.
 #' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column containing the patient's date of birth.
 #' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient age (numeric).
 #' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column for the patient age units (e.g., "Years", "Months").
@@ -61,9 +66,14 @@
 #' 
 #' @export
 #'
-syncope_01 <- function(df,
-                       incident_date_col,
-                       patient_DOB_col,
+syncope_01 <- function(df = NULL,
+                       patient_scene_table = NULL,
+                       response_table = NULL,
+                       situation_table = NULL,
+                       vitals_table = NULL,
+                       erecord_01_col,
+                       incident_date_col = NULL,
+                       patient_DOB_col = NULL,
                        epatient_15_col,
                        epatient_16_col,
                        eresponse_05_col,
@@ -74,186 +84,182 @@ syncope_01 <- function(df,
                        evitals_04_col,
                        ...) {
   
-  # provide better error messaging if df is missing
-  if (missing(df)) {
-    cli_abort(
-      c(
-        "No object of class {.cls data.frame} was passed to {.fn syncope_01}.",
-        "i" = "Please supply a {.cls data.frame} to the first argument in {.fn syncope_01}."
-      )
-    )
+  # utilize applicable tables to analyze the data for the measure
+  if (
+    any(
+      !is.null(patient_scene_table),
+      !is.null(vitals_table),
+      !is.null(situation_table),
+      !is.null(response_table)
+    ) &&
     
-  }
-  
-  # Ensure df is a data frame or tibble
-  if (!is.data.frame(df) && !tibble::is_tibble(df)) {
-    cli_abort(
-      c(
-        "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-        "i" = "The passed object is of class {.val {class(df)}}."
-      )
-    )
-  }
-  
-  # use quasiquotation on the date variables to check format
-  incident_date <- rlang::enquo(incident_date_col)
-  patient_DOB <- rlang::enquo(patient_DOB_col)
-  
-  if ((!lubridate::is.Date(df[[as_name(incident_date)]]) &
-       !lubridate::is.POSIXct(df[[as_name(incident_date)]])) ||
-      (!lubridate::is.Date(df[[as_name(patient_DOB)]]) &
-       !lubridate::is.POSIXct(df[[as_name(patient_DOB)]]))) {
+    is.null(df)
     
-    cli_abort(
-      "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
-    )
+  ) {
     
-  }
-  
-  # options for the progress bar
-  # a green dot for progress
-  # a white line for note done yet
-  options(cli.progress_bar_style = "dot")
-  
-  options(cli.progress_bar_style = list(
-    complete = cli::col_green("●"),
-    incomplete = cli::col_br_white("─")
-  ))
-  
-  # header
-  cli::cli_h1("Calculating Syncope-01")
-  
-  # initiate the progress bar process
-  progress_bar <- cli::cli_progress_bar(
-    "Running `syncope_01()`",
-    total = 7,
-    type = "tasks",
-    clear = F,
-    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
-  )
-  
-  progress_bar
-  
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar, force = T)
-  
-  # dplyr::filter incident data for 911 response codes and the corresponding primary/secondary impressions
-  # dplyr::filter down the primary / other associated symptoms
-  
-  # 911 codes for eresponse.05
-  codes_911 <- "2205001|2205003|2205009"
-  
-  # primary and secondary provider impression values
-  syncope_pattern <- "\\b(?:R(?:55|40.4))\\b|Syncope and collapse|Transient alteration of awareness"
-  
-  # ECG pattern
-  ecg_pattern <- "12 Lead-Left Sided \\(Normal\\)|12 Lead-Right Sided|15 Lead|18 Lead"
-  
-  # minor values
-  
-  minor_values <- "days|hours|minutes|months"
-
-  cli::cli_progress_update(set = 2, id = progress_bar, force = T)
-  
-  # dplyr::filter the table to get the initial population regardless of age
-  initial_population <- df |>
+    # Start timing the function execution
+    start_time <- Sys.time()
     
-    # create the age in years variable
-    dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
-      time1 = {{ incident_date_col }},
-      time2 = {{ patient_DOB_col }},
-      units = "days"
-    )) / 365,
-      
-      # create the syncope variable using primary / associated symptoms
-      syncope1 = dplyr::if_any(c({{esituation_09_col}}, {{esituation_10_col}}), ~ grepl(
-        pattern = syncope_pattern,
-        x = .,
-        ignore.case = T
-      )),
-      
-      # create the syncope variable using primary / secondary impressions
-      syncope2 = dplyr::if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
-        pattern = syncope_pattern,
-        x = .,
-        ignore.case = T
-      )),
-      
-      # final syncope variable
-      syncope = syncope1 | syncope2,
-      
-      # create the 911 variable
-      call_911 = grepl(
-        pattern = codes_911,
-        x = {{eresponse_05_col}},
-        ignore.case = T
-      ),
-      
-      # create the ECG variable
-      ecg_present = dplyr::if_else(grepl(pattern = ecg_pattern, x = {{evitals_04_col}}, ignore.case = T), 1, 0),
-      
-      # system age check
-      system_age_adult = {{ epatient_15_col }} >= 18 & {{ epatient_16_col }} == "Years",
-      system_age_minor1 = {{ epatient_15_col }} < 18 & {{ epatient_16_col }} == "Years",
-      system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}),
-      system_age_minor = system_age_minor1 | system_age_minor2,
-      
-      # calculated age check
-      calc_age_adult = patient_age_in_years_col >= 18,
-      calc_age_minor = patient_age_in_years_col < 18
-    ) |> 
+    # header
+    cli::cli_h1("Syncope-01")
     
-    dplyr::filter(
-      
-      # only records with a syncope dx
-      syncope,
-      
-      # only 911 calls
-      call_911
-           )
-
-
-  # Adult and Pediatric Populations
-  
-  cli::cli_progress_update(set = 3, id = progress_bar, force = T)
-  
-  # dplyr::filter adult
-  adult_pop <- initial_population |>
-    dplyr::filter(system_age_adult | calc_age_adult)
-  
-  cli::cli_progress_update(set = 4, id = progress_bar, force = T)
-  
-  # dplyr::filter peds
-  peds_pop <- initial_population |>
-    dplyr::filter(system_age_minor | calc_age_minor)
-  
-  # get the summary of results
-  
-  cli::cli_progress_update(set = 5, id = progress_bar, force = T)
+    # header
+    cli::cli_h2("Gathering Records for Syncope-01")
+    
+    # gather the population of interest
+    syncope_01_populations <- syncope_01_population(patient_scene_table = patient_scene_table,
+                                                    response_table = response_table,
+                                                    situation_table = situation_table,
+                                                    vitals_table = vitals_table,
+                                                    erecord_01_col = {{ erecord_01_col }},
+                                                    incident_date_col = {{ incident_date_col }},
+                                                    patient_DOB_col = {{ patient_DOB_col }},
+                                                    epatient_15_col = {{ epatient_15_col }},
+                                                    epatient_16_col = {{ epatient_16_col }},
+                                                    eresponse_05_col = {{ eresponse_05_col }},
+                                                    esituation_09_col = {{ esituation_09_col }},
+                                                    esituation_10_col = {{ esituation_10_col }},
+                                                    esituation_11_col = {{ esituation_11_col }},
+                                                    esituation_12_col = {{ esituation_12_col }},
+                                                    evitals_04_col = {{ evitals_04_col }}
+                                                    )
+    
+  # create a separator
+  cli::cli_text("\n")
+    
+  # header for calculations
+  cli::cli_h2("Calculating Syncope-01")
+    
+  # summarize
   
   # adults
-  adult_population <- adult_pop |>
+  adult_population <- syncope_01_populations$adults |>
     summarize_measure(measure_name = "Syncope-01",
                       population_name = "Adult",
-                      ecg_present,
+                      ECG_PERFORMED,
                       ...)
-  
-  cli::cli_progress_update(set = 6, id = progress_bar, force = T)
   
   # peds
-  peds_population <- peds_pop |>
+  peds_population <- syncope_01_populations$peds |>
     summarize_measure(measure_name = "Syncope-01",
                       population_name = "Peds",
-                      ecg_present,
+                      ECG_PERFORMED,
                       ...)
-  
-  cli::cli_progress_update(set = 7, id = progress_bar, force = T)
   
   # summary
   syncope.01 <- dplyr::bind_rows(adult_population, peds_population)
+
+  # create a separator
+  cli::cli_text("\n")
   
-  cli::cli_progress_done()
+  # Calculate and display the runtime
+  end_time <- Sys.time()
+  run_time_secs <- difftime(end_time, start_time, units = "secs")
+  run_time_secs <- as.numeric(run_time_secs)
   
-  syncope.01
+  if (run_time_secs >= 60) {
+    
+    run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+    cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+    
+  } else {
+    
+    run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+    cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+    
+  }
   
+  # create a separator
+  cli::cli_text("\n")
+  
+  return(syncope.01)
+  
+  } else if (
+    any(
+      is.null(patient_scene_table),
+      is.null(vitals_table),
+      is.null(situation_table),
+      is.null(response_table)
+    ) &&
+    
+    !is.null(df)
+    
+  ) {
+    
+    # Start timing the function execution
+    start_time <- Sys.time()
+    
+    # header
+    cli::cli_h1("Syncope-01")
+    
+    # header
+    cli::cli_h2("Gathering Records for Syncope-01")
+    
+    # gather the population of interest
+    syncope_01_populations <- syncope_01_population(df = df,
+                                                    erecord_01_col = {{ erecord_01_col }},
+                                                    incident_date_col = {{ incident_date_col }},
+                                                    patient_DOB_col = {{ patient_DOB_col }},
+                                                    epatient_15_col = {{ epatient_15_col }},
+                                                    epatient_16_col = {{ epatient_16_col }},
+                                                    eresponse_05_col = {{ eresponse_05_col }},
+                                                    esituation_09_col = {{ esituation_09_col }},
+                                                    esituation_10_col = {{ esituation_10_col }},
+                                                    esituation_11_col = {{ esituation_11_col }},
+                                                    esituation_12_col = {{ esituation_12_col }},
+                                                    evitals_04_col = {{ evitals_04_col }}
+                                                    )
+    
+    # create a separator
+    cli::cli_text("\n")
+    
+    # header for calculations
+    cli::cli_h2("Calculating Syncope-01")
+    
+    # summarize
+    
+    # adults
+    adult_population <- syncope_01_populations$adults |>
+      summarize_measure(measure_name = "Syncope-01",
+                        population_name = "Adult",
+                        ECG_PERFORMED,
+                        ...)
+    
+    # peds
+    peds_population <- syncope_01_populations$peds |>
+      summarize_measure(measure_name = "Syncope-01",
+                        population_name = "Peds",
+                        ECG_PERFORMED,
+                        ...)
+    
+    # summary
+    syncope.01 <- dplyr::bind_rows(adult_population, peds_population)
+    
+    # create a separator
+    cli::cli_text("\n")
+    
+    # Calculate and display the runtime
+    end_time <- Sys.time()
+    run_time_secs <- difftime(end_time, start_time, units = "secs")
+    run_time_secs <- as.numeric(run_time_secs)
+    
+    if (run_time_secs >= 60) {
+      
+      run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      
+    } else {
+      
+      run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      
+    }
+    
+    # create a separator
+    cli::cli_text("\n")
+    
+    return(syncope.01)
+    
+  }
+
 }

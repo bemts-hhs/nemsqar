@@ -121,6 +121,9 @@ trauma_14 <- function(df = NULL,
     
   ) {
     
+    # Start timing the function execution
+    start_time <- Sys.time()
+    
     # header
     cli::cli_h1("Trauma-14")
     
@@ -203,6 +206,26 @@ trauma_14 <- function(df = NULL,
     # create a separator
     cli::cli_text("\n")
     
+    # Calculate and display the runtime
+    end_time <- Sys.time()
+    run_time_secs <- difftime(end_time, start_time, units = "secs")
+    run_time_secs <- as.numeric(run_time_secs)
+    
+    if (run_time_secs >= 60) {
+      
+      run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, m))}.")
+      
+    } else {
+      
+      run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, s))}.")
+      
+    }
+    
+    # create a separator
+    cli::cli_text("\n")
+    
     return(trauma.04)
     
   } else if(
@@ -219,6 +242,9 @@ trauma_14 <- function(df = NULL,
     ) && !is.null(df)
     
   ) {
+    
+    # Start timing the function execution
+    start_time <- Sys.time()
     
     # header
     cli::cli_h1("Trauma-14")
@@ -291,6 +317,26 @@ trauma_14 <- function(df = NULL,
     # summary
     trauma.04 <- dplyr::bind_rows(population_65, population_10_64, population_10)
 
+    # create a separator
+    cli::cli_text("\n")
+    
+    # Calculate and display the runtime
+    end_time <- Sys.time()
+    run_time_secs <- difftime(end_time, start_time, units = "secs")
+    run_time_secs <- as.numeric(run_time_secs)
+    
+    if (run_time_secs >= 60) {
+      
+      run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, m))}.")
+      
+    } else {
+      
+      run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, s))}.")
+      
+    }
+    
     # create a separator
     cli::cli_text("\n")
     

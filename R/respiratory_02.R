@@ -80,6 +80,9 @@ respiratory_02 <- function(df = NULL,
     
   ) {
     
+    # Start timing the function execution
+    start_time <- Sys.time()
+    
     # header
     cli::cli_h1("Respiratory-02")
     
@@ -121,6 +124,26 @@ respiratory_02 <- function(df = NULL,
   # create a separator
   cli::cli_text("\n")
   
+  # Calculate and display the runtime
+  end_time <- Sys.time()
+  run_time_secs <- difftime(end_time, start_time, units = "secs")
+  run_time_secs <- as.numeric(run_time_secs)
+  
+  if (run_time_secs >= 60) {
+    
+    run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+    cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+    
+  } else {
+    
+    run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+    cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+    
+  }
+  
+  # create a separator
+  cli::cli_text("\n")
+  
   return(respiratory.02)
   
     
@@ -138,6 +161,9 @@ respiratory_02 <- function(df = NULL,
 
     ) {
   
+  # Start timing the function execution
+  start_time <- Sys.time()
+      
   # header
   cli::cli_h1("Respiratory-02")
   
@@ -172,6 +198,26 @@ respiratory_02 <- function(df = NULL,
                                    numerator_col = OXYGEN,
                                    ...)
 
+    # create a separator
+    cli::cli_text("\n")
+    
+    # Calculate and display the runtime
+    end_time <- Sys.time()
+    run_time_secs <- difftime(end_time, start_time, units = "secs")
+    run_time_secs <- as.numeric(run_time_secs)
+    
+    if (run_time_secs >= 60) {
+      
+      run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      
+    } else {
+      
+      run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      
+    }
+    
     # create a separator
     cli::cli_text("\n")
     
