@@ -17,8 +17,7 @@ safety_02_population(
   eresponse_05_col,
   edisposition_18_col,
   edisposition_28_col,
-  transport_disposition_cols,
-  ...
+  transport_disposition_cols
 )
 }
 \arguments{
@@ -46,8 +45,6 @@ safety_02_population(
 
 \item{transport_disposition_cols}{<\link[=dplyr_tidy_select]{'tidy-select'}> One or more unquoted column names (such as edisposition.12, edisposition.30) containing transport
 disposition details.}
-
-\item{...}{Additional arguments for summary calculation, if needed.}
 }
 \value{
 #' A list that contains the following:

@@ -14,8 +14,7 @@ safety_01_population(
   epatient_15_col,
   epatient_16_col,
   eresponse_05_col,
-  eresponse_24_col,
-  ...
+  eresponse_24_col
 )
 }
 \arguments{
@@ -38,8 +37,6 @@ safety_01_population(
 \item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing response mode codes (e.g., 911 response codes).}
 
 \item{eresponse_24_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column detailing additional response descriptors as text.}
-
-\item{...}{arguments passed on to summarize.}
 }
 \value{
 #' A list that contains the following:

@@ -22,11 +22,10 @@ airway_18_population(
   eprocedures_03_col,
   eprocedures_05_col,
   eprocedures_06_col,
-  eairway_02_col,
-  eairway_04_col,
+  eairway_02_col = NULL,
+  eairway_04_col = NULL,
   evitals_01_col,
-  evitals_16_col,
-  ...
+  evitals_16_col
 )
 }
 \arguments{
@@ -64,15 +63,13 @@ airway_18_population(
 
 \item{eprocedures_06_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for procedure success codes.}
 
-\item{eairway_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for airway procedure data (datetime).}
+\item{eairway_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for airway procedure data (datetime). Default is \code{NULL}.}
 
-\item{eairway_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for airway procedure data.}
+\item{eairway_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for airway procedure data. Default is \code{NULL}.}
 
 \item{evitals_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for vital signs data (datetime).}
 
 \item{evitals_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for additional vital signs data.}
-
-\item{...}{Additional arguments passed to other functions if needed.}
 }
 \value{
 #' A list that contains the following:
@@ -104,6 +101,8 @@ included in \code{df} or the \verb{*_table} arguments.
 
 The date time fields from eprocedures.01, eairway.02, and evitals.01 must be date time
 objects or the function will fail.
+
+The eAirway fields are optional in this function in case a user does not have access to those fields.
 }
 
 \section{Practical Tips}{

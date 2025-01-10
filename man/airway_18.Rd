@@ -22,8 +22,8 @@ airway_18(
   eprocedures_03_col,
   eprocedures_05_col,
   eprocedures_06_col,
-  eairway_02_col,
-  eairway_04_col,
+  eairway_02_col = NULL,
+  eairway_04_col = NULL,
   evitals_01_col,
   evitals_16_col,
   ...
@@ -64,9 +64,9 @@ airway_18(
 
 \item{eprocedures_06_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for procedure success codes.}
 
-\item{eairway_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for airway procedure data (datetime).}
+\item{eairway_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for airway procedure data (datetime). Default is \code{NULL}.}
 
-\item{eairway_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for airway procedure data.}
+\item{eairway_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for airway procedure data. Default is \code{NULL}.}
 
 \item{evitals_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for vital signs data (datetime).}
 
@@ -118,6 +118,8 @@ recorded" values common to ImageTrend or the NEMSIS codes that correspond to
 For the eprocedure, eairway, and evitals fields, all responses entered can be
 included in \code{df}.  This will result in Cartesian product, but the function
 will performantly handle that problem.
+
+The eAirway fields are optional in this function in case a user does not have access to those fields.
 }
 
 \section{Practical Tips}{

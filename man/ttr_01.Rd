@@ -2,13 +2,18 @@
 % Please edit documentation in R/ttr_01.R
 \name{ttr_01}
 \alias{ttr_01}
-\title{TTR-01 Measure Calculation}
+\title{TTR-01 Calculation}
 \usage{
 ttr_01(
-  df,
+  df = NULL,
+  patient_scene_table = NULL,
+  response_table = NULL,
+  disposition_table = NULL,
+  vitals_table = NULL,
+  arrest_table = NULL,
   erecord_01_col,
-  incident_date_col,
-  patient_DOB_col,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
   epatient_15_col,
   epatient_16_col,
   eresponse_05_col,
@@ -25,7 +30,17 @@ ttr_01(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing the dataset to analyze.}
+\item{df}{A data frame or tibble containing the dataset to analyze. Default is \code{NULL}.}
+
+\item{patient_scene_table}{A data frame or tibble containing only epatient and escene fields as a fact table. Default is \code{NULL}.}
+
+\item{response_table}{A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+
+\item{disposition_table}{A data frame or tibble containing only the edisposition fields needed for this measure's calculations. Default is \code{NULL}.}
+
+\item{vitals_table}{A data frame or tibble containing only the evitals fields needed for this measure's calculations. Default is \code{NULL}.}
+
+\item{arrest_table}{A data frame or tibble containing only the earrest fields needed for this measure's calculations. Default is \code{NULL}.}
 
 \item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column specifying unique patient records.}
 
@@ -41,15 +56,15 @@ ttr_01(
 
 \item{transport_disposition_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column specifying transport disposition for the patient.}
 
-\item{earrest_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}>,}
+\item{earrest_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing cardiac arrest data.}
 
 \item{evitals_06_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing systolic blood pressure (SBP) data from initial vital signs.}
 
-\item{evitals_07_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing diastolic blood pressure (DBP) data from initial vital signs,}
+\item{evitals_07_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing diastolic blood pressure (DBP) data from initial vital signs.}
 
-\item{evitals_10_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing heart rate data from initial vital signs.,}
+\item{evitals_10_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing heart rate data from initial vital signs.}
 
-\item{evitals_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing sp02 data from the initial vital signs,}
+\item{evitals_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing spO2 data from the initial vital signs.}
 
 \item{evitals_14_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing respiratory rate data from initial vital signs.}
 
@@ -72,23 +87,6 @@ decimal places.
 \description{
 This function calculates the TTR_01 measure, which evaluates the completeness of vitals documentation for patients not experiencing cardiac arrest who were also not transported during a 911 response. It determines the total population, adult population, and pediatric population meeting the criteria for the TTR_01 measure.
 }
-\details{
-The function performs the following steps:
-\itemize{
-\item Validates input data for proper formats and types.
-\item Creates unique IDs for patient incidents to maintain row distinctness.
-\item Filters records based on specific criteria, response type (911), non-transports, and non-cardiac arrest.
-\item Separately identifies adult and pediatric populations based on system and calculated age.
-\item Summarizes the TTR_01 measure for adults and pediatrics.
-}
-}
-\note{
-\itemize{
-\item Ensure the input dataset contains initial vital signs for each required vital signs.
-\item Not values should not be used, values missing a response should be blank so R interprets those as \code{NA} values.
-\item Date columns (\code{incident_date_col} and \code{patient_DOB_col}) must be properly formatted before calling this function.
-}
-}
 \section{Data Assumptions}{
 
 
@@ -101,15 +99,6 @@ This function assumes the input dataset contains the \emph{initial} vital signs 
 \item pulse oximetry (sp02), and
 \item total Glasgow Coma Scale (GCS) score, respectively.
 \item Complete AVPU responses are expected.
-}
-}
-
-\section{Features}{
-
-\itemize{
-\item Handles missing or invalid date formats with error messaging.
-\item Incorporates quasiquotation for flexible column referencing.
-\item Creates reusable dimension tables for efficient filtering and summarization.
 }
 }
 

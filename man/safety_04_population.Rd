@@ -22,8 +22,7 @@ safety_04_population(
   einjury_03_col,
   eprocedures_03_col,
   edisposition_14_col,
-  transport_disposition_col,
-  ...
+  transport_disposition_col
 )
 }
 \arguments{
@@ -62,18 +61,14 @@ safety_04_population(
 \item{edisposition_14_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for transport dispositions.}
 
 \item{transport_disposition_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Columns for primary and secondary transport dispositions.}
-
-\item{...}{Additional arguments for flexibility in function customization.}
 }
 \value{
-A data.frame summarizing results for three population groups (All,
-Adults, and Peds) with the following columns:
-\code{pop}: Population type (All, Adults, or Peds).
-\code{numerator}: Count of incidents where beta-agonist medications were administered.
-\code{denominator}: Total count of incidents.
-\code{prop}: Proportion of incidents involving beta-agonist medications.
-\code{prop_label}: Proportion formatted as a percentage with a specified number of
-decimal places.
+#' A list that contains the following:
+\itemize{
+\item a tibble with counts for each filtering step,
+\item a tibble for each population of interest
+\item a tibble for the initial population
+}
 }
 \description{
 Filters data down to the target populations for Safety-04, and categorizes
