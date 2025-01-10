@@ -47,7 +47,6 @@
 #' @param edisposition_28_col <['tidy-select'][dplyr_tidy_select]> Column giving patient evaluation and care categories for the EMS response.
 #' @param transport_disposition_cols <['tidy-select'][dplyr_tidy_select]> One or more unquoted column names (such as edisposition.12, edisposition.30) containing transport 
 #' disposition details.
-#' @param ... Additional arguments for summary calculation, if needed.
 #'
 #' @return
 #' #' A list that contains the following:
@@ -71,8 +70,7 @@ safety_02_population <- function(df = NULL,
                       eresponse_05_col,
                       edisposition_18_col,
                       edisposition_28_col,
-                      transport_disposition_cols,
-                      ...) {
+                      transport_disposition_cols) {
 
 
  # ensure that not all table arguments AND the df argument are fulfilled

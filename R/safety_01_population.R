@@ -30,7 +30,6 @@
 #' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column for age units.
 #' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column containing response mode codes (e.g., 911 response codes).
 #' @param eresponse_24_col <['tidy-select'][dplyr_tidy_select]> Column detailing additional response descriptors as text.
-#' @param ... arguments passed on to summarize.
 #'
 #' @return
 #' #' A list that contains the following:
@@ -51,8 +50,7 @@ safety_01_population <- function(df = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       eresponse_05_col,
-                      eresponse_24_col,
-                      ...) {
+                      eresponse_24_col) {
 
   # ensure that not all table arguments AND the df argument are fulfilled
   # user only passes df or all table arguments

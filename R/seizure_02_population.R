@@ -68,16 +68,12 @@
 #' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column name for secondary impressions.
 #' @param emedications_03_col <['tidy-select'][dplyr_tidy_select]> Column name for medications administered; ideally a list column 
 #' or string with comma-separated values.
-#' @param ... Additional arguments passed to `dplyr::summarize`.
 #'
-#' @return A tibble summarizing results for three population groups (All,
-#' Adults, and Peds) with the following columns:
-#' `pop`: Population type (All, Adults, or Peds).
-#' `numerator`: Count of incidents where beta-agonist medications were administered.
-#' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents involving beta-agonist medications.
-#' `prop_label`: Proportion formatted as a percentage with a specified number of
-#' decimal places.
+#' @return
+#' #' A list that contains the following:
+#' * a tibble with counts for each filtering step,
+#' * a tibble for each population of interest
+#' * a tibble for the initial population 
 #' 
 #' @author Nicolas Foss, Ed.D., MS
 #' 
@@ -96,8 +92,7 @@ seizure_02_population <- function(df = NULL,
                        eresponse_05_col,
                        esituation_11_col,
                        esituation_12_col,
-                       emedications_03_col,
-                       ...) {
+                       emedications_03_col) {
 
   # Ensure that not all table arguments AND the df argument are fulfilled
   # User must pass either `df` or all table arguments, but not both

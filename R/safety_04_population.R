@@ -66,16 +66,12 @@
 #' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column listing procedures, assumed to contain multiple procedure codes/texts in each cell.
 #' @param edisposition_14_col <['tidy-select'][dplyr_tidy_select]> Column for transport dispositions.
 #' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> Columns for primary and secondary transport dispositions.
-#' @param ... Additional arguments for flexibility in function customization.
 #'
-#' @return A data.frame summarizing results for three population groups (All,
-#' Adults, and Peds) with the following columns:
-#' `pop`: Population type (All, Adults, or Peds).
-#' `numerator`: Count of incidents where beta-agonist medications were administered.
-#' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents involving beta-agonist medications.
-#' `prop_label`: Proportion formatted as a percentage with a specified number of
-#' decimal places.
+#' @return
+#' #' A list that contains the following:
+#' * a tibble with counts for each filtering step,
+#' * a tibble for each population of interest
+#' * a tibble for the initial population 
 #' 
 #' @author Nicolas Foss, Ed.D., MS
 #' 
@@ -98,8 +94,8 @@ safety_04_population <- function(df = NULL,
                       einjury_03_col,
                       eprocedures_03_col,
                       edisposition_14_col,
-                      transport_disposition_col,
-                      ...) {
+                      transport_disposition_col
+                      ) {
   
   # ensure that not all table arguments AND the df argument are fulfilled
  # user only passes df or all table arguments

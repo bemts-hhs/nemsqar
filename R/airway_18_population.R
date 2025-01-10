@@ -51,7 +51,6 @@
 #' @param eairway_02_col <['tidy-select'][dplyr_tidy_select]> Column name for airway procedure data (datetime). Default is `NULL`.
 #' @param evitals_01_col <['tidy-select'][dplyr_tidy_select]> Column name for vital signs data (datetime).
 #' @param evitals_16_col <['tidy-select'][dplyr_tidy_select]> Column name for additional vital signs data.
-#' @param ... Additional arguments passed to other functions if needed.
 #'
 #' @return
 #' #' A list that contains the following:
@@ -83,8 +82,7 @@ airway_18_population <- function(df = NULL,
                       eairway_02_col = NULL,
                       eairway_04_col = NULL,
                       evitals_01_col,
-                      evitals_16_col,
-                      ...) {
+                      evitals_16_col) {
   
   # Ensure that not all table arguments AND the df argument are fulfilled
   # User must pass either `df` or all table arguments, but not both

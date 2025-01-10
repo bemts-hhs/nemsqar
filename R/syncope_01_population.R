@@ -53,16 +53,12 @@
 #' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column for primary impression code.
 #' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column for secondary impression codes.
 #' @param evitals_04_col <['tidy-select'][dplyr_tidy_select]> Column with ECG information if available.
-#' @param ... Additional arguments passed to `dplyr::summarize` for grouped summaries.
 #'
-#' @return A tibble summarizing results for three population groups (Adults, and Peds) with the following columns:
-#' 
-#' `pop`: Population type (Adults, Peds).
-#' `numerator`: Count of incidents where beta-agonist medications were administered.
-#' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents involving beta-agonist medications.
-#' `prop_label`: Proportion formatted as a percentage with a specified number of
-#' decimal places.
+#' @return
+#' #' A list that contains the following:
+#' * a tibble with counts for each filtering step,
+#' * a tibble for each population of interest
+#' * a tibble for the initial population 
 #' 
 #' @author Nicolas Foss, Ed.D., MS
 #' 
@@ -83,8 +79,7 @@ syncope_01_population <- function(df = NULL,
                        esituation_10_col,
                        esituation_11_col,
                        esituation_12_col,
-                       evitals_04_col,
-                       ...) {
+                       evitals_04_col) {
   
   # Ensure that not all table arguments AND the df argument are fulfilled
   # User must pass either `df` or all table arguments, but not both

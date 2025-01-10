@@ -55,22 +55,12 @@
 #' @param evitals_26_col <['tidy-select'][dplyr_tidy_select]> The column containing the AVPU (alert, verbal, pain, unresponsive) scale value.
 #' @param evitals_29_col <['tidy-select'][dplyr_tidy_select]> The column containing the stroke scale score achieved during assessment.
 #' @param evitals_30_col <['tidy-select'][dplyr_tidy_select]> The column containing stroke scale type descriptors (e.g., FAST, NIH, etc.).
-#' @param ... Additional arguments passed to `dplyr::summarize()` function for further customization of results.
-#' 
-#' @section Features:
-#' * **Stroke Case Identification**: Identifies potential stroke cases based on primary and secondary impression codes.
-#' * **911 Response Filtering**: Filters records to include only those flagged with 911 response codes in `eresponse_05_col`.
-#' * **Glasgow Coma Scale and AVPU Processing**: Analyzes and includes Glasgow Coma Scale (GCS) scores and AVPU levels from vital signs.
-#' * **Stroke Scale Type and Values Assessment**: Extracts and processes stroke scale information (e.g., FAST, NIH) from the specified columns.
-#' * **Encounter Aggregation**: Aggregates data by unique patient encounters to provide a summary view of stroke case proportions.
 #'         
-#' @return A tibble summarizing results for the total population with the following columns:
-#' `pop`: Population type (All).
-#' `numerator`: Count of incidents where beta-agonist medications were administered.
-#' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents involving beta-agonist medications.
-#' `prop_label`: Proportion formatted as a percentage with a specified number of
-#' decimal places.
+#' @return
+#' #' A list that contains the following:
+#' * a tibble with counts for each filtering step,
+#' * a tibble for each population of interest
+#' * a tibble for the initial population 
 #' 
 #' @author Nicolas Foss, Ed.D., MS
 #' 
@@ -88,8 +78,8 @@ stroke_01_population <- function(df = NULL,
                       evitals_23_col,
                       evitals_26_col,
                       evitals_29_col,
-                      evitals_30_col,
-                      ...) {
+                      evitals_30_col
+                      ) {
   
   # Ensure that not all table arguments AND the df argument are fulfilled
   # User must pass either `df` or all table arguments, but not both
