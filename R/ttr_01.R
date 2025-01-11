@@ -1,6 +1,6 @@
 #' TTR-01 Calculation
 #'
-#' This function calculates the TTR_01 measure, which evaluates the completeness of vitals 
+#' This function calculates the TTR-01 measure, which evaluates the completeness of vitals 
 #' documentation for patients not experiencing cardiac arrest who were also not transported 
 #' during a 911 response. It determines the total population, adult population, and pediatric 
 #' population meeting the criteria for the TTR_01 measure. 

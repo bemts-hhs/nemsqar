@@ -1,6 +1,6 @@
 #' TTR-01 Populations
 #'
-#' Filters data down to the target populations for Trauma-08, and categorizes 
+#' Filters data down to the target populations for TTR-01, and categorizes 
 #' records to identify needed information for the calculations.
 #'
 #' Identifies key categories to records that are 911 requests for patients not transported 

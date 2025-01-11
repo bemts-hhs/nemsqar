@@ -7,20 +7,19 @@
 #' 
 #' @section Data Assumptions:
 #' 
-#' #' This function assumes that:
+#' This function assumes that:
 #' Data are already loaded. The data needs to be a data.frame or tibble.
 #'
-#' Age in years will be calculated using the patient date of birth and incident
-#' date. These fields must have valid Date or POSIXct data types.
+#' Age in years can be calculated using the patient date of birth and incident
+#' date. These fields must have valid Date or POSIXct data types. If patient DOB
+#' and the incident date are not passed, the function will use the system generated
+#' patient age and age units.
 #'
 #' When values are missing, they are coded as NA, not the "not known"/"not
 #' recorded" values common to ImageTrend or the NEMSIS codes that correspond to
 #' "not values".
-#'
-#' For the eprocedure, eairway, and evitals fields, all responses entered can be
-#' included in `df` or the `*_table` arguments.
 #' 
-#' The date time fields from eprocedures.01, eairway.02, and evitals.01 must be date time
+#' The date time fields from eProcedures.01, eAirway.02, and eVitals.01 must be date time
 #' objects or the function will fail.
 #' 
 #' The eAirway fields are optional in this function in case a user does not have access to those fields.
@@ -29,26 +28,27 @@
 #' 
 #' Ensure data are pre-processed, with missing values coded as `NA`, before passing
 #' into the function.
+#' Prepare necessary joins (e.g., for vitals) in advance; this function does not perform joins.
 #'
-#' @param df A data frame or tibble containing the dataset to be processed.
-#' @param patient_scene_table A data frame or tibble containing only epatient and escene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is `NULL`.
-#' @param procedures_table A data frame or tibble containing only the eprocedures fields needed for this measure's calculations. Default is `NULL`.
-#' @param airway_table A data frame or tibble containing only the eairway fields needed for this measure's calculations. Default is `NULL`.
-#' @param vitals_table A data frame or tibble containing only the evitals fields needed for this measure's calculations. Default is `NULL`.
+#' @param df A data frame or tibble containing the dataset to be processed. Default is `NULL`.
+#' @param patient_scene_table A data frame or tibble containing only ePatient and eScene fields as a fact table. Default is `NULL`.
+#' @param response_table A data frame or tibble containing only the eResponse fields needed for this measure's calculations. Default is `NULL`.
+#' @param procedures_table A data frame or tibble containing only the eProcedures fields needed for this measure's calculations. Default is `NULL`.
+#' @param airway_table A data frame or tibble containing only the eAirway fields needed for this measure's calculations. Default is `NULL`.
+#' @param vitals_table A data frame or tibble containing only the eVitals fields needed for this measure's calculations. Default is `NULL`.
 #' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Column name containing the unique patient record identifier.
 #' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column name containing the incident date. Default is `NULL`.
-#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column name containing the patient's date of birth. Default is `NULL`.
+#' @param patient_dob_col <['tidy-select'][dplyr_tidy_select]> Column name containing the patient's date of birth. Default is `NULL`.
 #' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column name for patient information (exact purpose unclear).
 #' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column name for patient information (exact purpose unclear).
-#' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column name for procedure codes.
 #' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column name for emergency response codes.
-#' @param eprocedures_06_col <['tidy-select'][dplyr_tidy_select]> Column name for procedure success codes.
-#' @param eprocedures_05_col <['tidy-select'][dplyr_tidy_select]> Column name for number of procedure attempts.
 #' @param eprocedures_01_col <['tidy-select'][dplyr_tidy_select]> Column name for procedure times or other related data.
 #' @param eprocedures_02_col <['tidy-select'][dplyr_tidy_select]> Column name for additional procedure data.
-#' @param eairway_04_col <['tidy-select'][dplyr_tidy_select]> Column name for airway procedure data. Default is `NULL`.
+#' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column name for procedure codes.
+#' @param eprocedures_05_col <['tidy-select'][dplyr_tidy_select]> Column name for number of procedure attempts.
+#' @param eprocedures_06_col <['tidy-select'][dplyr_tidy_select]> Column name for procedure success codes.
 #' @param eairway_02_col <['tidy-select'][dplyr_tidy_select]> Column name for airway procedure data (datetime). Default is `NULL`.
+#' @param eairway_04_col <['tidy-select'][dplyr_tidy_select]> Column name for airway procedure data. Default is `NULL`.
 #' @param evitals_01_col <['tidy-select'][dplyr_tidy_select]> Column name for vital signs data (datetime).
 #' @param evitals_16_col <['tidy-select'][dplyr_tidy_select]> Column name for additional vital signs data.
 #'
@@ -139,7 +139,7 @@ airway_18_population <- function(df = NULL,
     cli::cli_abort("One or more of the *_col arguments is missing. Please ensure you pass an unquoted column to each of the *_col arguments to run {.fn airway_18_population}.")
   }
   
-    # 911 codes for eresponse.05
+    # 911 codes for eResponse.05
   codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
   
   # endotracheal intubation attempts

@@ -1,6 +1,8 @@
 #' Hypoglycemia-01 Populations
 #'
-#' The `hypoglycemia_01_population` filters data down to the target populations for Hypoglycemia-01, and categorizes 
+#' @description
+#' 
+#' Filters data down to the target populations for Hypoglycemia-01, and categorizes 
 #' records to identify needed information for the calculations.
 #'
 #' Identifies key categories related to diabetes/hypoglycemia incidents in an EMS dataset,
@@ -9,56 +11,50 @@
 #' into pediatric populations, computing the proportion of cases that have a documented weight.
 #'
 #' @section Data Assumptions:
-#' The `df` argument and each `*_table` argument should be a dataframe or tibble, with the following assumptions:
+#' The `df` and `*_table` arguments should be a data.frame(s) or tibble(s) with the following assumptions:
 #' - The data are already loaded.
-#' - The function will calculate an age in years using the incident date and the patient DOB.
-#' - The incident date and the patient DOB are `Date` or `POSIXct` data types.
+#' - The function can calculate an age in years using the incident date and the patient DOB.
+#' - The incident date and the patient DOB are Date or POSIXct data types.
+#' - If the incident date and patient DOB are not passed, the function will use the system-generated
+#'   patient age and age units.
 #' - Any missing values are encoded as `NA`, not the "Not Known"/"Not Recorded" text values
 #'   or NEMSIS "not value" codes commonly reported by ePCR vendors.
 #' - The vitals field may be the full list of values for each field or the lowest estimated
-#'   eVitals.18 (must include the "Low Blood Glucose" flag) and lowest estimated patient AVPU
-#'   in eVitals.2.
+#'   eVitals.18 and all estimated patient AVPU in eVitals.26.
 #' - The function assumes that the primary and secondary impression fields (eSituation.11
-#'   and eSituation.12) have the ICD-10 codes in them. The test description can be present,
-#'   too, for reference.
+#'   and eSituation.12) have the ICD-10 codes and/or text descriptions in them. 
 #' - The function assumes that the eResponse.05 fields have the NEMSIS codes in them,
-#'   although text can be also be present for reference.
-#' - The function assumes that the eMedications_03 and eProcedures_03 fields contain
+#'   and the text will be checked, too.
+#' - The function assumes that the eMedications.03 and eProcedures.03 fields contain
 #'   all medications/procedures and that it contains the text description of the
-#'   generic name of the medication. The codes can be included for reference, but will
-#'   not be checked. ALL medications and procedures are in one field per record, as either
-#'   a list column or a comma-separated list.
+#'   name of the medication. The codes can be included, and will be checked. 
+#'   ALL medications and procedures are in one field per record, as either a comma-separated list
+#'   in each cell, or the complete set of values can be passed as well.
 #' - The eSituation.12 (Secondary Impression) field is best as a list column of the secondary
 #'   impressions. No joining is done.
 #' - Any joins to get vitals, etc., will need to be done outside the function.
-#' - Grouping by specific attributes (e.g., region) can be performed inside this function by
-#'   utilizing the `.by` argument passed via tidydots (i.e. `...`) to `dplyr::summarize`.
 #'
-#' @param df A data frame or tibble containing emergency response records.
-#' @param patient_scene_table A data.frame or tibble containing only epatient and escene fields as a fact table.
-#' @param response_table A data.frame or tibble containing only the eresponse fields needed for this measure's calculations.
-#' @param situation_table A data.frame or tibble containing only the esituation fields needed for this measure's calculations.
-#' @param vitals_table A data.frame or tibble containing only the evtials fields needed for this measure's calculations.
-#' @param medications_table A data.frame or tibble containing only the emedications fields needed for this measure's calculations.
-#' @param procedures_table A data.frame or tibble containing only the eprocedures fields needed for this measure's calculations.
-#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.
-#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains the incident date. This defaults to `NULL` as it is optional in case not available due to PII restrictions.
-#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains the patient's date of birth. This defaults to `NULL` as it is optional in case not available due to PII restrictions.
+#' @param df A data frame or tibble containing emergency response records. Default is `NULL`.
+#' @param patient_scene_table A data.frame or tibble containing at least epatient and escene fields as a fact table. Default is `NULL`.
+#' @param response_table A data.frame or tibble containing at least the eresponse fields needed for this measure's calculations. Default is `NULL`.
+#' @param situation_table A data.frame or tibble containing at least the esituation fields needed for this measure's calculations. Default is `NULL`.
+#' @param vitals_table A data.frame or tibble containing at least the evitals fields needed for this measure's calculations. Default is `NULL`.
+#' @param medications_table A data.frame or tibble containing at least the emedications fields needed for this measure's calculations. Default is `NULL`.
+#' @param procedures_table A data.frame or tibble containing at least the eprocedures fields needed for this measure's calculations. Default is `NULL`.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Column representing the unique record identifier.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column that contains the incident date. This defaults to `NULL` as it is optional 
+#' in case not available due to PII restrictions.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column that contains the patient's date of birth. This defaults to `NULL` as it is optional 
+#' in case not available due to PII restrictions.
 #' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's numeric age agnostic of unit.
 #' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's age unit ("Years", "Months", "Days", "Hours", or "Minute").
-#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains eResponse.05.
-#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains eSituation.11.
-#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains all eSituation.12 values as a single comma-separated list.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column containing response type codes.
+#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column for primary impression fields, containing ICD-10 codes.
+#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column for secondary impression fields, containing ICD-10 codes.
 #' @param evitals_18_col <['tidy-select'][dplyr_tidy_select]> Column for blood glucose levels.
 #' @param evitals_23_cl <['tidy-select'][dplyr_tidy_select]> Column for Glasgow Coma Scale (GCS) scores.
 #' @param evitals_26_col <['tidy-select'][dplyr_tidy_select]> Column for AVPU alertness levels.
-#' @param emedications_03_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains all eMedications.03 values as a single comma-separated list.
+#' @param emedications_03_col <['tidy-select'][dplyr_tidy_select]> Column for administered medications.
 #' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column for procedures performed.
 #'
 #' @return

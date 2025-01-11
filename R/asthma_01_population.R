@@ -1,5 +1,7 @@
 #' Asthma-01 Populations
 #'
+#' @description
+#' 
 #' Filters data down to the target populations for Asthma-01, and categorizes 
 #' records to identify needed information for the calculations.
 #'
@@ -12,61 +14,48 @@
 #' @section Data Assumptions:
 #'
 #' This function assumes that:
-#' Data are already loaded. The data needs to be a data.frame or tibble where each row is
-#' one observation (patient) and each is a feature (field) or distinct datasets
-#' that can be references as unique columns.
+#' Data are already loaded. The data need to be a data.frame or tibble.
 #'
-#' Age in years will be calculated using the patient date of birth and incident
-#' date. These fields must have valid Date or POSIXct data types.
+#' Age in years can be calculated using the patient date of birth and incident
+#' date. These fields must have valid Date or POSIXct data types. If patient DOB
+#' and the incident date are not passed, the function will use the system generated
+#' patient age and age units.
 #'
 #' When values are missing, they are coded as NA, not the "not known"/"not
 #' recorded" values common to ImageTrend or the NEMSIS codes that correspond to
 #' "not values".
 #'
 #' The primary and secondary impression fields (eSituation.11 and eSituation.12)
-#' have the ICD-10 codes present in them. These fields may optionally contain
-#' text for reference. Similarly, this function assumes that the eResponse.05
-#' column has NEMSIS codes present, but text can also be included for reference.
+#' can have the ICD-10 codes and/or the text descriptions present in them. 
+#' Similarly, this function assumes that the eResponse.05 column has NEMSIS codes 
+#' and/or text descriptions present, but text can also be included for reference.
 #'
 #' The eMedications.03 field contains all medications administered and contains
-#' a text description of the medication using the generic name. The RxNORM code
-#' may also be included for reference, but will not be checked.
+#' a text description of the medication using the generic name. The Rx code
+#' may also be included for reference, and will be checked.
 #'
 #' The secondary impressions field (eSituation.12) is best prepared as a
 #' comma-separated list of all values in a single string.
 #'
 #' @section Practical Tips:
 #'
-#' The first argument is the dataframe or tables with data elements prepared as above. 
+#' The first argument is the data.frame or tables with data elements prepared as above. 
 #' No joining is done. Any joins to get vitals, etc. will need to be done outside of this function.
 #'
-#' @section Features:
-#' * Filters for asthma-related incidents (ICD-10 codes starting with 'J45' and
-#' 'J98.01').
-#' * Distinguishes between adults (age ≥ 18) and pediatric patients (age 2–17).
-#' Calculates age in years based on incident date and patient date of birth.
-#'
-#' @param df A data.frame or tibble containing EMS data where each row represents
-#' an observation, and columns represent features.
-#' @param patient_scene_table A data.frame or tibble containing only epatient and escene fields as a fact table.
-#' @param response_table A data.frame or tibble containing only the eresponse fields needed for this measure's calculations.
-#' @param situation_table A data.frame or tibble containing only the esituation fields needed for this measure's calculations.
-#' @param medications_table A data.frame or tibble containing only the emedications fields needed for this measure's calculations.
-#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.
-#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains the incident date.
-#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains the patient's date of birth.
+#' @param df A data.frame or tibble containing EMS data. Default is `NULL`.
+#' @param patient_scene_table A data.frame or tibble containing at least ePatient and eScene fields as a fact table. Default is `NULL`.
+#' @param response_table A data.frame or tibble containing at least the eResponse fields needed for this measure's calculations. Default is `NULL`.
+#' @param situation_table A data.frame or tibble containing at least the eSituation fields needed for this measure's calculations. Default is `NULL`.
+#' @param medications_table A data.frame or tibble containing at least the eMedications fields needed for this measure's calculations. Default is `NULL`.
+#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier. Default is `NULL`.
+#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column that contains the incident date. Default is `NULL`.
+#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column that contains the patient's date of birth. Default is `NULL`.
 #' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's numeric age agnostic of unit.
 #' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's age unit ("Years", "Months", "Days", "Hours", or "Minute").
-#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains eResponse.05.
-#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains eSituation.11.
-#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains all eSituation.12 values as a single comma-separated list.
-#' @param emedications_03_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains all eMedications.03 values as a single comma-separated list.
+#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column that contains eResponse.05.
+#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column that contains eSituation.11.
+#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column that contains all eSituation.12 values as a single comma-separated list.
+#' @param emedications_03_col <['tidy-select'][dplyr_tidy_select]> Column that contains all eMedications.03 values as a single comma-separated list.
 #'
 #' @return
 #' #' A list that contains the following:
