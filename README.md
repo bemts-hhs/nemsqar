@@ -29,15 +29,6 @@ You can install the development version of nemsqar from
 pak::pak("bemts-hhs/nemsqar")
 ```
 
-## Example
-
-This is a basic example which shows you how to solve a common problem:
-
-``` r
-#library(nemsqar)
-## basic example code
-```
-
 ## About NEMSQA
 
 The National EMS Quality Alliance (NEMSQA) is committed to developing
@@ -132,25 +123,6 @@ access.
   info page explaining why agencies and systems should migrate from EMS
   Compass legacy/candidate measures to the National EMS Quality Alliance
   Measure Set.
-
-# Contributors
-
-- [Nicolas Foss, Ed.D., MS](https://github.com/nicolasfoss);
-  - contributions: maintainer, code
-  - contact: nicolas.foss at hhs.iowa.gov
-  - work: Epidemiologist at Bureau of Emergency Medical and Trauma
-    Services \> Iowa HHS
-- [Samuel Kordik, BBA, BS,
-  NREMT](https://www.linkedin.com/in/samuelkordik)
-  - contributions: code
-  - contact: samuel.kordik at utsouthwestern.edu
-  - work: Quality Manager Dallas Fire-Rescue Office of the Medical
-    Director
-- [Alyssa Green, MS,
-  NREMT-P](https://www.linkedin.com/in/alyssa-green-1a7aa4218)
-  - contributions: code
-  - contact: awhim at nemsqa.org
-  - work: Project Coordinator National EMS Quality Alliance (NEMSQA)
 
 # Thanks!
 
