@@ -5,7 +5,3 @@
 .Rbuildignore
 .Rproj
 nemsqar-package.Rproj
-.Rdata
-.httr-oauth
-.DS_Store
-.quarto
