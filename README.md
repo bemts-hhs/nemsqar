@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# nemsqar <img src="man/figures/nemsqar_final.png" align="right" width="150" alt="" />
+# nemsqar <img src="man/figures/nemsqar_final.png" align="right" width="200" alt="" />
 
 <!-- badges: start -->
 
