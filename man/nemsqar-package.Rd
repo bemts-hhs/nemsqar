@@ -4,7 +4,7 @@
 \name{nemsqar-package}
 \alias{nemsqar}
 \alias{nemsqar-package}
-\title{nemsqar: Streamlines NEMSQA Metric Calculations}
+\title{nemsqar: National EMS Quality Alliance Measure Calculations}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 
@@ -19,12 +19,16 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Nicolas Foss \email{nicolas.foss@hhs.iowa.gov} [copyright holder]
+\strong{Maintainer}: Nicolas Foss \email{nicolas.foss@hhs.iowa.gov}
 
 Authors:
 \itemize{
-  \item Alyssa Green \email{awhim@nemsqa.org}
   \item Samuel Kordik \email{samuel.kordik@utsouthwestern.edu} (\href{https://orcid.org/0000-0003-4230-1154}{ORCID})
+}
+
+Other contributors:
+\itemize{
+  \item Alyssa Green \email{awhim@nemsqa.org} [contributor]
 }
 
 }

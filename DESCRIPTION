@@ -1,11 +1,11 @@
 Package: nemsqar
-Title: Streamlines NEMSQA Metric Calculations
+Title: National EMS Quality Alliance Measure Calculations
 Version: 0.1.0
 Authors@R: c(
     person("Nicolas", "Foss", email = "nicolas.foss@hhs.iowa.gov", role = c("aut", "cre")),
-    person("Alyssa", "Green", email = "awhim@nemsqa.org", role="aut"),
     person("Samuel", "Kordik", email = "samuel.kordik@utsouthwestern.edu", role="aut",
-           comment = c(ORCID = "0000-0003-4230-1154"))
+           comment = c(ORCID = "0000-0003-4230-1154")),
+    person("Alyssa", "Green", email = "awhim@nemsqa.org", role="ctb")
            )
 Description: nemsqar is an R package designed to automate the calculation of EMS 
              quality metrics as defined by the National EMS Quality Alliance 
@@ -22,9 +22,11 @@ Suggests:
 Config/testthat/edition: 3
 URL: https://github.com/bemts-hhs/nemsqar-package
 BugReports: https://github.com/bemts-hhs/nemsqar-package/issues
+Depends:
+    R (>= 4.1)
 Imports: 
-    cli,
-    dplyr,
-    lubridate,
-    rlang,
-    tibble
+    cli (>= 3.6.3),
+    dplyr (>= 1.1.4),
+    lubridate (>= 1.9.4),
+    rlang (>= 1.1.5),
+    tibble (>= 3.2.1)
