@@ -1,6 +1,6 @@
 Package: nemsqar
 Title: Streamlines NEMSQA Metric Calculations
-Version: 0.0.0.9000
+Version: 0.1.0
 Authors@R: c(
     person("Nicolas", "Foss", email = "nicolas.foss@hhs.iowa.gov", role = c("aut", "cre", "cph")),
     person("Alyssa", "Green", email = "awhim@nemsqa.org", role="aut"),
@@ -25,11 +25,6 @@ BugReports: https://github.com/bemts-hhs/nemsqar-package/issues
 Imports: 
     cli,
     dplyr,
-    ggplot2,
-    ggthemes,
     lubridate,
-    patchwork,
     rlang,
-    scales,
-    tibble,
-    viridis
+    tibble
