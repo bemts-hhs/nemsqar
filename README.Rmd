@@ -13,7 +13,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-# nemsqar <img src="man/figures/nemsqar_final.png" align="right" width="150" alt="" />
+# nemsqar <img src="man/figures/nemsqar_final.png" align="right" width="200" alt="" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/bemts-hhs/nemsqar-package/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bemts-hhs/nemsqar-package/actions/workflows/R-CMD-check.yaml)
