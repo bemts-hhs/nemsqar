@@ -5,11 +5,11 @@
 
 <!-- badges: start -->
 
+[![R-CMD-check](https://github.com/bemts-hhs/nemsqar-package/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bemts-hhs/nemsqar-package/actions/workflows/R-CMD-check.yaml)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/nemsqar)](https://CRAN.R-project.org/package=nemsqar)
 [![Codecov test
 coverage](https://codecov.io/gh/bemts-hhs/nemsqar-package/branch/main/graph/badge.svg)](https://app.codecov.io/gh/bemts-hhs/nemsqar-package?branch=main)
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
-[![R-CMD-check](https://github.com/bemts-hhs/nemsqar-package/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bemts-hhs/nemsqar-package/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `nemsqar` is an R package designed to automate the calculation of EMS
@@ -25,8 +25,8 @@ You can install the development version of nemsqar from
 [GitHub](https://github.com/) with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("bemts-hhs/nemsqar-package")
+# install.packages("pak")
+pak::pak("bemts-hhs/nemsqar")
 ```
 
 ## Example
