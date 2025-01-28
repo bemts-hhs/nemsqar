@@ -2,7 +2,7 @@ Package: nemsqar
 Title: Streamlines NEMSQA Metric Calculations
 Version: 0.0.0.9000
 Authors@R: c(
-    person("Nicolas", "Foss", email = "nicolas.foss@hhs.iowa.gov", role = c("aut", "cre")),
+    person("Nicolas", "Foss", email = "nicolas.foss@hhs.iowa.gov", role = c("aut", "cre", "cph")),
     person("Alyssa", "Green", email = "awhim@nemsqa.org", role="aut"),
     person("Samuel", "Kordik", email = "samuel.kordik@utsouthwestern.edu", role="aut",
            comment = c(ORCID = "0000-0003-4230-1154"))
