@@ -19,7 +19,7 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Nicolas Foss \email{nicolas.foss@hhs.iowa.gov}
+\strong{Maintainer}: Nicolas Foss \email{nicolas.foss@hhs.iowa.gov} [copyright holder]
 
 Authors:
 \itemize{

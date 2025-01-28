@@ -30,23 +30,21 @@ airway_18(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing the dataset to be processed.}
+\item{df}{A data frame or tibble containing the dataset to be processed. Default is \code{NULL}.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data frame or tibble containing only ePatient and eScene fields as a fact table. Default is \code{NULL}.}
 
-\item{procedures_table}{A data frame or tibble containing only the eprocedures fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{procedures_table}{A data frame or tibble containing only the eProcedures fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{vitals_table}{A data frame or tibble containing only the evitals fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A data frame or tibble containing only the eVitals fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{airway_table}{A data frame or tibble containing only the eairway fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{airway_table}{A data frame or tibble containing only the eAirway fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data frame or tibble containing only the eResponse fields needed for this measure's calculations. Default is \code{NULL}.}
 
 \item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing the unique patient record identifier.}
 
 \item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing the incident date. Default is \code{NULL}.}
-
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing the patient's date of birth. Default is \code{NULL}.}
 
 \item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for patient information (exact purpose unclear).}
 
@@ -73,6 +71,8 @@ airway_18(
 \item{evitals_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for additional vital signs data.}
 
 \item{...}{Additional arguments passed to other functions if needed.}
+
+\item{patient_dob_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing the patient's date of birth. Default is \code{NULL}.}
 }
 \value{
 A tibble summarizing results for Adults and Peds with the following columns:
@@ -93,31 +93,23 @@ The final calculation is an assessment of the successful last invasive airway pr
 performed during an EMS response originating from a 911 request in which waveform capnography
 is used for tube placement confirmation.
 }
-\note{
-This function filters and processes EMS data to:
-\itemize{
-\item Identify the last successful airway procedure.
-\item Filter for 911 response codes and relevant vital signs (i.e. ETCO2).
-\item Aggregate results by patient encounter and calculate stroke scale outcomes.
-\item Return a summary of stroke cases by unique patient identifier, including stroke scale measurements.
-}
-}
 \section{Data Assumptions}{
 
 
-#' This function assumes that:
+This function assumes that:
 Data are already loaded. The data needs to be a data.frame or tibble.
 
-Age in years will be calculated using the patient date of birth and incident
-date. These fields must have valid Date or POSIXct data types.
+Age in years can be calculated using the patient date of birth and incident
+date. These fields must have valid Date or POSIXct data types. If patient DOB
+and the incident date are not passed, the function will use the system generated
+patient age and age units.
 
 When values are missing, they are coded as NA, not the "not known"/"not
 recorded" values common to ImageTrend or the NEMSIS codes that correspond to
 "not values".
 
-For the eprocedure, eairway, and evitals fields, all responses entered can be
-included in \code{df}.  This will result in Cartesian product, but the function
-will performantly handle that problem.
+The date time fields from eProcedures.01, eAirway.02, and eVitals.01 must be date time
+objects or the function will fail.
 
 The eAirway fields are optional in this function in case a user does not have access to those fields.
 }

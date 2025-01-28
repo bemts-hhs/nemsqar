@@ -85,12 +85,15 @@ A tibble summarizing results for three population groups (Adults, and Peds) with
 decimal places.
 }
 \description{
-This function calculates the TTR_01 measure, which evaluates the completeness of vitals documentation for patients not experiencing cardiac arrest who were also not transported during a 911 response. It determines the total population, adult population, and pediatric population meeting the criteria for the TTR_01 measure.
+This function calculates the TTR-01 measure, which evaluates the completeness of vitals
+documentation for patients not experiencing cardiac arrest who were also not transported
+during a 911 response. It determines the total population, adult population, and pediatric
+population meeting the criteria for the TTR_01 measure.
 }
 \section{Data Assumptions}{
 
 
-This function assumes the input dataset contains the \emph{initial} vital signs for
+This function assumes the input dataset contains the \emph{initial} or complete vital signs for
 \itemize{
 \item respiratory rate,
 \item systolic blood pressure (SBP),

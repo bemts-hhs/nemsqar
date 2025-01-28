@@ -28,40 +28,37 @@ hypoglycemia_01_population(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing emergency response records.}
+\item{df}{A data frame or tibble containing emergency response records. Default is \code{NULL}.}
 
-\item{patient_scene_table}{A data.frame or tibble containing only epatient and escene fields as a fact table.}
+\item{patient_scene_table}{A data.frame or tibble containing at least epatient and escene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data.frame or tibble containing only the eresponse fields needed for this measure's calculations.}
+\item{response_table}{A data.frame or tibble containing at least the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{situation_table}{A data.frame or tibble containing only the esituation fields needed for this measure's calculations.}
+\item{situation_table}{A data.frame or tibble containing at least the esituation fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing only the evtials fields needed for this measure's calculations.}
+\item{vitals_table}{A data.frame or tibble containing at least the evitals fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{medications_table}{A data.frame or tibble containing only the emedications fields needed for this measure's calculations.}
+\item{medications_table}{A data.frame or tibble containing at least the emedications fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{procedures_table}{A data.frame or tibble containing only the eprocedures fields needed for this measure's calculations.}
+\item{procedures_table}{A data.frame or tibble containing at least the eprocedures fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column representing the EMS record unique identifier.}
+\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the unique record identifier.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that
-contains the incident date. This defaults to \code{NULL} as it is optional in case not available due to PII restrictions.}
+\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that contains the incident date. This defaults to \code{NULL} as it is optional
+in case not available due to PII restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that
-contains the patient's date of birth. This defaults to \code{NULL} as it is optional in case not available due to PII restrictions.}
+\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that contains the patient's date of birth. This defaults to \code{NULL} as it is optional
+in case not available due to PII restrictions.}
 
 \item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the patient's numeric age agnostic of unit.}
 
 \item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the patient's age unit ("Years", "Months", "Days", "Hours", or "Minute").}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that
-contains eResponse.05.}
+\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing response type codes.}
 
-\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that
-contains eSituation.11.}
+\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for primary impression fields, containing ICD-10 codes.}
 
-\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that
-contains all eSituation.12 values as a single comma-separated list.}
+\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for secondary impression fields, containing ICD-10 codes.}
 
 \item{evitals_18_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for blood glucose levels.}
 
@@ -69,8 +66,7 @@ contains all eSituation.12 values as a single comma-separated list.}
 
 \item{evitals_26_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for AVPU alertness levels.}
 
-\item{emedications_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that
-contains all eMedications.03 values as a single comma-separated list.}
+\item{emedications_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for administered medications.}
 
 \item{eprocedures_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for procedures performed.}
 }
@@ -83,10 +79,9 @@ contains all eMedications.03 values as a single comma-separated list.}
 }
 }
 \description{
-The \code{hypoglycemia_01_population} filters data down to the target populations for Hypoglycemia-01, and categorizes
+Filters data down to the target populations for Hypoglycemia-01, and categorizes
 records to identify needed information for the calculations.
-}
-\details{
+
 Identifies key categories related to diabetes/hypoglycemia incidents in an EMS dataset,
 specifically focusing on cases where 911 was called for diabetes/hypoglycemia distress,
 certain medications were administered, and a weight is taken. This function segments the data
@@ -94,31 +89,29 @@ into pediatric populations, computing the proportion of cases that have a docume
 }
 \section{Data Assumptions}{
 
-The \code{df} argument and each \verb{*_table} argument should be a dataframe or tibble, with the following assumptions:
+The \code{df} and \verb{*_table} arguments should be a data.frame(s) or tibble(s) with the following assumptions:
 \itemize{
 \item The data are already loaded.
-\item The function will calculate an age in years using the incident date and the patient DOB.
-\item The incident date and the patient DOB are \code{Date} or \code{POSIXct} data types.
+\item The function can calculate an age in years using the incident date and the patient DOB.
+\item The incident date and the patient DOB are Date or POSIXct data types.
+\item If the incident date and patient DOB are not passed, the function will use the system-generated
+patient age and age units.
 \item Any missing values are encoded as \code{NA}, not the "Not Known"/"Not Recorded" text values
 or NEMSIS "not value" codes commonly reported by ePCR vendors.
 \item The vitals field may be the full list of values for each field or the lowest estimated
-eVitals.18 (must include the "Low Blood Glucose" flag) and lowest estimated patient AVPU
-in eVitals.2.
+eVitals.18 and all estimated patient AVPU in eVitals.26.
 \item The function assumes that the primary and secondary impression fields (eSituation.11
-and eSituation.12) have the ICD-10 codes in them. The test description can be present,
-too, for reference.
+and eSituation.12) have the ICD-10 codes and/or text descriptions in them.
 \item The function assumes that the eResponse.05 fields have the NEMSIS codes in them,
-although text can be also be present for reference.
-\item The function assumes that the eMedications_03 and eProcedures_03 fields contain
+and the text will be checked, too.
+\item The function assumes that the eMedications.03 and eProcedures.03 fields contain
 all medications/procedures and that it contains the text description of the
-generic name of the medication. The codes can be included for reference, but will
-not be checked. ALL medications and procedures are in one field per record, as either
-a list column or a comma-separated list.
+name of the medication. The codes can be included, and will be checked.
+ALL medications and procedures are in one field per record, as either a comma-separated list
+in each cell, or the complete set of values can be passed as well.
 \item The eSituation.12 (Secondary Impression) field is best as a list column of the secondary
 impressions. No joining is done.
 \item Any joins to get vitals, etc., will need to be done outside the function.
-\item Grouping by specific attributes (e.g., region) can be performed inside this function by
-utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
 }
 }
 

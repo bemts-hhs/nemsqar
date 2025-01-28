@@ -81,7 +81,7 @@ ttr_01_population(
 }
 }
 \description{
-Filters data down to the target populations for Trauma-08, and categorizes
+Filters data down to the target populations for TTR-01, and categorizes
 records to identify needed information for the calculations.
 }
 \details{
