@@ -20,8 +20,8 @@ RoxygenNote: 7.3.2
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://github.com/bemts-hhs/nemsqar-package
-BugReports: https://github.com/bemts-hhs/nemsqar-package/issues
+URL: https://github.com/bemts-hhs/nemsqar, https://bemts-hhs.github.io/nemsqar/
+BugReports: https://github.com/bemts-hhs/nemsqar/issues
 Depends:
     R (>= 4.1)
 Imports: 

@@ -4,4 +4,5 @@
 .Ruserdata
 .Rbuildignore
 .Rproj
-nemsqar-package.Rproj
+nemsqar.Rproj
+docs

@@ -41,35 +41,35 @@ airway_18_population(
 
 \item{response_table}{A data frame or tibble containing only the eResponse fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing the unique patient record identifier.}
+\item{erecord_01_col}{Column name containing the unique patient record identifier.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing the incident date. Default is \code{NULL}.}
+\item{incident_date_col}{Column name containing the incident date. Default is \code{NULL}.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for patient information (exact purpose unclear).}
+\item{epatient_15_col}{Column name for patient information (exact purpose unclear).}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for patient information (exact purpose unclear).}
+\item{epatient_16_col}{Column name for patient information (exact purpose unclear).}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for emergency response codes.}
+\item{eresponse_05_col}{Column name for emergency response codes.}
 
-\item{eprocedures_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for procedure times or other related data.}
+\item{eprocedures_01_col}{Column name for procedure times or other related data.}
 
-\item{eprocedures_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for additional procedure data.}
+\item{eprocedures_02_col}{Column name for additional procedure data.}
 
-\item{eprocedures_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for procedure codes.}
+\item{eprocedures_03_col}{Column name for procedure codes.}
 
-\item{eprocedures_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for number of procedure attempts.}
+\item{eprocedures_05_col}{Column name for number of procedure attempts.}
 
-\item{eprocedures_06_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for procedure success codes.}
+\item{eprocedures_06_col}{Column name for procedure success codes.}
 
-\item{eairway_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for airway procedure data (datetime). Default is \code{NULL}.}
+\item{eairway_02_col}{Column name for airway procedure data (datetime). Default is \code{NULL}.}
 
-\item{eairway_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for airway procedure data. Default is \code{NULL}.}
+\item{eairway_04_col}{Column name for airway procedure data. Default is \code{NULL}.}
 
-\item{evitals_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for vital signs data (datetime).}
+\item{evitals_01_col}{Column name for vital signs data (datetime).}
 
-\item{evitals_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for additional vital signs data.}
+\item{evitals_16_col}{Column name for additional vital signs data.}
 
-\item{patient_dob_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing the patient's date of birth. Default is \code{NULL}.}
+\item{patient_dob_col}{Column name containing the patient's date of birth. Default is \code{NULL}.}
 }
 \value{
 #' A list that contains the following:
