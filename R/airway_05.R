@@ -1,9 +1,8 @@
 #' Airway-01
 #'
-#' Calculates the NEMSQA Airway-01 measure.
+#' Calculates the NEMSQA Airway-05 measure.
 #'
-#' Calculates the proportion of times when the first endotracheal intubation
-#' attempt is successful with no peri-intubation hypoxia or hypotension.
+#' Calculates the proportion of endotracheal intubation attempts with adequate oxygenation.
 #'
 #'
 #' @param df A dataframe or tibble contianing EMS data where each row represents
@@ -81,7 +80,7 @@ airway_01 <- function(df = NULL,
 
   ) {
 
-    cli::cli_abort("{.fn airway_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all four table arguments.")
+    cli::cli_abort("{.fn airway_05} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all four table arguments.")
 
   }
 
@@ -100,7 +99,7 @@ airway_01 <- function(df = NULL,
 
   ) {
 
-    cli::cli_abort("{.fn airway_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all four table arguments.")
+    cli::cli_abort("{.fn airway_05} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all four table arguments.")
 
   }
 
@@ -235,7 +234,7 @@ airway_01 <- function(df = NULL,
   #                                                                           #
   #############################################################################
 
-  airway_01_population <- airway_01_population(patient_scene_table = patient_scene_table,
+  airway_05_population <- airway_05_population(patient_scene_table = patient_scene_table,
                                                response_table = response_table,
                                                procedures_table = procedures_table,
                                                vitals_table = vitals_table,
@@ -260,13 +259,13 @@ airway_01 <- function(df = NULL,
     cli::cli_text("\n")
 
     # header for calculations
-    cli::cli_h2("Calculating Airway-01")
+    cli::cli_h2("Calculating Airway-05")
 
     # summary
-    airway.01 <- results_summarize(total_population = airway_01_population()$initial_population,
-                                   adult_population = airway_01_population($adults,
-                                   peds_population = airway_01_population($peds,
-                                   measure_name = "Airway-01",
+    airway.05 <- results_summarize(total_population = airway_05_population()$initial_population,
+                                   adult_population = airway_05_population($adults,
+                                   peds_population = airway_05_population($peds,
+                                   measure_name = "Airway-05",
                                    numerator_col = measure_performance,
                                    ...)
 
@@ -293,7 +292,7 @@ airway_01 <- function(df = NULL,
     # create a separator
     cli::cli_text("\n")
 
-    return(airway.01)
+    return(airway.05)
 
 
 }}
