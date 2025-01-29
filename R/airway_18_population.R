@@ -58,8 +58,6 @@
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
 #'
-#' @example path.R
-#'
 #' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export
