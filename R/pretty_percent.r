@@ -1,4 +1,6 @@
-#' Format Numeric Variables as Percentages
+#' @title Format Numeric Variables as Percentages
+#'
+#' @description
 #'
 #' This function formats numeric variables as percentages with a specified
 #' number of decimal places. It refines the output by removing unnecessary

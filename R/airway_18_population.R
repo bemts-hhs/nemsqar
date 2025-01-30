@@ -1,59 +1,50 @@
-#' Airway-18 Populations
+#' @title Airway-18 Populations
 #'
 #' @description
 #'
-#' This function processes and analyzes the dataset to generate the populations of interest
-#' needed to perform calculations to obtain performance data.
+#' This function processes and analyzes the dataset to generate the populations
+#' of interest needed to perform calculations to obtain performance data.
 #'
-#' @section Data Assumptions:
-#'
-#' This function assumes that:
-#' Data are already loaded. The data needs to be a data.frame or tibble.
-#'
-#' Age in years can be calculated using the patient date of birth and incident
-#' date. These fields must have valid Date or POSIXct data types. If patient DOB
-#' and the incident date are not passed, the function will use the system generated
-#' patient age and age units.
-#'
-#' When values are missing, they are coded as NA, not the "not known"/"not
-#' recorded" values common to ImageTrend or the NEMSIS codes that correspond to
-#' "not values".
-#'
-#' The date time fields from eProcedures.01, eAirway.02, and eVitals.01 must be date time
-#' objects or the function will fail.
-#'
-#' The eAirway fields are optional in this function in case a user does not have access to those fields.
-#'
-#' @section Practical Tips:
-#'
-#' Ensure data are pre-processed, with missing values coded as `NA`, before passing
-#' into the function.
-#' Prepare necessary joins (e.g., for vitals) in advance; this function does not perform joins.
-#'
-#' @param df A data frame or tibble containing the dataset to be processed. Default is `NULL`.
-#' @param patient_scene_table A data frame or tibble containing only ePatient and eScene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eResponse fields needed for this measure's calculations. Default is `NULL`.
-#' @param procedures_table A data frame or tibble containing only the eProcedures fields needed for this measure's calculations. Default is `NULL`.
-#' @param airway_table A data frame or tibble containing only the eAirway fields needed for this measure's calculations. Default is `NULL`.
-#' @param vitals_table A data frame or tibble containing only the eVitals fields needed for this measure's calculations. Default is `NULL`.
-#' @param erecord_01_col Column name containing the unique patient record identifier.
-#' @param incident_date_col Column name containing the incident date. Default is `NULL`.
-#' @param patient_dob_col Column name containing the patient's date of birth. Default is `NULL`.
-#' @param epatient_15_col Column name for patient information (exact purpose unclear).
-#' @param epatient_16_col Column name for patient information (exact purpose unclear).
+#' @param df A data frame or tibble containing the dataset to be processed.
+#'   Default is `NULL`.
+#' @param patient_scene_table A data frame or tibble containing only ePatient
+#'   and eScene fields as a fact table. Default is `NULL`.
+#' @param response_table A data frame or tibble containing only the eResponse
+#'   fields needed for this measure's calculations. Default is `NULL`.
+#' @param procedures_table A data frame or tibble containing only the
+#'   eProcedures fields needed for this measure's calculations. Default is
+#'   `NULL`.
+#' @param airway_table A data frame or tibble containing only the eAirway fields
+#'   needed for this measure's calculations. Default is `NULL`.
+#' @param vitals_table A data frame or tibble containing only the eVitals fields
+#'   needed for this measure's calculations. Default is `NULL`.
+#' @param erecord_01_col Column name containing the unique patient record
+#'   identifier.
+#' @param incident_date_col Column that contains the incident date. This
+#'   defaults to `NULL` as it is optional in case not available due to PII
+#'   restrictions.
+#' @param patient_DOB_col Column that contains the patient's date of birth. This
+#'   defaults to `NULL` as it is optional in case not available due to PII
+#'   restrictions.
+#' @param epatient_15_col Column name for patient information (exact purpose
+#'   unclear).
+#' @param epatient_16_col Column name for patient information (exact purpose
+#'   unclear).
 #' @param eresponse_05_col Column name for emergency response codes.
-#' @param eprocedures_01_col Column name for procedure times or other related data.
+#' @param eprocedures_01_col Column name for procedure times or other related
+#'   data.
 #' @param eprocedures_02_col Column name for additional procedure data.
 #' @param eprocedures_03_col Column name for procedure codes.
 #' @param eprocedures_05_col Column name for number of procedure attempts.
 #' @param eprocedures_06_col Column name for procedure success codes.
-#' @param eairway_02_col Column name for airway procedure data (datetime). Default is `NULL`.
-#' @param eairway_04_col Column name for airway procedure data. Default is `NULL`.
+#' @param eairway_02_col Column name for airway procedure data (datetime).
+#'   Default is `NULL`.
+#' @param eairway_04_col Column name for airway procedure data. Default is
+#'   `NULL`.
 #' @param evitals_01_col Column name for vital signs data (datetime).
 #' @param evitals_16_col Column name for additional vital signs data.
 #'
-#' @return
-#' A list that contains the following:
+#' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
