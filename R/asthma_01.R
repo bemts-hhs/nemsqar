@@ -1,71 +1,54 @@
-#' Asthma-01 Calculation
-#' 
+#' @title Asthma-01 Calculation
+#'
 #' @description
-#' 
+#'
 #' Calculates the NEMSQA Asthma-01 measure.
 #'
-#' Calculates key statistics related to asthma-related incidents in an EMS dataset,
-#' specifically focusing on cases where 911 was called for respiratory distress,
-#' and certain medications were administered. This function segments the data by
-#' age into adult and pediatric populations, computing the proportion of cases that
-#' received beta-agonist treatment.
-#'
-#' @section Data Assumptions:
-#'
-#' This function assumes that:
-#' Data are already loaded. The data need to be a data.frame or tibble.
-#'
-#' Age in years can be calculated using the patient date of birth and incident
-#' date. These fields must have valid Date or POSIXct data types. If patient DOB
-#' and the incident date are not passed, the function will use the system generated
-#' patient age and age units.
-#'
-#' When values are missing, they are coded as NA, not the "not known"/"not
-#' recorded" values common to ImageTrend or the NEMSIS codes that correspond to
-#' "not values".
-#'
-#' The primary and secondary impression fields (eSituation.11 and eSituation.12)
-#' can have the ICD-10 codes and/or the text descriptions present in them. 
-#' Similarly, this function assumes that the eResponse.05 column has NEMSIS codes 
-#' and/or text descriptions present, but text can also be included for reference.
-#'
-#' The eMedications.03 field contains all medications administered and contains
-#' a text description of the medication using the generic name. The RxNORM code
-#' may also be included for reference, and will be checked.
-#'
-#' The secondary impressions field (eSituation.12) is best prepared as a
-#' comma-separated list of all values in a single string.
-#'
-#' @section Practical Tips:
-#'
-#' The first argument is the data.frame or tables with data elements prepared as above. 
-#' No joining is done. Any joins to get vitals, etc. will need to be done outside of this function.
+#' Calculates key statistics related to asthma-related incidents in an EMS
+#' dataset, specifically focusing on cases where 911 was called for respiratory
+#' distress, and certain medications were administered. This function segments
+#' the data by age into adult and pediatric populations, computing the
+#' proportion of cases that received beta-agonist treatment.
 #'
 #' @param df A data.frame or tibble containing EMS data. Default is `NULL`.
-#' @param patient_scene_table A data.frame or tibble containing at least ePatient and eScene fields as a fact table. Default is `NULL`.
-#' @param response_table A data.frame or tibble containing at least the eResponse fields needed for this measure's calculations. Default is `NULL`.
-#' @param situation_table A data.frame or tibble containing at least the eSituation fields needed for this measure's calculations. Default is `NULL`.
-#' @param medications_table A data.frame or tibble containing at least the eMedications fields needed for this measure's calculations. Default is `NULL`.
-#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier. Default is `NULL`.
-#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column that contains the incident date. Default is `NULL`.
-#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column that contains the patient's date of birth. Default is `NULL`.
-#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's numeric age agnostic of unit.
-#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's age unit ("Years", "Months", "Days", "Hours", or "Minute").
-#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column that contains eResponse.05.
-#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column that contains eSituation.11.
-#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column that contains all eSituation.12 values as a single comma-separated list.
-#' @param emedications_03_col <['tidy-select'][dplyr_tidy_select]> Column that contains all eMedications.03 values as a single comma-separated list.
+#' @param patient_scene_table A data.frame or tibble containing at least
+#'   ePatient and eScene fields as a fact table. Default is `NULL`.
+#' @param response_table A data.frame or tibble containing at least the
+#'   eResponse fields needed for this measure's calculations. Default is `NULL`.
+#' @param situation_table A data.frame or tibble containing at least the
+#'   eSituation fields needed for this measure's calculations. Default is
+#'   `NULL`.
+#' @param medications_table A data.frame or tibble containing at least the
+#'   eMedications fields needed for this measure's calculations. Default is
+#'   `NULL`.
+#' @param erecord_01_col The column representing the EMS record unique
+#'   identifier. Default is `NULL`.
+#' @param incident_date_col Column that contains the incident date. This
+#'   defaults to `NULL` as it is optional in case not available due to PII
+#'   restrictions.
+#' @param patient_DOB_col Column that contains the patient's date of birth. This
+#'   defaults to `NULL` as it is optional in case not available due to PII
+#'   restrictions.
+#' @param epatient_15_col Column representing the patient's numeric age agnostic
+#'   of unit.
+#' @param epatient_16_col Column representing the patient's age unit ("Years",
+#'   "Months", "Days", "Hours", or "Minute").
+#' @param eresponse_05_col Column that contains eResponse.05.
+#' @param esituation_11_col Column that contains eSituation.11.
+#' @param esituation_12_col Column that contains all eSituation.12 values as a
+#'   single comma-separated list.
+#' @param emedications_03_col Column that contains all eMedications.03 values as
+#'   a single comma-separated list.
 #' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
 #' @return A data.frame summarizing results for three population groups (All,
-#' Adults, and Peds) with the following columns:
-#' `pop`: Population type (All, Adults, or Peds).
-#' `numerator`: Count of incidents where beta-agonist medications were administered.
-#' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents involving beta-agonist medications.
-#' `prop_label`: Proportion formatted as a percentage with a specified number of
-#' decimal places.
-#' 
+#'   Adults, and Peds) with the following columns: `pop`: Population type (All,
+#'   Adults, or Peds). `numerator`: Count of incidents where beta-agonist
+#'   medications were administered. `denominator`: Total count of incidents.
+#'   `prop`: Proportion of incidents involving beta-agonist medications.
+#'   `prop_label`: Proportion formatted as a percentage with a specified number
+#'   of decimal places.
+#'
 #' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export
@@ -85,26 +68,26 @@ asthma_01 <- function(df = NULL,
                       esituation_12_col,
                       emedications_03_col,
                       ...) {
-  
+
   # utilize applicable tables to analyze the data for the measure
   if(
-    all(!is.null(patient_scene_table), 
-        !is.null(response_table), 
-        !is.null(situation_table), 
+    all(!is.null(patient_scene_table),
+        !is.null(response_table),
+        !is.null(situation_table),
         !is.null(medications_table)
     ) && is.null(df)
-    
+
   ) {
-    
+
     # Start timing the function execution
     start_time <- Sys.time()
-    
+
     # header
     cli::cli_h1("Asthma-01")
-    
+
     # header
     cli::cli_h2("Gathering Records for Asthma-01")
-    
+
     # gather the population of interest
     asthma_01_populations <- asthma_01_population(patient_scene_table = patient_scene_table,
                                                   response_table = response_table,
@@ -120,13 +103,13 @@ asthma_01 <- function(df = NULL,
                                                   esituation_12_col = {{ esituation_12_col }},
                                                   emedications_03_col = {{ emedications_03_col }}
                                                   )
-    
+
     # create a separator
     cli::cli_text("\n")
-    
+
     # header for calculations
     cli::cli_h2("Calculating Asthma-01")
-    
+
     # summary
     asthma.01 <- results_summarize(total_population = asthma_01_populations$initial_population,
                                    adult_population = asthma_01_populations$adults,
@@ -134,47 +117,47 @@ asthma_01 <- function(df = NULL,
                                    measure_name = "Asthma-01",
                                    numerator_col = beta_agonist_check,
                                    ...)
-    
+
     # create a separator
     cli::cli_text("\n")
-    
+
     # Calculate and display the runtime
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
-    
+
     if (run_time_secs >= 60) {
-      
+
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
       cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
-      
+
     } else {
-      
+
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
       cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
-      
+
     }
-    
+
     # create a separator
     cli::cli_text("\n")
-    
+
     return(asthma.01)
-    
-  } else if(all(is.null(patient_scene_table), is.null(response_table), is.null(situation_table), is.null(medications_table)) && !is.null(df)) 
-    
+
+  } else if(all(is.null(patient_scene_table), is.null(response_table), is.null(situation_table), is.null(medications_table)) && !is.null(df))
+
     # utilize a dataframe to analyze the data for the measure analytics
-    
+
   {
-    
+
     # Start timing the function execution
     start_time <- Sys.time()
-    
+
     # header
     cli::cli_h1("Asthma-01")
-    
+
     # header
     cli::cli_h2("Gathering Records for Asthma-01")
-    
+
     # gather the population of interest
     asthma_01_populations <- asthma_01_population(df = df,
                                                   patient_scene_table = patient_scene_table,
@@ -191,13 +174,13 @@ asthma_01 <- function(df = NULL,
                                                   esituation_12_col = {{ esituation_12_col }},
                                                   emedications_03_col = {{ emedications_03_col }}
                                                   )
-    
+
     # create a separator
     cli::cli_text("\n")
-    
+
     # header for calculations
     cli::cli_h2("Calculating Asthma-01")
-    
+
     # summary
     asthma.01 <- results_summarize(total_population = asthma_01_populations$initial_population,
                                    adult_population = asthma_01_populations$adults,
@@ -205,32 +188,32 @@ asthma_01 <- function(df = NULL,
                                    measure_name = "Asthma-01",
                                    numerator_col = beta_agonist_check,
                                    ...)
-    
+
     # create a separator
     cli::cli_text("\n")
-    
+
     # Calculate and display the runtime
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
-    
+
     if (run_time_secs >= 60) {
-      
+
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
       cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
-      
+
     } else {
-      
+
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
       cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
-      
+
     }
-    
+
     # create a separator
     cli::cli_text("\n")
-    
+
     return(asthma.01)
-    
+
   }
-  
+
 }

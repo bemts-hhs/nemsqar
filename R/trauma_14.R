@@ -1,75 +1,86 @@
-#' Trauma-14
+#' @title Trauma-14 Calculation
 #'
-#' This function processes EMS data to generate a set of binary variables indicating whether specific trauma triage criteria are met. The output #' is a data frame enriched with these indicators for further analysis.  The final outcome is whether or not the EMS record documents the use of #' a pre-hospital trauma activation.
-#' 
-#' @section Data Assumptions:
-#' 
-#' - All vitals columns contain the full list of values entered for each record and columns.
-#' - Each eexam field is a list column containing all values entered per record
-#' that are also comma (or otherwise) separated.
-#' - The trauma triage fields are list columns containing all values entered per record
-#' that are also comma (or otherwise) separated.
-#' - `einjury_01_col` is a list column containing all values entered per record
-#' that are also comma (or otherwise) separated.
-#' - `eresponse_10_col` is a list column containing all values entered per record
-#' that are also comma (or otherwise) separated.
-#' - `eprocedures_03_col` is a list column containing all values entered per record
-#' that are also comma (or otherwise) separated.
+#' @description
 #'
-#' @param df A data frame or tibble containing EMS data with all relevant columns.
-#' @param patient_scene_table A data frame or tibble containing fields from epatient and escene needed for this measure's calculations.
-#' @param situation_table A data frame or tibble containing fields from esituation needed for this measure's calculations.
-#' @param response_table A data frame or tibble containing fields from eresponse needed for this measure's calculations.
-#' @param disposition_table A data frame or tibble containing fields from edisposition needed for this measure's calculations.
-#' @param vitals_table A data frame or tibble containing fields from evitals needed for this measure's calculations.
-#' @param exam_table A data frame or tibble containing fields from eexam needed for this measure's calculations.
-#' @param procedures_table A data frame or tibble containing fields from eprocedures needed for this measure's calculations.
-#' @param injury_table A data frame or tibble containing fields from einjury needed for this measure's calculations.
-#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.
-#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> The column indicating the incident date. Must be of class `Date` or similar.
-#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> The column representing the patient's date of birth. Must be of class `Date` or similar.
-#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> The column for patient age numeric value.
-#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> The column for patient age unit (e.g., "Years", "Months").
-#' @param esituation_02_col <['tidy-select'][dplyr_tidy_select]> The column containing information on the presence of injury.
-#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> The column representing the 911 response type.
-#' @param eresponse_10_col <['tidy-select'][dplyr_tidy_select]> Column name containing scene delay information.
-#' @param transport_disposition_col <['tidy-select'][dplyr_tidy_select]> The column for patient transport disposition.
-#' @param edisposition_24_col <['tidy-select'][dplyr_tidy_select]> Column name containing pre-hospital trauma alert information.
-#' @param evitals_06_col <['tidy-select'][dplyr_tidy_select]> Column name containing systolic blood pressure (SBP) values.
-#' @param evitals_10_col <['tidy-select'][dplyr_tidy_select]> Column name containing heart rate values.
-#' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> Column name containing pulse oximetry values.
-#' @param evitals_14_col <['tidy-select'][dplyr_tidy_select]> Column name containing capillary refill information.
-#' @param evitals_15_col <['tidy-select'][dplyr_tidy_select]> Column name containing respiratory effort values.
-#' @param evitals_21_col <['tidy-select'][dplyr_tidy_select]> Column name containing Glasgow Coma Scale (GCS) Motor values.
-#' @param eexam_16_col <['tidy-select'][dplyr_tidy_select]> Column name containing extremities assessment details.
-#' @param eexam_20_col <['tidy-select'][dplyr_tidy_select]> Column name containing neurological assessment details.
-#' @param eexam_23_col <['tidy-select'][dplyr_tidy_select]> Column name containing lung assessment details.
-#' @param eexam_25_col <['tidy-select'][dplyr_tidy_select]> Column name containing chest assessment details.
-#' @param eprocedures_03_col <['tidy-select'][dplyr_tidy_select]> Column name containing airway management or tourniquet usage details.
-#' @param einjury_01_col <['tidy-select'][dplyr_tidy_select]> Column name containing injury cause details.
-#' @param einjury_03_col <['tidy-select'][dplyr_tidy_select]> Column name containing trauma triage steps 1 and 2 information.
-#' @param einjury_04_col <['tidy-select'][dplyr_tidy_select]> Column name containing trauma triage steps 3 and 4 information.
-#' @param einjury_09_col <['tidy-select'][dplyr_tidy_select]> Column name containing fall height information.
-#' @param ... Additional arguments passed to helper functions for further customization.
+#' This function processes EMS data to generate a set of binary variables
+#' indicating whether specific trauma triage criteria are met. The output #' is
+#' a data frame enriched with these indicators for further analysis.  The final
+#' outcome is whether or not the EMS record documents the use of #' a
+#' pre-hospital trauma activation.
 #'
-#' @section Features: 
-#' 
-#' - Handles missing or invalid date formats with error messaging.
-#' - Incorporates quasiquotation for flexible column referencing.
-#' - Creates reusable dimension tables for efficient filtering and summarization.
+#' @param df A data frame or tibble containing EMS data with all relevant
+#'   columns.
+#' @param patient_scene_table A data frame or tibble containing fields from
+#'   epatient and escene needed for this measure's calculations.
+#' @param situation_table A data frame or tibble containing fields from
+#'   esituation needed for this measure's calculations.
+#' @param response_table A data frame or tibble containing fields from eresponse
+#'   needed for this measure's calculations.
+#' @param disposition_table A data frame or tibble containing fields from
+#'   edisposition needed for this measure's calculations.
+#' @param vitals_table A data frame or tibble containing fields from evitals
+#'   needed for this measure's calculations.
+#' @param exam_table A data frame or tibble containing fields from eexam needed
+#'   for this measure's calculations.
+#' @param procedures_table A data frame or tibble containing fields from
+#'   eprocedures needed for this measure's calculations.
+#' @param injury_table A data frame or tibble containing fields from einjury
+#'   needed for this measure's calculations.
+#' @param erecord_01_col The column representing the EMS record unique
+#'   identifier.
+#' @param incident_date_col Column that contains the incident date. This
+#'   defaults to `NULL` as it is optional in case not available due to PII
+#'   restrictions.
+#' @param patient_DOB_col Column that contains the patient's date of birth. This
+#'   defaults to `NULL` as it is optional in case not available due to PII
+#'   restrictions.
+#' @param epatient_15_col The column for patient age numeric value.
+#' @param epatient_16_col The column for patient age unit (e.g., "Years",
+#'   "Months").
+#' @param esituation_02_col The column containing information on the presence of
+#'   injury.
+#' @param eresponse_05_col The column representing the 911 response type.
+#' @param eresponse_10_col Column name containing scene delay information.
+#' @param transport_disposition_col The column for patient transport
+#'   disposition.
+#' @param edisposition_24_col Column name containing pre-hospital trauma alert
+#'   information.
+#' @param evitals_06_col Column name containing systolic blood pressure (SBP)
+#'   values.
+#' @param evitals_10_col Column name containing heart rate values.
+#' @param evitals_12_col Column name containing pulse oximetry values.
+#' @param evitals_14_col Column name containing capillary refill information.
+#' @param evitals_15_col Column name containing respiratory effort values.
+#' @param evitals_21_col Column name containing Glasgow Coma Scale (GCS) Motor
+#'   values.
+#' @param eexam_16_col Column name containing extremities assessment details.
+#' @param eexam_20_col Column name containing neurological assessment details.
+#' @param eexam_23_col Column name containing lung assessment details.
+#' @param eexam_25_col Column name containing chest assessment details.
+#' @param eprocedures_03_col Column name containing airway management or
+#'   tourniquet usage details.
+#' @param einjury_01_col Column name containing injury cause details.
+#' @param einjury_03_col Column name containing trauma triage steps 1 and 2
+#'   information.
+#' @param einjury_04_col Column name containing trauma triage steps 3 and 4
+#'   information.
+#' @param einjury_09_col Column name containing fall height information.
+#' @param ... Additional arguments passed to helper functions for further
+#'   customization.
 #'
-#' @return A tibble summarizing results for three age groups (< 10 yrs, 10–65 yrs, and >= 65 yrs) with the following columns:
+#' @return A tibble summarizing results for three age groups (< 10 yrs, 10–65
+#'   yrs, and >= 65 yrs) with the following columns:
 #'
-#' `pop`: Population type (< 10 yrs, 10–65 yrs, >= 65 yrs).
-#' `numerator`: Count of incidents where a pre-hospital trauma alert was called.
-#' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents where a pre-hospital trauma alert was called.
-#' `prop_label`: Proportion formatted as a percentage with a specified number of decimal places.
-#' 
+#'   `pop`: Population type (< 10 yrs, 10–65 yrs, >= 65 yrs). `numerator`: Count
+#'   of incidents where a pre-hospital trauma alert was called. `denominator`:
+#'   Total count of incidents. `prop`: Proportion of incidents where a
+#'   pre-hospital trauma alert was called. `prop_label`: Proportion formatted as
+#'   a percentage with a specified number of decimal places.
+#'
 #' @author Nicolas Foss, Ed.D., MS
-#' 
+#'
 #' @export
-#' 
+#'
 trauma_14 <- function(df = NULL,
                       patient_scene_table = NULL,
                       response_table = NULL,
@@ -109,29 +120,29 @@ trauma_14 <- function(df = NULL,
   # utilize applicable tables to analyze the data for the measure
   if(
     all(
-      !is.null(patient_scene_table), 
-      !is.null(response_table), 
+      !is.null(patient_scene_table),
+      !is.null(response_table),
       !is.null(situation_table),
-      !is.null(vitals_table), 
+      !is.null(vitals_table),
       !is.null(procedures_table),
       !is.null(exam_table),
       !is.null(injury_table),
       !is.null(disposition_table)
     ) && is.null(df)
-    
+
   ) {
-    
+
     # Start timing the function execution
     start_time <- Sys.time()
-    
+
     # header
     cli::cli_h1("Trauma-14")
-    
+
     # header
     cli::cli_h2("Gathering Records for Trauma-14")
-    
+
     trauma_14_populations <- trauma_14_population(
-      
+
       patient_scene_table = patient_scene_table,
       response_table = response_table,
       situation_table = situation_table,
@@ -165,12 +176,12 @@ trauma_14 <- function(df = NULL,
       einjury_03_col = {{ einjury_03_col }},
       einjury_04_col = {{ einjury_04_col }},
       einjury_09_col = {{ einjury_09_col }}
-      
+
     )
-    
+
     # create a separator
     cli::cli_text("\n")
-    
+
     # header for calculations
     cli::cli_h2("Calculating Trauma-14")
 
@@ -205,53 +216,53 @@ trauma_14 <- function(df = NULL,
 
     # create a separator
     cli::cli_text("\n")
-    
+
     # Calculate and display the runtime
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
-    
+
     if (run_time_secs >= 60) {
-      
+
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
       cli_alert_success("Function completed in {col_green(paste0(run_time, m))}.")
-      
+
     } else {
-      
+
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
       cli_alert_success("Function completed in {col_green(paste0(run_time, s))}.")
-      
+
     }
-    
+
     # create a separator
     cli::cli_text("\n")
-    
+
     return(trauma.04)
-    
+
   } else if(
-    
+
     all(
-      is.null(patient_scene_table), 
-      is.null(response_table), 
+      is.null(patient_scene_table),
+      is.null(response_table),
       is.null(situation_table),
-      is.null(vitals_table), 
+      is.null(vitals_table),
       is.null(procedures_table),
       is.null(exam_table),
       is.null(injury_table),
       is.null(disposition_table)
     ) && !is.null(df)
-    
+
   ) {
-    
+
     # Start timing the function execution
     start_time <- Sys.time()
-    
+
     # header
     cli::cli_h1("Trauma-14")
-    
+
     # header
     cli::cli_h2("Gathering Records for Trauma-14")
-    
+
     trauma_14_populations <- trauma_14_population(
       df = df,
       erecord_01_col = {{ erecord_01_col }},
@@ -279,12 +290,12 @@ trauma_14 <- function(df = NULL,
       einjury_03_col = {{ einjury_03_col }},
       einjury_04_col = {{ einjury_04_col }},
       einjury_09_col = {{ einjury_09_col }}
-      
+
     )
-    
+
     # create a separator
     cli::cli_text("\n")
-    
+
     # header for calculations
     cli::cli_h2("Calculating Trauma-14")
 
@@ -319,29 +330,29 @@ trauma_14 <- function(df = NULL,
 
     # create a separator
     cli::cli_text("\n")
-    
+
     # Calculate and display the runtime
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
-    
+
     if (run_time_secs >= 60) {
-      
+
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
       cli_alert_success("Function completed in {col_green(paste0(run_time, m))}.")
-      
+
     } else {
-      
+
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
       cli_alert_success("Function completed in {col_green(paste0(run_time, s))}.")
-      
+
     }
-    
+
     # create a separator
     cli::cli_text("\n")
-    
+
     return(trauma.04)
-    
+
   }
-  
+
 }

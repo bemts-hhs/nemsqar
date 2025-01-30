@@ -1,55 +1,75 @@
-#' Airway-01
+#' @title Airway-01 Calculation
 #'
-#' Calculates the NEMSQA Airway-01 measure.
+#' @description Calculates the NEMSQA Airway-01 measure.
 #'
 #' Calculates the proportion of times when the first endotracheal intubation
 #' attempt is successful with no peri-intubation hypoxia or hypotension.
 #'
-#'
 #' @param df A dataframe or tibble contianing EMS data where each row represents
-#' an observation and columns represent features.
-#' @param patient_scene_table A data.frame or tibble containing at least epatient, escene, and earrest.01 fields as a fact table.
-#' @param response_table A data.frame or tibble containing at least the eresponse fields needed for this measure's calculations.
-#' @param procedures_table A dataframe or tibble containing at least the eProcedures fields needed.
-#' @param vitals_table A dataframe or tibble containing at least the eVitals fields needed.
-#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column representing the EMS record unique identifier.
-#' @param incident_date_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains the incident date.
-#' @param patient_DOB_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains the patient's date of birth.
-#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's numeric age agnostic of unit.
-#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column representing the patient's age unit ("Years", "Months", "Days", "Hours", or "Minute").
-#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column that
-#' contains eResponse.05.
-#' @param earrest_01_col  <['tidy-select'][dplyr_tidy_select]> Column representing whether or not the patient is in arrest.
-#' @param evitals_01_col  <['tidy-select'][dplyr_tidy_select]> Date-time or POSIXct column containing vital signs date/time
-#' @param evitals_06_col  <['tidy-select'][dplyr_tidy_select]> Numeric column containing systolic blood pressure values
-#' @param evitals_12_col  <['tidy-select'][dplyr_tidy_select]> Numeric column containing pulse oximetry values.
-#' @param eprocedures_01_col  <['tidy-select'][dplyr_tidy_select]> Date-time or POSIXct column for procedures
-#' @param eprocedures_02_col  <['tidy-select'][dplyr_tidy_select]> Column that indicates procedure prior to arrival.
-#' @param eprocedures_03_col  <['tidy-select'][dplyr_tidy_select]> Column containing procedure codes with or without procedure names.
-#' @param eprocedures_05_col  <['tidy-select'][dplyr_tidy_select]> Column containing a count for how many times procedure was attempted.
-#' @param eprocedures_06_col  <['tidy-select'][dplyr_tidy_select]> Column indicating whether or not procedure was successful.
+#'   an observation and columns represent features.
+#' @param patient_scene_table A data.frame or tibble containing at least
+#'   epatient, escene, and earrest.01 fields as a fact table.
+#' @param response_table A data.frame or tibble containing at least the
+#'   eresponse fields needed for this measure's calculations.
+#' @param arrest_table A data.frame or tibble containing at least the earrest
+#'   fields needed for this measure's calculations.
+#' @param procedures_table A dataframe or tibble containing at least the
+#'   eProcedures fields needed.
+#' @param vitals_table A dataframe or tibble containing at least the eVitals
+#'   fields needed.
+#' @param erecord_01_col The column representing the EMS record unique
+#'   identifier.
+#' @param incident_date_col Column that contains the incident date. This
+#'   defaults to `NULL` as it is optional in case not available due to PII
+#'   restrictions.
+#' @param patient_DOB_col Column that contains the patient's date of birth. This
+#'   defaults to `NULL` as it is optional in case not available due to PII
+#'   restrictions.
+#' @param epatient_15_col Column representing the patient's numeric age agnostic
+#'   of unit.
+#' @param epatient_16_col Column representing the patient's age unit ("Years",
+#'   "Months", "Days", "Hours", or "Minutes").
+#' @param eresponse_05_col Column that contains eResponse.05.
+#' @param earrest_01_col  Column representing whether or not the patient is in
+#'   arrest.
+#' @param evitals_01_col  Date-time or POSIXct column containing vital signs
+#'   date/time
+#' @param evitals_06_col  Numeric column containing systolic blood pressure
+#'   values
+#' @param evitals_12_col  Numeric column containing pulse oximetry values.
+#' @param eprocedures_01_col  Date-time or POSIXct column for procedures
+#' @param eprocedures_02_col  Column that indicates procedure prior to arrival.
+#' @param eprocedures_03_col  Column containing procedure codes with or without
+#'   procedure names.
+#' @param eprocedures_05_col  Column containing a count for how many times
+#'   procedure was attempted.
+#' @param eprocedures_06_col  Column indicating whether or not procedure was
+#'   successful.
 #' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
 #' @return A data.frame summarizing results for three population groups (All,
 #' Adults, and Peds) with the following columns:
 #' `pop`: Population type (All, Adults, or Peds).
-#' `numerator`: Count of incidents where beta-agonist medications were administered.
+#' `numerator`: Count of incidents where beta-agonist medications were
+#' administered.
 #' `denominator`: Total count of incidents.
 #' `prop`: Proportion of incidents involving beta-agonist medications.
 #' `prop_label`: Proportion formatted as a percentage with a specified number of
 #' decimal places.
+#'
+#' @author Samuel Kordik, Nicolas Foss Ed.D., MS
+#'
 #' @export
 #'
 airway_01 <- function(df = NULL,
                       patient_scene_table = NULL,
                       response_table = NULL,
+                      arrest_table = NULL,
                       procedures_table = NULL,
                       vitals_table = NULL,
                       erecord_01_col,
-                      incident_date_col,
-                      patient_DOB_col,
+                      incident_date_col = NULL,
+                      patient_DOB_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       earrest_01_col,
@@ -64,164 +84,19 @@ airway_01 <- function(df = NULL,
                       eprocedures_06_col,
                       ...) {
 
-  # Either ALL tables are fulfilled or just df.
-
-  if(
-
-    any(
-      !is.null(patient_scene_table),
-      !is.null(response_table),
-      !is.null(procedures_table),
-      !is.null(vitals_table)
-    )
-
-    &&
-
-    !is.null(df)
-
-  ) {
-
-    cli::cli_abort("{.fn airway_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all four table arguments.")
-
-  }
-
-
-  # ensure that df or all table arguments are fulfilled
-  if(
-
-    all(
-      is.null(patient_scene_table),
-      is.null(response_table),
-      is.null(procedures_table),
-      is.null(vitals_table)
-    )
-
-    && is.null(df)
-
-  ) {
-
-    cli::cli_abort("{.fn airway_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all four table arguments.")
-
-  }
-
-  # ensure all *_col arguments are fulfilled
-  if(
-
-    any(
-
-      missing(erecord_01_col),
-      missing(incident_date_col),
-      missing(patient_DOB_col),
-      missing(epatient_15_col),
-      missing(epatient_16_col),
-      missing(earrest_01_col),
-      missing(eresponse_05_col),
-      missing(evitals_01_col),
-      missing(evitals_06_col),
-      missing(evitals_12_col),
-      missing(eprocedures_01_col),
-      missing(eprocedures_02_col),
-      missing(eprocedures_03_col),
-      missing(eprocedures_05_col),
-      missing(eprocedures_06_col)
-    )
-
-  ) {
-
-    cli::cli_abort("One or more of the *_col arguments is missing.  Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn airway_01}.")
-
-  }
-
-  # options for the progress bar
-  # a green dot for progress
-  # a white line for note done yet
-  options(cli.progress_bar_style = "dot")
-
-  options(cli.progress_bar_style = list(
-    complete = cli::col_green("●"),
-    incomplete = cli::col_br_white("─")
-  ))
-
-  # initiate the progress bar process
-  progress_bar_main <- cli::cli_progress_bar(
-    "Running `airway_01()`",
-    total = 1,
-    type = "tasks",
-    clear = F,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]\n"
-  )
-
   # utilize applicable tables to analyze the data for the measure
   if(
     all(!is.null(patient_scene_table),
         !is.null(response_table),
+        !is.null(arrest_table),
         !is.null(procedures_table),
         !is.null(vitals_table)
     ) && is.null(df)
 
   ) {
 
-    # Ensure df is a data frame or tibble
-    if (
-
-      any(!(is.data.frame(patient_scene_table) && tibble::is_tibble(patient_scene_table)) ||
-
-          !(is.data.frame(response_table) && tibble::is_tibble(response_table)) ||
-
-          !(is.data.frame(procedures_table) && tibble::is_tibble(procedures_table)) ||
-
-          !(is.data.frame(vitals_table) && tibble::is_tibble(vitals_table))
-
-      )
-
-    ) {
-
-      cli::cli_abort(
-        c(
-          "An object of class {.cls data.frame} or {.cls tibble} is required for each of the *_table arguments."
-        )
-      )
-    }
-
-    # only check the date columns if they are in fact passed
-    if(
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col)),
-        !rlang::quo_is_null(rlang::enquo(evitals_01_col)),
-        !rlang::quo_is_null(rlang::enquo(eprocedures_01_col)),
-      )
-    )
-
-    {
-      # use quasiquotation on the date variables to check format
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_DOB <- rlang::enquo(patient_DOB_col)
-      evitals_01 <- rlang::enquo(evitals_01_col)
-      eprocedures_01 <- rlang::enquo(eprocedures_01)
-
-      if (
-        any(
-          ( !lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
-           !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])),
-
-          (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_DOB)]]) &
-           !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_DOB)]])),
-
-          (!lubridate::is.Date(vitals_table[[rlang::as_name(evitals_01_col)]]) &
-           !lubridate::is.POSIXct(vitals_table[[rlang::as_name(evitals_01_col)]])),
-
-          (!lubridate::is.Date(procedures_table[[rlang::as_name(eprocedures_01_col)]]) &
-          !lubridate::is.POSIXct(procedures_table[[rlang::as_name(eprocedures_01_col)]]))
-          )
-        ) {
-
-        cli::cli_abort(
-          "For the variables {.var incident_date_col}, {.var patient_DOB_col}, {.var evitals_01_col}, {.var eprocedures_01_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your these vitals to class {.cls Date} or similar class."
-        )
-
-      }
-    }
+    # Start timing the function execution
+    start_time <- Sys.time()
 
     # header
     cli::cli_h1("Airway-01")
@@ -237,6 +112,7 @@ airway_01 <- function(df = NULL,
 
   airway_01_population <- airway_01_population(patient_scene_table = patient_scene_table,
                                                response_table = response_table,
+                                               arrest_table = arrest_table,
                                                procedures_table = procedures_table,
                                                vitals_table = vitals_table,
                                                erecord_01_col = {{ erecord_01_col }},
@@ -263,12 +139,22 @@ airway_01 <- function(df = NULL,
     cli::cli_h2("Calculating Airway-01")
 
     # summary
-    airway.01 <- results_summarize(total_population = airway_01_population()$initial_population,
-                                   adult_population = airway_01_population($adults,
-                                   peds_population = airway_01_population($peds,
-                                   measure_name = "Airway-01",
-                                   numerator_col = measure_performance,
-                                   ...)
+    # adults
+    adult_population <- airway_01_population$adults |>
+      summarize_measure(measure_name = "Airway-01",
+                        population_name = "Adult",
+                        measure_performance,
+                        ...)
+
+    # peds
+    peds_population <- airway_01_population$peds |>
+      summarize_measure(measure_name = "Airway-01",
+                        population_name = "Peds",
+                        measure_performance,
+                        ...)
+
+    # union
+    airway.01 <- bind_rows(adult_population, peds_population)
 
     # create a separator
     cli::cli_text("\n")
@@ -281,12 +167,12 @@ airway_01 <- function(df = NULL,
     if (run_time_secs >= 60) {
 
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
 
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 
@@ -295,5 +181,98 @@ airway_01 <- function(df = NULL,
 
     return(airway.01)
 
+    } else if(
+      all(is.null(patient_scene_table),
+          is.null(response_table),
+          is.null(arrest_table),
+          is.null(procedures_table),
+          is.null(vitals_table)
+      ) && !is.null(df)
 
-}}
+    ) {
+
+      # Start timing the function execution
+      start_time <- Sys.time()
+
+      # header
+      cli::cli_h1("Airway-01")
+
+      # header
+      cli::cli_h2("Gathering Records for Airway-01")
+
+      #############################################################################
+      #                                                                           #
+      #     Get Population Level Information from tables and columns              #
+      #                                                                           #
+      #############################################################################
+
+      airway_01_population <- airway_01_population(df = df,
+                                                   erecord_01_col = {{ erecord_01_col }},
+                                                   incident_date_col = {{ incident_date_col }},
+                                                   patient_DOB_col = {{ patient_DOB_col }},
+                                                   epatient_15_col = {{ epatient_15_col }},
+                                                   epatient_16_col = {{ epatient_16_col }},
+                                                   earrest_01_col = {{ earrest_01_col }},
+                                                   eresponse_05_col = {{ eresponse_05_col }},
+                                                   evitals_01_col = {{ evitals_01_col }},
+                                                   evitals_06_col = {{ evitals_06_col }},
+                                                   evitals_12_col = {{ evitals_12_col }},
+                                                   eprocedures_01_col = {{ eprocedures_01_col }},
+                                                   eprocedures_02_col = {{ eprocedures_02_col }},
+                                                   eprocedures_03_col = {{ eprocedures_03_col }},
+                                                   eprocedures_05_col = {{ eprocedures_05_col }},
+                                                   eprocedures_06_col = {{ eprocedures_06_col }}
+                                                   )
+
+      # create a separator
+      cli::cli_text("\n")
+
+      # header for calculations
+      cli::cli_h2("Calculating Airway-01")
+
+      # summary
+      # adults
+      adult_population <- airway_01_population$adults |>
+        summarize_measure(measure_name = "Airway-01",
+                          population_name = "Adult",
+                          measure_performance,
+                          ...)
+
+      # peds
+      peds_population <- airway_01_population$peds |>
+        summarize_measure(measure_name = "Airway-01",
+                          population_name = "Peds",
+                          measure_performance,
+                          ...)
+
+      # union
+      airway.01 <- bind_rows(adult_population, peds_population)
+
+      # create a separator
+      cli::cli_text("\n")
+
+      # Calculate and display the runtime
+      end_time <- Sys.time()
+      run_time_secs <- difftime(end_time, start_time, units = "secs")
+      run_time_secs <- as.numeric(run_time_secs)
+
+      if (run_time_secs >= 60) {
+
+        run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
+        cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
+
+      } else {
+
+        run_time <- round(run_time_secs, 2)  # Keep in seconds and round
+        cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
+
+      }
+
+      # create a separator
+      cli::cli_text("\n")
+
+      return(airway.01)
+
+    }
+
+}
