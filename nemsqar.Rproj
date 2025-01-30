@@ -1,5 +1,5 @@
 Version: 1.0
-ProjectId: 4122e8a7-42d9-44be-8879-a476165ab8ea
+ProjectId: 7dbb5e7f-006a-479d-8e15-fac55c45b8a6
 
 RestoreWorkspace: Default
 SaveWorkspace: Default
@@ -20,7 +20,3 @@ BuildType: Package
 PackageUseDevtools: Yes
 PackageInstallArgs: --no-multiarch --with-keep.source
 PackageRoxygenize: rd,collate,namespace
-
-SpellingDictionary: en_US
-
-ProjectName: nemsqar

@@ -5,7 +5,8 @@ Authors@R: c(
     person("Nicolas", "Foss", email = "nicolas.foss@hhs.iowa.gov", role = c("aut", "cre")),
     person("Samuel", "Kordik", email = "samuel.kordik@utsouthwestern.edu", role="aut",
            comment = c(ORCID = "0000-0003-4230-1154")),
-    person("Alyssa", "Green", email = "awhim@nemsqa.org", role="ctb")
+    person("Alyssa", "Green", email = "awhim@nemsqa.org", role="ctb"),
+    person("Iowa Department of Health and Human Services", role = "cph")
            )
 Description: nemsqar is an R package designed to automate the calculation of EMS 
              quality metrics as defined by the National EMS Quality Alliance 
@@ -20,8 +21,8 @@ RoxygenNote: 7.3.2
 Suggests: 
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
-URL: https://github.com/bemts-hhs/nemsqar-package
-BugReports: https://github.com/bemts-hhs/nemsqar-package/issues
+URL: https://github.com/bemts-hhs/nemsqar, https://bemts-hhs.github.io/nemsqar/
+BugReports: https://github.com/bemts-hhs/nemsqar/issues
 Depends:
     R (>= 4.1)
 Imports: 

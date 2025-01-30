@@ -6,15 +6,14 @@
 \alias{nemsqar-package}
 \title{nemsqar: National EMS Quality Alliance Measure Calculations}
 \description{
-\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
-
 nemsqar is an R package designed to automate the calculation of EMS quality metrics as defined by the National EMS Quality Alliance (NEMSQA). With a focus on enhancing EMS service performance through reliable, evidence-based quality measures, nemsqar aims to streamline metric calculation for healthcare providers, EMS agencies, and researchers dedicated to improving patient outcomes.
 }
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/bemts-hhs/nemsqar-package}
-  \item Report bugs at \url{https://github.com/bemts-hhs/nemsqar-package/issues}
+  \item \url{https://github.com/bemts-hhs/nemsqar}
+  \item \url{https://bemts-hhs.github.io/nemsqar/}
+  \item Report bugs at \url{https://github.com/bemts-hhs/nemsqar/issues}
 }
 
 }
@@ -29,6 +28,7 @@ Authors:
 Other contributors:
 \itemize{
   \item Alyssa Green \email{awhim@nemsqa.org} [contributor]
+  \item Iowa Department of Health and Human Services [copyright holder]
 }
 
 }

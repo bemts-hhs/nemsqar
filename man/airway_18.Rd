@@ -42,37 +42,38 @@ airway_18(
 
 \item{response_table}{A data frame or tibble containing only the eResponse fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing the unique patient record identifier.}
+\item{erecord_01_col}{Column name containing the unique patient record identifier.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing the incident date. Default is \code{NULL}.}
+\item{incident_date_col}{Column name containing the incident date. Default is \code{NULL}.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for patient information (exact purpose unclear).}
+\item{epatient_15_col}{Column name for patient information (exact purpose unclear).}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for patient information (exact purpose unclear).}
+\item{epatient_16_col}{Column name for patient information (exact purpose unclear).}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for emergency response codes.}
+\item{eresponse_05_col}{Column name for emergency response codes.}
 
-\item{eprocedures_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for procedure times or other related data.}
+\item{eprocedures_01_col}{Column name for procedure times or other related data.}
 
-\item{eprocedures_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for additional procedure data.}
+\item{eprocedures_02_col}{Column name for additional procedure data.}
 
-\item{eprocedures_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for procedure codes.}
+\item{eprocedures_03_col}{Column name for procedure codes.}
 
-\item{eprocedures_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for number of procedure attempts.}
+\item{eprocedures_05_col}{Column name for number of procedure attempts.}
 
-\item{eprocedures_06_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for procedure success codes.}
+\item{eprocedures_06_col}{Column name for procedure success codes.}
 
-\item{eairway_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for airway procedure data (datetime). Default is \code{NULL}.}
+\item{eairway_02_col}{Column name for airway procedure data (datetime). Default is \code{NULL}.}
 
-\item{eairway_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for airway procedure data. Default is \code{NULL}.}
+\item{eairway_04_col}{Column name for airway procedure data. Default is \code{NULL}.}
 
-\item{evitals_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for vital signs data (datetime).}
+\item{evitals_01_col}{Column name for vital signs data (datetime).}
 
-\item{evitals_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for additional vital signs data.}
+\item{evitals_16_col}{Column name for additional vital signs data.}
 
-\item{...}{Additional arguments passed to other functions if needed.}
+\item{...}{Additional arguments passed to \code{dplyr::summarize} to calculate performance,
+such as through using the \code{.by} argument for grouping.}
 
-\item{patient_dob_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing the patient's date of birth. Default is \code{NULL}.}
+\item{patient_dob_col}{Column name containing the patient's date of birth. Default is \code{NULL}.}
 }
 \value{
 A tibble summarizing results for Adults and Peds with the following columns:
@@ -122,6 +123,81 @@ into the function.
 Prepare necessary joins (e.g., for vitals) in advance; this function does not perform joins.
 }
 
+\examples{
+
+\dontrun{
+
+# If you are sourcing your data from a SQL database connection
+# or if you have your data in several different tables,
+# you can pass table inputs versus a single data.frame or tibble
+
+# Get the applicable tables from `nemsqar`
+data("nemsqar_airway_table")
+data("nemsqar_patient_scene_table")
+data("nemsqar_response_table")
+data("nemsqar_vitals_table")
+data("nemsqar_procedures_table")
+
+# Run the function
+
+airway_18(df = NULL,
+         patient_scene_table = nemsqar_patient_scene_table,
+         procedures_table = nemsqar_procedures_table,
+         vitals_table = nemsqar_vitals_table,
+         airway_table = nemsqar_airway_table,
+         response_table = nemsqar_response_table,
+         erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+         incident_date_col = `Incident Date`,
+         patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
+         epatient_15_col = `Patient Age (ePatient.15)`,
+         epatient_16_col = `Patient Age Units (ePatient.16)`,
+         eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+         eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+         eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+         eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+         eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
+         eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
+         eairway_02_col = `Airway Device Placement Confirmation Date Time (eAirway.02)`,
+         eairway_04_col = `Airway Device Placement Confirmed Method List (eAirway.04)`,
+         evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+         evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`
+         )
+
+# You can also pass a data.frame that has all the fields
+# necessary to calculate the measure, and `airway_18` will
+# take care of any one-to-many or many-to-many relationships for you
+
+# Load the data.frame from the package
+data("nemsqar_airway_18_df")
+
+# Run the function
+
+airway_18(df = nemsqar_airway_18_df,
+         patient_scene_table = NULL,
+         procedures_table = NULL,
+         vitals_table = NULL,
+         airway_table = NULL,
+         response_table = NULL,
+         erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+         incident_date_col = `Incident Date`,
+         patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
+         epatient_15_col = `Patient Age (ePatient.15)`,
+         epatient_16_col = `Patient Age Units (ePatient.16)`,
+         eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+         eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+         eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+         eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+         eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
+         eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
+         eairway_02_col = `Airway Device Placement Confirmation Date Time (eAirway.02)`,
+         eairway_04_col = `Airway Device Placement Confirmed Method List (eAirway.04)`,
+         evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+         evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`
+         )
+
+}
+
+}
 \author{
 Nicolas Foss, Ed.D., MS
 }
