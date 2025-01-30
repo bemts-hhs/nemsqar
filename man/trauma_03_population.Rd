@@ -27,43 +27,60 @@ trauma_03_population(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing EMS data with all relevant columns. Default is \code{NULL}.}
+\item{df}{A data frame or tibble containing EMS data with all relevant
+columns. Default is \code{NULL}.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data frame or tibble containing only epatient
+and escene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data frame or tibble containing only the eresponse
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{situation_table}{A data frame or tibble containing only the esituation fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data frame or tibble containing only the esituation
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{disposition_table}{A data frame or tibble containing only the edisposition fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{disposition_table}{A data frame or tibble containing only the
+edisposition fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{vitals_table}{A data frame or tibble containing only the evitals fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A data frame or tibble containing only the evitals fields
+needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column representing the EMS record unique identifier.}
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column indicating the incident date. Must be of class \code{Date} or similar. Default is \code{NULL}.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column representing the patient's date of birth. Must be of class \code{Date} or similar. Default is \code{NULL}.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for patient age numeric value.}
+\item{epatient_15_col}{The column for patient age numeric value.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for patient age unit (e.g., "Years", "Months").}
+\item{epatient_16_col}{The column for patient age unit (e.g., "Years",
+"Months").}
 
-\item{esituation_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing information on the presence of injury.}
+\item{esituation_02_col}{The column containing information on the presence of
+injury.}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column representing the 911 response type.}
+\item{eresponse_05_col}{The column representing the 911 response type.}
 
-\item{evitals_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for the time of pain scale measurement.}
+\item{evitals_01_col}{The column for the time of pain scale measurement.}
 
-\item{evitals_27_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for the pain scale score. Default is \code{NULL}.}
+\item{evitals_27_col}{The column for the pain scale score. Default is \code{NULL}.}
 
-\item{evitals_27_initial_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for the initial pain scale score. Default is \code{NULL}.}
+\item{evitals_27_initial_col}{The column for the initial pain scale score.
+Default is \code{NULL}.}
 
-\item{evitals_27_last_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for the last pain scale score. Default is \code{NULL}.}
+\item{evitals_27_last_col}{The column for the last pain scale score. Default
+is \code{NULL}.}
 
-\item{edisposition_28_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for patient care disposition details.}
+\item{edisposition_28_col}{The column for patient care disposition details.}
 
-\item{transport_disposition_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for patient transport disposition.}
+\item{transport_disposition_col}{The column for patient transport
+disposition.}
 }
 \value{
 #' A list that contains the following:
@@ -76,27 +93,12 @@ trauma_03_population(
 \description{
 Filters data down to the target populations for Trauma-08, and categorizes
 records to identify needed information for the calculations.
-}
-\details{
-Identifies key categories to records that are 911 request for patients whose pain score was
-lowered during the EMS encounter. based on specific criteria and calculates related ECG measures.
-This function segments the data by age into adult and pediatric populations.
-}
-\section{Data Assumptions}{
 
-\itemize{
-\item If a user passes the \code{evitals_27_initial_col} and \code{evitals_27_last_col}, the function
-will utilize those values to do calculations for the numerator.
-\item In the case that those values are \code{NULL}, the \code{evitals_27_col} must be passed
-and the function will do its best to find the first and last pain scores based on
-the \code{evitals_01_col} values.
-\item \code{evitals_27_initial_col} is the first pain scale score.
-\item \code{evitals_27_last_col} is the final pain scale score.
-\item \code{evitals_01_col} contains all vital measurement times, even those not corresponding
-to the pain scale.
+Identifies key categories to records that are 911 request for patients whose
+pain score was lowered during the EMS encounter. based on specific criteria
+and calculates related ECG measures. This function segments the data by age
+into adult and pediatric populations.
 }
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

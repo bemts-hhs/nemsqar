@@ -30,81 +30,88 @@ ttr_01(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing the dataset to analyze. Default is \code{NULL}.}
+\item{df}{A data frame or tibble containing the dataset to analyze. Default
+is \code{NULL}.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data frame or tibble containing only epatient
+and escene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data frame or tibble containing only the eresponse
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{disposition_table}{A data frame or tibble containing only the edisposition fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{disposition_table}{A data frame or tibble containing only the
+edisposition fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{vitals_table}{A data frame or tibble containing only the evitals fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A data frame or tibble containing only the evitals fields
+needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{arrest_table}{A data frame or tibble containing only the earrest fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{arrest_table}{A data frame or tibble containing only the earrest fields
+needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column specifying unique patient records.}
+\item{erecord_01_col}{A column specifying unique patient records.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column indicating the incident date. Must be of class \code{Date} or \code{POSIXct}.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column indicating the patient's date of birth. Must be of class \code{Date} or \code{POSIXct}.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column indicating the patient’s age in numeric form.}
+\item{epatient_15_col}{A column indicating the patient’s age in numeric form.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column specifying the unit of patient age (e.g., "Years", "Days").}
+\item{epatient_16_col}{A column specifying the unit of patient age (e.g.,
+"Years", "Days").}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column specifying the type of response (e.g., 911 codes).}
+\item{eresponse_05_col}{A column specifying the type of response (e.g., 911
+codes).}
 
-\item{transport_disposition_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column specifying transport disposition for the patient.}
+\item{transport_disposition_col}{A column specifying transport disposition
+for the patient.}
 
-\item{earrest_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing cardiac arrest data.}
+\item{earrest_01_col}{A column containing cardiac arrest data.}
 
-\item{evitals_06_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing systolic blood pressure (SBP) data from initial vital signs.}
+\item{evitals_06_col}{A column containing systolic blood pressure (SBP) data
+from initial vital signs.}
 
-\item{evitals_07_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing diastolic blood pressure (DBP) data from initial vital signs.}
+\item{evitals_07_col}{A column containing diastolic blood pressure (DBP) data
+from initial vital signs.}
 
-\item{evitals_10_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing heart rate data from initial vital signs.}
+\item{evitals_10_col}{A column containing heart rate data from initial vital
+signs.}
 
-\item{evitals_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing spO2 data from the initial vital signs.}
+\item{evitals_12_col}{A column containing spO2 data from the initial vital
+signs.}
 
-\item{evitals_14_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing respiratory rate data from initial vital signs.}
+\item{evitals_14_col}{A column containing respiratory rate data from initial
+vital signs.}
 
-\item{evitals_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing total Glasgow Coma Scale (GCS) scores from initial vital signs.}
+\item{evitals_23_col}{A column containing total Glasgow Coma Scale (GCS)
+scores from initial vital signs.}
 
-\item{evitals_26_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing alert, verbal, painful, unresponsive (AVPU) vital signs.}
+\item{evitals_26_col}{A column containing alert, verbal, painful,
+unresponsive (AVPU) vital signs.}
 
 \item{...}{Additional arguments passed to the \code{summarize_measure} function.}
 }
 \value{
-A tibble summarizing results for three population groups (Adults, and Peds) with the following columns:
+A tibble summarizing results for three population groups (Adults, and
+Peds) with the following columns:
 
-\code{pop}: Population type (Adults, Peds).
-\code{numerator}: Count of incidents where all applicable vital signs are taken.
-\code{denominator}: Total count of incidents.
-\code{prop}: Proportion of incidents where all applicable vital signs are taken.
-\code{prop_label}: Proportion formatted as a percentage with a specified number of
-decimal places.
+\code{pop}: Population type (Adults, Peds). \code{numerator}: Count of incidents
+where all applicable vital signs are taken. \code{denominator}: Total count of
+incidents. \code{prop}: Proportion of incidents where all applicable vital signs
+are taken. \code{prop_label}: Proportion formatted as a percentage with a
+specified number of decimal places.
 }
 \description{
-This function calculates the TTR-01 measure, which evaluates the completeness of vitals
-documentation for patients not experiencing cardiac arrest who were also not transported
-during a 911 response. It determines the total population, adult population, and pediatric
-population meeting the criteria for the TTR_01 measure.
+This function calculates the TTR-01 measure, which evaluates the completeness
+of vitals documentation for patients not experiencing cardiac arrest who were
+also not transported during a 911 response. It determines the total
+population, adult population, and pediatric population meeting the criteria
+for the TTR_01 measure.
 }
-\section{Data Assumptions}{
-
-
-This function assumes the input dataset contains the \emph{initial} or complete vital signs for
-\itemize{
-\item respiratory rate,
-\item systolic blood pressure (SBP),
-\item diastolic blood pressure (DBP),
-\item heart rate (HR),
-\item pulse oximetry (sp02), and
-\item total Glasgow Coma Scale (GCS) score, respectively.
-\item Complete AVPU responses are expected.
-}
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

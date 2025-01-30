@@ -1,4 +1,4 @@
-#' @title Airway-18
+#' @title Airway-18 Calculation
 #'
 #' @description
 #'

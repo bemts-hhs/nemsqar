@@ -22,102 +22,70 @@ stroke_01(
 )
 }
 \arguments{
-\item{df}{<\link[=dplyr_tidy_select]{'tidy-select'}> A data frame or tibble containing the dataset. Each row should represent a unique patient encounter.}
+\item{df}{A data frame or tibble containing the dataset. Each row should
+represent a unique patient encounter.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data frame or tibble containing only epatient
+and escene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data frame or tibble containing only the eresponse
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{situation_table}{A data.frame or tibble containing only the esituation fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data.frame or tibble containing only the esituation
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing only the evitals fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A data.frame or tibble containing only the evitals fields
+needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing unique record identifiers for each encounter.}
+\item{erecord_01_col}{The column containing unique record identifiers for
+each encounter.}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing EMS response codes, which should include 911 response codes.}
+\item{eresponse_05_col}{The column containing EMS response codes, which
+should include 911 response codes.}
 
-\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the primary impression codes or descriptions related to the situation.}
+\item{esituation_11_col}{The column containing the primary impression codes
+or descriptions related to the situation.}
 
-\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing secondary impression codes or descriptions related to the situation.}
+\item{esituation_12_col}{The column containing secondary impression codes or
+descriptions related to the situation.}
 
-\item{evitals_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the Glasgow Coma Scale (GCS) score.}
+\item{evitals_23_col}{The column containing the Glasgow Coma Scale (GCS)
+score.}
 
-\item{evitals_26_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the AVPU (alert, verbal, pain, unresponsive) scale value.}
+\item{evitals_26_col}{The column containing the AVPU (alert, verbal, pain,
+unresponsive) scale value.}
 
-\item{evitals_29_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the stroke scale score achieved during assessment.}
+\item{evitals_29_col}{The column containing the stroke scale score achieved
+during assessment.}
 
-\item{evitals_30_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing stroke scale type descriptors (e.g., FAST, NIH, etc.).}
+\item{evitals_30_col}{The column containing stroke scale type descriptors
+(e.g., FAST, NIH, etc.).}
 
-\item{...}{Additional arguments passed to \code{dplyr::summarize()} function for further customization of results.}
+\item{...}{Additional arguments passed to \code{dplyr::summarize()} function for
+further customization of results.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the date and time of the incident. This must be a \code{Date} or \code{POSIXct} type.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the patient's date of birth, formatted as \code{Date} or \code{POSIXct}.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 }
 \value{
-A tibble summarizing results for the total population with the following columns:
-\code{pop}: Population type (All).
-\code{numerator}: Count of incidents where beta-agonist medications were administered.
-\code{denominator}: Total count of incidents.
-\code{prop}: Proportion of incidents involving beta-agonist medications.
-\code{prop_label}: Proportion formatted as a percentage with a specified number of
-decimal places.
+A tibble summarizing results for the total population with the
+following columns: \code{pop}: Population type (All). \code{numerator}: Count of
+incidents where beta-agonist medications were administered. \code{denominator}:
+Total count of incidents. \code{prop}: Proportion of incidents involving
+beta-agonist medications. \code{prop_label}: Proportion formatted as a
+percentage with a specified number of decimal places.
 }
 \description{
-The \code{stroke_01} function processes EMS dataset to identify potential stroke cases based on specific criteria
-and calculates the stroke scale measures. It filters the data for 911 response calls, identifies stroke-related
+The \code{stroke_01} function processes EMS dataset to identify potential stroke
+cases based on specific criteria and calculates the stroke scale measures. It
+filters the data for 911 response calls, identifies stroke-related
 impressions and scales, and aggregates results by unique patient encounters.
 }
-\section{Data Assumptions}{
-
-
-This function assumes that:
-
-Data are already loaded into a data frame or tibble where each row represents
-one observation (e.g., patient) and each column is a dplyr::distinct feature (field).
-Alternatively, data may consist of separate datasets referenced by unique columns.
-
-Missing values in rows are represented as \code{NA}. "Not known" or "not recorded" values,
-common to ImageTrend or other non-numeric codes, should be pre-cleaned before use.
-
-The \code{eresponse_05_col} contains NEMSIS response codes and may also include
-descriptive text for reference.
-
-The vital signs columns \code{evitals.23}, \code{evitals.26}, \code{evitals.29}, and \code{evitals.30} can contain
-all the unique values entered per incident, which may cause row explosion.  The function will
-handle this issue elegantly under the hood.
-
-The \code{esituation.11} contains single responses per response, but \code{esituation.12} should be a list
-column or text field with all relevant secondary provider impression entries provided in a single cell
-as comma-separated values for each unique incident.
-
-The first argument to this function is the main data frame. No joins are performed within
-the function; any necessary joins (e.g., to incorporate vitals or additional fields) should
-be completed prior to calling this function.
-
-Grouping by specific attributes (e.g., region) can be performed inside this function by
-utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
-}
-
-\section{Practical Tips}{
-
-
-Ensure data are pre-processed, with missing values coded as \code{NA}, before passing
-into the function.
-Prepare necessary joins (e.g., for vitals) in advance; this function does not perform joins.
-}
-
-\section{Features}{
-
-\itemize{
-\item \strong{Stroke Case Identification}: Identifies potential stroke cases based on primary and secondary impression codes.
-\item \strong{911 Response Filtering}: Filters records to include only those flagged with 911 response codes in \code{eresponse_05_col}.
-\item \strong{Glasgow Coma Scale and AVPU Processing}: Analyzes and includes Glasgow Coma Scale (GCS) scores and AVPU levels from vital signs.
-\item \strong{Stroke Scale Type and Values Assessment}: Extracts and processes stroke scale information (e.g., FAST, NIH) from the specified columns.
-\item \strong{Encounter Aggregation}: Aggregates data by unique patient encounters to provide a summary view of stroke case proportions.
-}
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

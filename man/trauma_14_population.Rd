@@ -2,7 +2,7 @@
 % Please edit documentation in R/trauma_14_population.R
 \name{trauma_14_population}
 \alias{trauma_14_population}
-\title{Trauma-14}
+\title{Trauma-14 Population}
 \usage{
 trauma_14_population(
   df = NULL,
@@ -38,80 +38,100 @@ trauma_14_population(
   einjury_01_col,
   einjury_03_col,
   einjury_04_col,
-  einjury_09_col,
-  ...
+  einjury_09_col
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing EMS data with all relevant columns.}
+\item{df}{A data frame or tibble containing EMS data with all relevant
+columns.}
 
-\item{patient_scene_table}{A data frame or tibble containing fields from epatient and escene needed for this measure's calculations.}
+\item{patient_scene_table}{A data frame or tibble containing fields from
+epatient and escene needed for this measure's calculations.}
 
-\item{situation_table}{A data frame or tibble containing fields from esituation needed for this measure's calculations.}
+\item{situation_table}{A data frame or tibble containing fields from
+esituation needed for this measure's calculations.}
 
-\item{response_table}{A data frame or tibble containing fields from eresponse needed for this measure's calculations.}
+\item{response_table}{A data frame or tibble containing fields from eresponse
+needed for this measure's calculations.}
 
-\item{disposition_table}{A data frame or tibble containing fields from edisposition needed for this measure's calculations.}
+\item{disposition_table}{A data frame or tibble containing fields from
+edisposition needed for this measure's calculations.}
 
-\item{vitals_table}{A data frame or tibble containing fields from evitals needed for this measure's calculations.}
+\item{vitals_table}{A data frame or tibble containing fields from evitals
+needed for this measure's calculations.}
 
-\item{exam_table}{A data frame or tibble containing fields from eexam needed for this measure's calculations.}
+\item{exam_table}{A data frame or tibble containing fields from eexam needed
+for this measure's calculations.}
 
-\item{procedures_table}{A data frame or tibble containing fields from eprocedures needed for this measure's calculations.}
+\item{procedures_table}{A data frame or tibble containing fields from
+eprocedures needed for this measure's calculations.}
 
-\item{injury_table}{A data frame or tibble containing fields from einjury needed for this measure's calculations.}
+\item{injury_table}{A data frame or tibble containing fields from einjury
+needed for this measure's calculations.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column representing the EMS record unique identifier.}
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column indicating the incident date. Must be of class \code{Date} or similar.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column representing the patient's date of birth. Must be of class \code{Date} or similar.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for patient age numeric value.}
+\item{epatient_15_col}{The column for patient age numeric value.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for patient age unit (e.g., "Years", "Months").}
+\item{epatient_16_col}{The column for patient age unit (e.g., "Years",
+"Months").}
 
-\item{esituation_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing information on the presence of injury.}
+\item{esituation_02_col}{The column containing information on the presence of
+injury.}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column representing the 911 response type.}
+\item{eresponse_05_col}{The column representing the 911 response type.}
 
-\item{eresponse_10_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing scene delay information.}
+\item{eresponse_10_col}{Column name containing scene delay information.}
 
-\item{transport_disposition_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column for patient transport disposition.}
+\item{transport_disposition_col}{The column for patient transport
+disposition.}
 
-\item{edisposition_24_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing pre-hospital trauma alert information.}
+\item{edisposition_24_col}{Column name containing pre-hospital trauma alert
+information.}
 
-\item{evitals_06_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing systolic blood pressure (SBP) values.}
+\item{evitals_06_col}{Column name containing systolic blood pressure (SBP)
+values.}
 
-\item{evitals_10_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing heart rate values.}
+\item{evitals_10_col}{Column name containing heart rate values.}
 
-\item{evitals_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing pulse oximetry values.}
+\item{evitals_12_col}{Column name containing pulse oximetry values.}
 
-\item{evitals_14_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing capillary refill information.}
+\item{evitals_14_col}{Column name containing capillary refill information.}
 
-\item{evitals_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing respiratory effort values.}
+\item{evitals_15_col}{Column name containing respiratory effort values.}
 
-\item{evitals_21_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing Glasgow Coma Scale (GCS) Motor values.}
+\item{evitals_21_col}{Column name containing Glasgow Coma Scale (GCS) Motor
+values.}
 
-\item{eexam_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing extremities assessment details.}
+\item{eexam_16_col}{Column name containing extremities assessment details.}
 
-\item{eexam_20_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing neurological assessment details.}
+\item{eexam_20_col}{Column name containing neurological assessment details.}
 
-\item{eexam_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing lung assessment details.}
+\item{eexam_23_col}{Column name containing lung assessment details.}
 
-\item{eexam_25_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing chest assessment details.}
+\item{eexam_25_col}{Column name containing chest assessment details.}
 
-\item{eprocedures_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing airway management or tourniquet usage details.}
+\item{eprocedures_03_col}{Column name containing airway management or
+tourniquet usage details.}
 
-\item{einjury_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing injury cause details.}
+\item{einjury_01_col}{Column name containing injury cause details.}
 
-\item{einjury_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing trauma triage steps 1 and 2 information.}
+\item{einjury_03_col}{Column name containing trauma triage steps 1 and 2
+information.}
 
-\item{einjury_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing trauma triage steps 3 and 4 information.}
+\item{einjury_04_col}{Column name containing trauma triage steps 3 and 4
+information.}
 
-\item{einjury_09_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing fall height information.}
-
-\item{...}{Additional arguments passed to helper functions for further customization.}
+\item{einjury_09_col}{Column name containing fall height information.}
 }
 \value{
 #' A list that contains the following:
@@ -122,34 +142,9 @@ trauma_14_population(
 }
 }
 \description{
-This function processes EMS data to generate the population needed to calculated the Trauma-14 NEMSQA measure.
+This function processes EMS data to generate the population needed to
+calculate the Trauma-14 NEMSQA measure.
 }
-\section{Data Assumptions}{
-
-\itemize{
-\item All vitals columns contain the full list of values entered for each record and columns.
-\item Each eexam field is a list column containing all values entered per record
-that are also comma (or otherwise) separated.
-\item The trauma triage fields are list columns containing all values entered per record
-that are also comma (or otherwise) separated.
-\item \code{einjury_01_col} is a list column containing all values entered per record
-that are also comma (or otherwise) separated.
-\item \code{eresponse_10_col} is a list column containing all values entered per record
-that are also comma (or otherwise) separated.
-\item \code{eprocedures_03_col} is a list column containing all values entered per record
-that are also comma (or otherwise) separated.
-}
-}
-
-\section{Features}{
-
-\itemize{
-\item Handles missing or invalid date formats with error messaging.
-\item Incorporates quasiquotation for flexible column referencing.
-\item Creates reusable dimension tables for efficient filtering and summarization.
-}
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

@@ -26,68 +26,73 @@ trauma_08(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing EMS data with all relevant columns. Default is \code{NULL}.}
+\item{df}{A data frame or tibble containing EMS data with all relevant
+columns. Default is \code{NULL}.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data frame or tibble containing only epatient
+and escene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data frame or tibble containing only the eresponse
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{situation_table}{A data frame or tibble containing only the esituation fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data frame or tibble containing only the esituation
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{disposition_table}{A data frame or tibble containing only the edisposition fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{disposition_table}{A data frame or tibble containing only the
+edisposition fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{vitals_table}{A data frame or tibble containing only the evitals fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A data frame or tibble containing only the evitals fields
+needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column specifying unique patient records.}
+\item{erecord_01_col}{A column specifying unique patient records.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column indicating the incident date. Must be of class \code{Date} or \code{POSIXct}. Default is \code{NULL}.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column indicating the patient's date of birth. Must be of class \code{Date} or \code{POSIXct}. Default is \code{NULL}.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column indicating the patient’s age in numeric form.}
+\item{epatient_15_col}{A column indicating the patient’s age in numeric form.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column specifying the unit of patient age (e.g., "Years", "Days").}
+\item{epatient_16_col}{A column specifying the unit of patient age (e.g.,
+"Years", "Days").}
 
-\item{esituation_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing information about the nature of the patient’s condition (e.g., injury type).}
+\item{esituation_02_col}{A column containing information about the nature of
+the patient’s condition (e.g., injury type).}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column specifying the type of response (e.g., 911 codes).}
+\item{eresponse_05_col}{A column specifying the type of response (e.g., 911
+codes).}
 
-\item{transport_disposition_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column specifying transport disposition for the patient.}
+\item{transport_disposition_col}{A column specifying transport disposition
+for the patient.}
 
-\item{evitals_06_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing systolic blood pressure (SBP) data from initial vital signs.}
+\item{evitals_06_col}{A column containing systolic blood pressure (SBP) data
+from initial vital signs.}
 
-\item{evitals_14_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing respiratory rate data from initial vital signs.}
+\item{evitals_14_col}{A column containing respiratory rate data from initial
+vital signs.}
 
-\item{evitals_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> A column containing total Glasgow Coma Scale (GCS) scores from initial vital signs.}
+\item{evitals_23_col}{A column containing total Glasgow Coma Scale (GCS)
+scores from initial vital signs.}
 
 \item{...}{Additional arguments passed to the \code{summarize_measure} function.}
 }
 \value{
-A tibble summarizing results for three population groups (All, Adults, and Peds) with the following columns:
+A tibble summarizing results for three population groups (All,
+Adults, and Peds) with the following columns:
 
-\code{pop}: Population type (All, Adults, Peds).
-\code{numerator}: Count of incidents where the respiratory rate, SBP, and GCS vitals were taken.
-\code{denominator}: Total count of incidents.
-\code{prop}: Proportion of incidents where the respiratory rate, SBP, and GCS vitals were taken.
-\code{prop_label}: Proportion formatted as a percentage with a specified number of
-decimal places.
+\code{pop}: Population type (All, Adults, Peds). \code{numerator}: Count of incidents
+where the respiratory rate, SBP, and GCS vitals were taken. \code{denominator}:
+Total count of incidents. \code{prop}: Proportion of incidents where the
+respiratory rate, SBP, and GCS vitals were taken. \code{prop_label}: Proportion
+formatted as a percentage with a specified number of decimal places.
 }
 \description{
-This function calculates the Trauma-08 measure, which evaluates the completeness
-of pain scale documentation for patients experiencing traumatic injury. It determines
-the total population, adult population, and pediatric population meeting the criteria
-for the Trauma-08 measure.
+This function calculates the Trauma-08 measure, which evaluates the
 }
-\section{Data Assumptions}{
-
-\itemize{
-\item All vital signs are the initial vital signs.
-\item This function accepts the input dataset contains the \emph{initial} vital signs for respiratory rate, systolic blood pressure (SBP),
-and total Glasgow Coma Scale (GCS) score, respectively. If those values are not available, the user may pass all those values
-from the respective columns and the function will find the initial values.
-}
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

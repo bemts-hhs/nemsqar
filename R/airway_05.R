@@ -34,8 +34,6 @@
 #'   arrest.
 #' @param evitals_01_col Date-time or POSIXct column containing vital signs
 #'   date/time
-#' @param evitals_06_col Numeric column containing systolic blood pressure
-#'   values
 #' @param evitals_12_col Numeric column containing pulse oximetry values.
 #' @param eprocedures_01_col Date-time or POSIXct column for procedures
 #' @param eprocedures_02_col Column that indicates procedure prior to arrival.
@@ -71,7 +69,6 @@ airway_05 <- function(df = NULL,
                       earrest_01_col,
                       eresponse_05_col,
                       evitals_01_col,
-                      evitals_06_col,
                       evitals_12_col,
                       eprocedures_01_col,
                       eprocedures_02_col,
@@ -92,10 +89,10 @@ airway_05 <- function(df = NULL,
     start_time <- Sys.time()
 
     # header
-    cli::cli_h1("Airway-01")
+    cli::cli_h1("Airway-05")
 
     # header
-    cli::cli_h2("Gathering Records for Airway-01")
+    cli::cli_h2("Gathering Records for Airway-05")
 
   #############################################################################
   #                                                                           #
@@ -116,7 +113,6 @@ airway_05 <- function(df = NULL,
                                                earrest_01_col = {{ earrest_01_col }},
                                                eresponse_05_col = {{ eresponse_05_col }},
                                                evitals_01_col = {{ evitals_01_col }},
-                                               evitals_06_col = {{ evitals_06_col }},
                                                evitals_12_col = {{ evitals_12_col }},
                                                eprocedures_01_col = {{ eprocedures_01_col }},
                                                eprocedures_02_col = {{ eprocedures_02_col }},
@@ -145,7 +141,7 @@ airway_05 <- function(df = NULL,
                         ...)
 
     # union
-    airway.05 <- bind_rows(adult_population, peds_population)
+    airway.05 <- dplyr::bind_rows(adult_population, peds_population)
 
     # create a separator
     cli::cli_text("\n")
@@ -158,12 +154,12 @@ airway_05 <- function(df = NULL,
     if (run_time_secs >= 60) {
 
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
 
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 
@@ -187,10 +183,10 @@ airway_05 <- function(df = NULL,
     start_time <- Sys.time()
 
     # header
-    cli::cli_h1("Airway-01")
+    cli::cli_h1("Airway-05")
 
     # header
-    cli::cli_h2("Gathering Records for Airway-01")
+    cli::cli_h2("Gathering Records for Airway-05")
 
   #############################################################################
   #                                                                           #
@@ -207,7 +203,6 @@ airway_05 <- function(df = NULL,
                                                earrest_01_col = {{ earrest_01_col }},
                                                eresponse_05_col = {{ eresponse_05_col }},
                                                evitals_01_col = {{ evitals_01_col }},
-                                               evitals_06_col = {{ evitals_06_col }},
                                                evitals_12_col = {{ evitals_12_col }},
                                                eprocedures_01_col = {{ eprocedures_01_col }},
                                                eprocedures_02_col = {{ eprocedures_02_col }},
@@ -236,7 +231,7 @@ airway_05 <- function(df = NULL,
                         ...)
 
     # union
-    airway.05 <- bind_rows(adult_population, peds_population)
+    airway.05 <- dplyr::bind_rows(adult_population, peds_population)
 
     # create a separator
     cli::cli_text("\n")
@@ -249,12 +244,12 @@ airway_05 <- function(df = NULL,
     if (run_time_secs >= 60) {
 
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
 
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 

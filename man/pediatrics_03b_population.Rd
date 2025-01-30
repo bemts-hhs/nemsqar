@@ -23,37 +23,45 @@ pediatrics_03b_population(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing emergency response records. Default is \code{NULL}.}
+\item{df}{A data frame or tibble containing emergency response records.
+Default is \code{NULL}.}
 
-\item{patient_scene_table}{A data.frame or tibble containing only ePatient and eScene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing only ePatient
+and eScene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data.frame or tibble containing only the eResponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing only the eResponse
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{exam_table}{A data.frame or tibble containing only the eExam fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{exam_table}{A data.frame or tibble containing only the eExam fields
+needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{medications_table}{A data.frame or tibble containing only the eMedications fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{medications_table}{A data.frame or tibble containing only the
+eMedications fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for unique EMS record identifiers.}
+\item{erecord_01_col}{Column for unique EMS record identifiers.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that
-contains the incident date. This defaults to \code{NULL} as it is optional in case not available due to PII restrictions.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that
-contains the patient's date of birth. This defaults to \code{NULL} as it is optional in case not available due to PII restrictions.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving the calculated age value.}
+\item{epatient_15_col}{Column giving the calculated age value.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving the provided age unit value.}
+\item{epatient_16_col}{Column giving the provided age unit value.}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing the EMS response codes.}
+\item{eresponse_05_col}{Column containing the EMS response codes.}
 
-\item{eexam_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing documented weight information.}
+\item{eexam_01_col}{Column containing documented weight information.}
 
-\item{eexam_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Another column for weight documentation, if applicable.}
+\item{eexam_02_col}{Another column for weight documentation, if applicable.}
 
-\item{emedications_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column indicating medication administration.}
+\item{emedications_03_col}{Column indicating medication administration.}
 
-\item{emedications_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column listing medications administered.}
+\item{emedications_04_col}{Column listing medications administered.}
 }
 \value{
 #' A list that contains the following:
@@ -64,47 +72,15 @@ contains the patient's date of birth. This defaults to \code{NULL} as it is opti
 }
 }
 \description{
-Filters data down to the target populations for Pediatrics-03B, and categorizes
-records to identify needed information for the calculations.
+Filters data down to the target populations for Pediatrics-03B, and
+categorizes records to identify needed information for the calculations.
 
-Identifies key categories related to diabetes/hypoglycemia incidents in an EMS dataset,
-specifically focusing on cases where 911 was called for diabetes/hypoglycemia distress,
-certain medications were administered, and a weight is taken. This function segments the data
-into pediatric populations, computing the proportion of cases that have a documented weight.
+Identifies key categories related to diabetes/hypoglycemia incidents in an
+EMS dataset, specifically focusing on cases where 911 was called for
+diabetes/hypoglycemia distress, certain medications were administered, and a
+weight is taken. This function segments the data into pediatric populations,
+computing the proportion of cases that have a documented weight.
 }
-\section{Data Assumptions}{
-
-Assume data are already loaded
-\itemize{
-\item The data must be a data.frame or tibble that contains
-\item eMedications.03 is a column where each cell contains all values entered for each respective incident.
-If that is not possible, the user can pass the full set of eMedications.03 values.
-\item eMedications.04 is the full list of medication administration routes present in the data.
-\item The function can calculate an age in years using the incident date and the patient DOB.
-\item The incident date and the patient DOB are Date or POSIXct data types.
-\item If the incident date and patient DOB are not passed, the function will use the system-generated
-patient age and age units.
-\item This function also assumes that rows that are missing any value are NA,
-not the not known / not recorded values common to ImageTrend or the value codes
-that correspond to "not values".
-\item The function assumes that the eResponse.05 column has the codes in it, text
-can be present, too, for reference
-\item The function assumes that the eResponse.05 column has the codes in it; text can be present, too, for reference.
-\item The function assumes that eDisposition.18 is a list column or a column that
-has all text descriptors for additional transport mode descriptors. These can be separated
-by commas or other characters as long as all eResponse.18 values are present in one cell for
-each unique eRecord.01 value. Codes can be present but will be ignored by the function.
-\item For the argument transport_disposition_cols, this argument can receive the unquoted
-column names of eDisposition.12 and eDisposition.30. One or both can be entered, and
-the function will evaluate them. These columns are used to create a \code{transport} variable
-that is used to filter the table down further. As such, these columns eDisposition.12 and
-eDisposition.30 can be list columns that contain all values from each unique incident
-entered for each field. These can be comma-separated values all in one cell to make the table tidy,
-or the user can pass all values for each column.
-\item The first argument is a data.frame or a tibble, no joining is done.
-}
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

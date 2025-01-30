@@ -29,66 +29,75 @@ trauma_01(
 \arguments{
 \item{df}{A data frame or tibble containing EMS records. Default is \code{NULL}.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data frame or tibble containing only epatient
+and escene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data frame or tibble containing only the eresponse
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{situation_table}{A data.frame or tibble containing only the esituation fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data.frame or tibble containing only the esituation
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{disposition_table}{A data.frame or tibble containing only the edisposition fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{disposition_table}{A data.frame or tibble containing only the
+edisposition fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing only the evitals fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A data.frame or tibble containing only the evitals fields
+needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name representing the EMS record ID.}
+\item{erecord_01_col}{Column name representing the EMS record ID.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for the incident date. Default is \code{NULL}.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for the patient's date of birth. Default is \code{NULL}.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for the patient's age in numeric format.}
+\item{epatient_15_col}{Column name for the patient's age in numeric format.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for the unit of age (e.g., "Years", "Months").}
+\item{epatient_16_col}{Column name for the unit of age (e.g., "Years",
+"Months").}
 
-\item{esituation_02_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name indicating if the situation involved an injury.}
+\item{esituation_02_col}{Column name indicating if the situation involved an
+injury.}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for the type of EMS response (e.g., 911 call).}
+\item{eresponse_05_col}{Column name for the type of EMS response (e.g., 911
+call).}
 
-\item{evitals_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for the Glasgow Coma Scale (GCS) total score.}
+\item{evitals_23_col}{Column name for the Glasgow Coma Scale (GCS) total
+score.}
 
-\item{evitals_26_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for AVPU (Alert, Voice, Pain, Unresponsive) status.}
+\item{evitals_26_col}{Column name for AVPU (Alert, Voice, Pain, Unresponsive)
+status.}
 
-\item{evitals_27_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for the pain scale assessment.}
+\item{evitals_27_col}{Column name for the pain scale assessment.}
 
-\item{edisposition_28_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for patient care disposition details.}
+\item{edisposition_28_col}{Column name for patient care disposition details.}
 
-\item{transport_disposition_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for transport disposition details.}
+\item{transport_disposition_col}{Column name for transport disposition
+details.}
 
-\item{...}{Additional arguments passed to the \code{summarize_measure} function for custom summarization.}
+\item{...}{Additional arguments passed to the \code{dplyr::summarize} function for
+custom summarization.}
 }
 \value{
-A tibble summarizing results for three population groups (All, Adults, and Peds) with the following columns:
+A tibble summarizing results for three population groups (All,
+Adults, and Peds) with the following columns:
 
-\code{pop}: Population type (All, Adults, Peds).
-\code{numerator}: Count of incidents where a pain scale was administered.
-\code{denominator}: Total count of incidents.
-\code{prop}: Proportion of incidents where a pain scale was administered.
-\code{prop_label}: Proportion formatted as a percentage with a specified number of
-decimal places.
+\code{pop}: Population type (All, Adults, Peds). \code{numerator}: Count of incidents
+where a pain scale was administered. \code{denominator}: Total count of
+incidents. \code{prop}: Proportion of incidents where a pain scale was
+administered. \code{prop_label}: Proportion formatted as a percentage with a
+specified number of decimal places.
 }
 \description{
-This function processes EMS data to calculate the Trauma-01 performance measure,
-which evaluates the percentage of trauma patients assessed for pain using a numeric scale.
-The function filters and summarizes the data based on specified inclusion criteria.
+This function processes EMS data to calculate the Trauma-01 performance
+measure, which evaluates the percentage of trauma patients assessed for pain
+using a numeric scale. The function filters and summarizes the data based on
+specified inclusion criteria.
 }
-\section{Data Assumptions}{
-
-\itemize{
-\item \code{evitals_23_col} is the highest GCS total score or all GCS total scores.
-\item \code{evitals_26_col} contains all the AVPU responses for all records.
-\item \code{evitals_27_col} is the initial pain scale score or all pain scale scores.
-}
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

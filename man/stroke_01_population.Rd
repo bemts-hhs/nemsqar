@@ -21,31 +21,44 @@ stroke_01_population(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing the dataset. Each row should represent a unique patient encounter.}
+\item{df}{A data frame or tibble containing the dataset. Each row should
+represent a unique patient encounter.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data frame or tibble containing only epatient
+and escene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data frame or tibble containing only the eresponse
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{situation_table}{A data.frame or tibble containing only the esituation fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data.frame or tibble containing only the esituation
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing only the evitals fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A data.frame or tibble containing only the evitals fields
+needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing unique record identifiers for each encounter.}
+\item{erecord_01_col}{The column containing unique record identifiers for
+each encounter.}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing EMS response codes, which should include 911 response codes.}
+\item{eresponse_05_col}{The column containing EMS response codes, which
+should include 911 response codes.}
 
-\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the primary impression codes or descriptions related to the situation.}
+\item{esituation_11_col}{The column containing the primary impression codes
+or descriptions related to the situation.}
 
-\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing secondary impression codes or descriptions related to the situation.}
+\item{esituation_12_col}{The column containing secondary impression codes or
+descriptions related to the situation.}
 
-\item{evitals_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the Glasgow Coma Scale (GCS) score.}
+\item{evitals_23_col}{The column containing the Glasgow Coma Scale (GCS)
+score.}
 
-\item{evitals_26_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the AVPU (alert, verbal, pain, unresponsive) scale value.}
+\item{evitals_26_col}{The column containing the AVPU (alert, verbal, pain,
+unresponsive) scale value.}
 
-\item{evitals_29_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing the stroke scale score achieved during assessment.}
+\item{evitals_29_col}{The column containing the stroke scale score achieved
+during assessment.}
 
-\item{evitals_30_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing stroke scale type descriptors (e.g., FAST, NIH, etc.).}
+\item{evitals_30_col}{The column containing stroke scale type descriptors
+(e.g., FAST, NIH, etc.).}
 }
 \value{
 #' A list that contains the following:
@@ -58,51 +71,11 @@ stroke_01_population(
 \description{
 Filters data down to the target populations for Stroke-01, and categorizes
 records to identify needed information for the calculations.
+
+Identifies key categories related to stroke-related incidents in an EMS
+dataset, specifically focusing on cases where 911 was called for stroke, and
+a stroke scale was administered. .
 }
-\details{
-Identifies key categories related to stroke-related incidents in an EMS dataset,
-specifically focusing on cases where 911 was called for stroke,
-and a stroke scale was administered. .
-}
-\section{Data Assumptions}{
-
-
-This function assumes that:
-
-Data are already loaded into a data frame or tibble where each row represents
-one observation (e.g., patient) and each column is a dplyr::distinct feature (field).
-Alternatively, data may consist of separate datasets referenced by unique columns.
-
-Missing values in rows are represented as \code{NA}. "Not known" or "not recorded" values,
-common to ImageTrend or other non-numeric codes, should be pre-cleaned before use.
-
-The \code{eresponse_05_col} contains NEMSIS response codes and may also include
-descriptive text for reference.
-
-The vital signs columns \code{evitals.23}, \code{evitals.26}, \code{evitals.29}, and \code{evitals.30} can contain
-all the unique values entered per incident, which may cause row explosion.  The function will
-handle this issue elegantly under the hood.
-
-The \code{esituation.11} contains single responses per response, but \code{esituation.12} should be a list
-column or text field with all relevant secondary provider impression entries provided in a single cell
-as comma-separated values for each unique incident.
-
-The first argument to this function is the main data frame. No joins are performed within
-the function; any necessary joins (e.g., to incorporate vitals or additional fields) should
-be completed prior to calling this function.
-
-Grouping by specific attributes (e.g., region) can be performed inside this function by
-utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
-}
-
-\section{Practical Tips}{
-
-
-Ensure data are pre-processed, with missing values coded as \code{NA}, before passing
-into the function.
-Prepare necessary joins (e.g., for vitals) in advance; this function does not perform joins.
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

@@ -30,43 +30,60 @@ tbi_01_population(
 \arguments{
 \item{df}{A data frame or tibble containing the patient data.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data frame or tibble containing only epatient
+and escene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data frame or tibble containing only the eresponse
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{situation_table}{A data.frame or tibble containing only the esituation fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data.frame or tibble containing only the esituation
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{disposition_table}{A data.frame or tibble containing only the edisposition fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{disposition_table}{A data.frame or tibble containing only the
+edisposition fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing only the evitals fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A data.frame or tibble containing only the evitals fields
+needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with the patient’s unique record ID.}
+\item{erecord_01_col}{Column name in df with the patient’s unique record ID.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with the incident date. Default is \code{NULL}.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with the patient's date of birth. Default is \code{NULL}.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with the patient’s age value.}
+\item{epatient_15_col}{Column name in df with the patient’s age value.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with the patient’s age unit (e.g., years, months).}
+\item{epatient_16_col}{Column name in df with the patient’s age unit (e.g.,
+years, months).}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with response codes for the type of EMS call.}
+\item{eresponse_05_col}{Column name in df with response codes for the type of
+EMS call.}
 
-\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with the primary provider impression.}
+\item{esituation_11_col}{Column name in df with the primary provider
+impression.}
 
-\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with the secondary provider impression.}
+\item{esituation_12_col}{Column name in df with the secondary provider
+impression.}
 
-\item{transport_disposition_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with the transport disposition.}
+\item{transport_disposition_col}{Column name in df with the transport
+disposition.}
 
-\item{evitals_06_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with systolic blood pressure (SBP) values.}
+\item{evitals_06_col}{Column name in df with systolic blood pressure (SBP)
+values.}
 
-\item{evitals_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with pulse oximetry values.}
+\item{evitals_12_col}{Column name in df with pulse oximetry values.}
 
-\item{evitals_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with ETCO2 values.}
+\item{evitals_16_col}{Column name in df with ETCO2 values.}
 
-\item{evitals_23_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with Glasgow Coma Scale (GCS) scores.}
+\item{evitals_23_col}{Column name in df with Glasgow Coma Scale (GCS) scores.}
 
-\item{evitals_26_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name in \code{df} with AVPU (alert, verbal, painful, unresponsive) values.}
+\item{evitals_26_col}{Column name in df with AVPU (alert, verbal, painful,
+unresponsive) values.}
 }
 \value{
 #' A list that contains the following:
@@ -77,22 +94,10 @@ tbi_01_population(
 }
 }
 \description{
-This function screens for potential traumatic brain injury (TBI) cases based on specific criteria
-in a patient dataset. It produces a subset of the data with calculated variables for TBI identification.
+This function screens for potential traumatic brain injury (TBI) cases based
+on specific criteria in a patient dataset. It produces a subset of the data
+with calculated variables for TBI identification.
 }
-\section{Data Assumptions}{
-
-\itemize{
-\item Date columns are already formatted as \code{Date} or \code{POSIXct}.
-\item \code{esituation_12_col} is a list column with all values entered for a
-specific record separated by commas.
-\item \code{evitals_23_col} is the lowest GCS score.
-\item \code{evitals_26_col} contains all AVPU responses entered.
-\item \code{evitals_12_col}, \code{evitals_16_col}, and \code{evitals_06_col} can be all the values entered for these
-fields, or the initial value for each.  The latter will probably work best.
-}
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

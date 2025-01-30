@@ -29,29 +29,46 @@ airway_18_population(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing the dataset to be processed. Default is \code{NULL}.}
+\item{df}{A data frame or tibble containing the dataset to be processed.
+Default is \code{NULL}.}
 
-\item{patient_scene_table}{A data frame or tibble containing only ePatient and eScene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data frame or tibble containing only ePatient
+and eScene fields as a fact table. Default is \code{NULL}.}
 
-\item{procedures_table}{A data frame or tibble containing only the eProcedures fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{procedures_table}{A data frame or tibble containing only the
+eProcedures fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{vitals_table}{A data frame or tibble containing only the eVitals fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A data frame or tibble containing only the eVitals fields
+needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{airway_table}{A data frame or tibble containing only the eAirway fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{airway_table}{A data frame or tibble containing only the eAirway fields
+needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eResponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data frame or tibble containing only the eResponse
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{Column name containing the unique patient record identifier.}
+\item{erecord_01_col}{Column name containing the unique patient record
+identifier.}
 
-\item{incident_date_col}{Column name containing the incident date. Default is \code{NULL}.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{Column name for patient information (exact purpose unclear).}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_16_col}{Column name for patient information (exact purpose unclear).}
+\item{epatient_15_col}{Column name for patient information (exact purpose
+unclear).}
+
+\item{epatient_16_col}{Column name for patient information (exact purpose
+unclear).}
 
 \item{eresponse_05_col}{Column name for emergency response codes.}
 
-\item{eprocedures_01_col}{Column name for procedure times or other related data.}
+\item{eprocedures_01_col}{Column name for procedure times or other related
+data.}
 
 \item{eprocedures_02_col}{Column name for additional procedure data.}
 
@@ -61,15 +78,15 @@ airway_18_population(
 
 \item{eprocedures_06_col}{Column name for procedure success codes.}
 
-\item{eairway_02_col}{Column name for airway procedure data (datetime). Default is \code{NULL}.}
+\item{eairway_02_col}{Column name for airway procedure data (datetime).
+Default is \code{NULL}.}
 
-\item{eairway_04_col}{Column name for airway procedure data. Default is \code{NULL}.}
+\item{eairway_04_col}{Column name for airway procedure data. Default is
+\code{NULL}.}
 
 \item{evitals_01_col}{Column name for vital signs data (datetime).}
 
 \item{evitals_16_col}{Column name for additional vital signs data.}
-
-\item{patient_dob_col}{Column name containing the patient's date of birth. Default is \code{NULL}.}
 }
 \value{
 A list that contains the following:
@@ -80,38 +97,9 @@ A list that contains the following:
 }
 }
 \description{
-This function processes and analyzes the dataset to generate the populations of interest
-needed to perform calculations to obtain performance data.
+This function processes and analyzes the dataset to generate the populations
+of interest needed to perform calculations to obtain performance data.
 }
-\section{Data Assumptions}{
-
-
-This function assumes that:
-Data are already loaded. The data needs to be a data.frame or tibble.
-
-Age in years can be calculated using the patient date of birth and incident
-date. These fields must have valid Date or POSIXct data types. If patient DOB
-and the incident date are not passed, the function will use the system generated
-patient age and age units.
-
-When values are missing, they are coded as NA, not the "not known"/"not
-recorded" values common to ImageTrend or the NEMSIS codes that correspond to
-"not values".
-
-The date time fields from eProcedures.01, eAirway.02, and eVitals.01 must be date time
-objects or the function will fail.
-
-The eAirway fields are optional in this function in case a user does not have access to those fields.
-}
-
-\section{Practical Tips}{
-
-
-Ensure data are pre-processed, with missing values coded as \code{NA}, before passing
-into the function.
-Prepare necessary joins (e.g., for vitals) in advance; this function does not perform joins.
-}
-
 \examples{
 
 \dontrun{

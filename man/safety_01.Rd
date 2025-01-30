@@ -21,34 +21,43 @@ safety_01(
 \arguments{
 \item{df}{A data frame or tibble containing EMS data.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data frame or tibble containing only epatient
+and escene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data frame or tibble containing only the eresponse
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing the unique patient record identifier.}
+\item{erecord_01_col}{Column name containing the unique patient record
+identifier.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct column indicating the date of the incident.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct column for the patient’s date of birth}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing age.}
+\item{epatient_15_col}{Column containing age.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for age units.}
+\item{epatient_16_col}{Column for age units.}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing response mode codes (e.g., 911 response codes).}
+\item{eresponse_05_col}{Column containing response mode codes (e.g., 911
+response codes).}
 
-\item{eresponse_24_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column detailing additional response descriptors as text.}
+\item{eresponse_24_col}{Column detailing additional response descriptors as
+text.}
 
 \item{...}{arguments passed on to summarize.}
 }
 \value{
-A tibble summarizing results for the Adults, Peds, and all records with the following columns:
-\code{pop}: Population type (Adults, Peds, All).
-\code{numerator}: Count of 911 responses where "lights and sirens" were not used in an EMS dataset.
-\code{denominator}: Total count of incidents.
-\code{prop}: Proportion of 911 responses where "lights and sirens" were not used in an EMS dataset.
-\code{prop_label}: Proportion formatted as a percentage with a specified number of
-decimal places.
+A tibble summarizing results for the Adults, Peds, and all records
+with the following columns: \code{pop}: Population type (Adults, Peds, All).
+\code{numerator}: Count of 911 responses where "lights and sirens" were not used
+in an EMS dataset. \code{denominator}: Total count of incidents. \code{prop}:
+Proportion of 911 responses where "lights and sirens" were not used in an
+EMS dataset. \code{prop_label}: Proportion formatted as a percentage with a
+specified number of decimal places.
 }
 \description{
 The \code{safety_01} function calculates the proportion of 911 responses where
@@ -56,27 +65,6 @@ The \code{safety_01} function calculates the proportion of 911 responses where
 population summaries, calculating the count and proportion of "lights and
 sirens" responses among all incidents, and within adult and pediatric groups.
 }
-\section{Details}{
-
-This function assumes that:
-\itemize{
-\item The EMS dataset uses a row-per-observation format.
-\item Missing values are NA.
-\item The column eresponse.05 contains standardized response codes.
-\item The eresponse.24 column contains a list of textual descriptors.
-}
-}
-
-\section{Features}{
-
-\itemize{
-\item Age Calculation: Computes patient age in years by subtracting patient_DOB_col from incident_date_col.
-\item Filter for 911 Responses: Filters records based on response codes in eresponse.05.
-\item Lights and Sirens Filter: Assigns a value of 1 if "lights and sirens" are not used, and 0 otherwise.
-\item Population Grouping: Separates data into adult (age ≥ 18) and pediatric (age < 18) populations.
-}
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

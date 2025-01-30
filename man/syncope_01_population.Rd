@@ -24,37 +24,49 @@ syncope_01_population(
 )
 }
 \arguments{
-\item{df}{<\link[=dplyr_tidy_select]{'tidy-select'}> Main data frame containing EMS records.}
+\item{df}{Main data frame containing EMS records.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data frame or tibble containing only epatient
+and escene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data frame or tibble containing only the eresponse
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{situation_table}{A data.frame or tibble containing only the esituation fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data.frame or tibble containing only the esituation
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing only the evitals fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A data.frame or tibble containing only the evitals fields
+needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing unique record identifiers for each encounter.}
+\item{erecord_01_col}{The column containing unique record identifiers for
+each encounter.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing the incident date, used to calculate age.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing the patient's date of birth.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the patient age (numeric).}
+\item{epatient_15_col}{Column representing the patient age (numeric).}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for the patient age units (e.g., "Years", "Months").}
+\item{epatient_16_col}{Column for the patient age units (e.g., "Years",
+"Months").}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing response type codes, specifically 911 codes.}
+\item{eresponse_05_col}{Column containing response type codes, specifically
+911 codes.}
 
-\item{esituation_09_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column with primary symptoms associated with the patient encounter.}
+\item{esituation_09_col}{Column with primary symptoms associated with the
+patient encounter.}
 
-\item{esituation_10_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column with other associated symptoms.}
+\item{esituation_10_col}{Column with other associated symptoms.}
 
-\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for primary impression code.}
+\item{esituation_11_col}{Column for primary impression code.}
 
-\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for secondary impression codes.}
+\item{esituation_12_col}{Column for secondary impression codes.}
 
-\item{evitals_04_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column with ECG information if available.}
+\item{evitals_04_col}{Column with ECG information if available.}
 }
 \value{
 #' A list that contains the following:
@@ -67,47 +79,11 @@ syncope_01_population(
 \description{
 Filters data down to the target populations for Syncope-01, and categorizes
 records to identify needed information for the calculations.
-}
-\details{
+
 Identifies key categories to identify potential syncope (fainting) cases
-based on specific criteria and calculates related ECG measures. This function segments the data by
-age into adult and pediatric populations.
+based on specific criteria and calculates related ECG measures. This function
+segments the data by age into adult and pediatric populations.
 }
-\section{Data Assumptions}{
-
-
-This function assumes that:
-\itemize{
-\item Data are loaded into a data frame or tibble where each row represents one observation (e.g., patient)
-and each column is a distinct feature (field).
-\item Missing values in rows are represented as \code{NA}. Any "Not Known" or "Not Recorded" values commonly used
-in EMS datasets should be pre-cleaned before use.
-\item The \code{eresponse_05_col} column contains NEMSIS response codes, specifically for identifying 911 responses.
-\item Symptom and impression columns (\code{esituation_09_col}, \code{esituation_10_col}, \code{esituation_11_col}, and \code{esituation_12_col})
-should contain relevant codes or text descriptions that identify syncope and related conditions.  The secondary and associated symptoms
-columns need to be columns that contain all values in a comma separated format with all responses in one cell for a unique incident.
-These can also be a list column that is unnested before passing to the function.
-\item Patient ECG results, if present, are found in \code{evitals_04_col}. Values for this column can to contain all values in a comma
-separated format with all responses in one cell for a unique incident, or the complete set in a column.
-This can also be a list column that is unnested before passing to the function.
-\item Age information is captured across columns \code{epatient_15_col} and \code{epatient_16_col} to distinguish between adults
-and pediatric cases.
-\item Grouping by specific attributes (e.g., region) can be performed inside this function by
-utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
-}
-
-The first argument is the main data frame (\code{df}). No joins are performed; any necessary joins
-should be completed prior to calling this function.
-}
-
-\section{Practical Tips}{
-
-
-Ensure data are pre-processed with any missing values coded as \code{NA}. Additionally, ensure that date fields
-(e.g., \code{incident_date_col}, \code{patient_DOB_col}) are of type \code{Date} or \code{POSIXct}, as incorrect formatting will
-trigger an error message.
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

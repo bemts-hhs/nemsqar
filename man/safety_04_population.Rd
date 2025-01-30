@@ -26,41 +26,57 @@ safety_04_population(
 )
 }
 \arguments{
-\item{df}{<\link[=dplyr_tidy_select]{'tidy-select'}> A data frame or tibble containing EMS data where each row represents an individual observation.}
+\item{df}{A data frame or tibble containing EMS data where each row
+represents an individual observation.}
 
-\item{patient_scene_table}{A data frame or tibble containing fields from epatient and escene needed for this measure's calculations.}
+\item{patient_scene_table}{A data frame or tibble containing fields from
+epatient and escene needed for this measure's calculations.}
 
-\item{response_table}{A data frame or tibble containing fields from eresponse needed for this measure's calculations.}
+\item{response_table}{A data frame or tibble containing fields from eresponse
+needed for this measure's calculations.}
 
-\item{arrest_table}{A data frame or tibble containing fields from earrest needed for this measure's calculations.}
+\item{arrest_table}{A data frame or tibble containing fields from earrest
+needed for this measure's calculations.}
 
-\item{injury_table}{A data frame or tibble containing fields from einjury needed for this measure's calculations.}
+\item{injury_table}{A data frame or tibble containing fields from einjury
+needed for this measure's calculations.}
 
-\item{procedures_table}{A data frame or tibble containing fields from eprocedures needed for this measure's calculations.}
+\item{procedures_table}{A data frame or tibble containing fields from
+eprocedures needed for this measure's calculations.}
 
-\item{disposition_table}{A data frame or tibble containing fields from edisposition needed for this measure's calculations.}
+\item{disposition_table}{A data frame or tibble containing fields from
+edisposition needed for this measure's calculations.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing unique record identifiers for each encounter.}
+\item{erecord_01_col}{The column containing unique record identifiers for
+each encounter.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing the incident dates, expected to be of Date or POSIXct class.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name containing patient birth dates, expected to be of Date or POSIXct class.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name indicating the patient age.}
+\item{epatient_15_col}{Column name indicating the patient age.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for the unit of age (e.g., "Years," "Months").}
+\item{epatient_16_col}{Column name for the unit of age (e.g., "Years,"
+"Months").}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing response transport codes.}
+\item{eresponse_05_col}{Column containing response transport codes.}
 
-\item{earrest_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column with cardiac arrest status information.}
+\item{earrest_01_col}{Column with cardiac arrest status information.}
 
-\item{einjury_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column describing traumatic injuries, expected as a list or text-separated entries.}
+\item{einjury_03_col}{Column describing traumatic injuries, expected as a
+list or text-separated entries.}
 
-\item{eprocedures_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column listing procedures, assumed to contain multiple procedure codes/texts in each cell.}
+\item{eprocedures_03_col}{Column listing procedures, assumed to contain
+multiple procedure codes/texts in each cell.}
 
-\item{edisposition_14_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for transport dispositions.}
+\item{edisposition_14_col}{Column for transport dispositions.}
 
-\item{transport_disposition_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Columns for primary and secondary transport dispositions.}
+\item{transport_disposition_col}{Columns for primary and secondary transport
+dispositions.}
 }
 \value{
 #' A list that contains the following:
@@ -73,55 +89,12 @@ safety_04_population(
 \description{
 Filters data down to the target populations for Safety-04, and categorizes
 records to identify needed information for the calculations.
+
+Identifies key categories related to a 911 request or interfacility request
+for patients less than 8 years of age during which patients are transported
+using a pediatric restraint device. This function segments the data by age
+into adult and pediatric populations.
 }
-\details{
-Identifies key categories related to a 911 request or interfacility request for patients
-less than 8 years of age during which patients are transported using a pediatric restraint device.
-This function segments the data by age into adult and pediatric populations.
-}
-\section{Data Assumptions}{
-
-
-This function assumes that:
-
-Data are already loaded into a data frame or tibble where each row represents
-one observation (e.g., patient) and each column is a distinct feature (field).
-Alternatively, data may consist of separate datasets referenced by unique columns.
-
-Patient age in years will be calculated using \code{incident_date_col} and \code{patient_DOB_col}.
-Both of these fields must be valid \code{Date} or \code{POSIXct} data types.
-
-Missing values in rows are represented as \code{NA}. "Not known" or "not recorded" values,
-common to ImageTrend or other non-numeric codes, should be pre-cleaned before use.
-
-The \code{eresponse_05_col} contains NEMSIS response codes and may also include
-descriptive text for reference.
-
-The \code{edisposition_14_col} is expected to contain transport mode descriptors, which
-may be provided as comma-separated text within each cell, or as a list column.
-
-The \code{earrest_01_col} includes cardiac arrest information as text and code; typically
-only one response per patient encounter is recorded.
-
-The \code{eprocedures_03_col} contains all procedures as a list or a text column with
-multiple entries separated by commas or other delimiters. Procedure codes may be present
-but will not affect function output.
-
-The \code{einjury_03_col} should include all trauma center triage criteria. This function will
-detect duplicate entries and filter on unique values per patient encounter.
-
-The \code{edisposition_12} and \code{edisposition_30} fields should be list columns or text fields
-with all relevant transport disposition entries provided in a single cell as comma-separated
-values for each unique incident.
-
-The first argument to this function is the main data frame. No joins are performed within
-the function; any necessary joins (e.g., to incorporate vitals or additional fields) should
-be completed prior to calling this function.
-
-Grouping by specific attributes (e.g., region) can be performed inside this function by
-utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

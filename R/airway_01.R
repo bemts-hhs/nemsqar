@@ -154,7 +154,7 @@ airway_01 <- function(df = NULL,
                         ...)
 
     # union
-    airway.01 <- bind_rows(adult_population, peds_population)
+    airway.01 <- dplyr::bind_rows(adult_population, peds_population)
 
     # create a separator
     cli::cli_text("\n")

@@ -28,47 +28,63 @@ hypoglycemia_01_population(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing emergency response records. Default is \code{NULL}.}
+\item{df}{A data frame or tibble containing emergency response records.
+Default is \code{NULL}.}
 
-\item{patient_scene_table}{A data.frame or tibble containing at least epatient and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+epatient and escene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data.frame or tibble containing at least the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{situation_table}{A data.frame or tibble containing at least the esituation fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data.frame or tibble containing at least the
+esituation fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing at least the evitals fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A data.frame or tibble containing at least the evitals
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{medications_table}{A data.frame or tibble containing at least the emedications fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{medications_table}{A data.frame or tibble containing at least the
+emedications fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{procedures_table}{A data.frame or tibble containing at least the eprocedures fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{procedures_table}{A data.frame or tibble containing at least the
+eprocedures fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the unique record identifier.}
+\item{erecord_01_col}{Column representing the unique record identifier.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that contains the incident date. This defaults to \code{NULL} as it is optional
-in case not available due to PII restrictions.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that contains the patient's date of birth. This defaults to \code{NULL} as it is optional
-in case not available due to PII restrictions.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the patient's numeric age agnostic of unit.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the patient's age unit ("Years", "Months", "Days", "Hours", or "Minute").}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minute").}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column containing response type codes.}
+\item{eresponse_05_col}{Column containing response type codes.}
 
-\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for primary impression fields, containing ICD-10 codes.}
+\item{esituation_11_col}{Column for primary impression fields, containing
+ICD-10 codes.}
 
-\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for secondary impression fields, containing ICD-10 codes.}
+\item{esituation_12_col}{Column for secondary impression fields, containing
+ICD-10 codes.}
 
-\item{evitals_18_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for blood glucose levels.}
+\item{evitals_18_col}{Column for blood glucose levels.}
 
-\item{evitals_23_cl}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for Glasgow Coma Scale (GCS) scores.}
+\item{evitals_23_cl}{Column for Glasgow Coma Scale (GCS) scores.}
 
-\item{evitals_26_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for AVPU alertness levels.}
+\item{evitals_26_col}{Column for AVPU alertness levels.}
 
-\item{emedications_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for administered medications.}
+\item{emedications_03_col}{Column for administered medications.}
 
-\item{eprocedures_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column for procedures performed.}
+\item{eprocedures_03_col}{Column for procedures performed.}
 }
 \value{
 #' A list that contains the following:
@@ -79,42 +95,15 @@ in case not available due to PII restrictions.}
 }
 }
 \description{
-Filters data down to the target populations for Hypoglycemia-01, and categorizes
-records to identify needed information for the calculations.
+Filters data down to the target populations for Hypoglycemia-01, and
+categorizes records to identify needed information for the calculations.
 
-Identifies key categories related to diabetes/hypoglycemia incidents in an EMS dataset,
-specifically focusing on cases where 911 was called for diabetes/hypoglycemia distress,
-certain medications were administered, and a weight is taken. This function segments the data
-into pediatric populations, computing the proportion of cases that have a documented weight.
+Identifies key categories related to diabetes/hypoglycemia incidents in an
+EMS dataset, specifically focusing on cases where 911 was called for
+diabetes/hypoglycemia distress, certain medications were administered, and a
+weight is taken. This function segments the data into pediatric populations,
+computing the proportion of cases that have a documented weight.
 }
-\section{Data Assumptions}{
-
-The \code{df} and \verb{*_table} arguments should be a data.frame(s) or tibble(s) with the following assumptions:
-\itemize{
-\item The data are already loaded.
-\item The function can calculate an age in years using the incident date and the patient DOB.
-\item The incident date and the patient DOB are Date or POSIXct data types.
-\item If the incident date and patient DOB are not passed, the function will use the system-generated
-patient age and age units.
-\item Any missing values are encoded as \code{NA}, not the "Not Known"/"Not Recorded" text values
-or NEMSIS "not value" codes commonly reported by ePCR vendors.
-\item The vitals field may be the full list of values for each field or the lowest estimated
-eVitals.18 and all estimated patient AVPU in eVitals.26.
-\item The function assumes that the primary and secondary impression fields (eSituation.11
-and eSituation.12) have the ICD-10 codes and/or text descriptions in them.
-\item The function assumes that the eResponse.05 fields have the NEMSIS codes in them,
-and the text will be checked, too.
-\item The function assumes that the eMedications.03 and eProcedures.03 fields contain
-all medications/procedures and that it contains the text description of the
-name of the medication. The codes can be included, and will be checked.
-ALL medications and procedures are in one field per record, as either a comma-separated list
-in each cell, or the complete set of values can be passed as well.
-\item The eSituation.12 (Secondary Impression) field is best as a list column of the secondary
-impressions. No joining is done.
-\item Any joins to get vitals, etc., will need to be done outside the function.
-}
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

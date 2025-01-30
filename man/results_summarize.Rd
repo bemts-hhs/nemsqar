@@ -15,11 +15,14 @@ results_summarize(
 )
 }
 \arguments{
-\item{total_population}{a dataframe or tibble containing the filtered and calculated fields.}
+\item{total_population}{a dataframe or tibble containing the filtered and
+calculated fields.}
 
-\item{adult_population}{a dataframe or tibble containing the filtered and calculated fields.}
+\item{adult_population}{a dataframe or tibble containing the filtered and
+calculated fields.}
 
-\item{peds_population}{a dataframe or tibble containing the filtered and calculated fields.}
+\item{peds_population}{a dataframe or tibble containing the filtered and
+calculated fields.}
 
 \item{measure_name}{A string containing the measure description.}
 
@@ -33,10 +36,9 @@ results_summarize(
 Results tibble
 }
 \description{
-Calculates measure numerator, denominator, and proportions
-for a NEMSQA measure and each population.
-}
-\details{
+Calculates measure numerator, denominator, and proportions for a NEMSQA
+measure and each population.
+
 Used throughout this package to calculate measure results.
 }
 \author{

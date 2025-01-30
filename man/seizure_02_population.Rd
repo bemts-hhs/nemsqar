@@ -35,9 +35,13 @@ columns for analysis.}
 
 \item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing unique record identifiers for each encounter.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name representing the incident date as \code{Date} or \code{POSIXct.}}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name representing the patient's date of birth as \code{Date} or \code{POSIXct.}}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
 \item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for patient age in numeric form.}
 
@@ -63,61 +67,12 @@ or string with comma-separated values.}
 \description{
 Filters data down to the target populations for Seizure-02, and categorizes
 records to identify needed information for the calculations.
-}
-\details{
+
 Identifies key categories related to asthma-related incidents in an EMS dataset,
 specifically focusing on cases where 911 was called for respiratory distress,
 and certain medications were administered. This function segments the data by
 age into adult and pediatric populations.
 }
-\section{Data Assumptions}{
-
-
-This function assumes that:
-
-Data are already loaded in a data frame or tibble where each row represents
-one observation (e.g., patient), and each column is a feature (field).
-Alternatively, data can consist of distinct datasets referenced as unique columns.
-
-Age in years will be calculated using the patient's date of birth and the
-incident date. These fields must be valid \code{Date} or \code{POSIXct} data types.
-
-Any missing values in rows are coded as \code{NA} rather than ImageTrend-specific
-"not known" or "not recorded" values, or other codes that correspond to
-unspecified values.
-
-The primary and secondary impression fields contain ICD-10 codes, although
-descriptive text may also be present for reference. These fields are
-identified as \code{eSituation.11} for the primary impression and \code{eSituation.12}
-for secondary impressions.
-
-The \code{eResponse.05} column contains NEMSIS response codes. Additional descriptive
-text may also be present in this field for reference.
-
-The \code{eMedications.03} column holds all medications administered to a patient
-during an event, represented as a list column or comma-separated values.
-Each entry should use generic medication names, and while RxNORM codes can
-be included, they will not be validated by the function.
-
-The \code{eSituation.12} (secondary impressions) field is best prepared as a
-comma-separated list within a single string or as a list column containing
-each secondary impression.
-
-The first argument to the function is a data frame; any joins needed to
-incorporate additional data (e.g., vitals) must be conducted prior to calling
-this function.
-
-Grouping by specific attributes (e.g., region) can be performed inside this function by
-utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
-}
-
-\section{Practical Tips}{
-
-
-The first argument is the data.frame prepared as above. No joining is done.
-Any joins to get specific data elements will need to be done outside of this function.
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

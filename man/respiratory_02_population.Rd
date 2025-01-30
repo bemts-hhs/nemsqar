@@ -23,35 +23,46 @@ respiratory_02_population(
 )
 }
 \arguments{
-\item{df}{A data frame containing incident data with each row representing an observation.}
+\item{df}{A data frame containing incident data with each row representing an
+observation.}
 
-\item{patient_scene_table}{A data.frame or tibble containing at least epatient and escene fields as a fact table.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+epatient and escene fields as a fact table.}
 
-\item{response_table}{A data.frame or tibble containing at least the eresponse fields needed for this measure's calculations.}
+\item{response_table}{A data.frame or tibble containing at least the
+eresponse fields needed for this measure's calculations.}
 
-\item{vitals_table}{A data.frame or tibble containing at least the evitals fields needed for this measure's calculations.}
+\item{vitals_table}{A data.frame or tibble containing at least the evitals
+fields needed for this measure's calculations.}
 
-\item{medications_table}{A data.frame or tibble containing only the emedications fields needed for this measure's calculations.}
+\item{medications_table}{A data.frame or tibble containing only the
+emedications fields needed for this measure's calculations.}
 
-\item{procedures_table}{A data.frame or tibble containing only the eprocedures fields needed for this measure's calculations.}
+\item{procedures_table}{A data.frame or tibble containing only the
+eprocedures fields needed for this measure's calculations.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for eRecord.01, used to form a unique patient ID.}
+\item{erecord_01_col}{Column name for eRecord.01, used to form a unique
+patient ID.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct Column name for the incident date.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Date or POSIXct Column name for the patient's date of birth.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> integer Column giving the calculated age value.}
+\item{epatient_15_col}{integer Column giving the calculated age value.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving the provided age unit value.}
+\item{epatient_16_col}{Column giving the provided age unit value.}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for response codes (e.g., incident type).}
+\item{eresponse_05_col}{Column name for response codes (e.g., incident type).}
 
-\item{evitals_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for oxygen saturation (SpO2) values.}
+\item{evitals_12_col}{Column name for oxygen saturation (SpO2) values.}
 
-\item{emedications_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for medication codes.}
+\item{emedications_03_col}{Column name for medication codes.}
 
-\item{eprocedures_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for procedure codes.}
+\item{eprocedures_03_col}{Column name for procedure codes.}
 }
 \value{
 #' A list that contains the following:
@@ -62,35 +73,12 @@ respiratory_02_population(
 }
 }
 \description{
-The \code{respiratory_02_population} function calculates metrics for pediatric and adult
-respiratory populations based on pre-defined criteria, such as low oxygen
-saturation and specific medication or procedure codes. It returns a summary
-table of the overall, pediatric, and adult populations, showing counts and
-proportions.
+The \code{respiratory_02_population} function calculates metrics for pediatric and
+adult respiratory populations based on pre-defined criteria, such as low
+oxygen saturation and specific medication or procedure codes. It returns a
+summary table of the overall, pediatric, and adult populations, showing
+counts and proportions.
 }
-\section{Data Assumptions}{
-
-Assume data are already loaded The data must be a dataframe or tibble that
-contains emedications.03 and eprocedures.03 as columns where each cell
-contains all values entered for each respective incident. These are not list
-columns but can be comma separated values in each cell, and must contain all
-medications for each incident. The table must also have the erecord.01 values
-to attempt a best estimate of a unique ID by concatenating the erecord.01,
-incident date, and patient DOB. The table can include all values entered for
-evitals.12 in the table.  This will cause row explosion, but the function
-will find if the patient had sp02 < 90 among any values entered. This
-function assumes you have the following fields: eRecord.01, eresponse.05
-(must contain code), evitals.12 (all values), emedications.03 (all with
-code), eprocedures.03 (with code) this function will calculate age in years
-for the end user. this function also assumes that rows that are missing any
-value are NA, not the not known / not recorded values common to ImageTrend or
-the value codes that correspond to "not values". the first argument is a
-dataframe, no joining is done in the function. any needed table joins must be
-done prior to running the function to ensure required columns are present.
-Grouping by specific attributes (e.g., region) can be performed inside this function by
-utilizing the \code{.by} argument passed via tidydots (i.e. \code{...}) to \code{dplyr::summarize}.
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }

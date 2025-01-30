@@ -24,31 +24,46 @@ asthma_01_population(
 \arguments{
 \item{df}{A data.frame or tibble containing EMS data. Default is \code{NULL}.}
 
-\item{patient_scene_table}{A data.frame or tibble containing at least ePatient and eScene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient and eScene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data.frame or tibble containing at least the eResponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{situation_table}{A data.frame or tibble containing at least the eSituation fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data.frame or tibble containing at least the
+eSituation fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{medications_table}{A data.frame or tibble containing at least the eMedications fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{medications_table}{A data.frame or tibble containing at least the
+eMedications fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column representing the EMS record unique identifier. Default is \code{NULL}.}
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier. Default is \code{NULL}.}
 
-\item{incident_date_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that contains the incident date. Default is \code{NULL}.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that contains the patient's date of birth. Default is \code{NULL}.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the patient's numeric age agnostic of unit.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column representing the patient's age unit ("Years", "Months", "Days", "Hours", or "Minute").}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minute").}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that contains eResponse.05.}
+\item{eresponse_05_col}{Column that contains eResponse.05.}
 
-\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that contains eSituation.11.}
+\item{esituation_11_col}{Column that contains eSituation.11.}
 
-\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that contains all eSituation.12 values as a single comma-separated list.}
+\item{esituation_12_col}{Column that contains all eSituation.12 values as a
+single comma-separated list.}
 
-\item{emedications_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column that contains all eMedications.03 values as a single comma-separated list.}
+\item{emedications_03_col}{Column that contains all eMedications.03 values as
+a single comma-separated list.}
 }
 \value{
 #' A list that contains the following:
@@ -62,47 +77,12 @@ asthma_01_population(
 Filters data down to the target populations for Asthma-01, and categorizes
 records to identify needed information for the calculations.
 
-Identifies key categories related to asthma-related incidents in an EMS dataset,
-specifically focusing on cases where 911 was called for respiratory distress,
-and certain medications were administered. This function segments the data by
-age into adult and pediatric populations, computing the proportion of cases that
-received beta-agonist treatment.
+Identifies key categories related to asthma-related incidents in an EMS
+dataset, specifically focusing on cases where 911 was called for respiratory
+distress, and certain medications were administered. This function segments
+the data by age into adult and pediatric populations, computing the
+proportion of cases that received beta-agonist treatment.
 }
-\section{Data Assumptions}{
-
-
-This function assumes that:
-Data are already loaded. The data need to be a data.frame or tibble.
-
-Age in years can be calculated using the patient date of birth and incident
-date. These fields must have valid Date or POSIXct data types. If patient DOB
-and the incident date are not passed, the function will use the system generated
-patient age and age units.
-
-When values are missing, they are coded as NA, not the "not known"/"not
-recorded" values common to ImageTrend or the NEMSIS codes that correspond to
-"not values".
-
-The primary and secondary impression fields (eSituation.11 and eSituation.12)
-can have the ICD-10 codes and/or the text descriptions present in them.
-Similarly, this function assumes that the eResponse.05 column has NEMSIS codes
-and/or text descriptions present, but text can also be included for reference.
-
-The eMedications.03 field contains all medications administered and contains
-a text description of the medication using the generic name. The Rx code
-may also be included for reference, and will be checked.
-
-The secondary impressions field (eSituation.12) is best prepared as a
-comma-separated list of all values in a single string.
-}
-
-\section{Practical Tips}{
-
-
-The first argument is the data.frame or tables with data elements prepared as above.
-No joining is done. Any joins to get vitals, etc. will need to be done outside of this function.
-}
-
 \author{
 Nicolas Foss, Ed.D., MS
 }
