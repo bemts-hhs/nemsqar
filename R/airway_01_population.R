@@ -398,38 +398,35 @@ airway_01_population <- function(df = NULL,
 
   # Get first intubation procedure & time intervals for vitals
   procedures_table |>
-    dplyr::filter(!is.na({{ eprocedures_01_col }}), # Procedure date/time not null
-           !grepl(pattern = "9923003|Yes", x = {{ eprocedures_02_col }}), # Procedure PTA is not Yes
-           grepl(pattern = procedures_code, x = {{ eprocedures_03_col }}) # Procedure name/code in list
+    dplyr::mutate(
+      non_missing_procedure_time = !is.na({{ eprocedures_01_col }}), # Procedure date/time not null
+      not_performed_prior = !grepl(pattern = "9923003|Yes", x = {{ eprocedures_02_col }}), # Procedure PTA is not Yes
+      target_procedures = grepl(pattern = procedures_code, x = {{ eprocedures_03_col }}) # Procedure name/code in list
     ) |>
     dplyr::group_by({{ erecord_01_col }}) |>
     dplyr::arrange({{ eprocedures_01_col }}) |>
     dplyr::mutate(procedure_order = rank({{ eprocedures_01_col }})) |>
     dplyr::ungroup() |>
-    dplyr::mutate(vitals_range_start = {{ eprocedures_01_col }} - lubridate::dminutes(3),
-                  vitals_range_end = {{ eprocedures_01_col }} + lubridate::dminutes(5)
+    dplyr::mutate(
+      vitals_range_start = {{ eprocedures_01_col }} - lubridate::dminutes(3),
+      vitals_range_end = {{ eprocedures_01_col }} + lubridate::dminutes(5),
+      range_bounds_before = lubridate::interval(vitals_range_start, {{ eprocedures_01_col }}),
+      range_bounds_after = lubridate::interval({{ eprocedures_01_col }}, vitals_range_end),
+      successful_procedure = dplyr::if_else(all({{ eprocedures_05_col }} == 1,
+                                                grepl(pattern = "9923003|Yes", x = {{ eprocedures_06_col }})), 1, 0)
                   ) |>
-    dplyr::filter(procedure_order == 1) |>
     dplyr::distinct() -> procedures_ordered
 
   cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
 
-  # FIND successful procedures
-  procedures_ordered |>
-    dplyr::mutate(successful_procedure = dplyr::if_else(all({{ eprocedures_05_col }} == 1,
-                                                                          grepl(pattern = "9923003|Yes",
-                                                                                x = {{ eprocedures_06_col }})), 1, 0)
+  # create an effective filter for the initial population
+  procedures_filter <- procedures_ordered |>
+    dplyr::filter(target_procedures,
+                  non_missing_procedure_time,
+                  not_performed_prior
                   ) |>
-    dplyr::select(-{{ eprocedures_05_col }},
-           -{{ eprocedures_06_col }}) |>
-    dplyr::ungroup() |>
-    dplyr::distinct() -> procedures_ordered
-
-  # get the initial population
-  initial_population <- patient_scene_table |>
-    dplyr::left_join(procedures_ordered, by = dplyr::join_by({{ erecord_01_col }})) |>
-    dplyr::filter(procedure_order == 1) |>
-    dplyr::distinct()
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
 
   cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
 
@@ -442,18 +439,18 @@ airway_01_population <- function(df = NULL,
   ) {
 
   # Add calculated age in years
-  initial_population <- initial_population |>
+  initial_population_dev <- patient_scene_table |>
     dplyr::mutate(patient_age_in_years = as.numeric(difftime({{ incident_date_col }},
                                                              {{ patient_dob_col }},
                                                              units = "days")/365)) |>
     dplyr::mutate(patient_age_in_years = dplyr::case_when(!is.na(patient_age_in_years) ~ patient_age_in_years,
                                                           grepl(pattern = year_values,
                                                                 x = {{ epatient_16_col }},
-                                                                ignore.case=TRUE) ~ as.numeric({{ epatient_15_col }}),
+                                                                ignore.case = TRUE) ~ as.numeric({{ epatient_15_col }}),
 
                                                           grepl(pattern = month_values,
                                                                 x = {{ epatient_16_col }},
-                                                                ignore.case=TRUE) ~ as.numeric({{ epatient_15_col }} / 12),
+                                                                ignore.case = TRUE) ~ as.numeric({{ epatient_15_col }} / 12),
 
                                                           grepl(pattern = day_values,
                                                                 x = {{ epatient_16_col }},
@@ -476,14 +473,14 @@ airway_01_population <- function(df = NULL,
   ) {
 
     # Add calculated age in years
-    initial_population <- initial_population |>
+    initial_population_dev <- patient_scene_table |>
       dplyr::mutate(patient_age_in_years = dplyr::case_when(grepl(pattern = year_values,
                                                                   x = {{ epatient_16_col }},
-                                                                  ignore.case=TRUE) ~ as.numeric({{ epatient_15_col }}),
+                                                                  ignore.case = TRUE) ~ as.numeric({{ epatient_15_col }}),
 
                                                             grepl(pattern = month_values,
                                                                   x = {{ epatient_16_col }},
-                                                                  ignore.case=TRUE) ~ as.numeric({{ epatient_15_col }} / 12),
+                                                                  ignore.case = TRUE) ~ as.numeric({{ epatient_15_col }} / 12),
 
                                                             grepl(pattern = day_values,
                                                                   x = {{ epatient_16_col }},
@@ -506,70 +503,294 @@ airway_01_population <- function(df = NULL,
   response_table |>
     dplyr::mutate(call_911 = dplyr::if_else(grepl(pattern = codes_911,
                                                                   x = {{ eresponse_05_col }},
-                                                                  ignore.case=TRUE), 1, 0)
+                                                                  ignore.case = TRUE), 1, 0)
                                   ) |>
     dplyr::select({{ erecord_01_col }}, call_911) |>
-    dplyr::distinct() -> filtered_responses
-
-  # get the initial population
-  initial_population <- initial_population |>
-    dplyr::left_join(filtered_responses, by = dplyr::join_by({{ erecord_01_col }})) |>
-    dplyr::distinct()
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
+    dplyr::pull({{ erecord_01_col }}) -> call_911_data
 
   cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
 
-  # get arrest table with  needed exclusion classifications
+  # get arrest table with needed exclusion classifications
   arrest_table_filter <- arrest_table |>
-    dplyr::mutate(exclude_pta_ca = dplyr::if_else(grepl(pattern="3001003|Yes, Prior",
+    dplyr::mutate(exclude_pta_ca = dplyr::if_else(grepl(pattern = "3001003|Yes, Prior",
                                                         x = {{ earrest_01_col }}), 1, 0)
-                  )
+                  ) |>
+    dplyr::select({{ erecord_01_col }}, exclude_pta_ca) |>
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
+    dplyr::pull({{ erecord_01_col }})
 
   cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
 
-  # Initial counts
-  initial_population |>
-    dplyr::left_join(arrest_table_filter, by = dplyr::join_by({{ erecord_01_col }})) |>
-    dplyr::distinct() |>
-    dplyr::mutate(exclude_newborns = dplyr::if_else(patient_age_in_years <= 1/365, 1, 0),
+  # Initial manipulations
+  initial_population_dev |>
+    dplyr::mutate(call_911 = dplyr::if_else({{ erecord_01_col }} %in% call_911_data, 1, 0),
+                  exclude_newborns = dplyr::if_else(patient_age_in_years <= 1/365, 1, 0),
                   adult_population = dplyr::if_else(patient_age_in_years >= 18, 1, 0),
-                  pedi_population = dplyr::if_else(patient_age_in_years < 18, 1, 0)
+                  pedi_population = dplyr::if_else(patient_age_in_years < 18, 1, 0),
+                  target_procedures = dplyr::if_else({{ erecord_01_col }} %in% procedures_filter, 1, 0),
+                  exclude_pta_ca = dplyr::if_else({{ erecord_01_col }} %in% arrest_table_filter, 1, 0),
+                  patient_age_in_years_1_9 = patient_age_in_years >= 1 & patient_age_in_years <= 9,
+                  patient_age_in_years_10_plus = patient_age_in_years >= 10,
+                  patient_age_in_years_multiplied = dplyr::if_else(patient_age_in_years < 10, patient_age_in_years * 2, 1),
+                  patient_age_in_days = patient_age_in_years * 365,
+                  patient_age_28_days_1_year = patient_age_in_days < 365 & patient_age_in_days > 28,
+                  patient_age_days_28 = patient_age_in_days < 28
                   ) |>
-    dplyr::mutate(include_population = dplyr::if_else(all(call_911 == 1,
-                                                          exclude_pta_ca == 0,
-                                                          exclude_newborns == 0),
-                                                      1,
-                                                      0)) -> initial_population
+    dplyr::mutate(include_population = dplyr::if_else(
+
+      all(
+        call_911 == 1,
+        exclude_pta_ca == 0,
+        exclude_newborns == 0,
+        target_procedures == 1,
+        ), 1, 0
+
+      )) -> initial_population_dev
 
   cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
 
+  # NEED TO WORK ON THIS IN ORDER TO CONSIDER ALL THE CONDITIONS FOR NUMERATOR 1
+  # TOGETHER TO CALCULATE NUMERATOR 1 FOR ADULTS AND PEDS
+  # AND THEN CALCULATE NUMERATOR 2 FOR ADULTS AND PEDS
+  # THIS WILL LIKELY BE ONE ADDITIONAL LINE OF CODE THAT WILL
+  # SUMMARIZE EVERYTHING ACROSS NUMERATOR 1, AND THEN THE SAME FOR NUMERATOR 2
+  # THEN YOU CAN GAUGE PERFORMANCE FOR EACH SPECIFIC CONDITION WITHIN THE OUTPUT
+  # CREATE A TEST FILE TO TEST THIS WHOLE SCRIPT ONCE YOU GET THE CALCULATIONS
+  # TOGETHER
+
   # Numerator
-  vitals_table |>
-    dplyr::left_join(initial_population, by = dplyr::join_by({{ erecord_01_col }})) |>
+  initial_population_dev |>
+    dplyr::select({{ erecord_01_col }}, patient_age_in_years) |>
     dplyr::distinct() |>
-    dplyr::filter({{ evitals_01_col }} <= vitals_range_end,
-                  {{ evitals_01_col }} >= vitals_range_start) -> vf
+    dplyr::left_join(vitals_table, by = dplyr::join_by({{ erecord_01_col }}), relationship = "many-to-many") |>
+    dplyr::left_join(procedures_ordered, by = join_by({{ erecord_01_col }}), relationship = "many-to-many") |>
+    dplyr::mutate(within_range_before = do.call(lubridate::`%within%`, {{ evitals_01_col }}, range_bounds_before),
+                  within_range_after = do.call(lubridate::`%within%`, {{ evitals_01_col }}, range_bounds_after)
+                  ) |>
+    dplyr::mutate(
+
+      # numerator 1 for all patients with pulse oximetry >= 90
+      numerator1_all_spo2 = dplyr::if_else(
+
+      procedure_order == 1 &
+
+        successful_procedure &
+
+        ( within_range_before & {{ evitals_12_col }} >= 90 ), 1, 0
+
+      ),
+
+      numerator2_all_spo2 = dplyr::if_else(
+
+        procedure_order == 1 &
+
+          successful_procedure &
+
+          ( within_range_after & {{ evitals_12_col }} >= 90 ), 1, 0
+
+      ),
+
+      # final numerator 1
+      numerator_all_spo2 = dplyr::if_else((numerator1_all_spo2 + numerator2_all_spo2) > 1, 1, 0),
+
+      # start calculation of numerator 2, ages >= 10
+      numerator1_10 = dplyr::if_else(
+
+        patient_age_in_years_10_plus &
+
+        procedure_order == 1 &
+
+          successful_procedure &
+
+          ( within_range_before & {{ evitals_06_col }} >= 90 ), 1, 0
+
+      ),
+
+      numerator2_10 = dplyr::if_else(
+
+        patient_age_in_years_10_plus &
+
+          procedure_order == 1 &
+
+          successful_procedure &
+
+          ( within_range_after & {{ evitals_06_col }} >= 90 ), 1, 0
+
+      ),
+
+      # final numerator 2
+      numerator_10 = dplyr::if_else((numerator1_10 + numerator2_10) > 1, 1, 0),
+
+      # start calculation of numerator 3, ages 1-9 yrs
+      numerator1_1_9 = dplyr::if_else(
+
+        patient_age_in_years_1_9 &
+
+        procedure_order == 1 &
+
+          successful_procedure &
+
+          ( within_range_before & {{ evitals_06_col }} >= (70 + patient_age_in_years_multiplied) ), 1, 0
+
+      ),
+
+      numerator2_1_9 = dplyr::if_else(
+
+        patient_age_in_years_1_9 &
+
+          procedure_order == 1 &
+
+          successful_procedure &
+
+          ( within_range_after & {{ evitals_06_col }} >= (70 + patient_age_in_years_multiplied) ), 1, 0
+
+      ),
+
+      # final numerator 3
+      numerator_1_9 = dplyr::if_else((numerator1_1_9 + numerator2_1_9) > 1, 1, 0),
+
+      # start calculation of numerator 4, ages < 1 yr & > 28 days or < 28 days
+      numerator1_1_28 = dplyr::if_else(
+
+        patient_age_28_days_1_year &
+
+          procedure_order == 1 &
+
+          successful_procedure &
+
+          ( within_range_before & {{ evitals_06_col }} >= 70), 1, 0
+
+      ),
+
+      numerator2_1_28 = dplyr::if_else(
+
+        patient_age_28_days_1_year &
+
+          procedure_order == 1 &
+
+          successful_procedure &
+
+          ( within_range_after & {{ evitals_06_col }} >= 70 ), 1, 0
+
+      ),
+
+      numerator3_1_28 = dplyr::if_else(
+
+        patient_age_days_28 &
+
+          procedure_order == 1 &
+
+          successful_procedure &
+
+          ( within_range_before & {{ evitals_06_col }} >= 60 ), 1, 0
+
+      ),
+
+      numerator4_1_28 = dplyr::if_else(
+
+        patient_age_days_28 &
+
+          procedure_order == 1 &
+
+          successful_procedure &
+
+          ( within_range_after & {{ evitals_06_col }} >= 60 ), 1, 0
+
+      ),
+
+      # final numerator 4
+      numerator_1_28 = dplyr::if_else((numerator1_1_28 + numerator2_1_28) > 1 |
+                                        (numerator3_1_28 + numerator4_1_28) > 1, 1, 0),
+
+      # start numerator 5 calculations, sbp >= 90 among all patients
+      numerator1_all_sbp = dplyr::if_else(
+
+        procedure_order == 1 &
+
+          successful_procedure &
+
+          ( within_range_before & {{ evitals_06_col }} >= 90 ), 1, 0
+
+      ),
+
+      numerator2_all_sbp = dplyr::if_else(
+
+        procedure_order == 1 &
+
+          successful_procedure &
+
+          ( within_range_after & {{ evitals_06_col }} >= 90 ), 1, 0
+
+      ),
+
+      # final numerator 5
+      numerator_all_sbp = dplyr::if_else((numerator1_all_sbp + numerator2_all_sbp) > 1, 1, 0),
+
+
+      ) -> computing_population_dev
 
   cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
 
+  # Get successful performance across all numerator populations
+  all_numerators <- computing_population_dev |>
+    dplyr::select({{ erecord_01_col }}, matches("numerator_")) |>
+    dplyr::summarize(across(matches("numerator_"), ~ max(.)),
+                     .by = {{ erecord_01_col }}
+                     ) |>
+    dplyr::distinct({{ erecord_01_col }})
+
+  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+
   # Numerator calculations continued
-  vf |>
-    dplyr::mutate(sbp_threshold = dplyr::case_when(patient_age_in_years >= 10 ~ 90,
-                                     patient_age_in_years <= 9 & patient_age_in_years >= 1 ~ 70 + floor(patient_age_in_years*2),
-                                     patient_age_in_years <= 1 & patient_age_in_years >= 1/12 ~ 70,
-                                     TRUE ~ 60
-                                     )) |>
+  computing_population_dev |>
+    dplyr::mutate(sbp_threshold = dplyr::case_when(patient_age_in_years_10_plus ~ 90,
+                                                   patient_age_in_years_1_9 ~ 70 + patient_age_in_years_multiplied,
+                                                   patient_age_28_days_1_year ~ 70,
+                                                   TRUE ~ 60
+                                                   )) |>
     dplyr::mutate(no_hypoxia = dplyr::case_when(is.na({{ evitals_12_col }}) ~ 0,
                                   {{ evitals_12_col }} >= 90 ~ 1,
                                   TRUE ~ 0),
                   no_hypotension = dplyr::case_when(is.na({{ evitals_06_col }}) ~ 0,
                                       {{ evitals_06_col }} >= sbp_threshold ~ 1,
                                       TRUE ~ 0)
-           ) -> vf
+           ) |>
+    dplyr::select({{ erecord_01_col }},
+                  patient_age_in_years,
+                  call_911,
+                  exclude_newborns,
+                  adult_population,
+                  pedi_population,
+                  target_procedures,
+                  exclude_pta_ca,
+                  patient_age_in_years_1_9,
+                  patient_age_in_years_10_plus,
+                  patient_age_in_years_multiplied,
+                  patient_age_in_days,
+                  patient_age_28_days_1_year,
+                  patient_age_days_28,
+                  sbp_threshold,
+                  no_hypoxia,
+                  no_hypotension
+                  ) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::left_join(all_numerators, by = dplyr::join_by({{ erecord_01_col }})) -> computing_population
+
+  # YOU HAVE ATTEMPTED TO CALCULATE THE NUMERATOR FOR THE POPULATION
+  # YOU NEED TO NOW TEST YOUR METHODS ABOVE
+  # WHAT YOU NEED TO DO IS SUMMARIZE OVERALL ADULT PERFORMANCE
+  # OVERALL PEDS PERFORMANCE, AND THEN GET PERFORMANCE BY EACH OF THE DIFFERENT
+  # NUMERATORS
+  # YOU HAVE THE NUMERATOR CODED WRONG ABOVE, NUMERATOR 1 IS ALL THE CONDITIONS
+  # AND NUMERATOR 2 IS ALL THE CONDITIONS IN THERE, AND THEN YOU SPLIT THAT
+  # BY ADULTS AND PEDS
+  # CHANGE NUMERATOR CODE ABOVE TO BE `AND` CLAUSES AMONG ALL THE CONDITIONS
 
     cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
 
     # Numerator calculations continued
-    vf |>
+    computing_population |>
     dplyr::mutate(successful_no_hypoxia = as.numeric(no_hypoxia & successful_procedure),
            successful_no_hypotension = as.numeric(no_hypotension & successful_procedure),
            measure_performance = as.numeric(no_hypoxia & no_hypotension & successful_procedure)) |>
@@ -584,23 +805,8 @@ airway_01_population <- function(df = NULL,
 
     cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
 
-  # complete the initial population setup
-  initial_population |>
-    dplyr::left_join(calculated_numerator, by = dplyr::join_by({{ erecord_01_col }})) |>
-    dplyr::distinct() -> calculated_data
-
-  print(names(calculated_data))
-
-  print(dim(calculated_data))
-
-  # Remove the calculated_numerator intermediate object
-  rm(calculated_numerator)
-
-  cli::cli_progress_update(set = 12, id = progress_bar_population, force = T)
-
   # Work with calculated data
   calculated_data |>
-    dplyr::ungroup() |>
     dplyr::mutate(adult_measure_performance = as.numeric(measure_performance & adult_population),
                   adult_successful_no_hypoxia = as.numeric(successful_no_hypoxia & adult_population),
                   adult_successful_no_hypotension = as.numeric(successful_no_hypotension & adult_population),
@@ -609,7 +815,7 @@ airway_01_population <- function(df = NULL,
                   pedi_successful_no_hypotension = as.numeric(successful_no_hypotension & pedi_population),
                   adult_successful_intubation = as.numeric(successful_procedure & adult_population),
                   pedi_successful_intubation = as.numeric(successful_procedure & pedi_population)
-    ) |>
+                  ) |>
     dplyr::summarize(`Initial Population` = sum(procedure_order, na.rm = TRUE),
                      `911 calls` = sum(call_911, na.rm = TRUE),
                      `Excluded cardiac arrests prior to arrival` = sum(exclude_pta_ca, na.rm = TRUE),
@@ -630,7 +836,7 @@ airway_01_population <- function(df = NULL,
                      `Pedi successful without hypotension` = sum(pedi_successful_no_hypotension, na.rm = TRUE),
                      `Pedi measure met` = sum(pedi_measure_performance, na.rm = TRUE)
                      ) |>
-    tidyr::pivot_longer(everything(), names_to = "filter", values_to = "count") -> filter_counts
+    tidyr::pivot_longer(tidyselect::everything(), names_to = "filter", values_to = "count") -> filter_counts
 
   cli::cli_progress_update(set = 13, id = progress_bar_population, force = T)
 
