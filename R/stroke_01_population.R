@@ -112,8 +112,8 @@ stroke_01_population <- function(df = NULL,
   options(cli.progress_bar_style = "dot")
 
   options(cli.progress_bar_style = list(
-    complete = cli::col_green("●"),
-    incomplete = cli::col_br_white("─")
+    complete = cli::col_green("\u25CF"),  # Black Circle
+    incomplete = cli::col_br_white("\u2500")  # Light Horizontal Line
   ))
 
   # initiate the progress bar process

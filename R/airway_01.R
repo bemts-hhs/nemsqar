@@ -22,7 +22,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
+#' @param patient_dob_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col Column representing the patient's numeric age agnostic
@@ -69,7 +69,7 @@ airway_01 <- function(df = NULL,
                       vitals_table = NULL,
                       erecord_01_col,
                       incident_date_col = NULL,
-                      patient_DOB_col = NULL,
+                      patient_dob_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       earrest_01_col,
@@ -117,7 +117,7 @@ airway_01 <- function(df = NULL,
                                                vitals_table = vitals_table,
                                                erecord_01_col = {{ erecord_01_col }},
                                                incident_date_col = {{ incident_date_col }},
-                                               patient_DOB_col = {{ patient_DOB_col }},
+                                               patient_dob_col = {{ patient_dob_col }},
                                                epatient_15_col = {{ epatient_15_col }},
                                                epatient_16_col = {{ epatient_16_col }},
                                                earrest_01_col = {{ earrest_01_col }},
@@ -209,7 +209,7 @@ airway_01 <- function(df = NULL,
       airway_01_population <- airway_01_population(df = df,
                                                    erecord_01_col = {{ erecord_01_col }},
                                                    incident_date_col = {{ incident_date_col }},
-                                                   patient_DOB_col = {{ patient_DOB_col }},
+                                                   patient_dob_col = {{ patient_dob_col }},
                                                    epatient_15_col = {{ epatient_15_col }},
                                                    epatient_16_col = {{ epatient_16_col }},
                                                    earrest_01_col = {{ earrest_01_col }},

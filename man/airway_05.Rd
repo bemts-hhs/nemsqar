@@ -13,7 +13,7 @@ airway_05(
   vitals_table = NULL,
   erecord_01_col,
   incident_date_col = NULL,
-  patient_DOB_col = NULL,
+  patient_dob_col = NULL,
   epatient_15_col,
   epatient_16_col,
   earrest_01_col,
@@ -51,7 +51,7 @@ identifier.}
 \item{incident_date_col}{Column that contains the incident date. Default is
 \code{NULL}.}
 
-\item{patient_DOB_col}{Column that contains the patient's date of birth.
+\item{patient_dob_col}{Column that contains the patient's date of birth.
 Default is \code{NULL}.}
 
 \item{epatient_15_col}{Column representing the patient's numeric age agnostic

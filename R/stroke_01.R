@@ -19,12 +19,6 @@
 #'   needed for this measure's calculations. Default is `NULL`.
 #' @param erecord_01_col The column containing unique record identifiers for
 #'   each encounter.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
 #' @param eresponse_05_col The column containing EMS response codes, which
 #'   should include 911 response codes.
 #' @param esituation_11_col The column containing the primary impression codes

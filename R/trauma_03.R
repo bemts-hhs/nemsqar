@@ -26,7 +26,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
+#' @param patient_dob_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col The column for patient age numeric value.
@@ -39,10 +39,9 @@
 #' @param transport_disposition_col The column for patient transport
 #'   disposition.
 #' @param evitals_01_col The column for the time of pain scale measurement.
+#' @param evitals_27_col The column for the full set of pain scale scores.
 #' @param evitals_27_initial_col The column for the initial pain scale score.
 #' @param evitals_27_last_col The column for the last pain scale score.
-#' @param evitals_27_sortorder_col The column for the sort order of pain scale
-#'   measurement.
 #' @param ... Additional arguments passed to helper functions for further
 #'   customization.
 #'
@@ -67,7 +66,7 @@ trauma_03 <- function(df = NULL,
                       vitals_table = NULL,
                       erecord_01_col,
                       incident_date_col = NULL,
-                      patient_DOB_col = NULL,
+                      patient_dob_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       esituation_02_col,
@@ -112,7 +111,7 @@ trauma_03 <- function(df = NULL,
       disposition_table = disposition_table,
       erecord_01_col = {{ erecord_01_col }},
       incident_date_col = {{ incident_date_col }},
-      patient_DOB_col = {{ patient_DOB_col }},
+      patient_dob_col = {{ patient_dob_col }},
       epatient_15_col = {{ epatient_15_col }},
       epatient_16_col = {{ epatient_16_col }},
       esituation_02_col = {{ esituation_02_col }},
@@ -188,7 +187,7 @@ trauma_03 <- function(df = NULL,
       df = df,
       erecord_01_col = {{ erecord_01_col }},
       incident_date_col = {{ incident_date_col }},
-      patient_DOB_col = {{ patient_DOB_col }},
+      patient_dob_col = {{ patient_dob_col }},
       epatient_15_col = {{ epatient_15_col }},
       epatient_16_col = {{ epatient_16_col }},
       esituation_02_col = {{ esituation_02_col }},

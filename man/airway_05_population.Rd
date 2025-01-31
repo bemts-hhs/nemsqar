@@ -13,7 +13,7 @@ airway_05_population(
   vitals_table = NULL,
   erecord_01_col,
   incident_date_col,
-  patient_DOB_col,
+  patient_dob_col,
   epatient_15_col,
   epatient_16_col,
   earrest_01_col,
@@ -51,7 +51,7 @@ identifier.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+\item{patient_dob_col}{Column that contains the patient's date of birth. This
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 

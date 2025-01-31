@@ -23,7 +23,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
+#' @param patient_dob_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col Column representing the patient age (numeric).
@@ -54,7 +54,7 @@ syncope_01_population <- function(df = NULL,
                        vitals_table = NULL,
                        erecord_01_col,
                        incident_date_col = NULL,
-                       patient_DOB_col = NULL,
+                       patient_dob_col = NULL,
                        epatient_15_col,
                        epatient_16_col,
                        eresponse_05_col,
@@ -115,8 +115,8 @@ syncope_01_population <- function(df = NULL,
   options(cli.progress_bar_style = "dot")
 
   options(cli.progress_bar_style = list(
-    complete = cli::col_green("●"),
-    incomplete = cli::col_br_white("─")
+    complete = cli::col_green("\u25CF"),  # Black Circle
+    incomplete = cli::col_br_white("\u2500")  # Light Horizontal Line
   ))
 
   # initiate the progress bar process
@@ -190,20 +190,20 @@ syncope_01_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
       )
     ) {
       incident_date <- rlang::enquo(incident_date_col)
-      patient_DOB <- rlang::enquo(patient_DOB_col)
+      patient_dob <- rlang::enquo(patient_dob_col)
 
       if (
         (!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
          !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])) ||
-        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_DOB)]]) &
-         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_DOB)]]))
+        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_dob)]]) &
+         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_dob)]]))
       ) {
         cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
         )
       }
     }
@@ -220,7 +220,7 @@ syncope_01_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
       )
     ) {
 
@@ -230,7 +230,7 @@ syncope_01_population <- function(df = NULL,
     # create the age in years variable
     dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
       time1 = {{ incident_date_col }},
-      time2 = {{ patient_DOB_col }},
+      time2 = {{ patient_dob_col }},
       units = "days"
     )) / 365,
 
@@ -249,7 +249,7 @@ syncope_01_population <- function(df = NULL,
 
       all(
         is.null(incident_date_col),
-        is.null(patient_DOB_col)
+        is.null(patient_dob_col)
       )) {
 
       # dplyr::filter the table to get the initial population regardless of age
@@ -375,7 +375,7 @@ syncope_01_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
     )
   ) {
 
@@ -393,7 +393,7 @@ syncope_01_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_DOB_col)
+      is.null(patient_dob_col)
     )) {
 
     # filter adult
@@ -474,7 +474,7 @@ syncope_01_population <- function(df = NULL,
     if(
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
       )
     )
 
@@ -482,15 +482,15 @@ syncope_01_population <- function(df = NULL,
 
       # use quasiquotation on the date variables to check format
       incident_date <- rlang::enquo(incident_date_col)
-      patient_DOB <- rlang::enquo(patient_DOB_col)
+      patient_dob <- rlang::enquo(patient_dob_col)
 
       if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
            !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-          (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
-           !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))) {
+          (!lubridate::is.Date(df[[rlang::as_name(patient_dob)]]) &
+           !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))) {
 
         cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
+          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_dob_col} to class {.cls Date} or similar class."
         )
 
       }
@@ -509,7 +509,7 @@ syncope_01_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
       )
     ) {
 
@@ -527,7 +527,7 @@ syncope_01_population <- function(df = NULL,
         # create the age in years variable
         dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
           time1 = {{ incident_date_col }},
-          time2 = {{ patient_DOB_col }},
+          time2 = {{ patient_dob_col }},
           units = "days"
         )) / 365,
 
@@ -546,7 +546,7 @@ syncope_01_population <- function(df = NULL,
 
       all(
         is.null(incident_date_col),
-        is.null(patient_DOB_col)
+        is.null(patient_dob_col)
       )) {
 
       # dplyr::filter the table to get the initial population regardless of age
@@ -680,7 +680,7 @@ syncope_01_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
       )
     ) {
 
@@ -698,7 +698,7 @@ syncope_01_population <- function(df = NULL,
 
       all(
         is.null(incident_date_col),
-        is.null(patient_DOB_col)
+        is.null(patient_dob_col)
       )) {
 
       # filter adult

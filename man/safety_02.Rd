@@ -11,7 +11,7 @@ safety_02(
   disposition_table = NULL,
   erecord_01_col,
   incident_date_col = NULL,
-  patient_DOB_col = NULL,
+  patient_dob_col = NULL,
   epatient_15_col,
   epatient_16_col,
   eresponse_05_col,
@@ -34,11 +34,14 @@ fields needed for this measure's calculations.}
 \item{disposition_table}{A data.frame or tibble containing only the
 edisposition fields needed for this measure's calculations.}
 
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
+
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+\item{patient_dob_col}{Column that contains the patient's date of birth. This
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 

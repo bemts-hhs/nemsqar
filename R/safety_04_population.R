@@ -29,7 +29,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
+#' @param patient_dob_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col Column name indicating the patient age.
@@ -63,7 +63,7 @@ safety_04_population <- function(df = NULL,
                       disposition_table = NULL,
                       erecord_01_col,
                       incident_date_col = NULL,
-                      patient_DOB_col = NULL,
+                      patient_dob_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       eresponse_05_col,
@@ -126,7 +126,7 @@ safety_04_population <- function(df = NULL,
 
       missing(erecord_01_col),
       missing(incident_date_col),
-      missing(patient_DOB_col),
+      missing(patient_dob_col),
       missing(epatient_15_col),
       missing(epatient_16_col),
       missing(eresponse_05_col),
@@ -189,8 +189,8 @@ safety_04_population <- function(df = NULL,
   options(cli.progress_bar_style = "dot")
 
   options(cli.progress_bar_style = list(
-    complete = cli::col_green("●"),
-    incomplete = cli::col_br_white("─")
+    complete = cli::col_green("\u25CF"),  # Black Circle
+    incomplete = cli::col_br_white("\u2500")  # Light Horizontal Line
   ))
 
   # initiate the progress bar process
@@ -231,7 +231,7 @@ safety_04_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
       )
     ) {
 
@@ -239,7 +239,7 @@ safety_04_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
     dplyr::mutate(patient_age_in_years = as.numeric(difftime(
       time1 = {{  incident_date_col  }},
-      time2 = {{  patient_DOB_col  }},
+      time2 = {{  patient_dob_col  }},
       units = "days"
     )) / 365,
 
@@ -257,7 +257,7 @@ safety_04_population <- function(df = NULL,
 
       all(
         is.null(incident_date_col),
-        is.null(patient_DOB_col)
+        is.null(patient_dob_col)
       )) {
 
     final_data <- patient_scene_table |>
@@ -403,7 +403,7 @@ safety_04_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
     )
   ) {
 
@@ -423,7 +423,7 @@ safety_04_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_DOB_col)
+      is.null(patient_dob_col)
     )) {
 
     # get the initial population
@@ -525,7 +525,7 @@ safety_04_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
       )
     ) {
 
@@ -540,7 +540,7 @@ safety_04_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
     dplyr::mutate(patient_age_in_years = as.numeric(difftime(
       time1 = {{  incident_date_col  }},
-      time2 = {{  patient_DOB_col  }},
+      time2 = {{  patient_dob_col  }},
       units = "days"
     )) / 365,
 
@@ -558,7 +558,7 @@ safety_04_population <- function(df = NULL,
 
       all(
         is.null(incident_date_col),
-        is.null(patient_DOB_col)
+        is.null(patient_dob_col)
       )) {
 
     final_data <- df |>
@@ -711,7 +711,7 @@ safety_04_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
     )
   ) {
 
@@ -731,7 +731,7 @@ safety_04_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_DOB_col)
+      is.null(patient_dob_col)
     )) {
 
     # get the initial population

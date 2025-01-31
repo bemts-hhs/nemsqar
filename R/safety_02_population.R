@@ -17,10 +17,12 @@
 #'   fields needed for this measure's calculations.
 #' @param disposition_table A data.frame or tibble containing only the
 #'   edisposition fields needed for this measure's calculations.
+#' @param erecord_01_col The column representing the EMS record unique
+#'   identifier.
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
+#' @param patient_dob_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col Column giving the calculated age value.
@@ -49,7 +51,7 @@ safety_02_population <- function(df = NULL,
                       disposition_table = NULL,
                       erecord_01_col,
                       incident_date_col = NULL,
-                      patient_DOB_col = NULL,
+                      patient_dob_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       eresponse_05_col,
@@ -104,7 +106,7 @@ safety_02_population <- function(df = NULL,
 
       missing(erecord_01_col),
       missing(incident_date_col),
-      missing(patient_DOB_col),
+      missing(patient_dob_col),
       missing(epatient_15_col),
       missing(epatient_16_col),
       missing(eresponse_05_col),
@@ -143,6 +145,16 @@ safety_02_population <- function(df = NULL,
   minute_values <- "minutes|2516005"
 
   month_values <- "months|2516007"
+
+  # options for the progress bar
+  # a green dot for progress
+  # a white line for note done yet
+  options(cli.progress_bar_style = "dot")
+
+  options(cli.progress_bar_style = list(
+    complete = cli::col_green("\u25CF"),  # Black Circle
+    incomplete = cli::col_br_white("\u2500")  # Light Horizontal Line
+  ))
 
   # initiate the progress bar process
   progress_bar_population <- cli::cli_progress_bar(
@@ -186,21 +198,21 @@ safety_02_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
       )
     ) {
 
       incident_date <- rlang::enquo(incident_date_col)
-      patient_DOB <- rlang::enquo(patient_DOB_col)
+      patient_dob <- rlang::enquo(patient_dob_col)
 
       if (
         (!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
          !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])) ||
-        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_DOB)]]) &
-         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_DOB)]]))
+        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_dob)]]) &
+         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_dob)]]))
       ) {
         cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
         )
       }
     }
@@ -218,7 +230,7 @@ safety_02_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
       )
     ) {
 
@@ -230,7 +242,7 @@ safety_02_population <- function(df = NULL,
     dplyr::mutate(
       patient_age_in_years_col = as.numeric(difftime(
         time1 = {{ incident_date_col }},
-        time2 = {{ patient_DOB_col }},
+        time2 = {{ patient_dob_col }},
         units = "days"
       )) / 365,
 
@@ -249,7 +261,7 @@ safety_02_population <- function(df = NULL,
 
       all(
         is.null(incident_date_col),
-        is.null(patient_DOB_col)
+        is.null(patient_dob_col)
 
       )) {
 
@@ -371,7 +383,7 @@ safety_02_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
     )
   ) {
 
@@ -391,7 +403,7 @@ safety_02_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_DOB_col)
+      is.null(patient_dob_col)
     )) {
 
     # filter adult
@@ -476,20 +488,20 @@ safety_02_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
       )
     ) {
       incident_date <- rlang::enquo(incident_date_col)
-      patient_DOB <- rlang::enquo(patient_DOB_col)
+      patient_dob <- rlang::enquo(patient_dob_col)
 
       if (
         (!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
          !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-        (!lubridate::is.Date(df[[rlang::as_name(patient_DOB)]]) &
-         !lubridate::is.POSIXct(df[[rlang::as_name(patient_DOB)]]))
+        (!lubridate::is.Date(df[[rlang::as_name(patient_dob)]]) &
+         !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))
       ) {
         cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
         )
       }
     }
@@ -506,7 +518,7 @@ safety_02_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
       )
     ) {
 
@@ -523,7 +535,7 @@ safety_02_population <- function(df = NULL,
     dplyr::mutate(
       patient_age_in_years_col = as.numeric(difftime(
         time1 = {{ incident_date_col }},
-        time2 = {{ patient_DOB_col }},
+        time2 = {{ patient_dob_col }},
         units = "days"
       )) / 365,
 
@@ -542,7 +554,7 @@ safety_02_population <- function(df = NULL,
 
       all(
         is.null(incident_date_col),
-        is.null(patient_DOB_col)
+        is.null(patient_dob_col)
 
       )) {
 
@@ -669,7 +681,7 @@ safety_02_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
     )
   ) {
 
@@ -689,7 +701,7 @@ safety_02_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_DOB_col)
+      is.null(patient_dob_col)
     )) {
 
     # filter adult

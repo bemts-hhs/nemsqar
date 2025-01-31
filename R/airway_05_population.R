@@ -22,7 +22,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
+#' @param patient_dob_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col Column representing the patient's numeric age agnostic
@@ -62,7 +62,7 @@ airway_05_population <- function(df = NULL,
                       vitals_table = NULL,
                       erecord_01_col,
                       incident_date_col,
-                      patient_DOB_col,
+                      patient_dob_col,
                       epatient_15_col,
                       epatient_16_col,
                       earrest_01_col,
@@ -122,11 +122,12 @@ airway_05_population <- function(df = NULL,
   # Check for tables or DF
 
   if(
-    any(
+    all(
       !is.null(patient_scene_table),
       !is.null(response_table),
       !is.null(procedures_table),
-      !is.null(vitals_table)
+      !is.null(vitals_table),
+      !is.null(arrest_table)
     ) && !is.null(df)
   ) {
 
@@ -138,12 +139,10 @@ airway_05_population <- function(df = NULL,
 
   # ensure all *_col arguments are fulfilled
   if(
-
     any(
-
       missing(erecord_01_col),
       missing(incident_date_col),
-      missing(patient_DOB_col),
+      missing(patient_dob_col),
       missing(epatient_15_col),
       missing(epatient_16_col),
       missing(earrest_01_col),
@@ -152,7 +151,7 @@ airway_05_population <- function(df = NULL,
       missing(evitals_12_col),
       missing(eprocedures_01_col),
       missing(eprocedures_02_col),
-      missing(eprocedures_03_col),
+      missing(eprocedures_03_col)
     )
 
   ) {
@@ -167,8 +166,8 @@ airway_05_population <- function(df = NULL,
   options(cli.progress_bar_style = "dot")
 
   options(cli.progress_bar_style = list(
-    complete = cli::col_green("●"),
-    incomplete = cli::col_br_white("─")
+    complete = cli::col_green("\u25CF"),  # Black Circle
+    incomplete = cli::col_br_white("\u2500")  # Light Horizontal Line
   ))
 
   # initiate the progress bar process
@@ -187,7 +186,8 @@ airway_05_population <- function(df = NULL,
 
   ####### CREATE SEPARATE TABLES FROM DF IF TABLES ARE MISSING #######
 
-  if(all(
+  if(
+    all(
     is.null(patient_scene_table),
     is.null(response_table),
     is.null(arrest_table),
@@ -277,21 +277,21 @@ airway_05_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
     )
   ) {
 
     incident_date <- rlang::enquo(incident_date_col)
-    patient_DOB <- rlang::enquo(patient_DOB_col)
+    patient_dob <- rlang::enquo(patient_dob_col)
 
     if (
       (!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
        !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])) ||
-      (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_DOB)]]) &
-       !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_DOB)]]))
+      (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_dob)]]) &
+       !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_dob)]]))
     ) {
       cli::cli_abort(
-        "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+        "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
       )
     }
   }
@@ -339,14 +339,14 @@ airway_05_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
     )
   ) {
 
   # Add calculated age in years
   initial_population <- initial_population |>
     dplyr::mutate(patient_age_in_years = as.numeric(difftime({{ incident_date_col }},
-                                                             {{ patient_DOB_col }},
+                                                             {{ patient_dob_col }},
                                                              units = "days")/365)) |>
     dplyr::mutate(patient_age_in_years = dplyr::case_when(!is.na(patient_age_in_years) ~ patient_age_in_years,
                                                           grepl(pattern = year_values,
@@ -373,7 +373,7 @@ airway_05_population <- function(df = NULL,
   } else if ( # condition where the user does not pass the incident date nor the patient DOB
     all(
       rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      rlang::quo_is_null(rlang::enquo(patient_dob_col))
     )
   ) {
 

@@ -13,7 +13,7 @@ trauma_03(
   vitals_table = NULL,
   erecord_01_col,
   incident_date_col = NULL,
-  patient_DOB_col = NULL,
+  patient_dob_col = NULL,
   epatient_15_col,
   epatient_16_col,
   esituation_02_col,
@@ -54,7 +54,7 @@ identifier.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+\item{patient_dob_col}{Column that contains the patient's date of birth. This
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
@@ -75,15 +75,14 @@ disposition.}
 
 \item{evitals_01_col}{The column for the time of pain scale measurement.}
 
+\item{evitals_27_col}{The column for the full set of pain scale scores.}
+
 \item{evitals_27_initial_col}{The column for the initial pain scale score.}
 
 \item{evitals_27_last_col}{The column for the last pain scale score.}
 
 \item{...}{Additional arguments passed to helper functions for further
 customization.}
-
-\item{evitals_27_sortorder_col}{The column for the sort order of pain scale
-measurement.}
 }
 \value{
 A tibble summarizing results for three population groups (All,

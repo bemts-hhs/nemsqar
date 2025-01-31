@@ -23,7 +23,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
+#' @param patient_dob_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col Column name for the patient's age in numeric format.
@@ -65,7 +65,7 @@ trauma_01 <- function(df = NULL,
                       vitals_table = NULL,
                       erecord_01_col,
                       incident_date_col = NULL,
-                      patient_DOB_col = NULL,
+                      patient_dob_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       esituation_02_col,
@@ -109,7 +109,7 @@ trauma_01 <- function(df = NULL,
       disposition_table = disposition_table,
       erecord_01_col = {{ erecord_01_col }},
       incident_date_col = {{ incident_date_col }},
-      patient_DOB_col = {{ patient_DOB_col }},
+      patient_dob_col = {{ patient_dob_col }},
       epatient_15_col = {{ epatient_15_col }},
       epatient_16_col = {{ epatient_16_col }},
       esituation_02_col = {{ esituation_02_col }},
@@ -185,7 +185,7 @@ trauma_01 <- function(df = NULL,
       df = df,
       erecord_01_col = {{ erecord_01_col }},
       incident_date_col = {{ incident_date_col }},
-      patient_DOB_col = {{ patient_DOB_col }},
+      patient_dob_col = {{ patient_dob_col }},
       epatient_15_col = {{ epatient_15_col }},
       epatient_16_col = {{ epatient_16_col }},
       esituation_02_col = {{ esituation_02_col }},

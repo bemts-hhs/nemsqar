@@ -10,7 +10,7 @@ safety_01_population(
   response_table = NULL,
   erecord_01_col,
   incident_date_col = NULL,
-  patient_DOB_col = NULL,
+  patient_dob_col = NULL,
   epatient_15_col,
   epatient_16_col,
   eresponse_05_col,
@@ -32,7 +32,7 @@ identifier.}
 \item{incident_date_col}{Date or POSIXct column indicating the date of the
 incident.}
 
-\item{patient_DOB_col}{Date or POSIXct column for the patient’s date of birth}
+\item{patient_dob_col}{Date or POSIXct column for the patient’s date of birth}
 
 \item{epatient_15_col}{Column containing age.}
 

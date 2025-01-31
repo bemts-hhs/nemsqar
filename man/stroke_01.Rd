@@ -63,14 +63,6 @@ during assessment.}
 
 \item{...}{Additional arguments passed to \code{dplyr::summarize()} function for
 further customization of results.}
-
-\item{incident_date_col}{Column that contains the incident date. This
-defaults to \code{NULL} as it is optional in case not available due to PII
-restrictions.}
-
-\item{patient_DOB_col}{Column that contains the patient's date of birth. This
-defaults to \code{NULL} as it is optional in case not available due to PII
-restrictions.}
 }
 \value{
 A tibble summarizing results for the total population with the

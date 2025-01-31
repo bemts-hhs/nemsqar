@@ -13,7 +13,7 @@ airway_18(
   response_table = NULL,
   erecord_01_col,
   incident_date_col = NULL,
-  patient_DOB_col = NULL,
+  patient_dob_col = NULL,
   epatient_15_col,
   epatient_16_col,
   eresponse_05_col,
@@ -55,6 +55,9 @@ identifier.}
 \item{incident_date_col}{Column name containing the incident date. Default is
 \code{NULL}.}
 
+\item{patient_dob_col}{Column name containing the patient's date of birth.
+Default is \code{NULL}.}
+
 \item{epatient_15_col}{Column name for patient information (exact purpose
 unclear).}
 
@@ -85,9 +88,6 @@ Default is \code{NULL}.}
 \item{evitals_16_col}{Column name for additional vital signs data.}
 
 \item{...}{Additional arguments passed to other functions if needed.}
-
-\item{patient_dob_col}{Column name containing the patient's date of birth.
-Default is \code{NULL}.}
 }
 \value{
 A tibble summarizing results for Adults and Peds with the following
@@ -137,7 +137,7 @@ airway_18(df = NULL,
          response_table = nemsqar_response_table,
          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
          incident_date_col = `Incident Date`,
-         patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
+         patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
          epatient_15_col = `Patient Age (ePatient.15)`,
          epatient_16_col = `Patient Age Units (ePatient.16)`,
          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
@@ -169,7 +169,7 @@ airway_18(df = nemsqar_airway_18_df,
          response_table = NULL,
          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
          incident_date_col = `Incident Date`,
-         patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
+         patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
          epatient_15_col = `Patient Age (ePatient.15)`,
          epatient_16_col = `Patient Age Units (ePatient.16)`,
          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,

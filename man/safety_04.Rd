@@ -14,7 +14,7 @@ safety_04(
   disposition_table = NULL,
   erecord_01_col,
   incident_date_col = NULL,
-  patient_DOB_col = NULL,
+  patient_dob_col = NULL,
   epatient_15_col,
   epatient_16_col,
   eresponse_05_col,
@@ -55,7 +55,7 @@ each encounter.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+\item{patient_dob_col}{Column that contains the patient's date of birth. This
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
@@ -76,10 +76,10 @@ multiple procedure codes/texts in each cell.}
 
 \item{edisposition_14_col}{Column for transport dispositions.}
 
-\item{...}{Additional arguments for flexibility in function customization.}
-
-\item{transport_disposition_cols}{Columns for primary and secondary transport
+\item{transport_disposition_col}{Columns for primary and secondary transport
 dispositions.}
+
+\item{...}{Additional arguments for flexibility in function customization.}
 }
 \value{
 A data.frame summarizing results for three population groups (All,
