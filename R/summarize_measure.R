@@ -12,11 +12,11 @@
 #' @param ... (optional) additional arguments
 #'
 #' @return Summarized information
-#' 
+#'
 #' @author Samuel Kordik, BBA, BS
-#' 
+#'
 #' @export
-#' 
+#'
 summarize_measure <- function(data,
                               measure_name,
                               population_name,
@@ -31,7 +31,7 @@ summarize_measure <- function(data,
       denominator = dplyr::n(),
       prop = sum(numerator / denominator, na.rm = T),
       prop_label = pretty_percent(prop,
-                                  n_decimal = 0.01),
+                                  n_decimal = 2),
       ...
     )
 }

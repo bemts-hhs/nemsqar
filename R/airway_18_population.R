@@ -408,17 +408,15 @@ airway_18_population <- function(df = NULL,
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
 
-  # endotracheal intubation
+  # all invasive airway procedures
   intubation_data <- procedures_table |>
     dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}, {{ eprocedures_06_col}}) |>
     dplyr::distinct() |>
     dplyr::filter(
 
-      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
+      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T)
 
-        grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T)
-
-      ) |>
+    ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
@@ -438,15 +436,17 @@ airway_18_population <- function(df = NULL,
 
     cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
 
-    # successful airway procedures
-    successful_procedure_data <- procedures_table |>
-      dplyr::select({{ erecord_01_col }}, {{ eprocedures_06_col }}) |>
+    # successful endotracheal intubation
+    successful_intubation_data <- procedures_table |>
+      dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}, {{ eprocedures_06_col}}) |>
       dplyr::distinct() |>
       dplyr::filter(
 
+        grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
+
         grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T)
 
-        ) |>
+      ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
@@ -633,7 +633,7 @@ airway_18_population <- function(df = NULL,
   # assign variables to final data
   computing_population <- final_data |>
     dplyr::mutate(CALL_911 = {{ erecord_01_col }} %in% call_911_data,
-                  SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% successful_procedure_data,
+                  SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% successful_intubation_data,
                   ENDOTRACHEAL_INTUBATION = {{ erecord_01_col }} %in% intubation_data,
                   LAST_SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% last_procedures_data,
                   WAVEFORM_ETCO2 = {{ erecord_01_col }} %in% waveform_ETCO2_data,
@@ -979,47 +979,48 @@ airway_18_population <- function(df = NULL,
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
 
-  # endotracheal intubation
-  intubation_data <- df |>
+  # all invasive airway procedures
+  intubation_data <- procedures_table |>
+    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}, {{ eprocedures_06_col}}) |>
+    dplyr::distinct() |>
+    dplyr::filter(
+
+      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T)
+
+
+    ) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
+
+  # 911 calls
+  call_911_data <- response_table |>
+    dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter(
+
+      grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)
+
+    ) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
+
+  # successful endotracheal intubation
+  successful_intubation_data <- procedures_table |>
     dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}, {{ eprocedures_06_col}}) |>
     dplyr::distinct() |>
     dplyr::filter(
 
       grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
 
-        grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T)
+      grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T)
 
-      ) |>
+    ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
-
-    # 911 calls
-    call_911_data <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-
-        grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)
-
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
-
-    # successful airway procedures
-    successful_procedure_data <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ eprocedures_06_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-
-        grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T)
-
-        ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
 
   cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
 
@@ -1179,7 +1180,7 @@ cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
   # assign variables to final data
   computing_population <- final_data |>
     dplyr::mutate(CALL_911 = {{ erecord_01_col }} %in% call_911_data,
-                  SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% successful_procedure_data,
+                  SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% successful_intubation_data,
                   ENDOTRACHEAL_INTUBATION = {{ erecord_01_col }} %in% intubation_data,
                   LAST_SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% last_procedures_data,
                   WAVEFORM_ETCO2 = {{ erecord_01_col }} %in% waveform_ETCO2_data,

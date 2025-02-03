@@ -37,6 +37,18 @@ utils::globalVariables(c(
   "system_age_minor", "system_age_minor1", "system_age_minor2",
   "system_age_minor3", "system_age_minor_exclusion",
   "system_age_minor_exclusion1", "system_age_minor_exclusion2",
-  "vitals_range_end", "vitals_range_start"
+  "vitals_range_end", "vitals_range_start",
+  ":=", "CLEANED_AGE_UNITS", "INCIDENT_DATE", "across", "airway_01_vitals_table",
+  "airway_05_vitals_table", "first_procedure", "first_successful_procedure",
+  "matches", "non_missing_procedure_time", "not_performed_prior", "numerator1_10",
+  "numerator1_1_28", "numerator1_1_9", "numerator1_all_sbp", "numerator1_all_spo2",
+  "numerator2_10", "numerator2_1_28", "numerator2_1_9", "numerator2_all_sbp",
+  "numerator2_all_spo2", "numerator3_1_28", "numerator4_1_28", "numerator_1",
+  "numerator_10", "numerator_1_28", "numerator_1_9", "numerator_28",
+  "numerator_all_sbp", "numerator_all_spo2", "patient_age_28_days_1_year",
+  "patient_age_days_28", "patient_age_in_years_10_plus",
+  "patient_age_in_years_1_9", "patient_age_in_years_multiplied",
+  "range_bounds_after", "range_bounds_before", "successful_procedure_data",
+  "target_procedures", "within_range_after", "within_range_before"
   )
 )

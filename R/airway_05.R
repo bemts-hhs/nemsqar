@@ -127,17 +127,17 @@ airway_05 <- function(df = NULL,
 
     # summary
     # adults
-    adult_population <- airway_01_population$adults |>
+    adult_population <- airway_05_population$adults |>
       summarize_measure(measure_name = "Airway-05",
                         population_name = "Adult",
-                        measure_performance,
+                        numerator,
                         ...)
 
     # peds
-    peds_population <- airway_01_population$peds |>
+    peds_population <- airway_05_population$peds |>
       summarize_measure(measure_name = "Airway-05",
                         population_name = "Peds",
-                        measure_performance,
+                        numerator,
                         ...)
 
     # union
@@ -154,12 +154,12 @@ airway_05 <- function(df = NULL,
     if (run_time_secs >= 60) {
 
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
 
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 
@@ -217,17 +217,17 @@ airway_05 <- function(df = NULL,
 
     # summary
     # adults
-    adult_population <- airway_01_population$adults |>
+    adult_population <- airway_05_population$adults |>
       summarize_measure(measure_name = "Airway-05",
                         population_name = "Adult",
-                        measure_performance,
+                        numerator,
                         ...)
 
     # peds
-    peds_population <- airway_01_population$peds |>
+    peds_population <- airway_05_population$peds |>
       summarize_measure(measure_name = "Airway-05",
                         population_name = "Peds",
-                        measure_performance,
+                        numerator,
                         ...)
 
     # union
@@ -244,12 +244,12 @@ airway_05 <- function(df = NULL,
     if (run_time_secs >= 60) {
 
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
 
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 
