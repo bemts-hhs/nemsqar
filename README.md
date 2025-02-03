@@ -10,8 +10,6 @@
 status](https://www.r-pkg.org/badges/version/nemsqar)](https://CRAN.R-project.org/package=nemsqar)
 [![Codecov test
 coverage](https://codecov.io/gh/bemts-hhs/nemsqar/graph/badge.svg)](https://app.codecov.io/gh/bemts-hhs/nemsqar?branch=main)
-[![Codecov test
-coverage](https://codecov.io/gh/bemts-hhs/nemsqar/graph/badge.svg)](https://app.codecov.io/gh/bemts-hhs/nemsqar)
 <!-- badges: end -->
 
 `nemsqar` is an R package designed to automate the calculation of EMS

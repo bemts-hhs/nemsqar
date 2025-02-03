@@ -19,7 +19,6 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/bemts-hhs/nemsqar/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/bemts-hhs/nemsqar/actions/workflows/R-CMD-check.yaml)
 [![CRAN status](https://www.r-pkg.org/badges/version/nemsqar)](https://CRAN.R-project.org/package=nemsqar)
 [![Codecov test coverage](https://codecov.io/gh/bemts-hhs/nemsqar/graph/badge.svg)](https://app.codecov.io/gh/bemts-hhs/nemsqar?branch=main)
-[![Codecov test coverage](https://codecov.io/gh/bemts-hhs/nemsqar/graph/badge.svg)](https://app.codecov.io/gh/bemts-hhs/nemsqar)
 <!-- badges: end -->
 
 `nemsqar` is an R package designed to automate the calculation of EMS quality metrics as defined by the National EMS Quality Alliance (NEMSQA). With a focus on enhancing EMS service performance through reliable, evidence-based quality measures, `nemsqar` aims to streamline metric calculation for healthcare providers, EMS agencies, and researchers dedicated to improving patient outcomes.
