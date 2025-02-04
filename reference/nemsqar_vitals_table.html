@@ -55,7 +55,7 @@ but does not produce meaningful clinical results.</p>
 
     <div class="section level2">
     <h2 id="format">Format<a class="anchor" aria-label="anchor" href="#format"></a></h2>
-    <p>A tibble with 1,000 rows and 19 variables:</p><dl><dt>Incident Patient Care Report Number - PCR (eRecord.01)</dt>
+    <p>A tibble with 10,000 rows and 19 variables:</p><dl><dt>Incident Patient Care Report Number - PCR (eRecord.01)</dt>
 <dd><p>Unique incident identifier (character).</p></dd>
 
 <dt>Incident Date</dt>
@@ -125,27 +125,27 @@ demonstrate the expected input structure.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">nemsqar_vitals_table</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">nemsqar_vitals_table</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 1,000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Rows: 10,000</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Columns: 19</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $ `Incident Patient Care Report Number - PCR (eRecord.01)` <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "NyXFBlJfnm-8…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Incident Date`                                          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2023-08-26, …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Signs Taken Date Time (eVitals.01)`              <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span> 2023-08-26 1…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals ECG Type (eVitals.04)`                           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Other (AED, …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Systolic Blood Pressure SBP (eVitals.06)`        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 196, 109, 413…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Diastolic Blood Pressure DBP (eVitals.07)`       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 91, 66, 137, …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Heart Rate (eVitals.10)`                         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 177, 287, 244…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Pulse Oximetry (eVitals.12)`                     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 55, 6, 92, 19…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Respiratory Rate (eVitals.14)`                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 168, 61, 82, …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Respiratory Effort (eVitals.15)`                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Mechanically…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Carbon Dioxide CO2 (eVitals.16)`                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 45, 37, 6, 6,…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Blood Glucose Level (eVitals.18)`                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 334, 148, 11,…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Glasgow Coma Score GCS Motor (eVitals.21)`       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Not Applicab…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Total Glasgow Coma Score GCS (eVitals.23)`       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 5, 14, 11, 3,…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Level Of Responsiveness AVPU (eVitals.26)`       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Not Applicab…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Pain Scale Score (eVitals.27)`                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 6, 3, 6, 9, 6…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Pain Scale Score Range Sort Order (eVitals.27)`  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 2, 1, 0, 2…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Stroke Scale Score (eVitals.29)`                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Non-Conclusi…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Stroke Scale Type (eVitals.30)`                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "NIH", "Los A…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Incident Date`                                          <span style="color: #949494; font-style: italic;">&lt;date&gt;</span> 2023-05-27, …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Signs Taken Date Time (eVitals.01)`              <span style="color: #949494; font-style: italic;">&lt;dttm&gt;</span> 2023-05-27 0…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals ECG Type (eVitals.04)`                           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "5 Lead", "Qu…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Systolic Blood Pressure SBP (eVitals.06)`        <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 164, 159, 84,…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Diastolic Blood Pressure DBP (eVitals.07)`       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 180, 200, 61,…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Heart Rate (eVitals.10)`                         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 193, 218, 247…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Pulse Oximetry (eVitals.12)`                     <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 91, 76, 18, 3…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Respiratory Rate (eVitals.14)`                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 36, 69, 168, …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Respiratory Effort (eVitals.15)`                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Rapid", "Apn…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Carbon Dioxide CO2 (eVitals.16)`                 <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 96, 24, 90, 1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Blood Glucose Level (eVitals.18)`                <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 90, 186, 9, 4…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Glasgow Coma Score GCS Motor (eVitals.21)`       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Not Recorded…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Total Glasgow Coma Score GCS (eVitals.23)`       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 7, 8, 6, 5, 1…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Level Of Responsiveness AVPU (eVitals.26)`       <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Not Recorded…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Pain Scale Score (eVitals.27)`                   <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 10, 0, 3, 9, …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Pain Scale Score Range Sort Order (eVitals.27)`  <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 3, 3, 1, 3…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Stroke Scale Score (eVitals.29)`                 <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Not Applicab…</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> $ `Vitals Stroke Scale Type (eVitals.30)`                  <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Not Applicab…</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

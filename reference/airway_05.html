@@ -149,7 +149,8 @@ date/time</p></dd>
 
 
 <dt id="arg-eprocedures-col">eprocedures_02_col<a class="anchor" aria-label="anchor" href="#arg-eprocedures-col"></a></dt>
-<dd><p>Column that indicates procedure prior to arrival.</p></dd>
+<dd><p>Column name for whether or not the procedure was
+performed prior to EMS care being provided.</p></dd>
 
 
 <dt id="arg-eprocedures-col">eprocedures_03_col<a class="anchor" aria-label="anchor" href="#arg-eprocedures-col"></a></dt>
@@ -164,7 +165,8 @@ procedure names.</p></dd>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p>A data.frame summarizing results for three population groups (All,
-Adults, and Peds) with the following columns:
+Adults, and Peds) with the following columns:</p>
+<p><code>measure</code>: The name of the measure being calculated.
 <code>pop</code>: Population type (All, Adults, or Peds).
 <code>numerator</code>: Count of incidents where beta-agonist medications were
 administered.

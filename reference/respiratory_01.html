@@ -155,8 +155,19 @@ to respiratory distress.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Returns a data frame summarizing the proportion of cases with
-complete vital sign data, divided by population</p>
+    <p>A tibble summarizing results for the Adults, Peds, and all records
+with the following columns:</p>
+<p><code>measure</code>: The name of the measure being calculated.
+<code>pop</code>: Population type (Adults, Peds, All).
+<code>numerator</code>: Count of EMS responses originating from a 911 request for
+patients with primary or secondary impression of respiratory distress who
+had a respiratory assessment.
+<code>denominator</code>: Total count of incidents.
+<code>prop</code>: Proportion of EMS responses originating from a 911 request for
+patients with primary or secondary impression of respiratory distress who
+had a respiratory assessment.
+<code>prop_label</code>: Proportion formatted as a percentage with a specified number
+of decimal places.</p>
     </div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
