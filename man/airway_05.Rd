@@ -72,7 +72,8 @@ date/time}
 
 \item{eprocedures_01_col}{Date-time or POSIXct column for procedures}
 
-\item{eprocedures_02_col}{Column that indicates procedure prior to arrival.}
+\item{eprocedures_02_col}{Column name for whether or not the procedure was
+performed prior to EMS care being provided.}
 
 \item{eprocedures_03_col}{Column containing procedure codes with or without
 procedure names.}
@@ -82,6 +83,8 @@ procedure names.}
 \value{
 A data.frame summarizing results for three population groups (All,
 Adults, and Peds) with the following columns:
+
+\code{measure}: The name of the measure being calculated.
 \code{pop}: Population type (All, Adults, or Peds).
 \code{numerator}: Count of incidents where beta-agonist medications were
 administered.

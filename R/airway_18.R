@@ -36,7 +36,8 @@
 #' @param eresponse_05_col Column name for emergency response codes.
 #' @param eprocedures_01_col Column name for procedure times or other related
 #'   data.
-#' @param eprocedures_02_col Column name for additional procedure data.
+#' @param eprocedures_02_col Column name for whether or not the procedure was
+#'   performed prior to EMS care being provided.
 #' @param eprocedures_03_col Column name for procedure codes.
 #' @param eprocedures_05_col Column name for number of procedure attempts.
 #' @param eprocedures_06_col Column name for procedure success codes.
@@ -50,6 +51,8 @@
 #'
 #' @return A tibble summarizing results for Adults and Peds with the following
 #'   columns:
+#'
+#'   `measure`: The name of the measure being calculated.
 #'   `pop`: Population type (Adults, Peds).
 #'   `numerator`: Count of incidents where waveform capnography is used for
 #'    tube placement confirmation on the last successful invasive airway

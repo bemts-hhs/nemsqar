@@ -22,12 +22,20 @@ researchers dedicated to improving patient outcomes.
 ## Installation
 
 You can install the development version of nemsqar from
-[GitHub](https://github.com/) with:
+[GitHub](https://github.com/bemts-hhs/nemsqar) with:
 
 ``` r
 # install.packages("pak")
 pak::pak("bemts-hhs/nemsqar")
 ```
+
+## Functionality
+
+nemsqar has functions that will always automate the calculation of a
+service’s performance (or even a system’s) against the currently
+approved list of NEMSQA Measures (see below). Given the large number of
+these functions, please check the full package documentation resource
+[here](https://bemts-hhs.github.io/nemsqar/).
 
 ## About NEMSQA
 

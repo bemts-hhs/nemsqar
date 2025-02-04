@@ -93,11 +93,15 @@ functions.}
 A tibble summarizing results for three population groups (Adults, and
 Peds) with the following columns:
 
-\code{pop}: Population type (Adults, Peds). \code{numerator}: Count of incidents
-where SP02, ETCO2, and SBP were all measured. \code{denominator}: Total count of
-incidents. \code{prop}: Proportion of incidents where SP02, ETCO2, and SBP were
-all measured. \code{prop_label}: Proportion formatted as a percentage with a
-specified number of decimal places.
+\code{measure}: The name of the measure being calculated.
+\code{pop}: Population type (Adults, Peds).
+\code{numerator}: Count of incidents where SP02, ETCO2, and SBP were all
+measured.
+\code{denominator}: Total count of incidents.
+\code{prop}: Proportion of incidents where SP02, ETCO2, and SBP were all
+measured.
+\code{prop_label}: Proportion formatted as a percentage with a specified number
+of decimal places.
 }
 \description{
 This function screens for potential traumatic brain injury (TBI) cases based

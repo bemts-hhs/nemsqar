@@ -50,10 +50,14 @@
 #' @return A tibble summarizing results for three population groups (All,
 #'   Adults, and Peds) with the following columns:
 #'
-#'   `pop`: Population type (All, Adults, Peds). `numerator`: Count of incidents
+#'   `measure`: The name of the measure being calculated.
+#'   `pop`: Population type (All, Adults, Peds).
+#'   `numerator`: Count of incidents
 #'   where specific hypoglycemia best practices were administered.
-#'   `denominator`: Total count of incidents. `prop`: Proportion of incidents
-#'   where specific hypoglycemia best practices were administered. `prop_label`:
+#'   `denominator`: Total count of incidents.
+#'   `prop`: Proportion of incidents
+#'   where specific hypoglycemia best practices were administered.
+#'   `prop_label`:
 #'   Proportion formatted as a percentage with a specified number of decimal
 #'   places.
 #'

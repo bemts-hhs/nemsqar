@@ -5,7 +5,7 @@
 \alias{nemsqar_airway_table}
 \title{Synthetic Test Data for eAirway Fields in National EMS Information System}
 \format{
-A data frame with 1,000 rows and 8 variables:
+A data frame with 10,000 rows and 8 variables:
 \describe{
 \item{Incident Patient Care Report Number - PCR (eRecord.01)}{Unique identifier for the incident report (character).}
 \item{Incident Date}{Date of the incident (Date).}

@@ -6,7 +6,7 @@
 \title{Synthetic eProcedures Data from the National Emergency Medical Services
 Information System (NEMSIS)}
 \format{
-A tibble with 1,000 rows and 8 variables:
+A tibble with 10,000 rows and 8 variables:
 \describe{
 \item{\verb{Incident Patient Care Report Number - PCR (eRecord.01)}}{(chr) Unique identifier for the patient care report.}
 \item{\verb{Incident Date}}{(date) The date of the EMS incident.}

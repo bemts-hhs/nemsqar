@@ -1,0 +1,31 @@
+#' Synthetic Test Data for eMedications Fields in National EMS Information System
+#'
+#' This dataset provides completely synthetic test data for evaluating medication-related
+#' functions in the `nemsqar` package. It includes key variables related to medication
+#' administration, timing, route, and standardized coding. The dataset is designed to
+#' assist users in testing the expected input structure for medication-related measures.
+#'
+#' Users are encouraged to test these functions with this dataset, but results
+#' should not be interpreted as meaningful. Some outputs may be nonsensical,
+#' which is expected since this data is only intended to demonstrate the
+#' expected structure of input data.
+#'
+#' @format A data frame with 10,000 rows and 8 variables:
+#' \describe{
+#'   \item{Incident Patient Care Report Number - PCR (eRecord.01)}{Unique identifier for the incident report (character).}
+#'   \item{Incident Date}{Date of the incident (Date).}
+#'   \item{Medication Administered Date Time (eMedications.01)}{Date and time the medication was administered (datetime).}
+#'   \item{Medication Administered Prior To EMS Unit Care (eMedications.02)}{Indicator of whether medication was administered before EMS arrival (character).}
+#'   \item{Medication Given or Administered Description And RXCUI Code (eMedications.03)}{Name of medication administered with its associated RXCUI code (character).}
+#'   \item{Patient Medication Given or Administered Description And RXCUI Codes List (eMedications.03)}{List of all medications administered with RXCUI codes (character).}
+#'   \item{Medication Administered Route (eMedications.04)}{Method by which the medication was administered (character).}
+#'   \item{Medication Administered Route Code (eMedications.04)}{Standardized code for medication administration route (character).}
+#' }
+#'
+#' @usage data(nemsqar_medications_table)
+#'
+#' @examples
+#' data(nemsqar_medications_table)
+#' head(nemsqar_medications_table)
+#'
+"nemsqar_medications_table"

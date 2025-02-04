@@ -84,11 +84,15 @@ scores from initial vital signs.}
 A tibble summarizing results for three population groups (All,
 Adults, and Peds) with the following columns:
 
-\code{pop}: Population type (All, Adults, Peds). \code{numerator}: Count of incidents
-where the respiratory rate, SBP, and GCS vitals were taken. \code{denominator}:
-Total count of incidents. \code{prop}: Proportion of incidents where the
-respiratory rate, SBP, and GCS vitals were taken. \code{prop_label}: Proportion
-formatted as a percentage with a specified number of decimal places.
+\code{measure}: The name of the measure being calculated.
+\code{pop}: Population type (All, Adults, Peds).
+\code{numerator}: Count of incidents where the respiratory rate, SBP, and GCS
+vitals were taken.
+\code{denominator}: Total count of incidents.
+\code{prop}: Proportion of incidents where the respiratory rate, SBP, and GCS
+vitals were taken.
+\code{prop_label}: Proportion formatted as a percentage with a specified number
+of decimal places.
 }
 \description{
 This function calculates the Trauma-08 measure, which evaluates the

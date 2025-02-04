@@ -66,11 +66,17 @@ further customization of results.}
 }
 \value{
 A tibble summarizing results for the total population with the
-following columns: \code{pop}: Population type (All). \code{numerator}: Count of
-incidents where beta-agonist medications were administered. \code{denominator}:
-Total count of incidents. \code{prop}: Proportion of incidents involving
-beta-agonist medications. \code{prop_label}: Proportion formatted as a
-percentage with a specified number of decimal places.
+following columns:
+
+\code{measure}: The name of the measure being calculated.
+\code{pop}: Population type (All).
+\code{numerator}: Count of incidents where beta-agonist medications were
+administered.
+\code{denominator}:
+Total count of incidents.
+\code{prop}: Proportion of incidents involving beta-agonist medications.
+\code{prop_label}: Proportion formatted as a percentage with a specified number
+of decimal places.
 }
 \description{
 The \code{stroke_01} function processes EMS dataset to identify potential stroke

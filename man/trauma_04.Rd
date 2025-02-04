@@ -141,12 +141,15 @@ customization.}
 A tibble summarizing results for three age groups (< 10 yrs, 10–65
 yrs, and >= 65 yrs) with the following columns:
 
-\code{pop}: Population type (< 10 yrs, 10–65 yrs, >= 65 yrs). \code{numerator}: Count
-of incidents where the trauma hospital was a verified trauma center levels
-1 through 5. \code{denominator}: Total count of incidents. \code{prop}: Proportion of
-incidents where the trauma hospital was a verified trauma center levels 1
-through 5. \code{prop_label}: Proportion formatted as a percentage with a
-specified number of decimal places.
+\code{measure}: The name of the measure being calculated.
+\code{pop}: Population type (< 10 yrs, 10–65 yrs, >= 65 yrs).
+\code{numerator}: Count of incidents where the trauma hospital was a verified
+trauma center levels 1 through 5.
+\code{denominator}: Total count of incidents.
+\code{prop}: Proportion of incidents where the trauma hospital was a verified
+trauma center levels 1 through 5.
+\code{prop_label}: Proportion formatted as a percentage with a specified number
+of decimal places.
 }
 \description{
 This function processes EMS data to generate a set of binary variables

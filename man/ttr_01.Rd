@@ -99,11 +99,13 @@ unresponsive (AVPU) vital signs.}
 A tibble summarizing results for three population groups (Adults, and
 Peds) with the following columns:
 
-\code{pop}: Population type (Adults, Peds). \code{numerator}: Count of incidents
-where all applicable vital signs are taken. \code{denominator}: Total count of
-incidents. \code{prop}: Proportion of incidents where all applicable vital signs
-are taken. \code{prop_label}: Proportion formatted as a percentage with a
-specified number of decimal places.
+\code{measure}: The name of the measure being calculated.
+\code{pop}: Population type (Adults, Peds).
+\code{numerator}: Count of incidents where all applicable vital signs are taken.
+\code{denominator}: Total count of incidents.
+\code{prop}: Proportion of incidents where all applicable vital signs are taken.
+\code{prop_label}: Proportion formatted as a percentage with a specified number
+of decimal places.
 }
 \description{
 This function calculates the TTR-01 measure, which evaluates the completeness

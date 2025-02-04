@@ -29,11 +29,16 @@
 #' @param ... arguments passed on to summarize.
 #'
 #' @return A tibble summarizing results for the Adults, Peds, and all records
-#'   with the following columns: `pop`: Population type (Adults, Peds, All).
+#'   with the following columns:
+#'
+#'   `measure`: The name of the measure being calculated.
+#'   `pop`: Population type (Adults, Peds, All).
 #'   `numerator`: Count of 911 responses where "lights and sirens" were not used
-#'   in an EMS dataset. `denominator`: Total count of incidents. `prop`:
-#'   Proportion of 911 responses where "lights and sirens" were not used in an
-#'   EMS dataset. `prop_label`: Proportion formatted as a percentage with a
+#'   in an EMS dataset.
+#'   `denominator`: Total count of incidents.
+#'   `prop`: Proportion of 911 responses where "lights and sirens" were not used
+#'   in an EMS dataset.
+#'   `prop_label`: Proportion formatted as a percentage with a
 #'   specified number of decimal places.
 #'
 #' @author Nicolas Foss, Ed.D., MS

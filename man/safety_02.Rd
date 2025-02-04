@@ -67,11 +67,14 @@ edisposition.12, edisposition.30) containing transport disposition details.}
 A tibble summarizing results for three age groups (< 10 yrs, 10–65
 yrs, and >= 65 yrs) with the following columns:
 
-\code{pop}: Population type (< 18 yrs, >= 18 yrs, all). \code{numerator}: Count of
-incidents from a 911 request during which lights and sirens were not used
-during patient transport. \code{denominator}: Total count of incidents. \code{prop}:
-Proportion of incidents from a 911 request during which lights and sirens
-were not used during patient transport. \code{prop_label}: Proportion formatted
+\code{measure}: The name of the measure being calculated.
+\code{pop}: Population type (< 18 yrs, >= 18 yrs, all).
+\code{numerator}: Count of incidents from a 911 request during which lights and
+sirens were not used during patient transport.
+\code{denominator}: Total count of incidents.
+\code{prop}:Proportion of incidents from a 911 request during which lights and
+sirens were not used during patient transport.
+\code{prop_label}: Proportion formatted
 as a percentage with a specified number of decimal places.
 }
 \description{

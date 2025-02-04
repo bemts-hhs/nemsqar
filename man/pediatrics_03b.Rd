@@ -70,10 +70,15 @@ restrictions.}
 A tibble summarizing results for three population groups (All,
 Adults, and Peds) with the following columns:
 
-\code{pop}: Population type (All, Adults, Peds). \code{numerator}: Count of incidents
-where patient weight was documented. \code{denominator}: Total count of
-incidents. \code{prop}: Proportion of incidents where patient weight was
-documented. \code{prop_label}: Proportion formatted as a percentage with a
+\code{measure}: The name of the measure being calculated.
+\code{pop}: Population type (All, Adults, Peds).
+\code{numerator}: Count of incidents
+where patient weight was documented.
+\code{denominator}: Total count of
+incidents.
+\code{prop}: Proportion of incidents where patient weight was
+documented.
+\code{prop_label}: Proportion formatted as a percentage with a
 specified number of decimal places.
 }
 \description{

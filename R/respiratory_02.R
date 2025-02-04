@@ -36,8 +36,18 @@
 #' @param eprocedures_03_col Column name for procedure codes.
 #' @param ... arguments passed to `dplyr::summarize()`.
 #'
-#' @return Returns a tibble summarizing the overall and age-grouped
-#'   respiratory-02 metrics, formatted for ease of interpretation.
+#' @return A tibble summarizing results for the Adults, Peds, and all records
+#'   with the following columns:
+#'
+#'   `measure`: The name of the measure being calculated.
+#'   `pop`: Population type (Adults, Peds, All).
+#'   `numerator`: Count of EMS responses originating from a 911 request for
+#'   patients with hypoxia during which oxygen is administered.
+#'   `denominator`: Total count of incidents.
+#'   `prop`: Proportion of EMS responses originating from a 911 request for
+#'   patients with hypoxia during which oxygen is administered.
+#'   `prop_label`: Proportion formatted as a percentage with a
+#'   specified number of decimal places.
 #'
 #' @author Nicolas Foss, Ed.D., MS
 #'

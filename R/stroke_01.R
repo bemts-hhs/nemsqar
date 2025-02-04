@@ -37,11 +37,17 @@
 #'   further customization of results.
 #'
 #' @return A tibble summarizing results for the total population with the
-#'   following columns: `pop`: Population type (All). `numerator`: Count of
-#'   incidents where beta-agonist medications were administered. `denominator`:
-#'   Total count of incidents. `prop`: Proportion of incidents involving
-#'   beta-agonist medications. `prop_label`: Proportion formatted as a
-#'   percentage with a specified number of decimal places.
+#'   following columns:
+#'
+#'   `measure`: The name of the measure being calculated.
+#'   `pop`: Population type (All).
+#'   `numerator`: Count of incidents where beta-agonist medications were
+#'   administered.
+#'   `denominator`:
+#'   Total count of incidents.
+#'   `prop`: Proportion of incidents involving beta-agonist medications.
+#'   `prop_label`: Proportion formatted as a percentage with a specified number
+#'   of decimal places.
 #'
 #' @author Nicolas Foss, Ed.D., MS
 #'

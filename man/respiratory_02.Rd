@@ -68,8 +68,18 @@ restrictions.}
 \item{...}{arguments passed to \code{dplyr::summarize()}.}
 }
 \value{
-Returns a tibble summarizing the overall and age-grouped
-respiratory-02 metrics, formatted for ease of interpretation.
+A tibble summarizing results for the Adults, Peds, and all records
+with the following columns:
+
+\code{measure}: The name of the measure being calculated.
+\code{pop}: Population type (Adults, Peds, All).
+\code{numerator}: Count of EMS responses originating from a 911 request for
+patients with hypoxia during which oxygen is administered.
+\code{denominator}: Total count of incidents.
+\code{prop}: Proportion of EMS responses originating from a 911 request for
+patients with hypoxia during which oxygen is administered.
+\code{prop_label}: Proportion formatted as a percentage with a
+specified number of decimal places.
 }
 \description{
 The \code{respiratory_02} function calculates metrics for pediatric and adult

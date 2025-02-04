@@ -71,12 +71,15 @@
 #' @return A tibble summarizing results for three age groups (< 10 yrs, 10–65
 #'   yrs, and >= 65 yrs) with the following columns:
 #'
-#'   `pop`: Population type (< 10 yrs, 10–65 yrs, >= 65 yrs). `numerator`: Count
-#'   of incidents where the trauma hospital was a verified trauma center levels
-#'   1 through 5. `denominator`: Total count of incidents. `prop`: Proportion of
-#'   incidents where the trauma hospital was a verified trauma center levels 1
-#'   through 5. `prop_label`: Proportion formatted as a percentage with a
-#'   specified number of decimal places.
+#'   `measure`: The name of the measure being calculated.
+#'   `pop`: Population type (< 10 yrs, 10–65 yrs, >= 65 yrs).
+#'   `numerator`: Count of incidents where the trauma hospital was a verified
+#'   trauma center levels 1 through 5.
+#'   `denominator`: Total count of incidents.
+#'   `prop`: Proportion of incidents where the trauma hospital was a verified
+#'   trauma center levels 1 through 5.
+#'   `prop_label`: Proportion formatted as a percentage with a specified number
+#'   of decimal places.
 #'
 #' @author Nicolas Foss, Ed.D., MS
 #'

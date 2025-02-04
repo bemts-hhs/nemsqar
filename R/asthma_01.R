@@ -42,9 +42,13 @@
 #' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
 #' @return A data.frame summarizing results for three population groups (All,
-#'   Adults, and Peds) with the following columns: `pop`: Population type (All,
-#'   Adults, or Peds). `numerator`: Count of incidents where beta-agonist
-#'   medications were administered. `denominator`: Total count of incidents.
+#'   Adults, and Peds) with the following columns:
+#'   `measure`: The name of the measure being calculated.
+#'   `pop`: Population type (All,
+#'   Adults, or Peds).
+#'   `numerator`: Count of incidents where beta-agonist
+#'   medications were administered.
+#'   `denominator`: Total count of incidents.
 #'   `prop`: Proportion of incidents involving beta-agonist medications.
 #'   `prop_label`: Proportion formatted as a percentage with a specified number
 #'   of decimal places.

@@ -38,8 +38,20 @@
 #' @param evitals_14_col Column name for the second vital sign measurement.
 #' @param ... arguments passed to `dplyr::summarize()`.
 #'
-#' @return Returns a data frame summarizing the proportion of cases with
-#'   complete vital sign data, divided by population
+#' @return A tibble summarizing results for the Adults, Peds, and all records
+#'   with the following columns:
+#'
+#'   `measure`: The name of the measure being calculated.
+#'   `pop`: Population type (Adults, Peds, All).
+#'   `numerator`: Count of EMS responses originating from a 911 request for
+#'   patients with primary or secondary impression of respiratory distress who
+#'   had a respiratory assessment.
+#'   `denominator`: Total count of incidents.
+#'   `prop`: Proportion of EMS responses originating from a 911 request for
+#'   patients with primary or secondary impression of respiratory distress who
+#'   had a respiratory assessment.
+#'   `prop_label`: Proportion formatted as a percentage with a specified number
+#'   of decimal places.
 #'
 #' @author Nicolas Foss, Ed.D., MS
 #'

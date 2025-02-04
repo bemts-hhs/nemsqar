@@ -70,7 +70,8 @@ unclear).}
 \item{eprocedures_01_col}{Column name for procedure times or other related
 data.}
 
-\item{eprocedures_02_col}{Column name for additional procedure data.}
+\item{eprocedures_02_col}{Column name for whether or not the procedure was
+performed prior to EMS care being provided.}
 
 \item{eprocedures_03_col}{Column name for procedure codes.}
 
@@ -139,39 +140,6 @@ airway_18_population(df = NULL,
          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
          evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`
          )
-
-# You can also pass a data.frame that has all the fields
-# necessary to calculate the measure, and `airway_18_population` will
-# take care of any one-to-many or many-to-many relationships for you
-
-# Load the data.frame from the package
-data("nemsqar_airway_18_df")
-
-# Run the function
-
-airway_18_population(df = nemsqar_airway_18_df,
-         patient_scene_table = NULL,
-         procedures_table = NULL,
-         vitals_table = NULL,
-         airway_table = NULL,
-         response_table = NULL,
-         erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
-         incident_date_col = `Incident Date`,
-         patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
-         epatient_15_col = `Patient Age (ePatient.15)`,
-         epatient_16_col = `Patient Age Units (ePatient.16)`,
-         eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
-         eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
-         eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
-         eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
-         eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
-         eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
-         eairway_02_col = `Airway Device Placement Confirmation Date Time (eAirway.02)`,
-         eairway_04_col = `Airway Device Placement Confirmed Method List (eAirway.04)`,
-         evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
-         evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`
-         )
-
 }
 
 }

@@ -52,11 +52,16 @@ text.}
 }
 \value{
 A tibble summarizing results for the Adults, Peds, and all records
-with the following columns: \code{pop}: Population type (Adults, Peds, All).
+with the following columns:
+
+\code{measure}: The name of the measure being calculated.
+\code{pop}: Population type (Adults, Peds, All).
 \code{numerator}: Count of 911 responses where "lights and sirens" were not used
-in an EMS dataset. \code{denominator}: Total count of incidents. \code{prop}:
-Proportion of 911 responses where "lights and sirens" were not used in an
-EMS dataset. \code{prop_label}: Proportion formatted as a percentage with a
+in an EMS dataset.
+\code{denominator}: Total count of incidents.
+\code{prop}: Proportion of 911 responses where "lights and sirens" were not used
+in an EMS dataset.
+\code{prop_label}: Proportion formatted as a percentage with a
 specified number of decimal places.
 }
 \description{

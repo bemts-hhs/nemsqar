@@ -36,13 +36,16 @@
 #'   date/time
 #' @param evitals_12_col Numeric column containing pulse oximetry values.
 #' @param eprocedures_01_col Date-time or POSIXct column for procedures
-#' @param eprocedures_02_col Column that indicates procedure prior to arrival.
+#' @param eprocedures_02_col Column name for whether or not the procedure was
+#'   performed prior to EMS care being provided.
 #' @param eprocedures_03_col Column containing procedure codes with or without
 #'   procedure names.
 #' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
 #' @return A data.frame summarizing results for three population groups (All,
 #' Adults, and Peds) with the following columns:
+#'
+#' `measure`: The name of the measure being calculated.
 #' `pop`: Population type (All, Adults, or Peds).
 #' `numerator`: Count of incidents where beta-agonist medications were
 #' administered.

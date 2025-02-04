@@ -9,7 +9,7 @@
 #' nonsensical, which is expected since this data is only intended to
 #' demonstrate the expected structure of input data.
 #'
-#' @format A tibble with 1,000 rows and 5 variables:
+#' @format A tibble with 10,000 rows and 5 variables:
 #' \describe{
 #'   \item{Incident Patient Care Report Number - PCR (eRecord.01)}{Character. Unique identifier for the patient care report.}
 #'   \item{Incident Date}{Date. The date of the EMS incident.}

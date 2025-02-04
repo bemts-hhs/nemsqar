@@ -6,7 +6,7 @@
 \title{Synthetic eVitals Data for NEMSIS from the National Emergency Medical Services
 Information System (NEMSIS)}
 \format{
-A tibble with 1,000 rows and 19 variables:
+A tibble with 10,000 rows and 19 variables:
 \describe{
 \item{Incident Patient Care Report Number - PCR (eRecord.01)}{Unique incident identifier (character).}
 \item{Incident Date}{Date of the EMS incident (Date).}

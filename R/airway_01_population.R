@@ -38,7 +38,8 @@
 #'   values
 #' @param evitals_12_col Numeric column containing pulse oximetry values.
 #' @param eprocedures_01_col Date-time or POSIXct column for procedures
-#' @param eprocedures_02_col Column that indicates procedure prior to arrival.
+#' @param eprocedures_02_col Column name for whether or not the procedure was
+#'   performed prior to EMS care being provided.
 #' @param eprocedures_03_col Column containing procedure codes with or without
 #'   procedure names.
 #' @param eprocedures_05_col Column containing a count for how many times

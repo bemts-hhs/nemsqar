@@ -69,9 +69,14 @@ a list column or string with comma-separated values.}
 }
 \value{
 A tibble summarizing results for three population groups (All,
-Adults, and Peds) with the following columns: \code{pop}: Population type (All,
-Adults, or Peds). \code{numerator}: Count of incidents where beta-agonist
-medications were administered. \code{denominator}: Total count of incidents.
+Adults, and Peds) with the following columns:
+
+\code{measure}: The name of the measure being calculated.
+\code{pop}: Population type (All,
+Adults, or Peds).
+\code{numerator}: Count of incidents where beta-agonist
+medications were administered.
+\code{denominator}: Total count of incidents.
 \code{prop}: Proportion of incidents involving beta-agonist medications.
 \code{prop_label}: Proportion formatted as a percentage with a specified number
 of decimal places.

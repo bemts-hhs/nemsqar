@@ -1,14 +1,22 @@
 # Function should correctly classify airway cases
 testthat::test_that("airway_01_population correctly identifies intubation cases", {
   # Sample synthetic test data
-  data("nemsqar_airway_01_df", package = "nemsqar")
+  data("nemsqar_patient_scene_table", package = "nemsqar")
+  data("nemsqar_arrest_table", package = "nemsqar")
+  data("nemsqar_response_table", package = "nemsqar")
+  data("nemsqar_vitals_table", package = "nemsqar")
+  data("nemsqar_procedures_table", package = "nemsqar")
 
-  testthat::expect_error(airway_01_population(nemsqar_airway_01_df), "arguments is missing")
+  testthat::expect_error(airway_01_population(patient_scene_table = nemsqar_patient_scene_table), "arguments is missing")
 
-  result <- nemsqar_airway_01_df |>
-    airway_01_population(erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
-                         incident_date_col = `Incident Date`,
-                         patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+  result <- airway_01_population(
+                         patient_scene_table = nemsqar_patient_scene_table,
+                         arrest_table = nemsqar_arrest_table,
+                         response_table = nemsqar_response_table,
+                         vitals_table = nemsqar_vitals_table,
+                         procedures_table = nemsqar_procedures_table,
+                         erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+                         incident_date_col = `Incident Date`,patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
                          epatient_15_col = `Patient Age (ePatient.15)`,
                          epatient_16_col = `Patient Age Units (ePatient.16)`,
                          earrest_01_col = `Cardiac Arrest During EMS Event With Code (eArrest.01)`,
@@ -31,14 +39,21 @@ testthat::test_that("airway_01_population correctly identifies intubation cases"
 # Function should handle missing values without errors
 testthat::test_that("airway_01_population handles missing values gracefully", {
   # Sample synthetic test data
-  data("nemsqar_airway_01_df", package = "nemsqar")
+  data("nemsqar_patient_scene_table", package = "nemsqar")
+  data("nemsqar_arrest_table", package = "nemsqar")
+  data("nemsqar_response_table", package = "nemsqar")
+  data("nemsqar_vitals_table", package = "nemsqar")
+  data("nemsqar_procedures_table", package = "nemsqar")
 
-  missing_data <- nemsqar_airway_01_df
+  missing_data <- nemsqar_procedures_table
   missing_data$`Procedure Performed Description And Code (eProcedures.03)` <- NA  # Set all to NA
-  result <- airway_01_population(missing_data,
+  result <- airway_01_population(patient_scene_table = nemsqar_patient_scene_table,
+                                 arrest_table = nemsqar_arrest_table,
+                                 response_table = nemsqar_response_table,
+                                 vitals_table = nemsqar_vitals_table,
+                                 procedures_table = missing_data,
                                  erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
-                                 incident_date_col = `Incident Date`,
-                                 patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+                                 incident_date_col = `Incident Date`,patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
                                  epatient_15_col = `Patient Age (ePatient.15)`,
                                  epatient_16_col = `Patient Age Units (ePatient.16)`,
                                  earrest_01_col = `Cardiac Arrest During EMS Event With Code (eArrest.01)`,
@@ -52,19 +67,28 @@ testthat::test_that("airway_01_population handles missing values gracefully", {
                                  eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
                                  eprocedures_06_col = `Procedure Successful (eProcedures.06)`
                                  )
+
   testthat::expect_type(result, "list")
   testthat::expect_true(nrow(result$initial_population) == 0)
+
 })
 
 # Function should return expected types and structure
 testthat::test_that("airway_01_population returns expected structure", {
   # Sample synthetic test data
-  data("nemsqar_airway_01_df", package = "nemsqar")
+  data("nemsqar_patient_scene_table", package = "nemsqar")
+  data("nemsqar_arrest_table", package = "nemsqar")
+  data("nemsqar_response_table", package = "nemsqar")
+  data("nemsqar_vitals_table", package = "nemsqar")
+  data("nemsqar_procedures_table", package = "nemsqar")
 
-  result <- airway_01_population(nemsqar_airway_01_df,
+  result <- airway_01_population(patient_scene_table = nemsqar_patient_scene_table,
+                                 arrest_table = nemsqar_arrest_table,
+                                 response_table = nemsqar_response_table,
+                                 vitals_table = nemsqar_vitals_table,
+                                 procedures_table = nemsqar_procedures_table,
                                  erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
-                                 incident_date_col = `Incident Date`,
-                                 patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+                                 incident_date_col = `Incident Date`,patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
                                  epatient_15_col = `Patient Age (ePatient.15)`,
                                  epatient_16_col = `Patient Age Units (ePatient.16)`,
                                  earrest_01_col = `Cardiac Arrest During EMS Event With Code (eArrest.01)`,
@@ -86,49 +110,49 @@ testthat::test_that("airway_01_population returns expected structure", {
   testthat::expect_equal(result$filter_process |>
                            dplyr::filter(filter == "Total procedures in dataset") |>
                            dplyr::pull(count),
-                         nrow(nemsqar_airway_01_df)
+                         nrow(nemsqar_patient_scene_table)
                          )
 })
 
 # Function should correctly handle unexpected procedure codes
 testthat::test_that("airway_01_population filters unexpected codes", {
   # Sample synthetic test data
-  data("nemsqar_airway_01_df", package = "nemsqar")
+  data("nemsqar_patient_scene_table", package = "nemsqar")
+  data("nemsqar_arrest_table", package = "nemsqar")
+  data("nemsqar_response_table", package = "nemsqar")
+  data("nemsqar_vitals_table", package = "nemsqar")
+  data("nemsqar_procedures_table", package = "nemsqar")
 
-  unexpected_data <- nemsqar_airway_01_df
+  unexpected_data <- nemsqar_vitals_table
   unexpected_data$`Vitals Signs Taken Date Time (eVitals.01)` <- 9999  # Invalid values
-  testthat::expect_error(airway_01_population(unexpected_data,
-                                 erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
-                                 incident_date_col = `Incident Date`,
-                                 patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
-                                 epatient_15_col = `Patient Age (ePatient.15)`,
-                                 epatient_16_col = `Patient Age Units (ePatient.16)`,
-                                 earrest_01_col = `Cardiac Arrest During EMS Event With Code (eArrest.01)`,
-                                 eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
-                                 evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
-                                 evitals_06_col = `Vitals Systolic Blood Pressure SBP (eVitals.06)`,
-                                 evitals_12_col = `Vitals Pulse Oximetry (eVitals.12)`,
-                                 eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
-                                 eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
-                                 eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
-                                 eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
-                                 eprocedures_06_col = `Procedure Successful (eProcedures.06)`
-                                 )
+  testthat::expect_error(airway_01_population(patient_scene_table = nemsqar_patient_scene_table,
+                                              arrest_table = nemsqar_arrest_table,
+                                              response_table = nemsqar_response_table,
+                                              vitals_table = unexpected_data,
+                                              procedures_table = nemsqar_procedures_table,
+                                              erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+                                              incident_date_col = `Incident Date`,patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+                                              epatient_15_col = `Patient Age (ePatient.15)`,
+                                              epatient_16_col = `Patient Age Units (ePatient.16)`,
+                                              earrest_01_col = `Cardiac Arrest During EMS Event With Code (eArrest.01)`,
+                                              eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+                                              evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+                                              evitals_06_col = `Vitals Systolic Blood Pressure SBP (eVitals.06)`,
+                                              evitals_12_col = `Vitals Pulse Oximetry (eVitals.12)`,
+                                              eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+                                              eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+                                              eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+                                              eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
+                                              eprocedures_06_col = `Procedure Successful (eProcedures.06)`
+                                              )
                          )
 
 })
 
 # Function should handle empty data without error
 testthat::test_that("airway_01_population handles empty input", {
-  # Sample synthetic test data
-  valid_data <- tibble::tibble(
-    eProcedures_03 = c("4250", "1025", NA, "4250"),
-    eProcedures_02 = c("201", "202", "203", "201"),
-    eVitals_02 = c(120, 60, 90, NA),
-    eVitals_03 = c(80, 40, 70, NA),
-    ePatient_15 = c(25, 40, 16, 60),
-    patient_age_in_months = c(NA, NA, 180, NA)
-  )
+
+  valid_data <- tibble::tibble()
 
   empty_data <- valid_data[0, ]  # No rows
 
@@ -139,15 +163,23 @@ testthat::test_that("airway_01_population handles empty input", {
 # Function should handle non-numeric vitals
 testthat::test_that("airway_01_population handles non-numeric vital signs gracefully", {
   # Sample synthetic test data
-  data("nemsqar_airway_01_df", package = "nemsqar")
+  data("nemsqar_patient_scene_table", package = "nemsqar")
+  data("nemsqar_arrest_table", package = "nemsqar")
+  data("nemsqar_response_table", package = "nemsqar")
+  data("nemsqar_vitals_table", package = "nemsqar")
+  data("nemsqar_procedures_table", package = "nemsqar")
 
-  non_numeric_data <- nemsqar_airway_01_df
-  non_numeric_data$`Vitals Signs Taken Date Time (eVitals.01)` <- "high"
-  non_numeric_data$`Incident Date` <- "low"
-  testthat::expect_error(airway_01_population(non_numeric_data,
+  non_numeric_data1 <- nemsqar_vitals_table
+  non_numeric_data2 <- nemsqar_patient_scene_table
+  non_numeric_data1$`Vitals Signs Taken Date Time (eVitals.01)` <- "high"
+  non_numeric_data2$`Incident Date` <- "low"
+  testthat::expect_error(airway_01_population(patient_scene_table = non_numeric_data2,
+                                              arrest_table = nemsqar_arrest_table,
+                                              response_table = nemsqar_response_table,
+                                              vitals_table = non_numeric_data1,
+                                              procedures_table = nemsqar_procedures_table,
                                               erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
-                                              incident_date_col = `Incident Date`,
-                                              patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+                                              incident_date_col = `Incident Date`,patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
                                               epatient_15_col = `Patient Age (ePatient.15)`,
                                               epatient_16_col = `Patient Age Units (ePatient.16)`,
                                               earrest_01_col = `Cardiac Arrest During EMS Event With Code (eArrest.01)`,

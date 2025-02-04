@@ -7,7 +7,7 @@
 #' outputs may be nonsensical, which is expected since this data is only intended to demonstrate
 #' the expected structure of input data.
 #'
-#' @format A data frame with 1,000 rows and 28 variables:
+#' @format A data frame with 10,000 rows and 28 variables:
 #' \describe{
 #'   \item{Incident Patient Care Report Number - PCR (eRecord.01)}{Unique identifier for the incident report (character).}
 #'   \item{Incident Date}{Date of the incident (Date).}

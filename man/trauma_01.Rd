@@ -86,11 +86,13 @@ custom summarization.}
 A tibble summarizing results for three population groups (All,
 Adults, and Peds) with the following columns:
 
-\code{pop}: Population type (All, Adults, Peds). \code{numerator}: Count of incidents
-where a pain scale was administered. \code{denominator}: Total count of
-incidents. \code{prop}: Proportion of incidents where a pain scale was
-administered. \code{prop_label}: Proportion formatted as a percentage with a
-specified number of decimal places.
+\code{measure}: The name of the measure being calculated.
+\code{pop}: Population type (All, Adults, Peds).
+\code{numerator}: Count of incidents where a pain scale was administered.
+\code{denominator}: Total count of incidents.
+\code{prop}: Proportion of incidents where a pain scale was administered.
+\code{prop_label}: Proportion formatted as a percentage with a specified number
+of decimal places.
 }
 \description{
 This function processes EMS data to calculate the Trauma-01 performance

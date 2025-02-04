@@ -69,8 +69,20 @@ to respiratory distress.}
 \item{...}{arguments passed to \code{dplyr::summarize()}.}
 }
 \value{
-Returns a data frame summarizing the proportion of cases with
-complete vital sign data, divided by population
+A tibble summarizing results for the Adults, Peds, and all records
+with the following columns:
+
+\code{measure}: The name of the measure being calculated.
+\code{pop}: Population type (Adults, Peds, All).
+\code{numerator}: Count of EMS responses originating from a 911 request for
+patients with primary or secondary impression of respiratory distress who
+had a respiratory assessment.
+\code{denominator}: Total count of incidents.
+\code{prop}: Proportion of EMS responses originating from a 911 request for
+patients with primary or secondary impression of respiratory distress who
+had a respiratory assessment.
+\code{prop_label}: Proportion formatted as a percentage with a specified number
+of decimal places.
 }
 \description{
 The \code{respiratory_01} function filters and analyzes data related to emergency

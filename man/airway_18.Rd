@@ -69,7 +69,8 @@ unclear).}
 \item{eprocedures_01_col}{Column name for procedure times or other related
 data.}
 
-\item{eprocedures_02_col}{Column name for additional procedure data.}
+\item{eprocedures_02_col}{Column name for whether or not the procedure was
+performed prior to EMS care being provided.}
 
 \item{eprocedures_03_col}{Column name for procedure codes.}
 
@@ -92,6 +93,8 @@ Default is \code{NULL}.}
 \value{
 A tibble summarizing results for Adults and Peds with the following
 columns:
+
+\code{measure}: The name of the measure being calculated.
 \code{pop}: Population type (Adults, Peds).
 \code{numerator}: Count of incidents where waveform capnography is used for
 tube placement confirmation on the last successful invasive airway
