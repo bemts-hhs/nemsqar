@@ -35,9 +35,11 @@
 #' @param epatient_16_col Column representing the patient's age unit ("Years",
 #'   "Months", "Days", "Hours", or "Minute").
 #' @param eresponse_05_col Column that contains eResponse.05.
-#' @param esituation_11_col Column that contains eSituation.11.
-#' @param esituation_12_col Column that contains all eSituation.12 values as a
-#'   single comma-separated list.
+#' @param esituation_11_col Column that contains eSituation.11 provider primary
+#' impression data.
+#' @param esituation_12_col Column that contains all eSituation.12 values as
+#'   (possible a single comma-separated list), provider secondary impression
+#'   data.
 #' @param emedications_03_col Column that contains all eMedications.03 values as
 #'   a single comma-separated list.
 #'
@@ -163,7 +165,7 @@ asthma_01_population <- function(df = NULL,
     total = 10,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   # utilize applicable tables to analyze the data for the measure
