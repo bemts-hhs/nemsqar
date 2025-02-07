@@ -85,6 +85,44 @@ distress, and certain medications were administered. This function segments
 the data by age into adult and pediatric populations, computing the
 proportion of cases that received beta-agonist treatment.
 }
+\examples{
+
+\dontrun{
+
+# If you are sourcing your data from a SQL database connection
+# or if you have your data in several different tables,
+# you can pass table inputs versus a single data.frame or tibble
+
+# Get the applicable tables from `nemsqar`
+data("nemsqar_medications_table")
+data("nemsqar_patient_scene_table")
+data("nemsqar_response_table")
+data("nemsqar_situation_table")
+
+asthma_01_population(
+
+patient_scene_table = nemsqar_patient_scene_table,
+response_table = nemsqar_response_table,
+situation_table = nemsqar_situation_table,
+medications_table = nemsqar_medications_table,
+erecord_01_col = `Incident Patient Care Report Number - PCR`,
+incident_date_col = `Incident Date`,
+patient_dob_col = `Patient Date Of Birth`,
+epatient_15_col = `Patient Age`,
+epatient_16_col = `Patient Age Units`,
+eresponse_05_col = `Response Type Of Service Requested With Code`,
+esituation_11_col =
+`Situation Provider Primary Impression Code And Description`,
+esituation_12_col =
+`Situation Provider Secondary Impression Description And Code`,
+emedications_03_col =
+`Medication Given or Administered Description And RXCUI Code`
+
+)
+
+}
+
+}
 \author{
 Nicolas Foss, Ed.D., MS
 }

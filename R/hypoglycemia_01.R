@@ -40,7 +40,7 @@
 #' @param esituation_12_col Column for secondary impression fields, containing
 #'   ICD-10 codes.
 #' @param evitals_18_col Column for blood glucose levels.
-#' @param evitals_23_cl Column for Glasgow Coma Scale (GCS) scores.
+#' @param evitals_23_col Column for Glasgow Coma Scale (GCS) scores.
 #' @param evitals_26_col Column for AVPU alertness levels.
 #' @param emedications_03_col Column for administered medications.
 #' @param eprocedures_03_col Column for procedures performed.
@@ -81,7 +81,7 @@ hypoglycemia_01 <- function(df = NULL,
                             esituation_11_col,
                             esituation_12_col,
                             evitals_18_col,
-                            evitals_23_cl,
+                            evitals_23_col,
                             evitals_26_col,
                             emedications_03_col,
                             eprocedures_03_col,
@@ -121,14 +121,14 @@ hypoglycemia_01 <- function(df = NULL,
                            procedures_table = procedures_table,
                            erecord_01_col = {{ erecord_01_col }},
                            incident_date_col = {{ incident_date_col }},
-                           patient_dob_col = {{ patient_dob_col}},
+                           patient_dob_col = {{ patient_dob_col }},
                            epatient_15_col = {{ epatient_15_col}},
                            epatient_16_col = {{ epatient_16_col }},
                            eresponse_05_col = {{ eresponse_05_col }},
                            esituation_11_col = {{ esituation_11_col }},
                            esituation_12_col = {{ esituation_12_col }},
                            evitals_18_col = {{ evitals_18_col }},
-                           evitals_23_cl = {{ evitals_23_cl }},
+                           evitals_23_col = {{ evitals_23_col }},
                            evitals_26_col = {{ evitals_26_col }},
                            emedications_03_col = {{ emedications_03_col }},
                            eprocedures_03_col = {{ eprocedures_03_col }}
@@ -159,12 +159,12 @@ hypoglycemia_01 <- function(df = NULL,
     if (run_time_secs >= 60) {
 
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
 
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 
@@ -201,14 +201,14 @@ hypoglycemia_01 <- function(df = NULL,
                                                   df = df,
                                                   erecord_01_col = {{ erecord_01_col }},
                                                   incident_date_col = {{ incident_date_col }},
-                                                  patient_dob_col = {{ patient_dob_col}},
+                                                  patient_dob_col = {{ patient_dob_col }},
                                                   epatient_15_col = {{ epatient_15_col}},
                                                   epatient_16_col = {{ epatient_16_col }},
                                                   eresponse_05_col = {{ eresponse_05_col }},
                                                   esituation_11_col = {{ esituation_11_col }},
                                                   esituation_12_col = {{ esituation_12_col }},
                                                   evitals_18_col = {{ evitals_18_col }},
-                                                  evitals_23_cl = {{ evitals_23_cl }},
+                                                  evitals_23_col = {{ evitals_23_col }},
                                                   evitals_26_col = {{ evitals_26_col }},
                                                   emedications_03_col = {{ emedications_03_col }},
                                                   eprocedures_03_col = {{ eprocedures_03_col }}
@@ -239,12 +239,12 @@ hypoglycemia_01 <- function(df = NULL,
     if (run_time_secs >= 60) {
 
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
 
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 

@@ -45,7 +45,7 @@
 #' @param esituation_12_col Column for secondary impression fields, containing
 #'   ICD-10 codes.
 #' @param evitals_18_col Column for blood glucose levels.
-#' @param evitals_23_cl Column for Glasgow Coma Scale (GCS) scores.
+#' @param evitals_23_col Column for Glasgow Coma Scale (GCS) scores.
 #' @param evitals_26_col Column for AVPU alertness levels.
 #' @param emedications_03_col Column for administered medications.
 #' @param eprocedures_03_col Column for procedures performed.
@@ -75,7 +75,7 @@ hypoglycemia_01_population <- function(df = NULL,
                             esituation_11_col,
                             esituation_12_col,
                             evitals_18_col,
-                            evitals_23_cl,
+                            evitals_23_col,
                             evitals_26_col,
                             emedications_03_col,
                             eprocedures_03_col
@@ -137,7 +137,7 @@ hypoglycemia_01_population <- function(df = NULL,
       missing(esituation_11_col),
       missing(esituation_12_col),
       missing(evitals_18_col),
-      missing(evitals_23_cl),
+      missing(evitals_23_col),
       missing(evitals_26_col),
       missing(emedications_03_col),
       missing(eprocedures_03_col)
@@ -201,7 +201,7 @@ hypoglycemia_01_population <- function(df = NULL,
     total = 17,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   # utilize applicable tables to analyze the data for the measure
@@ -362,8 +362,8 @@ hypoglycemia_01_population <- function(df = NULL,
       x = {{ esituation_11_col }},
       ignore.case = T
     )) |>
-    distinct({{ erecord_01_col }}) |>
-    pull({{ erecord_01_col }})
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
 
   # progress update, these will be repeated throughout the script
   cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
@@ -397,9 +397,9 @@ hypoglycemia_01_population <- function(df = NULL,
 
   # GCS
   GCS_data <- vitals_table |>
-    dplyr::select({{ erecord_01_col }}, {{  evitals_23_cl  }}) |>
+    dplyr::select({{ erecord_01_col }}, {{  evitals_23_col  }}) |>
     dplyr::distinct() |>
-    dplyr::filter({{ evitals_23_cl }} < 15) |>
+    dplyr::filter({{ evitals_23_col }} < 15) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
@@ -704,7 +704,7 @@ hypoglycemia_01_population <- function(df = NULL,
                      {{  esituation_11_col  }},
                      {{  esituation_12_col }},
                      {{  evitals_18_col  }},
-                     {{  evitals_23_cl  }},
+                     {{  evitals_23_col  }},
                      {{  evitals_26_col  }},
                      {{  emedications_03_col  }},
                      {{  eprocedures_03_col  }}
@@ -748,7 +748,7 @@ hypoglycemia_01_population <- function(df = NULL,
                      {{  esituation_11_col  }},
                      {{  esituation_12_col }},
                      {{  evitals_18_col  }},
-                     {{  evitals_23_cl  }},
+                     {{  evitals_23_col  }},
                      {{  evitals_26_col  }},
                      {{  emedications_03_col  }},
                      {{  eprocedures_03_col  }}
@@ -825,9 +825,9 @@ hypoglycemia_01_population <- function(df = NULL,
 
   # GCS
   GCS_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{  evitals_23_cl  }}) |>
+    dplyr::select({{ erecord_01_col }}, {{  evitals_23_col  }}) |>
     dplyr::distinct() |>
-    dplyr::filter({{ evitals_23_cl }} < 15) |>
+    dplyr::filter({{ evitals_23_col }} < 15) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 

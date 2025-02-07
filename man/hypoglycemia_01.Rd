@@ -21,7 +21,7 @@ hypoglycemia_01(
   esituation_11_col,
   esituation_12_col,
   evitals_18_col,
-  evitals_23_cl,
+  evitals_23_col,
   evitals_26_col,
   emedications_03_col,
   eprocedures_03_col,
@@ -79,7 +79,7 @@ ICD-10 codes.}
 
 \item{evitals_18_col}{Column for blood glucose levels.}
 
-\item{evitals_23_cl}{Column for Glasgow Coma Scale (GCS) scores.}
+\item{evitals_23_col}{Column for Glasgow Coma Scale (GCS) scores.}
 
 \item{evitals_26_col}{Column for AVPU alertness levels.}
 

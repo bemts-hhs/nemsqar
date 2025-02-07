@@ -52,7 +52,7 @@
 #'
 #' @examples
 #'
-#'\dontrun{
+#' \dontrun{
 #'
 #' # If you are sourcing your data from a SQL database connection
 #' # or if you have your data in several different tables,
