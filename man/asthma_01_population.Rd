@@ -57,10 +57,12 @@ of unit.}
 
 \item{eresponse_05_col}{Column that contains eResponse.05.}
 
-\item{esituation_11_col}{Column that contains eSituation.11.}
+\item{esituation_11_col}{Column that contains eSituation.11 provider primary
+impression data.}
 
-\item{esituation_12_col}{Column that contains all eSituation.12 values as a
-single comma-separated list.}
+\item{esituation_12_col}{Column that contains all eSituation.12 values as
+(possible a single comma-separated list), provider secondary impression
+data.}
 
 \item{emedications_03_col}{Column that contains all eMedications.03 values as
 a single comma-separated list.}

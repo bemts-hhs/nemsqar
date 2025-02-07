@@ -235,7 +235,7 @@ airway_05_population <- function(df = NULL,
                     -{{ eprocedures_03_col }},
                     -{{ eresponse_05_col }}
                     ) |>
-      dplyr::distinct()
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
     # response
     response_table <- df |>
@@ -284,7 +284,7 @@ airway_05_population <- function(df = NULL,
     # get distinct tables when passed to table arguments
     # patient
     patient_scene_table <- patient_scene_table |>
-      dplyr::distinct()
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
     # response
     response_table <- response_table |>
@@ -380,8 +380,9 @@ airway_05_population <- function(df = NULL,
 
   cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
 
-  # Get first intubation procedure & time intervals for vitals
+  # Get intubation procedure & time intervals for vitals
   procedures_table |>
+    dplyr::filter(!is.na({{ eprocedures_03_col }})) |>
     dplyr::mutate(
       non_missing_procedure_time = !is.na({{ eprocedures_01_col }}), # Procedure date/time not null
       not_performed_prior = !grepl(pattern = "9923003|Yes", x = {{ eprocedures_02_col }}) | is.na({{ eprocedures_02_col }}), # Procedure PTA is not Yes
@@ -500,7 +501,9 @@ airway_05_population <- function(df = NULL,
   # get arrest table with needed exclusion classifications
   arrest_table_filter <- arrest_table |>
     dplyr::mutate(exclude_pta_ca = !grepl(pattern = "3001003|Yes, Prior",
-                                          x = {{ earrest_01_col }}, ignore.case = TRUE)) |>
+                                          x = {{ earrest_01_col }}, ignore.case = TRUE) |
+                    is.na({{ earrest_01_col }})
+                  ) |>
     dplyr::filter(exclude_pta_ca) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
@@ -518,54 +521,78 @@ airway_05_population <- function(df = NULL,
 
   cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
 
+  ###_____________________________________________________________________________
   # Numerator
-  suppressWarnings( # warnings can pop up related to left join relationships
+  # utilized the procedures table with ranked, non-missing eprocedures.03
+  # which will return mostly non-missing eprocedures.01
+  ###_____________________________________________________________________________
+
+  # get record IDs for the vitals table
+  procedures_ID <- procedures_ordered |>
+    dplyr::filter(target_procedures) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  # get applicable vitals
+  # only those that match patients in the
+  # procedures table with the target procedures
+  vitals_table_filter <- vitals_table |>
+    dplyr::filter(!is.na({{ evitals_12_col }}),
+                  {{ erecord_01_col }} %in% procedures_ID
+                  )
+
+  ###_____________________________________________________________________________
+  # this is the initial table for calculating
+  # setup process
+  ###_____________________________________________________________________________
+
+    suppressWarnings( # warnings can pop up related to left join relationships
 
   procedures_ordered |>
-    dplyr::left_join(vitals_table, by = dplyr::join_by({{ erecord_01_col }}), relationship = "many-to-many") |>
+    dplyr::filter(target_procedures) |>
+    dplyr::left_join(vitals_table_filter, by = dplyr::join_by({{ erecord_01_col }})) |>
     dplyr::mutate(within_range_before = do.call(lubridate::`%within%`, list({{ evitals_01_col }}, range_bounds_before))) |>
-    dplyr::mutate(
+    dplyr::summarize(
 
       # numerator vitals taken between 0 and 3 minutes before the intubation
       # with pulse oximetry >= 94
-      numerator = dplyr::if_else(
+      numerator = max(within_range_before & {{ evitals_12_col }} >= 94, na.rm = TRUE),
 
-          within_range_before & {{ evitals_12_col }} >= 94 , 1, 0
+      .by = c({{ erecord_01_col }}, {{ eprocedures_01_col }}, {{ eprocedures_03_col }})
 
-          ))) -> computing_population_dev
+
+          )) -> computing_population_dev
+
+    ###_____________________________________________________________________________
 
   cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
 
   # Get the final computing population containing all pertinent data
-  computing_population_num <- computing_population_dev |>
+  computing_population_dev <- computing_population_dev |>
 
     # deal with NA values in the numerator calculation
-    dplyr::mutate(numerator = dplyr::if_else(is.na(numerator), 0, numerator)) |>
+    dplyr::mutate(numerator = dplyr::if_else(is.na(numerator) | is.infinite(numerator), 0, numerator))
 
-    # summarize the numerators to remove the vitals data, and get the highest numerator value
-    # for each unique procedure record in the procedures table
-    dplyr::summarize(numerator = max(numerator),
-                     .by = c({{ erecord_01_col }},
-                             {{ eprocedures_01_col}},
-                             {{ eprocedures_02_col }},
-                             {{ eprocedures_03_col }},
-                             target_procedures,
-                             non_missing_procedure_time,
-                             not_performed_prior
-                             )
-                     )
-
-    cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
-
+  ###_____________________________________________________________________________
     # final join for the computing population
     # will have the same number of rows as the
     # initial procedures table if ran through dplyr::distinct()
-    computing_population <- suppressWarnings( # warnings can pop up related to left join relationships
+  ###_____________________________________________________________________________
 
-      computing_population_num |>
-      dplyr::left_join(patient_data, by = dplyr::join_by({{ erecord_01_col }}), relationship = "many-to-many")
+  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+
+  computing_population <- suppressWarnings( # warnings can pop up related to left join relationships
+
+    procedures_ordered |>
+      dplyr::left_join(computing_population_dev, by = dplyr::join_by({{ erecord_01_col }},
+                                                                     {{ eprocedures_01_col }},
+                                                                     {{ eprocedures_03_col }})
+      ) |>
+      dplyr::left_join(patient_data, by = dplyr::join_by({{ erecord_01_col }}))
 
     )
+
+    ###_____________________________________________________________________________
 
     cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
 
@@ -619,7 +646,7 @@ airway_05_population <- function(df = NULL,
       ),
       count = c(
         sum(procedures_ordered$target_procedures, na.rm = T),
-        sum(patient_data$call_911, na.rm = T),
+        length(call_911_data),
         sum(patient_data$exclude_pta_ca == FALSE, na.rm = T),
         sum(patient_data$exclude_newborns == FALSE, na.rm = T),
         sum(initial_population$numerator, na.rm = T),

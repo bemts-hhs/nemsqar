@@ -117,1164 +117,823 @@ airway_18_population <- function(df = NULL,
                       evitals_01_col,
                       evitals_16_col) {
 
-  # Ensure that not all table arguments AND the df argument are fulfilled
-  # User must pass either `df` or all table arguments, but not both
+    # Ensure that not all table arguments AND the df argument are fulfilled
+    # User must pass either `df` or all table arguments, but not both
 
-  if (
-    any(
-      !is.null(patient_scene_table),
-      !is.null(procedures_table),
-      !is.null(vitals_table),
-      !is.null(airway_table),
-      !is.null(response_table)
-    ) &&
-    !is.null(df)
-  ) {
-    cli::cli_abort("{.fn airway_18_population} requires either a {.cls data.frame} or {.cls tibble} passed to the {.var df} argument, or all table arguments to be fulfilled. Please choose one approach.")
-  }
-
-  # Ensure that df or all table arguments are fulfilled
-
-  if (
-    all(
-      is.null(patient_scene_table),
-      is.null(procedures_table),
-      is.null(vitals_table),
-      is.null(airway_table),
-      is.null(response_table)
-    ) &&
-    is.null(df)
-  ) {
-    cli::cli_abort("{.fn airway_18_population} requires either a {.cls data.frame} or {.cls tibble} passed to the {.var df} argument, or all table arguments to be fulfilled. Please choose one approach.")
-  }
-
-  # Ensure all *_col arguments are fulfilled
-
-  if (
-    any(
-      missing(erecord_01_col),
-      missing(incident_date_col),
-      missing(patient_dob_col),
-      missing(epatient_15_col),
-      missing(epatient_16_col),
-      missing(eresponse_05_col),
-      missing(eprocedures_01_col),
-      missing(eprocedures_02_col),
-      missing(eprocedures_03_col),
-      missing(eprocedures_05_col),
-      missing(eprocedures_06_col),
-      missing(eairway_02_col),
-      missing(eairway_04_col),
-      missing(evitals_01_col),
-      missing(evitals_16_col)
-    )
-  ) {
-    cli::cli_abort("One or more of the *_col arguments is missing. Please ensure you pass an unquoted column to each of the *_col arguments to run {.fn airway_18_population}.")
-  }
-
-    # 911 codes for eResponse.05
-  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
-
-  # endotracheal intubation attempts
-  endotracheal_intubation <- "673005|Indirect laryngoscopy \\(procedure\\)|49077009|Flexible fiberoptic laryngoscopy \\(procedure\\)|78121007|Direct laryngoscopy \\(procedure\\)|112798008|Insertion of endotracheal tube \\(procedure\\)|16883004|Endotracheal intubation, emergency procedure \\(procedure\\)|182682004|Emergency laryngeal intubation \\(procedure\\)|232674004|Orotracheal intubation \\(procedure\\)|232677006|Tracheal intubation using rigid bronchoscope \\(procedure\\)|232678001|Orotracheal fiberoptic intubation \\(procedure\\)|232679009|Nasotracheal intubation \\(procedure\\)|232682004|Nasotracheal fiberoptic intubation \\(procedure\\)|232680007|Nasal intubation awake \\(procedure\\)|241689008|Rapid sequence induction \\(procedure\\)|304341005|Awake intubation \\(procedure\\)|397892004|Retrograde intubation \\(procedure\\)|418613003|Tracheal intubation through a laryngeal mask airway \\(procedure\\)|429705000|Intubation, combitube \\(procedure\\)|424979004|Laryngeal mask airway insertion \\(procedure\\)|427753009|Insertion of esophageal tracheal double lumen supraglottic airway \\(procedure\\)|429161001|Insertion of endotracheal tube using laryngoscope \\(procedure\\)|450601000124103|Orotracheal intubation using bougie device \\(procedure\\)|450611000124|Insertion of Single Lumen Supraglottic Airway Device \\(procedure\\)|1141752008|Flexible video intubation laryngoscope \\(physical object\\)|285696003|Fiberoptic laryngoscope \\(physical object\\)|420311007|Flexible fiberoptic laryngoscope \\(physical object\\)|421100004|Rigid fiberoptic laryngoscope \\(physical object\\)|44738004|Laryngoscope device \\(physical object\\)|469919007|Flexible video laryngoscope \\(physical object\\)|700640001|Rigid intubation laryngoscope \\(physical object\\)|701054002|Flexible fiberoptic intubation laryngoscope \\(physical object\\)|706013009|Intubation laryngoscope \\(physical object\\)|734928009|Rigid non-bladed video intubation laryngoscope \\(physical object\\)|879788006|Channeled video intubation laryngoscope \\(physical object\\)"
-
-  # waveform ETCO2
-  waveform_etco2 <- "4004019|Waveform ETCO2"
-
-  # answer yes!
-  yes_code <- "9923003|Yes"
-
-  # minor values
-  minor_values <- "days|hours|minutes|months"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
-
-  # options for the progress bar
-  # a green dot for progress
-  # a white line for note done yet
-  options(cli.progress_bar_style = "dot")
-
-  options(cli.progress_bar_style = list(
-    complete = cli::col_green("\u25CF"),  # Black Circle
-    incomplete = cli::col_br_white("\u2500")  # Light Horizontal Line
-  ))
-
-  # Initialize the progress bar
-  progress_bar_population <- cli::cli_progress_bar(
-    "Running `airway_18_population()`",
-    total = 16,
-    type = "tasks",
-    clear = FALSE,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
-  )
-
-  # utilize applicable tables to analyze the data for the measure
-  if (
-    all(
-      !is.null(patient_scene_table),
-      !is.null(procedures_table),
-      !is.null(vitals_table),
-      !is.null(airway_table),
-      !is.null(response_table)
-    ) && is.null(df)
-
-  ) {
-
-    # Ensure all tables are of class `data.frame` or `tibble`
     if (
-
-      !all(
-      is.data.frame(patient_scene_table) || tibble::is_tibble(patient_scene_table),
-      is.data.frame(procedures_table) || tibble::is_tibble(procedures_table),
-      is.data.frame(vitals_table) || tibble::is_tibble(vitals_table),
-      is.data.frame(airway_table) || tibble::is_tibble(airway_table),
-      is.data.frame(response_table) || tibble::is_tibble(response_table)
-      )
-
+      any(
+        !is.null(patient_scene_table),
+        !is.null(procedures_table),
+        !is.null(vitals_table),
+        !is.null(airway_table),
+        !is.null(response_table)
+      ) &&
+      !is.null(df)
     ) {
-
-      cli::cli_abort(
-        "One or more of the tables passed to {.fn airway_18_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
-      )
-
+      cli::cli_abort("{.fn airway_18_population} requires either a {.cls data.frame} or {.cls tibble} passed to the {.var df} argument, or all table arguments to be fulfilled. Please choose one approach.")
     }
 
-    # Validate date columns if provided
+    # Ensure that df or all table arguments are fulfilled
+
     if (
       all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        is.null(patient_scene_table),
+        is.null(procedures_table),
+        is.null(vitals_table),
+        is.null(airway_table),
+        is.null(response_table)
+      ) &&
+      is.null(df)
+    ) {
+      cli::cli_abort("{.fn airway_18_population} requires either a {.cls data.frame} or {.cls tibble} passed to the {.var df} argument, or all table arguments to be fulfilled. Please choose one approach.")
+    }
+
+    # Ensure all *_col arguments are fulfilled
+
+    if (
+      any(
+        missing(erecord_01_col),
+        missing(incident_date_col),
+        missing(patient_dob_col),
+        missing(epatient_15_col),
+        missing(epatient_16_col),
+        missing(eresponse_05_col),
+        missing(eprocedures_01_col),
+        missing(eprocedures_02_col),
+        missing(eprocedures_03_col),
+        missing(eprocedures_05_col),
+        missing(eprocedures_06_col),
+        missing(eairway_02_col),
+        missing(eairway_04_col),
+        missing(evitals_01_col),
+        missing(evitals_16_col)
       )
     ) {
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_dob_col)
-
-      if (
-        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
-         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])) ||
-        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_dob)]]) &
-         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_dob)]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
-        )
-      }
+      cli::cli_abort("One or more of the *_col arguments is missing. Please ensure you pass an unquoted column to each of the *_col arguments to run {.fn airway_18_population}.")
     }
 
-    # Use quasiquotation on the vitals, airway, and procedures datetime fields
-    airway_datetime <- rlang::enquo(eairway_02_col)
-    vitals_datetime <- rlang::enquo(evitals_01_col)
-    procedures_datetime <- rlang::enquo(eprocedures_01_col)
+    # 911 codes for eResponse.05
+    codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
 
-    if(!rlang::quo_is_null(airway_datetime)) {
+    # endotracheal intubation attempts
+    endotracheal_intubation <- "673005|Indirect laryngoscopy|49077009|Flexible fiberoptic laryngoscopy|78121007|Direct laryngoscopy|112798008|Insertion of endotracheal tube|16883004|Endotracheal intubation, emergency procedure|182682004|Emergency laryngeal intubation|232674004|Orotracheal intubation|232677006|Tracheal intubation using rigid bronchoscope|232678001|Orotracheal fiberoptic intubation|232679009|Nasotracheal intubation|232682004|Nasotracheal fiberoptic intubation|232680007|Nasal intubation awake|241689008|Rapid sequence induction|304341005|Awake intubation|397892004|Retrograde intubation|418613003|Tracheal intubation through a laryngeal mask airway|429705000|Intubation, combitube|424979004|Laryngeal mask airway insertion|427753009|Insertion of esophageal tracheal double lumen supraglottic airway|429161001|Insertion of endotracheal tube using laryngoscope|450601000124103|Orotracheal intubation using bougie device|450611000124|Insertion of Single Lumen Supraglottic Airway Device|1141752008|Flexible video intubation laryngoscope |285696003|Fiberoptic laryngoscope |420311007|Flexible fiberoptic laryngoscope |421100004|Rigid fiberoptic laryngoscope |44738004|Laryngoscope device |469919007|Flexible video laryngoscope |700640001|Rigid intubation laryngoscope |701054002|Flexible fiberoptic intubation laryngoscope |706013009|Intubation laryngoscope |734928009|Rigid non-bladed video intubation laryngoscope |879788006|Channeled video intubation laryngoscope "
 
-  # Validate the datetime fields in the patient_scene_table
-  if ((!lubridate::is.Date(airway_table[[rlang::as_name(airway_datetime)]]) &
-       !lubridate::is.POSIXct(airway_table[[rlang::as_name(airway_datetime)]])) ||
-      (!lubridate::is.Date(vitals_table[[rlang::as_name(vitals_datetime)]]) &
-       !lubridate::is.POSIXct(vitals_table[[rlang::as_name(vitals_datetime)]])) ||
-      (!lubridate::is.Date(procedures_table[[rlang::as_name(procedures_datetime)]]) &
-       !lubridate::is.POSIXct(procedures_table[[rlang::as_name(procedures_datetime)]]))) {
+    # waveform ETCO2
+    waveform_etc02_codes <- "4004019|Waveform ETCO2"
 
-    cli::cli_abort(
-      "For the variables {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
+    # answer yes!
+    yes_code <- "9923003|Yes"
+
+    # minor values
+    minor_values <- "days|hours|minutes|months"
+
+    year_values <- "2516009|years"
+
+    day_values <- "days|2516001"
+
+    hour_values <- "hours|2516003"
+
+    minute_values <- "minutes|2516005"
+
+    month_values <- "months|2516007"
+
+    # options for the progress bar
+    # a green dot for progress
+    # a white line for note done yet
+    options(cli.progress_bar_style = "dot")
+
+    options(cli.progress_bar_style = list(
+      complete = cli::col_green("\u25CF"),  # Black Circle
+      incomplete = cli::col_br_white("\u2500")  # Light Horizontal Line
+    ))
+
+    # Initialize the progress bar
+    progress_bar_population <- cli::cli_progress_bar(
+      "Running `airway_18_population()`",
+      total = 13,
+      type = "tasks",
+      clear = FALSE,
+      format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
     )
 
-  }
+    # use quasiquotation to validate the
+    # airway placement confirmation method column
+    airway_confirmation_col <- rlang::enquo(eairway_04_col)
 
-  } else if(rlang::quo_is_null(airway_datetime)) {
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
 
-    # Validate the datetime fields in the patient_scene_table
-    if ((!lubridate::is.Date(vitals_table[[rlang::as_name(vitals_datetime)]]) &
-         !lubridate::is.POSIXct(vitals_table[[rlang::as_name(vitals_datetime)]])) ||
-        (!lubridate::is.Date(procedures_table[[rlang::as_name(procedures_datetime)]]) &
-         !lubridate::is.POSIXct(procedures_table[[rlang::as_name(procedures_datetime)]]))) {
+    ####### CREATE SEPARATE TABLES FROM DF IF TABLES ARE MISSING #######
 
-      cli::cli_abort(
-        "For the variables {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
-      )
-
-    }
-}
-
-  # Progress update example (repeated throughout the script as necessary)
-  cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
-
-  ###_____________________________________________________________________________
-  # fact table
-  # the user should ensure that variables beyond those supplied for calculations
-  # are distinct (i.e. one value or cell per patient)
-  ###_____________________________________________________________________________
-
-  if (
-    all(
-      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
-    )
-  ) {
-
-  final_data <- patient_scene_table |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
-    dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
-      time1 = {{ incident_date_col }},
-      time2 = {{ patient_dob_col }},
-      units = "days"
-    )) / 365,
-    patient_age_in_days_col = as.numeric(difftime(
-      time1 = {{ incident_date_col }},
-      time2 = {{ patient_dob_col }},
-      units = "days"
-    )),
-
-    # system age check
-    system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor = system_age_minor1 | system_age_minor2,
-
-    # calculated age check
-    calc_age_adult = patient_age_in_years_col >= 18,
-    calc_age_minor = patient_age_in_years_col < 18
-    )
-
-  } else if(
-
-    all(
-      is.null(incident_date_col),
-      is.null(patient_dob_col)
-    )) {
-
-    final_data <- patient_scene_table |>
-      dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
-      dplyr::mutate(
-
-      # system age check
-      system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-      system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-      system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
-      system_age_minor = system_age_minor1 | system_age_minor2
-
-      )
-
-  }
-
-  cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
-
-  ###_____________________________________________________________________________
-  ### dimension tables
-  ### each dimension table is turned into a vector of unique IDs
-  ### that are then utilized on the fact table to create distinct variables
-  ### that tell if the patient had the characteristic or not for final
-  ### calculations of the numerator and filtering
-  ###_____________________________________________________________________________
-
-  # all invasive airway procedures
-  intubation_data <- procedures_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}, {{ eprocedures_06_col}}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
-
-    # 911 calls
-    call_911_data <- response_table |>
-      dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-
-        grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)
-
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
-
-    # successful endotracheal intubation
-    successful_intubation_data <- procedures_table |>
-      dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}, {{ eprocedures_06_col}}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-
-        grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
-
-        grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T)
-
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
-
-  # Last successful invasive airway procedures in the initial population
-  # suppress warnings due to an expected occurrence of some {{ erecord_01_col }} groups
-  # returning `NA` values within eprocedures_01_col.  This is expected as
-  # in some cases a date/time is not entered, which is a data entry issue but expected
-  # we will not get any of the expected warning output flagging these cases
-
-  # last procedures
-  last_procedures_data <- suppressWarnings(
-
-    procedures_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}, {{ eprocedures_02_col }}, {{ eprocedures_03_col }}, {{ eprocedures_05_col }}, {{ eprocedures_06_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
-
-      grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T),
-
-      !is.na({{ eprocedures_01_col }}),
-
-      !grepl(pattern = yes_code, x = {{ eprocedures_02_col }}, ignore.case = T)
-
-      ) |>
-    dplyr::filter(
-
-      {{ eprocedures_05_col }} == max({{ eprocedures_05_col }}, na.rm = T),
-
-      .by = {{ erecord_01_col }}
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  )
-
-  cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
-
-  # optionally use eairway fields
-  if(!rlang::quo_is_null(airway_datetime)) {
-
-  # numerator 1
-  numerator_data1 <- suppressWarnings(
-    airway_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eairway_02_col}}, {{ eairway_04_col }}
-                  ) |>
-    dplyr::distinct() |>
-    dplyr::left_join(procedures_table |> dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}) |> dplyr::distinct(),
-                     by = rlang::as_name(rlang::enquo(erecord_01_col))
-                     ) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = waveform_etco2, x = {{ eairway_04_col }}, ignore.case = T),
-
-      !is.na({{ eairway_02_col }}),
-
-      {{ eairway_02_col }} > {{ eprocedures_01_col }}
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-    )
-
-  }
-
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
-
-  # numerator 2
-  numerator_data2 <- suppressWarnings(
-    procedures_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}) |>
-    dplyr::distinct() |>
-    dplyr::left_join(vitals_table |> dplyr::select({{ erecord_01_col }}, {{ evitals_01_col }}, {{ evitals_16_col }}) |> dplyr::distinct(),
-                     by = rlang::as_name(rlang::enquo(erecord_01_col))
-                     ) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-     ( {{ evitals_01_col }} > {{ eprocedures_01_col }} ) &
-
-       {{ evitals_16_col }} >= 5
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-    )
-
-  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
-
-  # numerator 3
-  numerator_data3 <- vitals_table |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_16_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-        {{ evitals_16_col }} >= 5
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
-
-  # optionally use eairway fields to get counts
-  if(!rlang::quo_is_null(airway_datetime)) {
-
-  # numerator calculation part 1
-  waveform_ETCO2_data <- airway_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eairway_04_col }}
-    ) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = waveform_etco2, x = {{ eairway_04_col }}, ignore.case = T)
-
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
-
-  # numerator calculation part 2
-  airway_procedure_time_data <- suppressWarnings(
-
-    airway_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eairway_02_col }}
-    ) |>
-    dplyr::distinct() |>
-    dplyr::left_join(
-
-      procedures_table |> dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}) |> dplyr::distinct(),
-
-      by = rlang::as_name(rlang::enquo(erecord_01_col))
-
-      ) |>
-    dplyr::filter(
-
-      !is.na({{ eairway_02_col }}) &
-
-      ( {{ eairway_02_col }} > {{ eprocedures_01_col }} )
-
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-    )
-
-  }
-
-  cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
-
-  if(!rlang::quo_is_null(airway_datetime)) {
-
-  # assign variables to final data
-  computing_population <- final_data |>
-    dplyr::mutate(CALL_911 = {{ erecord_01_col }} %in% call_911_data,
-                  SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% successful_intubation_data,
-                  ENDOTRACHEAL_INTUBATION = {{ erecord_01_col }} %in% intubation_data,
-                  LAST_SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% last_procedures_data,
-                  WAVEFORM_ETCO2 = {{ erecord_01_col }} %in% waveform_ETCO2_data,
-                  AIRWAY_PROCEDURE_TIME = {{ erecord_01_col }} %in% airway_procedure_time_data,
-                  NUMERATOR1 = {{ erecord_01_col }} %in% numerator_data1,
-                  NUMERATOR2 = {{ erecord_01_col }} %in% numerator_data2,
-                  NUMERATOR3 = {{ erecord_01_col }} %in% numerator_data3,
-                  NUMERATOR = NUMERATOR1 & NUMERATOR2
-                  )
-
-  } else if(rlang::quo_is_null(airway_datetime)) {
-
-    # assign variables to final data
-  computing_population <- final_data |>
-    dplyr::mutate(CALL_911 = {{ erecord_01_col }} %in% call_911_data,
-                  SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% successful_procedure_data,
-                  ENDOTRACHEAL_INTUBATION = {{ erecord_01_col }} %in% intubation_data,
-                  LAST_SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% last_procedures_data,
-                  NUMERATOR2 = {{ erecord_01_col }} %in% numerator_data2,
-                  NUMERATOR3 = {{ erecord_01_col }} %in% numerator_data3,
-                  NUMERATOR = NUMERATOR2
-                  )
-
-  }
-
-  cli::cli_progress_update(set = 12, id = progress_bar_population, force = T)
-
-  # get the initial population
-  initial_population <- computing_population |>
-    dplyr::filter(
-
-      ENDOTRACHEAL_INTUBATION,
-      CALL_911
-
-    )
-
-  cli::cli_progress_update(set = 13, id = progress_bar_population, force = T)
-
-  # Adult and Pediatric Populations
-
-  if (
-    all(
-      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
-    )
-  ) {
-
-  # filter adult
-  adult_pop <- initial_population |>
-    dplyr::filter(system_age_adult | calc_age_adult,
-                  LAST_SUCCESSFUL_PROCEDURE
-                  )
-
-  cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
-
-  # filter peds
-  peds_pop <- initial_population |>
-    dplyr::filter(system_age_minor | calc_age_minor,
-                  LAST_SUCCESSFUL_PROCEDURE
-                  )
-
-  } else if(
-
-    all(
-      is.null(incident_date_col),
-      is.null(patient_dob_col)
-    )) {
-
-    # filter adult
-    adult_pop <- initial_population |>
-      dplyr::filter(system_age_adult,
-                    LAST_SUCCESSFUL_PROCEDURE
-                    )
-
-    cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
-
-    # filter peds
-    peds_pop <- initial_population |>
-      dplyr::filter(system_age_minor,
-                    LAST_SUCCESSFUL_PROCEDURE
-                    )
-
-  }
-
-  # summarize
-
-  cli::cli_progress_update(set = 15, id = progress_bar_population, force = T)
-
-
-  if(!rlang::quo_is_null(airway_datetime)) {
-
-  # summarize counts for populations filtered
-    filter_counts <- tibble::tibble(
-      filter = c("Invasive airway procedures",
-                 "Successful invasive airway procedures",
-                 "911 calls",
-                 "Last successful invasive airway procedures",
-                 "Waveform ETCO2 used",
-                 "Airway device placement confirmed after airway procedure",
-                 "Vitals taken after airway procedure where waveform ETCO2 >= 5",
-                 "Waveform ETCO2 >= 5",
-                 "Last successful invasive airway procedures with waveform ETCO2",
-                 "Adults denominator",
-                 "Peds denominator",
-                 "Total dataset"
-      ),
-      count = c(
-        sum(computing_population$ENDOTRACHEAL_INTUBATION, na.rm = T),
-        sum(computing_population$SUCCESSFUL_PROCEDURE, na.rm = T),
-        sum(computing_population$CALL_911, na.rm = T),
-        sum(computing_population$LAST_SUCCESSFUL_PROCEDURE, na.rm = T),
-        sum(computing_population$WAVEFORM_ETCO2, na.rm = T),
-        sum(computing_population$AIRWAY_PROCEDURE_TIME, na.rm = T),
-        sum(computing_population$NUMERATOR2, na.rm = T),
-        sum(computing_population$NUMERATOR3, na.rm = T),
-        sum(computing_population$NUMERATOR, na.rm = T),
-        nrow(adult_pop),
-        nrow(peds_pop),
-        nrow(computing_population)
-      )
-    )
-
-  } else if(rlang::quo_is_null(airway_datetime)) {
-
-    # summarize counts for populations filtered
-    filter_counts <- tibble::tibble(
-      filter = c("Invasive airway procedures",
-                 "Successful invasive airway procedures",
-                 "911 calls",
-                 "Last successful invasive airway procedures",
-                 "Vitals taken after airway procedure where waveform ETCO2 >= 5",
-                 "Waveform ETCO2 >= 5",
-                 "Last successful invasive airway procedures with waveform ETCO2",
-                 "Adults denominator",
-                 "Peds denominator",
-                 "Total dataset"
-      ),
-      count = c(
-        sum(computing_population$ENDOTRACHEAL_INTUBATION, na.rm = T),
-        sum(computing_population$SUCCESSFUL_PROCEDURE, na.rm = T),
-        sum(computing_population$CALL_911, na.rm = T),
-        sum(computing_population$LAST_SUCCESSFUL_PROCEDURE, na.rm = T),
-        sum(computing_population$NUMERATOR2, na.rm = T),
-        sum(computing_population$NUMERATOR3, na.rm = T),
-        sum(computing_population$NUMERATOR, na.rm = T),
-        nrow(adult_pop),
-        nrow(peds_pop),
-        nrow(computing_population)
-      )
-    )
-
-  }
-
-    # get the populations of interest
-
-    cli::cli_progress_update(set = 16, id = progress_bar_population, force = T)
-
-    # gather data into a list for multi-use output
-    airway.18.population <- list(
-      filter_process = filter_counts,
-      adults = adult_pop,
-      peds = peds_pop
-    )
-
-  cli::cli_progress_done(id = progress_bar_population)
-
-  return(airway.18.population)
-
-  } else if(
-    all(
+    if(all(
       is.null(patient_scene_table),
-      is.null(procedures_table),
-      is.null(vitals_table),
+      is.null(response_table),
       is.null(airway_table),
-      is.null(response_table)
+      is.null(procedures_table),
+      is.null(vitals_table)
     ) && !is.null(df)
 
     # utilize a dataframe to analyze the data for the measure analytics
 
-  ) {
-
-    # Ensure df is a data frame or tibble
-    if (!is.data.frame(df) && !tibble::is_tibble(df)) {
-      cli::cli_abort(
-        c(
-          "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-          "i" = "The passed object is of class {.val {class(df)}}."
-        )
-      )
-    }
-
-    # Validate date columns if provided
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
-      )
     ) {
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_dob_col)
 
-      if (
-        (!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-         !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-        (!lubridate::is.Date(df[[rlang::as_name(patient_dob)]]) &
-         !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))
-      ) {
+      # Ensure df is a data frame or tibble
+      if (!is.data.frame(df) && !tibble::is_tibble(df)) {
         cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+          c(
+            "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
+            "i" = "The passed object is of class {.val {class(df)}}."
+          )
         )
       }
+
+      # Validate date columns if provided
+      if (
+        all(
+          !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+          !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        )
+      ) {
+
+        incident_date <- rlang::enquo(incident_date_col)
+        patient_dob <- rlang::enquo(patient_dob_col)
+
+        if (
+          (!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
+           !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
+          (!lubridate::is.Date(df[[rlang::as_name(patient_dob)]]) &
+           !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))
+        ) {
+          cli::cli_abort(
+            "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+          )
+        }
+      }
+
+      # Use quasiquotation on the vitals, airway, and procedures datetime fields
+      vitals_datetime <- rlang::enquo(evitals_01_col)
+      procedures_datetime <- rlang::enquo(eprocedures_01_col)
+      airway_datetime <- rlang::enquo(eairway_02_col)
+
+      if(!rlang::quo_is_null(airway_datetime)) {
+
+        # Validate the datetime fields in the df
+        if ((!lubridate::is.Date(df[[rlang::as_name(airway_datetime)]]) &
+             !lubridate::is.POSIXct(df[[rlang::as_name(airway_datetime)]])) ||
+             (!lubridate::is.Date(df[[rlang::as_name(vitals_datetime)]]) &
+             !lubridate::is.POSIXct(df[[rlang::as_name(vitals_datetime)]])) ||
+            (!lubridate::is.Date(df[[rlang::as_name(procedures_datetime)]]) &
+             !lubridate::is.POSIXct(df[[rlang::as_name(procedures_datetime)]]))) {
+
+          cli::cli_abort(
+            "For the variables {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
+          )
+
+        }
+
+      } else if (rlang::quo_is_null(airway_datetime)) {
+
+        # Validate the datetime fields in the df
+        if ((!lubridate::is.Date(df[[rlang::as_name(vitals_datetime)]]) &
+             !lubridate::is.POSIXct(df[[rlang::as_name(vitals_datetime)]])) ||
+            (!lubridate::is.Date(df[[rlang::as_name(procedures_datetime)]]) &
+             !lubridate::is.POSIXct(df[[rlang::as_name(procedures_datetime)]]))) {
+
+          cli::cli_abort(
+            "For the variables {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
+          )
+
+        }
+      }
+
+      # make tables from df
+      # patient
+      patient_scene_table <- df |>
+        dplyr::select(-{{ evitals_01_col }},
+                      -{{ evitals_16_col }},
+                      -{{ eairway_02_col }},
+                      -{{ eairway_04_col }},
+                      -{{ eprocedures_01_col }},
+                      -{{ eprocedures_02_col }},
+                      -{{ eprocedures_03_col }},
+                      -{{ eprocedures_05_col }},
+                      -{{ eprocedures_06_col }},
+                      -{{ eresponse_05_col }}
+        ) |>
+        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+
+      # response
+      response_table <- df |>
+        dplyr::select({{ erecord_01_col }},
+                      {{ eresponse_05_col }}
+        ) |>
+        dplyr::distinct()
+
+      # optionally use eairway fields
+      if (
+
+        all(
+          !rlang::quo_is_null(airway_datetime),
+          !rlang::quo_is_null(airway_confirmation_col)
+        )
+
+      ) {
+
+      # airway
+      airway_table <- df |>
+        dplyr::select({{ erecord_01_col }},
+                      {{ eairway_02_col }},
+                      {{ eairway_04_col }}
+        ) |>
+        dplyr::distinct()
+
+      }
+
+      # vitals
+      vitals_table <- df |>
+        dplyr::select({{ erecord_01_col }},
+                      {{ evitals_01_col }},
+                      {{ evitals_16_col }}
+        ) |>
+        dplyr::distinct()
+
+      # procedures
+      procedures_table <- df |>
+        dplyr::select({{ erecord_01_col }},
+                      {{ eprocedures_01_col }},
+                      {{ eprocedures_02_col }},
+                      {{ eprocedures_03_col }},
+                      {{ eprocedures_05_col }},
+                      {{ eprocedures_06_col }}
+        ) |>
+        dplyr::distinct()
+
+
+    } else if( # else continue with the tables passed to the applicable arguments
+
+      all(
+        !is.null(patient_scene_table),
+        !is.null(response_table),
+        !is.null(airway_table),
+        !is.null(procedures_table),
+        !is.null(vitals_table)
+      ) && is.null(df)
+
+    ) {
+
+      # Ensure all tables are of class `data.frame` or `tibble`
+      if (
+
+        !all(
+          is.data.frame(patient_scene_table) || tibble::is_tibble(patient_scene_table),
+          is.data.frame(procedures_table) || tibble::is_tibble(procedures_table),
+          is.data.frame(vitals_table) || tibble::is_tibble(vitals_table),
+          is.data.frame(response_table) || tibble::is_tibble(response_table),
+          is.data.frame(airway_table) || tibble::is_tibble(airway_table)
+
+        )
+
+      ) {
+
+        cli::cli_abort(
+          "One or more of the tables passed to {.fn airway_01_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
+        )
+
+      }
+
+      # Validate date columns if provided
+      if (
+        all(
+          !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+          !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        )
+      ) {
+
+        incident_date <- rlang::enquo(incident_date_col)
+        patient_dob <- rlang::enquo(patient_dob_col)
+
+        if (
+          (!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
+           !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])) ||
+          (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_dob)]]) &
+           !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_dob)]]))
+        ) {
+          cli::cli_abort(
+            "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+          )
+        }
+      }
+
+      # Use quasiquotation on the vitals, airway, and procedures datetime fields
+      vitals_datetime <- rlang::enquo(evitals_01_col)
+      procedures_datetime <- rlang::enquo(eprocedures_01_col)
+      airway_datetime <- rlang::enquo(eairway_02_col)
+
+      if(!rlang::quo_is_null(airway_datetime)) {
+
+        # Validate the datetime fields in the df
+        if ((!lubridate::is.Date(airway_table[[rlang::as_name(airway_datetime)]]) &
+             !lubridate::is.POSIXct(airway_table[[rlang::as_name(airway_datetime)]])) ||
+            (!lubridate::is.Date(vitals_table[[rlang::as_name(vitals_datetime)]]) &
+             !lubridate::is.POSIXct(vitals_table[[rlang::as_name(vitals_datetime)]])) ||
+            (!lubridate::is.Date(procedures_table[[rlang::as_name(procedures_datetime)]]) &
+             !lubridate::is.POSIXct(procedures_table[[rlang::as_name(procedures_datetime)]]))) {
+
+          cli::cli_abort(
+            "For the variables {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
+          )
+
+        }
+
+      } else if(rlang::quo_is_null(airway_datetime)) {
+
+        # Validate the datetime fields in the df
+        if ((!lubridate::is.Date(vitals_table[[rlang::as_name(vitals_datetime)]]) &
+             !lubridate::is.POSIXct(vitals_table[[rlang::as_name(vitals_datetime)]])) ||
+            (!lubridate::is.Date(procedures_table[[rlang::as_name(procedures_datetime)]]) &
+             !lubridate::is.POSIXct(procedures_table[[rlang::as_name(procedures_datetime)]]))) {
+
+          cli::cli_abort(
+            "For the variables {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
+          )
+
+        }
+      }
+
+      # get distinct tables when passed to table arguments
+      # patient
+      patient_scene_table <- patient_scene_table |>
+        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+
+      # response
+      response_table <- response_table |>
+        dplyr::select({{ erecord_01_col }},
+                      {{ eresponse_05_col }}
+        ) |>
+        dplyr::distinct()
+
+
+      # airway
+      airway_table <- airway_table |>
+        dplyr::select({{ erecord_01_col }},
+                      {{ eairway_02_col }},
+                      {{ eairway_04_col }}
+        ) |>
+        dplyr::distinct()
+
+      # vitals
+      vitals_table <- vitals_table |>
+        dplyr::select({{ erecord_01_col }},
+                      {{ evitals_01_col }},
+                      {{ evitals_16_col }}
+        ) |>
+        dplyr::distinct()
+
+      # procedures
+      procedures_table <- procedures_table |>
+        dplyr::select({{ erecord_01_col }},
+                      {{ eprocedures_01_col }},
+                      {{ eprocedures_02_col }},
+                      {{ eprocedures_03_col }},
+                      {{ eprocedures_05_col }},
+                      {{ eprocedures_06_col }}
+        ) |>
+        dplyr::distinct()
+
     }
 
-    # Use quasiquotation on the vitals, airway, and procedures datetime fields
-    airway_datetime <- rlang::enquo(eairway_02_col)
-    vitals_datetime <- rlang::enquo(evitals_01_col)
-    procedures_datetime <- rlang::enquo(eprocedures_01_col)
+    cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
 
-    if(!rlang::quo_is_null(airway_datetime)) {
+      ###_____________________________________________________________________________
+      ### calculations of the numerator and filtering
+      ###_____________________________________________________________________________
 
-  # Validate the datetime fields in the df
-  if ((!lubridate::is.Date(df[[rlang::as_name(airway_datetime)]]) &
-       !lubridate::is.POSIXct(df[[rlang::as_name(airway_datetime)]])) ||
-      (!lubridate::is.Date(df[[rlang::as_name(vitals_datetime)]]) &
-       !lubridate::is.POSIXct(df[[rlang::as_name(vitals_datetime)]])) ||
-      (!lubridate::is.Date(df[[rlang::as_name(procedures_datetime)]]) &
-       !lubridate::is.POSIXct(df[[rlang::as_name(procedures_datetime)]]))) {
+        procedures_table |>
+          dplyr::filter(!is.na({{ eprocedures_03_col }})) |>
+          dplyr::mutate(
+            non_missing_procedure_time = !is.na({{ eprocedures_01_col }}), # Procedure date/time not null
+            not_performed_prior = !grepl(pattern = yes_code, x = {{ eprocedures_02_col }}) | is.na({{ eprocedures_02_col }}), # Procedure PTA is not Yes
+            target_procedures = grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}), # Procedure name/code in list
+            successful_procedure = grepl(pattern = yes_code, x = {{ eprocedures_06_col }})
+          ) -> procedures_ordered
 
-    cli::cli_abort(
-      "For the variables {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
-    )
+      cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
 
-  }
+      # 911 calls
+      call_911_data <- response_table |>
+        dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
+        dplyr::distinct() |>
+        dplyr::filter(
 
-  } else if(rlang::quo_is_null(airway_datetime)) {
+          grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)
 
-    # Validate the datetime fields in the df
-    if ((!lubridate::is.Date(df[[rlang::as_name(vitals_datetime)]]) &
-         !lubridate::is.POSIXct(df[[rlang::as_name(vitals_datetime)]])) ||
-        (!lubridate::is.Date(df[[rlang::as_name(procedures_datetime)]]) &
-         !lubridate::is.POSIXct(df[[rlang::as_name(procedures_datetime)]]))) {
+        ) |>
+        dplyr::distinct({{ erecord_01_col }}) |>
+        dplyr::pull({{ erecord_01_col }})
 
-      cli::cli_abort(
-        "For the variables {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
+      cli::cli_progress_update(set = 4, id = progress_bar_population, force = TRUE)
+
+      ###_____________________________________________________________________________
+      # fact table
+      # the user should ensure that variables beyond those supplied for calculations
+      # are distinct (i.e. one value or cell per patient)
+      ###_____________________________________________________________________________
+
+      # conditionally perform age in years calculations
+      if (
+        all(
+          !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+          !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        )
+      ) {
+
+        # Add calculated age in years
+        patient_data <- patient_scene_table |>
+          dplyr::mutate(
+            CLEANED_AGE_UNITS = dplyr::case_when(
+              tolower({{ epatient_16_col }}) %in% c("seconds", "minutes", "hours", "days", "weeks", "months", "years") ~
+                tolower({{ epatient_16_col }}),
+              TRUE ~ "years" # Replace invalid units with NA
+            ),
+            {{ patient_dob_col }} := dplyr::if_else(
+              is.na({{ patient_dob_col }}) &
+                !is.na({{ epatient_15_col }}) &
+                !is.na(CLEANED_AGE_UNITS),
+              {{ incident_date_col }} - dplyr::case_when(
+                CLEANED_AGE_UNITS == "years"  ~ lubridate::dyears({{ epatient_15_col }}),
+                CLEANED_AGE_UNITS == "months" ~ lubridate::dmonths({{ epatient_15_col }}),
+                CLEANED_AGE_UNITS == "weeks"  ~ lubridate::dweeks({{ epatient_15_col }}),
+                CLEANED_AGE_UNITS == "days"   ~ lubridate::ddays({{ epatient_15_col }}),
+                CLEANED_AGE_UNITS == "hours"  ~ lubridate::dhours({{ epatient_15_col }}) / 24, # Convert to days
+                CLEANED_AGE_UNITS == "minutes" ~ lubridate::dminutes({{ epatient_15_col }}) / (24 * 60), # Convert to days
+                CLEANED_AGE_UNITS == "seconds" ~ lubridate::dseconds({{ epatient_15_col }}) / (24 * 3600) # Convert to days
+              ),
+              {{ patient_dob_col }}
+            )
+          ) |>
+          dplyr::mutate(call_911 = {{ erecord_01_col }} %in% call_911_data,
+                        patient_age_in_years = as.numeric(difftime({{ incident_date_col }},
+                                                                   {{ patient_dob_col }},
+                                                                   units = "days")/365)) |>
+          dplyr::mutate(patient_age_in_years = dplyr::case_when(!is.na(patient_age_in_years) ~ patient_age_in_years,
+                                                                grepl(pattern = year_values,
+                                                                      x = {{ epatient_16_col }},
+                                                                      ignore.case = TRUE) ~ {{ epatient_15_col }},
+
+                                                                grepl(pattern = month_values,
+                                                                      x = {{ epatient_16_col }},
+                                                                      ignore.case = TRUE) ~ {{ epatient_15_col }} / 12,
+
+                                                                grepl(pattern = day_values,
+                                                                      x = {{ epatient_16_col }},
+                                                                      ignore.case = TRUE) ~ {{ epatient_15_col }} / 365,
+
+                                                                grepl(pattern = hour_values,
+                                                                      x = {{ epatient_16_col }},
+                                                                      ignore.case = TRUE) ~ {{ epatient_15_col }} / (365*24),
+
+                                                                grepl(pattern = minute_values,
+                                                                      x = {{ epatient_16_col }},
+                                                                      ignore.case = TRUE) ~ {{ epatient_15_col }} / (365*24*60)
+          ))
+
+      } else if ( # condition where the user does not pass the incident date nor the patient DOB
+        all(
+          rlang::quo_is_null(rlang::enquo(incident_date_col)),
+          rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        )
+      ) {
+
+        # Add calculated age in years
+        patient_data <- patient_scene_table |>
+          dplyr::mutate(call_911 = {{ erecord_01_col }} %in% call_911_data,
+                        patient_age_in_years = dplyr::case_when(grepl(pattern = year_values,
+                                                                      x = {{ epatient_16_col }},
+                                                                      ignore.case = TRUE) ~ {{ epatient_15_col }},
+
+                                                                grepl(pattern = month_values,
+                                                                      x = {{ epatient_16_col }},
+                                                                      ignore.case = TRUE) ~ {{ epatient_15_col }} / 12,
+
+                                                                grepl(pattern = day_values,
+                                                                      x = {{ epatient_16_col }},
+                                                                      ignore.case = TRUE) ~ {{ epatient_15_col }} / 365,
+
+                                                                grepl(pattern = hour_values,
+                                                                      x = {{ epatient_16_col }},
+                                                                      ignore.case = TRUE) ~ {{ epatient_15_col }} / (365*24),
+
+                                                                grepl(pattern = minute_values,
+                                                                      x = {{ epatient_16_col }},
+                                                                      ignore.case = TRUE) ~ {{ epatient_15_col }} / (365*24*60)
+                        ))
+
+      }
+
+      cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
+
+      ###_____________________________________________________________________________
+      # Numerator
+      # utilized the procedures table with ranked, non-missing eprocedures.03
+      # which will return mostly non-missing eprocedures.01
+      ###_____________________________________________________________________________
+
+      # get record IDs for the vitals table
+      procedures_ID <- procedures_ordered |>
+        dplyr::filter(target_procedures) |>
+        dplyr::distinct({{ erecord_01_col }}) |>
+        dplyr::pull({{ erecord_01_col }})
+
+      cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
+
+      # get applicable vitals
+      # only those that match patients in the
+      # procedures table with the target procedures
+      vitals_table_filter <- vitals_table |>
+        dplyr::filter(!is.na({{ evitals_16_col }}),
+                      {{ erecord_01_col }} %in% procedures_ID
+                      )
+
+      # get total waveform ETC02 measurements >= 5
+      waveform_etc02 <- vitals_table_filter |>
+        dplyr::filter({{ evitals_16_col }} >= 5) |>
+        nrow()
+
+      cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
+
+      # optionally use eairway fields
+      if(
+
+        all(
+          !rlang::quo_is_null(airway_datetime),
+          !rlang::quo_is_null(airway_confirmation_col)
+        )
+
+      ) {
+
+        # get applicable airway data
+        # only those that match patients in the
+        # procedures table with the target procedures
+        airway_table_filter <- airway_table |>
+          dplyr::filter(!is.na({{ eairway_04_col }}),
+                        {{ erecord_01_col }} %in% procedures_ID
+                        )
+
+        # total cases where waveform ETC02 airway confirmation
+        # is documented
+        airway_etc02_confirmations <- airway_table_filter |>
+          dplyr::filter(grepl(pattern = waveform_etc02_codes, x = {{ eairway_04_col }}, ignore.case = TRUE)) |>
+          nrow()
+
+        ###_____________________________________________________________________________
+        # this is the initial table for calculating
+        # setup process
+        ###_____________________________________________________________________________
+
+        # airway data
+        suppressWarnings( # warnings can pop up related to left join relationships
+
+          procedures_ordered |>
+            dplyr::filter(target_procedures) |>
+            dplyr::left_join(airway_table_filter, by = dplyr::join_by({{ erecord_01_col }})) |>
+            dplyr::left_join(vitals_table_filter, by = dplyr::join_by({{ erecord_01_col }})) |>
+            dplyr::mutate(waveform_etc02_used = grepl(pattern = waveform_etc02_codes, x = {{ eairway_04_col }}, ignore.case = TRUE),
+                          airway_after_procedure = {{ eairway_02_col}} > {{ eprocedures_01_col }},
+                          airway_after_procedure_waveform = airway_after_procedure & waveform_etc02_used,
+                          vitals_after_procedure = ({{ evitals_01_col }} > {{ eprocedures_01_col }}),
+                          waveform_etc02_5 = {{ evitals_16_col }} >= 5,
+                          vitals_after_procedure_waveform = vitals_after_procedure & waveform_etc02_5
+                            ) |>
+            dplyr::summarize(
+
+              waveform_etc02_used = max(waveform_etc02_used, na.rm = TRUE),
+              airway_after_procedure = max(airway_after_procedure, na.rm = TRUE),
+              airway_after_procedure_waveform = max(airway_after_procedure_waveform, na.rm = TRUE),
+              vitals_after_procedure = max(vitals_after_procedure, na.rm = TRUE),
+              waveform_etc02_5 = max(waveform_etc02_5, na.rm = TRUE),
+              vitals_after_procedure_waveform = max(vitals_after_procedure_waveform, na.rm = TRUE),
+
+              .by = c({{ erecord_01_col }}, {{ eprocedures_01_col }}, {{ eprocedures_03_col }})
+
+            )) -> computing_population_dev
+
+        # deal with NA or Inf values
+        computing_population_dev <- computing_population_dev |>
+          dplyr::mutate(dplyr::across(tidyselect::matches("after_procedure|waveform"), ~ dplyr::if_else(is.na(.) | is.infinite(.), 0, .)),
+                        NUMERATOR = as.integer(waveform_etc02_used == 1 & (vitals_after_procedure_waveform + airway_after_procedure) > 0)
+                        )
+
+      } else if( # if no airway fields are passed
+
+          all(
+            rlang::quo_is_null(airway_datetime),
+            rlang::quo_is_null(airway_confirmation_col)
+          )
+
+      ) {
+
+        ###_____________________________________________________________________________
+        # this is the initial table for calculating
+        # setup process
+        ###_____________________________________________________________________________
+
+        # vitals data
+        suppressWarnings( # warnings can pop up related to left join relationships
+
+          procedures_ordered |>
+            dplyr::filter(target_procedures) |>
+            dplyr::left_join(vitals_table_filter, by = dplyr::join_by({{ erecord_01_col }})) |>
+            dplyr::mutate(vitals_after_procedure = ({{ evitals_01_col }} > {{ eprocedures_01_col }}),
+                          waveform_etc02_5 = {{ evitals_16_col }} >= 5,
+                          vitals_after_procedure_waveform = vitals_after_procedure & waveform_etc02_5
+            ) |>
+            dplyr::summarize(
+
+              vitals_after_procedure_waveform = max(vitals_after_procedure_waveform, na.rm = TRUE),
+
+              .by = c({{ erecord_01_col }}, {{ eprocedures_01_col }}, {{ eprocedures_03_col }})
+
+            )) -> computing_population_dev
+
+        # deal with NA or Inf values
+        computing_population_dev <- computing_population_dev |>
+          dplyr::mutate(vitals_after_procedure_waveform = dplyr::if_else(is.na(vitals_after_procedure_waveform) |
+                                                                           is.infinite(vitals_after_procedure_waveform), 0, vitals_after_procedure_waveform),
+                        NUMERATOR = as.integer(vitals_after_procedure_waveform > 0)
+                        )
+      }
+
+      ###_____________________________________________________________________________
+      # final join for the computing population
+      # will have the same number of rows as the
+      # initial procedures table if ran through dplyr::distinct()
+      ###_____________________________________________________________________________
+
+      cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
+
+      computing_population <- suppressWarnings( # warnings can pop up related to left join relationships
+
+        procedures_ordered |>
+          dplyr::left_join(computing_population_dev, by = dplyr::join_by({{ erecord_01_col }},
+                                                                         {{ eprocedures_01_col }},
+                                                                         {{ eprocedures_03_col }})
+          ) |>
+          dplyr::left_join(patient_data, by = dplyr::join_by({{ erecord_01_col }}))
+
       )
+
+      ###_____________________________________________________________________________
+
+      cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
+
+      # get the initial population
+      initial_population <- computing_population |>
+        dplyr::filter(
+
+          target_procedures,
+
+          successful_procedure,
+
+          call_911
+
+        )
+
+
+      # Adult and Pediatric Populations
+
+      cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
+
+        # filter adult
+        adult_pop <- initial_population |>
+          dplyr::filter(patient_age_in_years >= 18,
+                        not_performed_prior,
+                        non_missing_procedure_time
+                        ) |>
+          dplyr::filter({{ eprocedures_01_col }} == max({{ eprocedures_01_col }}, na.rm = TRUE),
+                        .by = {{ erecord_01_col }}
+                        )
+
+        cli::cli_progress_update(set = 11, id = progress_bar_population, force = TRUE)
+
+        # filter peds
+        peds_pop <- initial_population |>
+          dplyr::filter(patient_age_in_years < 18,
+                        not_performed_prior,
+                        non_missing_procedure_time
+                        ) |>
+          dplyr::filter({{ eprocedures_01_col }} == max({{ eprocedures_01_col }}, na.rm = TRUE),
+                        .by = {{ erecord_01_col }}
+                        )
+
+      # summarize
+
+      cli::cli_progress_update(set = 12, id = progress_bar_population, force = TRUE)
+
+      # get total number of procedures examined
+      n_procedures <- procedures_ordered |>
+        dplyr::filter(!is.na({{ eprocedures_03_col }})) |>
+        dplyr::distinct({{ erecord_01_col }}, {{ eprocedures_01_col }}, {{ eprocedures_03_col }}) |>
+        nrow()
+
+
+      # optionally use eairway fields
+      if(
+
+        all(
+          !rlang::quo_is_null(airway_datetime),
+          !rlang::quo_is_null(airway_confirmation_col)
+        )
+
+      ) {
+
+        # summarize counts for populations filtered
+        filter_counts <- tibble::tibble(
+          filter = c("Invasive airway procedures",
+                     "Successful invasive airway procedures",
+                     "911 calls",
+                     "Successful invasive airway procedures performed after EMS arrival",
+                     "Waveform ETCO2 used",
+                     "Airway device placement confirmed after airway procedure",
+                     "Vitals taken after airway procedure where waveform ETCO2 >= 5",
+                     "Waveform ETCO2 >= 5",
+                     "Successful invasive airway procedures with waveform ETCO2 confirmed post-procedure",
+                     "Adults denominator",
+                     "Peds denominator",
+                     "Total procedures in dataset"
+          ),
+          count = c(
+            sum(procedures_ordered$target_procedures, na.rm = T),
+            sum(procedures_ordered$target_procedures & procedures_ordered$successful_procedure, na.rm = T),
+            length(call_911_data),
+            sum(procedures_ordered$target_procedures &
+                  procedures_ordered$successful_procedure &
+                  procedures_ordered$not_performed_prior, na.rm = T),
+            airway_etc02_confirmations,
+            sum(computing_population_dev$airway_after_procedure_waveform, na.rm = T),
+            sum(computing_population_dev$vitals_after_procedure_waveform, na.rm = T),
+            waveform_etc02,
+            sum(initial_population$NUMERATOR, na.rm = T),
+            nrow(adult_pop),
+            nrow(peds_pop),
+            n_procedures
+          )
+        )
+
+      } else if(
+
+          all(
+            rlang::quo_is_null(airway_datetime),
+            rlang::quo_is_null(airway_confirmation_col)
+          )
+
+        ) {
+
+
+        # summarize counts for populations filtered
+        filter_counts <- tibble::tibble(
+          filter = c("Invasive airway procedures",
+                     "Successful invasive airway procedures",
+                     "911 calls",
+                     "Successful invasive airway procedures performed after EMS arrival",
+                     "Vitals taken after airway procedure where waveform ETCO2 >= 5",
+                     "Waveform ETCO2 >= 5",
+                     "Successful invasive airway procedures with waveform ETCO2",
+                     "Adults denominator",
+                     "Peds denominator",
+                     "Total procedures in dataset"
+          ),
+          count = c(
+            sum(procedures_ordered$target_procedures, na.rm = T),
+            sum(procedures_ordered$target_procedures & procedures_ordered$successful_procedure, na.rm = T),
+            length(call_911_data),
+            sum(procedures_ordered$target_procedures &
+                  procedures_ordered$successful_procedure &
+                  procedures_ordered$not_performed_prior, na.rm = T),
+            sum(computing_population_dev$vitals_after_procedure_waveform, na.rm = T),
+            waveform_etc02,
+            sum(initial_population$NUMERATOR, na.rm = T),
+            nrow(adult_pop),
+            nrow(peds_pop),
+            n_procedures
+          )
+        )
+
+      }
+
+      # get the populations of interest
+
+      cli::cli_progress_update(set = 13, id = progress_bar_population, force = TRUE)
+
+      # gather data into a list for multi-use output
+      airway.18.population <- list(
+        filter_process = filter_counts,
+        adults = adult_pop,
+        peds = peds_pop,
+        initial_population = initial_population
+      )
+
+      cli::cli_progress_done(id = progress_bar_population)
+
+      return(airway.18.population)
 
     }
-}
-
-  # Progress update example (repeated throughout the script as necessary)
-  cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
-
-  ###_____________________________________________________________________________
-  # from the full dataframe with all variables
-  # create one fact table and several dimension tables
-  # to complete calculations and avoid issues due to row
-  # explosion
-  ###_____________________________________________________________________________
-
-  if (
-    all(
-      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
-    )
-  ) {
-
-  final_data <- df |>
-    dplyr::select(-c(
-      {{ eresponse_05_col }},
-      {{ eprocedures_01_col }},
-      {{ eprocedures_02_col }},
-      {{ eprocedures_03_col }},
-      {{ eprocedures_05_col }},
-      {{ eprocedures_06_col }},
-      {{ eairway_02_col }},
-      {{ eairway_04_col }},
-      {{ evitals_01_col }},
-      {{ evitals_16_col }}
-    )) |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
-    dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
-      time1 = {{ incident_date_col }},
-      time2 = {{ patient_dob_col }},
-      units = "days"
-    )) / 365,
-    patient_age_in_days_col = as.numeric(difftime(
-      time1 = {{ incident_date_col }},
-      time2 = {{ patient_dob_col }},
-      units = "days"
-    )),
-
-    # system age check
-    system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor = system_age_minor1 | system_age_minor2,
-
-    # calculated age check
-    calc_age_adult = patient_age_in_years_col >= 18,
-    calc_age_minor = patient_age_in_years_col < 18
-    )
-
-  } else if(
-
-    all(
-      is.null(incident_date_col),
-      is.null(patient_dob_col)
-    )) {
-
-    final_data <- df |>
-      dplyr::select(-c(
-        {{ eresponse_05_col }},
-        {{ eprocedures_01_col }},
-        {{ eprocedures_02_col }},
-        {{ eprocedures_03_col }},
-        {{ eprocedures_05_col }},
-        {{ eprocedures_06_col }},
-        {{ eairway_02_col }},
-        {{ eairway_04_col }},
-        {{ evitals_01_col }},
-        {{ evitals_16_col }}
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
-      dplyr::mutate(
-
-      # system age check
-      system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-      system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-      system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
-      system_age_minor = system_age_minor1 | system_age_minor2
-
-      )
-
-  }
-
-  cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
-
-  ###_____________________________________________________________________________
-  ### dimension tables
-  ### each dimension table is turned into a vector of unique IDs
-  ### that are then utilized on the fact table to create distinct variables
-  ### that tell if the patient had the characteristic or not for final
-  ### calculations of the numerator and filtering
-  ###_____________________________________________________________________________
-
-  # all invasive airway procedures
-  intubation_data <- procedures_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}, {{ eprocedures_06_col}}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T)
-
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
-
-  # 911 calls
-  call_911_data <- response_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
-
-  # successful endotracheal intubation
-  successful_intubation_data <- procedures_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}, {{ eprocedures_06_col}}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
-
-      grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
-
-  # Last successful invasive airway procedures in the initial population
-  # suppress warnings due to an expected occurrence of some {{ erecord_01_col }} groups
-  # returning `NA` values within eprocedures_01_col.  This is expected as
-  # in some cases a date/time is not entered, which is a data entry issue but expected
-  # we will not get any of the expected warning output flagging these cases
-
-  # last procedures
-  last_procedures_data <- suppressWarnings(
-
-    procedures_table |>
-      dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}, {{ eprocedures_02_col }}, {{ eprocedures_03_col }}, {{ eprocedures_05_col }}, {{ eprocedures_06_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-
-        grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = T),
-
-        grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = T),
-
-        !is.na({{ eprocedures_01_col }}),
-
-        !grepl(pattern = yes_code, x = {{ eprocedures_02_col }}, ignore.case = T)
-
-      ) |>
-      dplyr::filter(
-
-        {{ eprocedures_05_col }} == max({{ eprocedures_05_col }}, na.rm = T),
-
-        .by = {{ erecord_01_col }}
-
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-  )
-
-  cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
-
-  # optionally use eairway fields
-  if(!rlang::quo_is_null(airway_datetime)) {
-
-  # numerator 1
-  numerator_data1 <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ eairway_02_col}}, {{ eairway_04_col }}, {{ eprocedures_01_col }}
-                  ) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = waveform_etco2, x = {{ eairway_04_col }}, ignore.case = T),
-
-      !is.na({{ eairway_02_col }}),
-
-      {{ eairway_02_col }} > {{ eprocedures_01_col }}
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  }
-
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
-
-  # numerator 2
-  numerator_data2 <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_01_col }}, {{ evitals_01_col }}, {{ evitals_16_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-     ( {{ evitals_01_col }} > {{ eprocedures_01_col }} ) &
-
-       {{ evitals_16_col }} >= 5
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
-
-  # numerator 3
-  numerator_data3 <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_16_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-        {{ evitals_16_col }} >= 5
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
-
-  # optionally use eairway fields to get counts
-  if(!rlang::quo_is_null(airway_datetime)) {
-
-  # numerator calculation part 1
-  waveform_ETCO2_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ eairway_04_col }}
-    ) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = waveform_etco2, x = {{ eairway_04_col }}, ignore.case = T)
-
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
-
-  # numerator calculation part 2
-  airway_procedure_time_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ eairway_02_col }}, {{ eprocedures_01_col }}
-    ) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      !is.na({{ eairway_02_col }}) &
-
-      ( {{ eairway_02_col }} > {{ eprocedures_01_col }} )
-
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  }
-
-  cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
-
-  if(!rlang::quo_is_null(airway_datetime)) {
-
-  # assign variables to final data
-  computing_population <- final_data |>
-    dplyr::mutate(CALL_911 = {{ erecord_01_col }} %in% call_911_data,
-                  SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% successful_intubation_data,
-                  ENDOTRACHEAL_INTUBATION = {{ erecord_01_col }} %in% intubation_data,
-                  LAST_SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% last_procedures_data,
-                  WAVEFORM_ETCO2 = {{ erecord_01_col }} %in% waveform_ETCO2_data,
-                  AIRWAY_PROCEDURE_TIME = {{ erecord_01_col }} %in% airway_procedure_time_data,
-                  NUMERATOR1 = {{ erecord_01_col }} %in% numerator_data1,
-                  NUMERATOR2 = {{ erecord_01_col }} %in% numerator_data2,
-                  NUMERATOR3 = {{ erecord_01_col }} %in% numerator_data3,
-                  NUMERATOR = NUMERATOR1 & NUMERATOR2
-                  )
-
-  } else if(rlang::quo_is_null(airway_datetime)) {
-
-    # assign variables to final data
-  computing_population <- final_data |>
-    dplyr::mutate(CALL_911 = {{ erecord_01_col }} %in% call_911_data,
-                  SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% successful_procedure_data,
-                  ENDOTRACHEAL_INTUBATION = {{ erecord_01_col }} %in% intubation_data,
-                  LAST_SUCCESSFUL_PROCEDURE = {{ erecord_01_col }} %in% last_procedures_data,
-                  NUMERATOR2 = {{ erecord_01_col }} %in% numerator_data2,
-                  NUMERATOR3 = {{ erecord_01_col }} %in% numerator_data3,
-                  NUMERATOR = NUMERATOR2
-                  )
-
-  }
-
-  cli::cli_progress_update(set = 12, id = progress_bar_population, force = T)
-
-  # get the initial population
-  initial_population <- computing_population |>
-    dplyr::filter(
-
-      ENDOTRACHEAL_INTUBATION,
-      CALL_911
-
-    )
-
-  cli::cli_progress_update(set = 13, id = progress_bar_population, force = T)
-
-  # Adult and Pediatric Populations
-
-  if (
-    all(
-      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
-    )
-  ) {
-
-  # filter adult
-  adult_pop <- initial_population |>
-    dplyr::filter(system_age_adult | calc_age_adult,
-                  LAST_SUCCESSFUL_PROCEDURE
-                  )
-
-  cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
-
-  # filter peds
-  peds_pop <- initial_population |>
-    dplyr::filter(system_age_minor | calc_age_minor,
-                  LAST_SUCCESSFUL_PROCEDURE
-                  )
-
-  } else if(
-
-    all(
-      is.null(incident_date_col),
-      is.null(patient_dob_col)
-    )) {
-
-    # filter adult
-    adult_pop <- initial_population |>
-      dplyr::filter(system_age_adult,
-                    LAST_SUCCESSFUL_PROCEDURE
-                    )
-
-    cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
-
-    # filter peds
-    peds_pop <- initial_population |>
-      dplyr::filter(system_age_minor,
-                    LAST_SUCCESSFUL_PROCEDURE
-                    )
-
-  }
-
-  # summarize
-
-  cli::cli_progress_update(set = 15, id = progress_bar_population, force = T)
-
-
-  if(!rlang::quo_is_null(airway_datetime)) {
-
-  # summarize counts for populations filtered
-    filter_counts <- tibble::tibble(
-      filter = c("Invasive airway procedures",
-                 "Successful invasive airway procedures",
-                 "911 calls",
-                 "Last successful invasive airway procedures",
-                 "Waveform ETCO2 used",
-                 "Airway device placement confirmed after airway procedure",
-                 "Vitals taken after airway procedure where waveform ETCO2 >= 5",
-                 "Waveform ETCO2 >= 5",
-                 "Last successful invasive airway procedures with waveform ETCO2",
-                 "Adults denominator",
-                 "Peds denominator",
-                 "Total dataset"
-      ),
-      count = c(
-        sum(computing_population$ENDOTRACHEAL_INTUBATION, na.rm = T),
-        sum(computing_population$SUCCESSFUL_PROCEDURE, na.rm = T),
-        sum(computing_population$CALL_911, na.rm = T),
-        sum(computing_population$LAST_SUCCESSFUL_PROCEDURE, na.rm = T),
-        sum(computing_population$WAVEFORM_ETCO2, na.rm = T),
-        sum(computing_population$AIRWAY_PROCEDURE_TIME, na.rm = T),
-        sum(computing_population$NUMERATOR2, na.rm = T),
-        sum(computing_population$NUMERATOR3, na.rm = T),
-        sum(computing_population$NUMERATOR, na.rm = T),
-        nrow(adult_pop),
-        nrow(peds_pop),
-        nrow(computing_population)
-      )
-    )
-
-  } else if(rlang::quo_is_null(airway_datetime)) {
-
-    # summarize counts for populations filtered
-    filter_counts <- tibble::tibble(
-      filter = c("Invasive airway procedures",
-                 "Successful invasive airway procedures",
-                 "911 calls",
-                 "Last successful invasive airway procedures",
-                 "Vitals taken after airway procedure where waveform ETCO2 >= 5",
-                 "Waveform ETCO2 >= 5",
-                 "Last successful invasive airway procedures with waveform ETCO2",
-                 "Adults denominator",
-                 "Peds denominator",
-                 "Total dataset"
-      ),
-      count = c(
-        sum(computing_population$ENDOTRACHEAL_INTUBATION, na.rm = T),
-        sum(computing_population$SUCCESSFUL_PROCEDURE, na.rm = T),
-        sum(computing_population$CALL_911, na.rm = T),
-        sum(computing_population$LAST_SUCCESSFUL_PROCEDURE, na.rm = T),
-        sum(computing_population$NUMERATOR2, na.rm = T),
-        sum(computing_population$NUMERATOR3, na.rm = T),
-        sum(computing_population$NUMERATOR, na.rm = T),
-        nrow(adult_pop),
-        nrow(peds_pop),
-        nrow(computing_population)
-      )
-    )
-
-  }
-
-    # get the populations of interest
-
-    cli::cli_progress_update(set = 16, id = progress_bar_population, force = T)
-
-    # gather data into a list for multi-use output
-    airway.18.population <- list(
-      filter_process = filter_counts,
-      adults = adult_pop,
-      peds = peds_pop
-    )
-
-  cli::cli_progress_done(id = progress_bar_population)
-
-  return(airway.18.population)
-
-  }
-
-}

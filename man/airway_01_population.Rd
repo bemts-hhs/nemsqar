@@ -25,7 +25,8 @@ airway_01_population(
   eprocedures_02_col,
   eprocedures_03_col,
   eprocedures_05_col,
-  eprocedures_06_col
+  eprocedures_06_col,
+  do_not_count = TRUE
 )
 }
 \arguments{
