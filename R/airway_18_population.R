@@ -91,7 +91,7 @@
 #'          )
 #'}
 #'
-#' @author Nicolas Foss, Ed.D., MS
+#' @author Nicolas Foss, Ed.D., MS, Samuel Kordik, BBA, BS
 #'
 #' @export
 #'
@@ -225,7 +225,7 @@ airway_18_population <- function(df = NULL,
 
     ####### CREATE SEPARATE TABLES FROM DF IF TABLES ARE MISSING #######
 
-    if(all(
+    if (all(
       is.null(patient_scene_table),
       is.null(response_table),
       is.null(airway_table),
@@ -275,7 +275,7 @@ airway_18_population <- function(df = NULL,
       procedures_datetime <- rlang::enquo(eprocedures_01_col)
       airway_datetime <- rlang::enquo(eairway_02_col)
 
-      if(!rlang::quo_is_null(airway_datetime)) {
+      if (!rlang::quo_is_null(airway_datetime)) {
 
         # Validate the datetime fields in the df
         if ((!lubridate::is.Date(df[[rlang::as_name(airway_datetime)]]) &
@@ -368,8 +368,13 @@ airway_18_population <- function(df = NULL,
         ) |>
         dplyr::distinct()
 
+      if (all(is.na(procedures_table[[rlang::as_name(rlang::enquo(eprocedures_03_col))]]))) {
+        cli::cli_warn("eprocedures_03_col is entirely missing. Returning an empty result.")
+        return(tibble::tibble())
+      }
 
-    } else if( # else continue with the tables passed to the applicable arguments
+
+    } else if ( # else continue with the tables passed to the applicable arguments
 
       all(
         !is.null(patient_scene_table),
@@ -429,7 +434,7 @@ airway_18_population <- function(df = NULL,
       procedures_datetime <- rlang::enquo(eprocedures_01_col)
       airway_datetime <- rlang::enquo(eairway_02_col)
 
-      if(!rlang::quo_is_null(airway_datetime)) {
+      if (!rlang::quo_is_null(airway_datetime)) {
 
         # Validate the datetime fields in the df
         if ((!lubridate::is.Date(airway_table[[rlang::as_name(airway_datetime)]]) &
@@ -445,7 +450,7 @@ airway_18_population <- function(df = NULL,
 
         }
 
-      } else if(rlang::quo_is_null(airway_datetime)) {
+      } else if (rlang::quo_is_null(airway_datetime)) {
 
         # Validate the datetime fields in the df
         if ((!lubridate::is.Date(vitals_table[[rlang::as_name(vitals_datetime)]]) &
@@ -471,7 +476,6 @@ airway_18_population <- function(df = NULL,
                       {{ eresponse_05_col }}
         ) |>
         dplyr::distinct()
-
 
       # airway
       airway_table <- airway_table |>
@@ -499,6 +503,12 @@ airway_18_population <- function(df = NULL,
                       {{ eprocedures_06_col }}
         ) |>
         dplyr::distinct()
+
+      if (all(is.na(procedures_table[[rlang::as_name(rlang::enquo(eprocedures_03_col))]]))) {
+        cli::cli_warn("eprocedures_03_col is entirely missing. Returning an empty result.")
+        return(tibble::tibble())
+      }
+
 
     }
 
@@ -662,7 +672,7 @@ airway_18_population <- function(df = NULL,
       cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
 
       # optionally use eairway fields
-      if(
+      if (
 
         all(
           !rlang::quo_is_null(airway_datetime),
@@ -720,10 +730,10 @@ airway_18_population <- function(df = NULL,
         # deal with NA or Inf values
         computing_population_dev <- computing_population_dev |>
           dplyr::mutate(dplyr::across(tidyselect::matches("after_procedure|waveform"), ~ dplyr::if_else(is.na(.) | is.infinite(.), 0, .)),
-                        NUMERATOR = as.integer(waveform_etc02_used == 1 & (vitals_after_procedure_waveform + airway_after_procedure) > 0)
+                        NUMERATOR = as.integer((vitals_after_procedure_waveform + airway_after_procedure_waveform) > 1)
                         )
 
-      } else if( # if no airway fields are passed
+      } else if ( # if no airway fields are passed
 
           all(
             rlang::quo_is_null(airway_datetime),
@@ -837,7 +847,7 @@ airway_18_population <- function(df = NULL,
 
 
       # optionally use eairway fields
-      if(
+      if (
 
         all(
           !rlang::quo_is_null(airway_datetime),
@@ -879,7 +889,7 @@ airway_18_population <- function(df = NULL,
           )
         )
 
-      } else if(
+      } else if (
 
           all(
             rlang::quo_is_null(airway_datetime),

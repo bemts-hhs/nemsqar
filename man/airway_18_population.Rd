@@ -144,5 +144,5 @@ airway_18_population(df = NULL,
 
 }
 \author{
-Nicolas Foss, Ed.D., MS
+Nicolas Foss, Ed.D., MS, Samuel Kordik, BBA, BS
 }

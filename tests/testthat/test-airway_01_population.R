@@ -47,7 +47,7 @@ testthat::test_that("airway_01_population handles missing values gracefully", {
 
   missing_data <- nemsqar_procedures_table
   missing_data$`Procedure Performed Description And Code (eProcedures.03)` <- NA  # Set all to NA
-  result <- airway_01_population(patient_scene_table = nemsqar_patient_scene_table,
+  expect_warning(airway_01_population(patient_scene_table = nemsqar_patient_scene_table,
                                  arrest_table = nemsqar_arrest_table,
                                  response_table = nemsqar_response_table,
                                  vitals_table = nemsqar_vitals_table,
@@ -66,10 +66,7 @@ testthat::test_that("airway_01_population handles missing values gracefully", {
                                  eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
                                  eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
                                  eprocedures_06_col = `Procedure Successful (eProcedures.06)`
-                                 )
-
-  testthat::expect_type(result, "list")
-  testthat::expect_true(nrow(result$initial_population) == 0)
+                                 ))
 
 })
 

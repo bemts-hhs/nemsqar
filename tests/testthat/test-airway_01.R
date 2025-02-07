@@ -207,6 +207,6 @@ testthat::test_that("airway_01 correctly processes complete fact tables", {
   testthat::expect_true(all(c("Adult", "Peds") %in% result$pop))
 
   # Ensure denominator is non-zero (indicating valid patient inclusion)
-  testthat::expect_false(all(result$denominator > 0, na.rm = TRUE))
+  testthat::expect_true(all(result$denominator > 0, na.rm = TRUE))
 
 })

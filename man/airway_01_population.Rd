@@ -25,8 +25,7 @@ airway_01_population(
   eprocedures_02_col,
   eprocedures_03_col,
   eprocedures_05_col,
-  eprocedures_06_col,
-  do_not_count = TRUE
+  eprocedures_06_col
 )
 }
 \arguments{
@@ -103,6 +102,48 @@ A list that contains the following:
 \description{
 This function processes and analyzes the dataset to generate the populations
 of interest needed to perform calculations to obtain performance data.
+}
+\examples{
+
+\dontrun{
+
+# If you are sourcing your data from a SQL database connection
+# or if you have your data in several different tables,
+# you can pass table inputs versus a single data.frame or tibble
+
+# Get the applicable tables from `nemsqar`
+data("nemsqar_arrest_table")
+data("nemsqar_patient_scene_table")
+data("nemsqar_response_table")
+data("nemsqar_vitals_table")
+data("nemsqar_procedures_table")
+
+# Run the function
+
+airway_01_population(df = NULL,
+         patient_scene_table = nemsqar_patient_scene_table,
+         procedures_table = nemsqar_procedures_table,
+         vitals_table = nemsqar_vitals_table,
+         arrest_table = nemsqar_arrest_table,
+         response_table = nemsqar_response_table,
+         erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+         incident_date_col = `Incident Date`,
+         patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+         epatient_15_col = `Patient Age (ePatient.15)`,
+         epatient_16_col = `Patient Age Units (ePatient.16)`,
+         eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+         eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+         eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+         eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+         eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
+         eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
+         earrest_01_col = `Cardiac Arrest During EMS Event With Code (eArrest.01)`,
+         evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+         evitals_06_col = `Vitals Systolic Blood Pressure SBP (eVitals.06)`,
+         evitals_12_col = `Vitals Pulse Oximetry (eVitals.12)`
+         )
+}
+
 }
 \author{
 Samuel Kordik, BBA, BS, Nicolas Foss Ed.D., MS

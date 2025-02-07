@@ -49,6 +49,10 @@ utils::globalVariables(c(
   "patient_age_days_28", "patient_age_in_years_10_plus",
   "patient_age_in_years_1_9", "patient_age_in_years_multiplied",
   "range_bounds_after", "range_bounds_before", "successful_procedure_data",
-  "target_procedures", "within_range_after", "within_range_before"
+  "target_procedures", "within_range_after", "within_range_before",
+  "SBP_threshold", "airway_after_procedure", "airway_after_procedure_waveform",
+  "first_attempt", "first_successful_attempt", "numerator1_sbp", "numerator2_sbp",
+  "vitals_after_procedure", "vitals_after_procedure_waveform",
+  "waveform_etc02_5", "waveform_etc02_used"
   )
 )
