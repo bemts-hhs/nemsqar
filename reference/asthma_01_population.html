@@ -162,6 +162,46 @@ a single comma-separated list.</p></dd>
     <p>Nicolas Foss, Ed.D., MS</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># If you are sourcing your data from a SQL database connection</span></span></span>
+<span class="r-in"><span><span class="co"># or if you have your data in several different tables,</span></span></span>
+<span class="r-in"><span><span class="co"># you can pass table inputs versus a single data.frame or tibble</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Get the applicable tables from `nemsqar`</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_medications_table"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_patient_scene_table"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_response_table"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_situation_table"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="fu">asthma_01_population</span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>patient_scene_table <span class="op">=</span> <span class="va">nemsqar_patient_scene_table</span>,</span></span>
+<span class="r-in"><span>response_table <span class="op">=</span> <span class="va">nemsqar_response_table</span>,</span></span>
+<span class="r-in"><span>situation_table <span class="op">=</span> <span class="va">nemsqar_situation_table</span>,</span></span>
+<span class="r-in"><span>medications_table <span class="op">=</span> <span class="va">nemsqar_medications_table</span>,</span></span>
+<span class="r-in"><span>erecord_01_col <span class="op">=</span> <span class="va">`Incident Patient Care Report Number - PCR`</span>,</span></span>
+<span class="r-in"><span>incident_date_col <span class="op">=</span> <span class="va">`Incident Date`</span>,</span></span>
+<span class="r-in"><span>patient_dob_col <span class="op">=</span> <span class="va">`Patient Date Of Birth`</span>,</span></span>
+<span class="r-in"><span>epatient_15_col <span class="op">=</span> <span class="va">`Patient Age`</span>,</span></span>
+<span class="r-in"><span>epatient_16_col <span class="op">=</span> <span class="va">`Patient Age Units`</span>,</span></span>
+<span class="r-in"><span>eresponse_05_col <span class="op">=</span> <span class="va">`Response Type Of Service Requested With Code`</span>,</span></span>
+<span class="r-in"><span>esituation_11_col <span class="op">=</span></span></span>
+<span class="r-in"><span><span class="va">`Situation Provider Primary Impression Code And Description`</span>,</span></span>
+<span class="r-in"><span>esituation_12_col <span class="op">=</span></span></span>
+<span class="r-in"><span><span class="va">`Situation Provider Secondary Impression Description And Code`</span>,</span></span>
+<span class="r-in"><span>emedications_03_col <span class="op">=</span></span></span>
+<span class="r-in"><span><span class="va">`Medication Given or Administered Description And RXCUI Code`</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
