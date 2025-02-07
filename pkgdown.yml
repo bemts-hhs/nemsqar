@@ -2,7 +2,7 @@ pandoc: 3.1.11
 pkgdown: 2.1.1
 pkgdown_sha: ~
 articles: {}
-last_built: 2025-02-04T23:56Z
+last_built: 2025-02-07T04:47Z
 urls:
   reference: https://bemts-hhs.github.io/nemsqar/reference
   article: https://bemts-hhs.github.io/nemsqar/articles
