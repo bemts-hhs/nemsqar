@@ -1,0 +1,769 @@
+pkgname <- "nemsqar"
+source(file.path(R.home("share"), "R", "examples-header.R"))
+options(warn = 1)
+options(pager = "console")
+base::assign(".ExTimings", "nemsqar-Ex.timings", pos = 'CheckExEnv')
+base::cat("name\tuser\tsystem\telapsed\n", file=base::get(".ExTimings", pos = 'CheckExEnv'))
+base::assign(".format_ptime",
+function(x) {
+  if(!is.na(x[4L])) x[1L] <- x[1L] + x[4L]
+  if(!is.na(x[5L])) x[2L] <- x[2L] + x[5L]
+  options(OutDec = '.')
+  format(x[1L:3L], digits = 7L)
+},
+pos = 'CheckExEnv')
+
+### * </HEADER>
+library('nemsqar')
+
+base::assign(".oldSearch", base::search(), pos = 'CheckExEnv')
+base::assign(".old_wd", base::getwd(), pos = 'CheckExEnv')
+cleanEx()
+nameEx("airway_01")
+### * airway_01
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: airway_01
+### Title: Airway-01 Calculation
+### Aliases: airway_01
+
+### ** Examples
+
+
+## Not run: 
+##D 
+##D # If you are sourcing your data from a SQL database connection
+##D # or if you have your data in several different tables,
+##D # you can pass table inputs versus a single data.frame or tibble
+##D 
+##D # Get the applicable tables from `nemsqar`
+##D data("nemsqar_arrest_table")
+##D data("nemsqar_patient_scene_table")
+##D data("nemsqar_response_table")
+##D data("nemsqar_vitals_table")
+##D data("nemsqar_procedures_table")
+##D 
+##D # Run the function
+##D 
+##D airway_01(df = NULL,
+##D          patient_scene_table = nemsqar_patient_scene_table,
+##D          procedures_table = nemsqar_procedures_table,
+##D          vitals_table = nemsqar_vitals_table,
+##D          arrest_table = nemsqar_arrest_table,
+##D          response_table = nemsqar_response_table,
+##D          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+##D          incident_date_col = `Incident Date`,
+##D          patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+##D          epatient_15_col = `Patient Age (ePatient.15)`,
+##D          epatient_16_col = `Patient Age Units (ePatient.16)`,
+##D          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+##D          eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+##D          eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+##D          eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+##D          eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
+##D          eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
+##D          earrest_01_col = `Cardiac Arrest During EMS Event With Code (eArrest.01)`,
+##D          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+##D          evitals_06_col = `Vitals Systolic Blood Pressure SBP (eVitals.06)`,
+##D          evitals_12_col = `Vitals Pulse Oximetry (eVitals.12)`
+##D          )
+## End(Not run)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("airway_01", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("airway_01_population")
+### * airway_01_population
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: airway_01_population
+### Title: Airway-01 Population
+### Aliases: airway_01_population
+
+### ** Examples
+
+
+## Not run: 
+##D 
+##D # If you are sourcing your data from a SQL database connection
+##D # or if you have your data in several different tables,
+##D # you can pass table inputs versus a single data.frame or tibble
+##D 
+##D # Get the applicable tables from `nemsqar`
+##D data("nemsqar_arrest_table")
+##D data("nemsqar_patient_scene_table")
+##D data("nemsqar_response_table")
+##D data("nemsqar_vitals_table")
+##D data("nemsqar_procedures_table")
+##D 
+##D # Run the function
+##D 
+##D airway_01_population(df = NULL,
+##D          patient_scene_table = nemsqar_patient_scene_table,
+##D          procedures_table = nemsqar_procedures_table,
+##D          vitals_table = nemsqar_vitals_table,
+##D          arrest_table = nemsqar_arrest_table,
+##D          response_table = nemsqar_response_table,
+##D          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+##D          incident_date_col = `Incident Date`,
+##D          patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+##D          epatient_15_col = `Patient Age (ePatient.15)`,
+##D          epatient_16_col = `Patient Age Units (ePatient.16)`,
+##D          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+##D          eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+##D          eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+##D          eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+##D          eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
+##D          eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
+##D          earrest_01_col = `Cardiac Arrest During EMS Event With Code (eArrest.01)`,
+##D          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+##D          evitals_06_col = `Vitals Systolic Blood Pressure SBP (eVitals.06)`,
+##D          evitals_12_col = `Vitals Pulse Oximetry (eVitals.12)`
+##D          )
+## End(Not run)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("airway_01_population", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("airway_05")
+### * airway_05
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: airway_05
+### Title: Airway-05 Calculation
+### Aliases: airway_05
+
+### ** Examples
+
+
+## Not run: 
+##D 
+##D # If you are sourcing your data from a SQL database connection
+##D # or if you have your data in several different tables,
+##D # you can pass table inputs versus a single data.frame or tibble
+##D 
+##D # Get the applicable tables from `nemsqar`
+##D data("nemsqar_arrest_table")
+##D data("nemsqar_patient_scene_table")
+##D data("nemsqar_response_table")
+##D data("nemsqar_vitals_table")
+##D data("nemsqar_procedures_table")
+##D 
+##D # Run the function
+##D 
+##D airway_05(df = NULL,
+##D          patient_scene_table = nemsqar_patient_scene_table,
+##D          procedures_table = nemsqar_procedures_table,
+##D          vitals_table = nemsqar_vitals_table,
+##D          arrest_table = nemsqar_arrest_table,
+##D          response_table = nemsqar_response_table,
+##D          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+##D          incident_date_col = `Incident Date`,
+##D          patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+##D          epatient_15_col = `Patient Age (ePatient.15)`,
+##D          epatient_16_col = `Patient Age Units (ePatient.16)`,
+##D          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+##D          eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+##D          eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+##D          eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+##D          earrest_01_col = `Cardiac Arrest During EMS Event With Code (eArrest.01)`,
+##D          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+##D          evitals_012_col = `Vitals Pulse Oximetry (eVitals.12)`
+##D          )
+## End(Not run)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("airway_05", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("airway_05_population")
+### * airway_05_population
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: airway_05_population
+### Title: Airway-05 Population
+### Aliases: airway_05_population
+
+### ** Examples
+
+
+## Not run: 
+##D 
+##D # If you are sourcing your data from a SQL database connection
+##D # or if you have your data in several different tables,
+##D # you can pass table inputs versus a single data.frame or tibble
+##D 
+##D # Get the applicable tables from `nemsqar`
+##D data("nemsqar_arrest_table")
+##D data("nemsqar_patient_scene_table")
+##D data("nemsqar_response_table")
+##D data("nemsqar_vitals_table")
+##D data("nemsqar_procedures_table")
+##D 
+##D # Run the function
+##D 
+##D airway_05_population(df = NULL,
+##D          patient_scene_table = nemsqar_patient_scene_table,
+##D          procedures_table = nemsqar_procedures_table,
+##D          vitals_table = nemsqar_vitals_table,
+##D          arrest_table = nemsqar_arrest_table,
+##D          response_table = nemsqar_response_table,
+##D          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+##D          incident_date_col = `Incident Date`,
+##D          patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+##D          epatient_15_col = `Patient Age (ePatient.15)`,
+##D          epatient_16_col = `Patient Age Units (ePatient.16)`,
+##D          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+##D          eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+##D          eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+##D          eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+##D          earrest_01_col = `Cardiac Arrest During EMS Event With Code (eArrest.01)`,
+##D          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+##D          evitals_012_col = `Vitals Pulse Oximetry (eVitals.12)`
+##D          )
+## End(Not run)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("airway_05_population", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("airway_18")
+### * airway_18
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: airway_18
+### Title: Airway-18 Calculation
+### Aliases: airway_18
+
+### ** Examples
+
+
+## Not run: 
+##D 
+##D # If you are sourcing your data from a SQL database connection
+##D # or if you have your data in several different tables,
+##D # you can pass table inputs versus a single data.frame or tibble
+##D 
+##D # Get the applicable tables from `nemsqar`
+##D data("nemsqar_airway_table")
+##D data("nemsqar_patient_scene_table")
+##D data("nemsqar_response_table")
+##D data("nemsqar_vitals_table")
+##D data("nemsqar_procedures_table")
+##D 
+##D # Run the function
+##D 
+##D airway_18(df = NULL,
+##D          patient_scene_table = nemsqar_patient_scene_table,
+##D          procedures_table = nemsqar_procedures_table,
+##D          vitals_table = nemsqar_vitals_table,
+##D          airway_table = nemsqar_airway_table,
+##D          response_table = nemsqar_response_table,
+##D          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+##D          incident_date_col = `Incident Date`,
+##D          patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+##D          epatient_15_col = `Patient Age (ePatient.15)`,
+##D          epatient_16_col = `Patient Age Units (ePatient.16)`,
+##D          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+##D          eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+##D          eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+##D          eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+##D          eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
+##D          eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
+##D          eairway_02_col = `Airway Device Placement Confirmation Date Time (eAirway.02)`,
+##D          eairway_04_col = `Airway Device Placement Confirmed Method List (eAirway.04)`,
+##D          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+##D          evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`
+##D          )
+##D 
+##D # You can also pass a data.frame that has all the fields
+##D # necessary to calculate the measure, and `airway_18` will
+##D # take care of any one-to-many or many-to-many relationships for you
+##D 
+##D # Load the data.frame from the package
+##D data("nemsqar_airway_18_df")
+##D 
+##D # Run the function
+##D 
+##D airway_18(df = nemsqar_airway_18_df,
+##D          patient_scene_table = NULL,
+##D          procedures_table = NULL,
+##D          vitals_table = NULL,
+##D          airway_table = NULL,
+##D          response_table = NULL,
+##D          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+##D          incident_date_col = `Incident Date`,
+##D          patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+##D          epatient_15_col = `Patient Age (ePatient.15)`,
+##D          epatient_16_col = `Patient Age Units (ePatient.16)`,
+##D          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+##D          eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+##D          eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+##D          eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+##D          eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
+##D          eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
+##D          eairway_02_col = `Airway Device Placement Confirmation Date Time (eAirway.02)`,
+##D          eairway_04_col = `Airway Device Placement Confirmed Method List (eAirway.04)`,
+##D          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+##D          evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`
+##D          )
+##D 
+## End(Not run)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("airway_18", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("airway_18_population")
+### * airway_18_population
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: airway_18_population
+### Title: Airway-18 Populations
+### Aliases: airway_18_population
+
+### ** Examples
+
+
+## Not run: 
+##D 
+##D # If you are sourcing your data from a SQL database connection
+##D # or if you have your data in several different tables,
+##D # you can pass table inputs versus a single data.frame or tibble
+##D 
+##D # Get the applicable tables from `nemsqar`
+##D data("nemsqar_airway_table")
+##D data("nemsqar_patient_scene_table")
+##D data("nemsqar_response_table")
+##D data("nemsqar_vitals_table")
+##D data("nemsqar_procedures_table")
+##D 
+##D # Run the function
+##D 
+##D airway_18_population(df = NULL,
+##D          patient_scene_table = nemsqar_patient_scene_table,
+##D          procedures_table = nemsqar_procedures_table,
+##D          vitals_table = nemsqar_vitals_table,
+##D          airway_table = nemsqar_airway_table,
+##D          response_table = nemsqar_response_table,
+##D          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+##D          incident_date_col = `Incident Date`,
+##D          patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+##D          epatient_15_col = `Patient Age (ePatient.15)`,
+##D          epatient_16_col = `Patient Age Units (ePatient.16)`,
+##D          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+##D          eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+##D          eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+##D          eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+##D          eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
+##D          eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
+##D          eairway_02_col = `Airway Device Placement Confirmation Date Time (eAirway.02)`,
+##D          eairway_04_col = `Airway Device Placement Confirmed Method List (eAirway.04)`,
+##D          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+##D          evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`
+##D          )
+## End(Not run)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("airway_18_population", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("asthma_01")
+### * asthma_01
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: asthma_01
+### Title: Asthma-01 Calculation
+### Aliases: asthma_01
+
+### ** Examples
+
+
+## Not run: 
+##D 
+##D # If you are sourcing your data from a SQL database connection
+##D # or if you have your data in several different tables,
+##D # you can pass table inputs versus a single data.frame or tibble
+##D 
+##D # Get the applicable tables from `nemsqar`
+##D data("nemsqar_medications_table")
+##D data("nemsqar_patient_scene_table")
+##D data("nemsqar_response_table")
+##D data("nemsqar_situation_table")
+##D 
+##D asthma_01(
+##D 
+##D patient_scene_table = nemsqar_patient_scene_table,
+##D response_table = nemsqar_response_table,
+##D situation_table = nemsqar_situation_table,
+##D medications_table = nemsqar_medications_table,
+##D erecord_01_col = `Incident Patient Care Report Number - PCR`,
+##D incident_date_col = `Incident Date`,
+##D patient_dob_col = `Patient Date Of Birth`,
+##D epatient_15_col = `Patient Age`,
+##D epatient_16_col = `Patient Age Units`,
+##D eresponse_05_col = `Response Type Of Service Requested With Code`,
+##D esituation_11_col =
+##D `Situation Provider Primary Impression Code And Description`,
+##D esituation_12_col =
+##D `Situation Provider Secondary Impression Description And Code`,
+##D emedications_03_col =
+##D `Medication Given or Administered Description And RXCUI Code`
+##D 
+##D )
+##D 
+## End(Not run)
+
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("asthma_01", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("asthma_01_population")
+### * asthma_01_population
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: asthma_01_population
+### Title: Asthma-01 Populations
+### Aliases: asthma_01_population
+
+### ** Examples
+
+
+## Not run: 
+##D 
+##D # If you are sourcing your data from a SQL database connection
+##D # or if you have your data in several different tables,
+##D # you can pass table inputs versus a single data.frame or tibble
+##D 
+##D # Get the applicable tables from `nemsqar`
+##D data("nemsqar_medications_table")
+##D data("nemsqar_patient_scene_table")
+##D data("nemsqar_response_table")
+##D data("nemsqar_situation_table")
+##D 
+##D asthma_01_population(
+##D 
+##D patient_scene_table = nemsqar_patient_scene_table,
+##D response_table = nemsqar_response_table,
+##D situation_table = nemsqar_situation_table,
+##D medications_table = nemsqar_medications_table,
+##D erecord_01_col = `Incident Patient Care Report Number - PCR`,
+##D incident_date_col = `Incident Date`,
+##D patient_dob_col = `Patient Date Of Birth`,
+##D epatient_15_col = `Patient Age`,
+##D epatient_16_col = `Patient Age Units`,
+##D eresponse_05_col = `Response Type Of Service Requested With Code`,
+##D esituation_11_col =
+##D `Situation Provider Primary Impression Code And Description`,
+##D esituation_12_col =
+##D `Situation Provider Secondary Impression Description And Code`,
+##D emedications_03_col =
+##D `Medication Given or Administered Description And RXCUI Code`
+##D 
+##D )
+##D 
+## End(Not run)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("asthma_01_population", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("nemsqar_airway_table")
+### * nemsqar_airway_table
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: nemsqar_airway_table
+### Title: Synthetic Test Data for eAirway Fields in National EMS
+###   Information System
+### Aliases: nemsqar_airway_table
+### Keywords: datasets
+
+### ** Examples
+
+data(nemsqar_airway_table)
+head(nemsqar_airway_table)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("nemsqar_airway_table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("nemsqar_arrest_table")
+### * nemsqar_arrest_table
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: nemsqar_arrest_table
+### Title: Synthetic Test Data for eArrest Fields in National EMS
+###   Information System
+### Aliases: nemsqar_arrest_table
+### Keywords: datasets
+
+### ** Examples
+
+data(nemsqar_arrest_table)
+head(nemsqar_arrest_table)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("nemsqar_arrest_table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("nemsqar_disposition_table")
+### * nemsqar_disposition_table
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: nemsqar_disposition_table
+### Title: Synthetic Test Data for eDisposition Fields in National EMS
+###   Information System
+### Aliases: nemsqar_disposition_table
+### Keywords: datasets
+
+### ** Examples
+
+data(nemsqar_disposition_table)
+head(nemsqar_disposition_table)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("nemsqar_disposition_table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("nemsqar_exam_table")
+### * nemsqar_exam_table
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: nemsqar_exam_table
+### Title: Synthetic Test Data for eExam Fields in National EMS Information
+###   System
+### Aliases: nemsqar_exam_table
+### Keywords: datasets
+
+### ** Examples
+
+data(nemsqar_exam_table)
+head(nemsqar_exam_table)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("nemsqar_exam_table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("nemsqar_injury_table")
+### * nemsqar_injury_table
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: nemsqar_injury_table
+### Title: Synthetic Test Data for eInjury Fields in National EMS
+###   Information System
+### Aliases: nemsqar_injury_table
+### Keywords: datasets
+
+### ** Examples
+
+data(nemsqar_injury_table)
+head(nemsqar_injury_table)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("nemsqar_injury_table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("nemsqar_medications_table")
+### * nemsqar_medications_table
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: nemsqar_medications_table
+### Title: Synthetic Test Data for eMedications Fields in National EMS
+###   Information System
+### Aliases: nemsqar_medications_table
+### Keywords: datasets
+
+### ** Examples
+
+data(nemsqar_medications_table)
+head(nemsqar_medications_table)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("nemsqar_medications_table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("nemsqar_patient_scene_table")
+### * nemsqar_patient_scene_table
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: nemsqar_patient_scene_table
+### Title: Synthetic ePatient Data from the National Emergency Medical
+###   Services Information System (NEMSIS)
+### Aliases: nemsqar_patient_scene_table
+### Keywords: datasets
+
+### ** Examples
+
+data(nemsqar_patient_scene_table)
+dplyr::glimpse(nemsqar_patient_scene_table)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("nemsqar_patient_scene_table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("nemsqar_procedures_table")
+### * nemsqar_procedures_table
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: nemsqar_procedures_table
+### Title: Synthetic eProcedures Data from the National Emergency Medical
+###   Services Information System (NEMSIS)
+### Aliases: nemsqar_procedures_table
+### Keywords: datasets
+
+### ** Examples
+
+data(nemsqar_procedures_table)
+dplyr::glimpse(nemsqar_procedures_table)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("nemsqar_procedures_table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("nemsqar_situation_table")
+### * nemsqar_situation_table
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: nemsqar_situation_table
+### Title: Synthetic Test Data for eSituation Fields in National EMS
+###   Information System
+### Aliases: nemsqar_situation_table
+### Keywords: datasets
+
+### ** Examples
+
+data(nemsqar_situation_table)
+head(nemsqar_situation_table)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("nemsqar_situation_table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("nemsqar_vitals_table")
+### * nemsqar_vitals_table
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: nemsqar_vitals_table
+### Title: Synthetic eVitals Data for NEMSIS from the National Emergency
+###   Medical Services Information System (NEMSIS)
+### Aliases: nemsqar_vitals_table
+### Keywords: datasets
+
+### ** Examples
+
+data(nemsqar_vitals_table)
+dplyr::glimpse(nemsqar_vitals_table)
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("nemsqar_vitals_table", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+cleanEx()
+nameEx("pretty_percent")
+### * pretty_percent
+
+flush(stderr()); flush(stdout())
+
+base::assign(".ptime", proc.time(), pos = "CheckExEnv")
+### Name: pretty_percent
+### Title: Format Numeric Variables as Percentages
+### Aliases: pretty_percent
+
+### ** Examples
+
+# Example usage:
+pretty_percent(0.12345)  # Default decimal places
+pretty_percent(0.12345, n_decimal = 2)  # Two decimal places
+pretty_percent(c(0.1, 0.25, 0.3333), n_decimal = 1)  # Vector input
+
+
+
+
+base::assign(".dptime", (proc.time() - get(".ptime", pos = "CheckExEnv")), pos = "CheckExEnv")
+base::cat("pretty_percent", base::get(".format_ptime", pos = 'CheckExEnv')(get(".dptime", pos = "CheckExEnv")), "\n", file=base::get(".ExTimings", pos = 'CheckExEnv'), append=TRUE, sep="\t")
+### * <FOOTER>
+###
+cleanEx()
+options(digits = 7L)
+base::cat("Time elapsed: ", proc.time() - base::get("ptime", pos = 'CheckExEnv'),"\n")
+grDevices::dev.off()
+###
+### Local variables: ***
+### mode: outline-minor ***
+### outline-regexp: "\\(> \\)?### [*]+" ***
+### End: ***
+quit('no')

@@ -1,0 +1,145 @@
+###_____________________________________________________________________________
+# 2023 data
+###_____________________________________________________________________________
+
+tbi_data <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tbi01_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_")
+
+# clean
+tbi_data_clean <- tbi_data |>
+  dplyr::mutate(dplyr::across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ lubridate::mdy(
+    stringr::str_remove_all(string = ., pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))) |>
+  dplyr::mutate(dplyr::across(where(is.character), ~ stringr::str_remove_all(., pattern = '"'))) |>
+  dplyr::mutate(dplyr::across(where(is.character), ~ tidyr::replace_na(., "missing")),
+         TRANSPORTS_CONCATENATE = stringr::str_c(TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30,
+                                        ", ",
+                                        DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112
+         ))
+
+###_____________________________________________________________________________
+# try the function
+###_____________________________________________________________________________
+
+tbi_data_clean  |>
+  tbi_01(erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+         incident_date_col = INCIDENT_DATE,
+         patient_dob_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+         epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+         epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+         eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+         esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
+         esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
+         evitals_23_col = PATIENT_LOW_TOTAL_GLASGOW_COMA_SCORE_GCS_E_VITALS_23,
+         evitals_26_col = VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26,
+         transport_disposition_col = c(TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30,
+                                       DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112
+                                       ),
+         evitals_12_col = PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12,
+         evitals_16_col = PATIENT_INITIAL_CARBON_DIOXIDE_CO2_LEVEL_E_VITALS_16,
+         evitals_06_col = PATIENT_INITIAL_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06
+         )
+
+# use the population function
+tbi_population_df <- tbi_data_clean  |>
+  tbi_01_population(
+         erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+         incident_date_col = INCIDENT_DATE,
+         patient_dob_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+         epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+         epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+         eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+         esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
+         esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
+         evitals_23_col = PATIENT_LOW_TOTAL_GLASGOW_COMA_SCORE_GCS_E_VITALS_23,
+         evitals_26_col = VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26,
+         transport_disposition_col = TRANSPORTS_CONCATENATE,
+         evitals_12_col = PATIENT_INITIAL_PULSE_OXIMETRY_E_VITALS_12,
+         evitals_16_col = PATIENT_INITIAL_CARBON_DIOXIDE_CO2_LEVEL_E_VITALS_16,
+         evitals_06_col = PATIENT_INITIAL_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06
+         )
+
+###_____________________________________________________________________________
+### TBI-01 Test using the new table functions
+###_____________________________________________________________________________
+
+# data import
+
+# patient table
+tbi_01_patient_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_patient_scene_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(dplyr::across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~  lubridate::mdy(stringr::str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  )))
+
+# response table
+tbi_01_response_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_response_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# situation table
+tbi_01_situation_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_situation_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# disposition table
+tbi_01_disposition_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_disposition_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# medications table
+tbi_01_vitals_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_vitals_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# run the function
+tbi_01(patient_scene_table = tbi_01_patient_table,
+         response_table = tbi_01_response_table,
+         situation_table = tbi_01_situation_table,
+         disposition_table = tbi_01_disposition_table,
+         vitals_table = tbi_01_vitals_table,
+         erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+         incident_date_col = INCIDENT_DATE,
+         patient_dob_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+         epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+         epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+         eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+         esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
+         esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
+         evitals_23_col = VITALS_TOTAL_GLASGOW_COMA_SCORE_GCS_E_VITALS_23,
+         evitals_26_col = VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26,
+         transport_disposition_col = c(TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30,
+                                       DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112
+                                       ),
+         evitals_12_col = VITALS_PULSE_OXIMETRY_E_VITALS_12,
+         evitals_16_col = VITALS_CARBON_DIOXIDE_CO2_E_VITALS_16,
+         evitals_06_col = VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06
+       )
+
+# run the population function
+tbi_population <- tbi_01_population(
+  patient_scene_table = tbi_01_patient_table,
+  response_table = tbi_01_response_table,
+  situation_table = tbi_01_situation_table,
+  disposition_table = tbi_01_disposition_table,
+  vitals_table = tbi_01_vitals_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = INCIDENT_DATE,
+  patient_dob_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
+  esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
+  evitals_23_col = VITALS_TOTAL_GLASGOW_COMA_SCORE_GCS_E_VITALS_23,
+  evitals_26_col = VITALS_LEVEL_OF_RESPONSIVENESS_AVPU_E_VITALS_26,
+  transport_disposition_col = c(TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30,
+                                DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112
+                                ),
+  evitals_12_col = VITALS_PULSE_OXIMETRY_E_VITALS_12,
+  evitals_16_col = VITALS_CARBON_DIOXIDE_CO2_E_VITALS_16,
+  evitals_06_col = VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06
+)
