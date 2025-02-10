@@ -21,7 +21,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_dob_col Column that contains the patient's date of birth. This
+#' @param patient_DOB_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col Column giving the calculated age value.
@@ -59,7 +59,7 @@ safety_02 <- function(df = NULL,
                       disposition_table = NULL,
                       erecord_01_col,
                       incident_date_col = NULL,
-                      patient_dob_col = NULL,
+                      patient_DOB_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       eresponse_05_col,
@@ -94,7 +94,7 @@ safety_02 <- function(df = NULL,
                                                   disposition_table = disposition_table,
                                                   erecord_01_col = {{ erecord_01_col }},
                                                   incident_date_col = {{ incident_date_col }},
-                                                  patient_dob_col = {{ patient_dob_col }},
+                                                  patient_DOB_col = {{ patient_DOB_col }},
                                                   epatient_15_col = {{ epatient_15_col }},
                                                   epatient_16_col = {{ epatient_16_col }},
                                                   eresponse_05_col = {{ eresponse_05_col }},
@@ -128,12 +128,12 @@ safety_02 <- function(df = NULL,
     if (run_time_secs >= 60) {
 
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
 
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 
@@ -167,7 +167,7 @@ safety_02 <- function(df = NULL,
     safety_02_populations <- safety_02_population(df = df,
                                                   erecord_01_col = {{ erecord_01_col }},
                                                   incident_date_col = {{ incident_date_col }},
-                                                  patient_dob_col = {{ patient_dob_col }},
+                                                  patient_DOB_col = {{ patient_DOB_col }},
                                                   epatient_15_col = {{ epatient_15_col }},
                                                   epatient_16_col = {{ epatient_16_col }},
                                                   eresponse_05_col = {{ eresponse_05_col }},
@@ -201,12 +201,12 @@ safety_02 <- function(df = NULL,
     if (run_time_secs >= 60) {
 
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
 
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 

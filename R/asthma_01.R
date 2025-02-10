@@ -26,7 +26,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_dob_col Column that contains the patient's date of birth. This
+#' @param patient_DOB_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col Column representing the patient's numeric age agnostic
@@ -75,7 +75,7 @@
 #' medications_table = nemsqar_medications_table,
 #' erecord_01_col = `Incident Patient Care Report Number - PCR`,
 #' incident_date_col = `Incident Date`,
-#' patient_dob_col = `Patient Date Of Birth`,
+#' patient_DOB_col = `Patient Date Of Birth`,
 #' epatient_15_col = `Patient Age`,
 #' epatient_16_col = `Patient Age Units`,
 #' eresponse_05_col = `Response Type Of Service Requested With Code`,
@@ -102,7 +102,7 @@ asthma_01 <- function(df = NULL,
                       medications_table = NULL,
                       erecord_01_col,
                       incident_date_col = NULL,
-                      patient_dob_col = NULL,
+                      patient_DOB_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       eresponse_05_col,
@@ -137,7 +137,7 @@ asthma_01 <- function(df = NULL,
                                                   medications_table = medications_table,
                                                   erecord_01_col = {{ erecord_01_col }},
                                                   incident_date_col = {{ incident_date_col }},
-                                                  patient_dob_col = {{ patient_dob_col }},
+                                                  patient_DOB_col = {{ patient_DOB_col }},
                                                   epatient_15_col = {{ epatient_15_col }},
                                                   epatient_16_col = {{ epatient_16_col }},
                                                   eresponse_05_col = {{ eresponse_05_col }},
@@ -208,7 +208,7 @@ asthma_01 <- function(df = NULL,
                                                   medications_table = medications_table,
                                                   erecord_01_col = {{ erecord_01_col }},
                                                   incident_date_col = {{ incident_date_col }},
-                                                  patient_dob_col = {{ patient_dob_col }},
+                                                  patient_DOB_col = {{ patient_DOB_col }},
                                                   epatient_15_col = {{ epatient_15_col }},
                                                   epatient_16_col = {{ epatient_16_col }},
                                                   eresponse_05_col = {{ eresponse_05_col }},

@@ -73,7 +73,7 @@ testthat::test_that("asthma_01 produces expected results", {
                                  medications_table = medications_table,
                                  erecord_01_col = erecord_01,
                                  incident_date_col = incident_date,
-                                 patient_dob_col = patient_dob,
+                                 patient_DOB_col = patient_dob,
                                  epatient_15_col = epatient_15,
                                  epatient_16_col = epatient_16,
                                  eresponse_05_col = eresponse_05,

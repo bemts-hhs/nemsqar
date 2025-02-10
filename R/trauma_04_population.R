@@ -27,7 +27,7 @@
 #'   identifier.
 #' @param incident_date_col The column indicating the incident date. Must be of
 #'   class `Date` or similar.
-#' @param patient_dob_col The column representing the patient's date of birth.
+#' @param patient_DOB_col The column representing the patient's date of birth.
 #'   Must be of class `Date` or similar.
 #' @param epatient_15_col The column for patient age numeric value.
 #' @param epatient_16_col The column for patient age unit (e.g., "Years",
@@ -81,7 +81,7 @@ trauma_04_population <- function(df = NULL,
                       disposition_table = NULL,
                       erecord_01_col,
                       incident_date_col = NULL,
-                      patient_dob_col = NULL,
+                      patient_DOB_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       esituation_02_col,
@@ -154,7 +154,7 @@ trauma_04_population <- function(df = NULL,
 
       missing(erecord_01_col),
       missing(incident_date_col),
-      missing(patient_dob_col),
+      missing(patient_DOB_col),
       missing(epatient_15_col),
       missing(epatient_16_col),
       missing(esituation_02_col),
@@ -326,12 +326,12 @@ trauma_04_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
       # Use quasiquotation on the date variables to check format
       incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_dob_col)
+      patient_dob <- rlang::enquo(patient_DOB_col)
 
       # Convert quosures to names and check the column classes
       incident_date_name <- rlang::as_name(incident_date)
@@ -343,7 +343,7 @@ trauma_04_population <- function(df = NULL,
            !lubridate::is.POSIXct(patient_scene_table[[patient_dob_name]]))) {
 
         cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both of these variables were not of class {.cls Date} or a similar class. Please format your {.var incident_date_col} and {.var patient_dob_col} to class {.cls Date} or a similar class."
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class. Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or a similar class."
         )
       }
     }
@@ -361,7 +361,7 @@ trauma_04_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -369,7 +369,7 @@ trauma_04_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
     dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
       time1 = {{ incident_date_col }},
-      time2 = {{ patient_dob_col }},
+      time2 = {{ patient_DOB_col }},
       units = "days"
     )) / 365,
 
@@ -391,7 +391,7 @@ trauma_04_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     ))
 
   {
@@ -731,7 +731,7 @@ trauma_04_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -762,7 +762,7 @@ trauma_04_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     ))
 
   {
@@ -855,7 +855,7 @@ trauma_04_population <- function(df = NULL,
 
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -939,7 +939,7 @@ trauma_04_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     )
 
   ) {
@@ -1135,7 +1135,7 @@ trauma_04_population <- function(df = NULL,
     if(
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     )
 
@@ -1143,7 +1143,7 @@ trauma_04_population <- function(df = NULL,
 
       # use quasiquotation on the date variables to check format
       incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_dob_col)
+      patient_dob <- rlang::enquo(patient_DOB_col)
 
       if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
            !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
@@ -1151,7 +1151,7 @@ trauma_04_population <- function(df = NULL,
            !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))) {
 
         cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_dob_col} to class {.cls Date} or similar class."
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
         )
 
       }
@@ -1175,7 +1175,7 @@ trauma_04_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -1208,7 +1208,7 @@ trauma_04_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
     dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
       time1 = {{ incident_date_col }},
-      time2 = {{ patient_dob_col }},
+      time2 = {{ patient_DOB_col }},
       units = "days"
     )) / 365,
 
@@ -1230,7 +1230,7 @@ trauma_04_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     ))
 
   {
@@ -1595,7 +1595,7 @@ trauma_04_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -1626,7 +1626,7 @@ trauma_04_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     ))
 
   {
@@ -1719,7 +1719,7 @@ trauma_04_population <- function(df = NULL,
 
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -1803,7 +1803,7 @@ trauma_04_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     )
 
   ) {

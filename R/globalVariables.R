@@ -53,6 +53,6 @@ utils::globalVariables(c(
   "SBP_threshold", "airway_after_procedure", "airway_after_procedure_waveform",
   "first_attempt", "first_successful_attempt", "numerator1_sbp", "numerator2_sbp",
   "vitals_after_procedure", "vitals_after_procedure_waveform",
-  "waveform_etc02_5", "waveform_etc02_used"
+  "waveform_etc02_5", "waveform_etc02_used", "etc02", "sbp", "sp02", "vitals"
   )
 )

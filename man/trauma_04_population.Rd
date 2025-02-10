@@ -16,7 +16,7 @@ trauma_04_population(
   disposition_table = NULL,
   erecord_01_col,
   incident_date_col = NULL,
-  patient_dob_col = NULL,
+  patient_DOB_col = NULL,
   epatient_15_col,
   epatient_16_col,
   esituation_02_col,
@@ -75,7 +75,7 @@ identifier.}
 \item{incident_date_col}{The column indicating the incident date. Must be of
 class \code{Date} or similar.}
 
-\item{patient_dob_col}{The column representing the patient's date of birth.
+\item{patient_DOB_col}{The column representing the patient's date of birth.
 Must be of class \code{Date} or similar.}
 
 \item{epatient_15_col}{The column for patient age numeric value.}

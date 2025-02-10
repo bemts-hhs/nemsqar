@@ -29,7 +29,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_dob_col Column that contains the patient's date of birth. This
+#' @param patient_DOB_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col Column name indicating the patient age.
@@ -63,7 +63,7 @@ safety_04_population <- function(df = NULL,
                       disposition_table = NULL,
                       erecord_01_col,
                       incident_date_col = NULL,
-                      patient_dob_col = NULL,
+                      patient_DOB_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       eresponse_05_col,
@@ -126,7 +126,7 @@ safety_04_population <- function(df = NULL,
 
       missing(erecord_01_col),
       missing(incident_date_col),
-      missing(patient_dob_col),
+      missing(patient_DOB_col),
       missing(epatient_15_col),
       missing(epatient_16_col),
       missing(eresponse_05_col),
@@ -199,7 +199,7 @@ safety_04_population <- function(df = NULL,
     total = 13,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   progress_bar_population
@@ -220,6 +220,49 @@ safety_04_population <- function(df = NULL,
 
   ) {
 
+    # Ensure all tables are of class `data.frame` or `tibble`
+    if (
+
+      !all(
+        is.data.frame(patient_scene_table) || tibble::is_tibble(patient_scene_table),
+        is.data.frame(response_table) || tibble::is_tibble(response_table),
+        is.data.frame(disposition_table) || tibble::is_tibble(disposition_table),
+        is.data.frame(arrest_table) || tibble::is_tibble(arrest_table),
+        is.data.frame(injury_table) || tibble::is_tibble(injury_table),
+        is.data.frame(procedures_table) || tibble::is_tibble(procedures_table)
+      )
+
+    ) {
+
+      cli::cli_abort(
+        "One or more of the tables passed to {.fn safety_02_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
+      )
+
+    }
+
+    # Validate date columns if provided
+    if (
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) {
+
+      incident_date <- rlang::enquo(incident_date_col)
+      patient_dob <- rlang::enquo(patient_DOB_col)
+
+      if (
+        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
+         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(incident_date)]])) ||
+        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(patient_dob)]]) &
+         !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_dob)]]))
+      ) {
+        cli::cli_abort(
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+        )
+      }
+    }
+
   cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
 
   ###_____________________________________________________________________________
@@ -231,7 +274,7 @@ safety_04_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
 
@@ -239,7 +282,7 @@ safety_04_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
     dplyr::mutate(patient_age_in_years = as.numeric(difftime(
       time1 = {{  incident_date_col  }},
-      time2 = {{  patient_dob_col  }},
+      time2 = {{  patient_DOB_col  }},
       units = "days"
     )) / 365,
 
@@ -257,7 +300,7 @@ safety_04_population <- function(df = NULL,
 
       all(
         is.null(incident_date_col),
-        is.null(patient_dob_col)
+        is.null(patient_DOB_col)
       )) {
 
     final_data <- patient_scene_table |>
@@ -403,7 +446,7 @@ safety_04_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -423,7 +466,7 @@ safety_04_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     )) {
 
     # get the initial population
@@ -513,6 +556,38 @@ safety_04_population <- function(df = NULL,
 
   ) {
 
+    # Ensure df is a data frame or tibble
+    if (!is.data.frame(df) && !tibble::is_tibble(df)) {
+      cli::cli_abort(
+        c(
+          "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
+          "i" = "The passed object is of class {.val {class(df)}}."
+        )
+      )
+    }
+
+    # Validate date columns if provided
+    if (
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) {
+      incident_date <- rlang::enquo(incident_date_col)
+      patient_dob <- rlang::enquo(patient_DOB_col)
+
+      if (
+        (!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
+         !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
+        (!lubridate::is.Date(df[[rlang::as_name(patient_dob)]]) &
+         !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))
+      ) {
+        cli::cli_abort(
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+        )
+      }
+    }
+
     cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
 
   ###_____________________________________________________________________________
@@ -525,7 +600,7 @@ safety_04_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
 
@@ -540,7 +615,7 @@ safety_04_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
     dplyr::mutate(patient_age_in_years = as.numeric(difftime(
       time1 = {{  incident_date_col  }},
-      time2 = {{  patient_dob_col  }},
+      time2 = {{  patient_DOB_col  }},
       units = "days"
     )) / 365,
 
@@ -558,7 +633,7 @@ safety_04_population <- function(df = NULL,
 
       all(
         is.null(incident_date_col),
-        is.null(patient_dob_col)
+        is.null(patient_DOB_col)
       )) {
 
     final_data <- df |>
@@ -711,7 +786,7 @@ safety_04_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -731,7 +806,7 @@ safety_04_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     )) {
 
     # get the initial population

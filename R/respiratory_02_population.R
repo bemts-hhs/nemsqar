@@ -25,7 +25,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_dob_col Column that contains the patient's date of birth. This
+#' @param patient_DOB_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col integer Column giving the calculated age value.
@@ -52,7 +52,7 @@ respiratory_02_population <- function(df = NULL,
                            procedures_table = NULL,
                            erecord_01_col,
                            incident_date_col = NULL,
-                           patient_dob_col = NULL,
+                           patient_DOB_col = NULL,
                            epatient_15_col,
                            epatient_16_col,
                            eresponse_05_col,
@@ -107,7 +107,7 @@ respiratory_02_population <- function(df = NULL,
     any(
 
       missing(incident_date_col),
-      missing(patient_dob_col),
+      missing(patient_DOB_col),
       missing(epatient_15_col),
       missing(epatient_16_col),
       missing(eresponse_05_col),
@@ -172,7 +172,7 @@ respiratory_02_population <- function(df = NULL,
     total = 11,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   # utilize applicable tables to analyze the data for the measure
@@ -215,12 +215,12 @@ respiratory_02_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
       # Use quasiquotation on the date variables to check format
       incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_dob_col)
+      patient_dob <- rlang::enquo(patient_DOB_col)
 
       # Convert quosures to names and check the column classes
       incident_date_name <- rlang::as_name(incident_date)
@@ -232,7 +232,7 @@ respiratory_02_population <- function(df = NULL,
            !lubridate::is.POSIXct(patient_scene_table[[patient_dob_name]]))) {
 
         cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both of these variables were not of class {.cls Date} or a similar class. Please format your {.var incident_date_col} and {.var patient_dob_col} to class {.cls Date} or a similar class."
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class. Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or a similar class."
         )
       }
     }
@@ -255,7 +255,7 @@ respiratory_02_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -263,12 +263,12 @@ respiratory_02_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
     dplyr::mutate(patient_age_in_years = as.numeric(difftime(
       time1 = {{ incident_date_col }},
-      time2 = {{ patient_dob_col }},
+      time2 = {{ patient_DOB_col }},
       units = "days"
     )) / 365,
     patient_age_in_days = as.numeric(difftime(
       time1 = {{ incident_date_col }},
-      time2 = {{ patient_dob_col }},
+      time2 = {{ patient_DOB_col }},
       units = "days"
     )),
 
@@ -290,7 +290,7 @@ respiratory_02_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     ))
 
   {
@@ -408,7 +408,7 @@ respiratory_02_population <- function(df = NULL,
 
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -432,7 +432,7 @@ respiratory_02_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     )
 
   ) {
@@ -527,7 +527,7 @@ respiratory_02_population <- function(df = NULL,
     if(
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     )
 
@@ -535,7 +535,7 @@ respiratory_02_population <- function(df = NULL,
 
       # use quasiquotation on the date variables to check format
       incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_dob_col)
+      patient_dob <- rlang::enquo(patient_DOB_col)
 
       if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
            !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
@@ -543,7 +543,7 @@ respiratory_02_population <- function(df = NULL,
            !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))) {
 
         cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_dob_col} to class {.cls Date} or similar class."
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
         )
 
       }
@@ -568,7 +568,7 @@ respiratory_02_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -581,12 +581,12 @@ respiratory_02_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
     dplyr::mutate(patient_age_in_years = as.numeric(difftime(
       time1 = {{ incident_date_col }},
-      time2 = {{ patient_dob_col }},
+      time2 = {{ patient_DOB_col }},
       units = "days"
     )) / 365,
     patient_age_in_days = as.numeric(difftime(
       time1 = {{ incident_date_col }},
-      time2 = {{ patient_dob_col }},
+      time2 = {{ patient_DOB_col }},
       units = "days"
     )),
 
@@ -608,7 +608,7 @@ respiratory_02_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     ))
 
   {
@@ -731,7 +731,7 @@ respiratory_02_population <- function(df = NULL,
 
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -755,7 +755,7 @@ respiratory_02_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     )
 
   ) {

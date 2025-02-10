@@ -99,7 +99,7 @@ testthat::test_that("hypoglycemia_01 produces expected results", {
                         procedures_table = procedures_table,
                         erecord_01_col = erecord_01,
                         incident_date_col = incident_date,
-                        patient_dob_col = patient_dob,
+                        patient_DOB_col = patient_dob,
                         epatient_15_col = epatient_15,
                         epatient_16_col = epatient_16,
                         eresponse_05_col = eresponse_05,
@@ -192,3 +192,4 @@ testthat::test_that("hypoglycemia_01 returns empty result for non-matching crite
 
   testthat::expect_equal(sum(result$denominator), 0)
 })
+

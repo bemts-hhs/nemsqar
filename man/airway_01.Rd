@@ -13,7 +13,7 @@ airway_01(
   vitals_table = NULL,
   erecord_01_col,
   incident_date_col = NULL,
-  patient_dob_col = NULL,
+  patient_DOB_col = NULL,
   epatient_15_col,
   epatient_16_col,
   earrest_01_col,
@@ -55,7 +55,7 @@ identifier.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{patient_dob_col}{Column that contains the patient's date of birth. This
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
@@ -136,7 +136,7 @@ airway_01(df = NULL,
          response_table = nemsqar_response_table,
          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
          incident_date_col = `Incident Date`,
-         patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+         patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
          epatient_15_col = `Patient Age (ePatient.15)`,
          epatient_16_col = `Patient Age Units (ePatient.16)`,
          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,

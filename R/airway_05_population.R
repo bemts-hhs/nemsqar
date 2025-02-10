@@ -22,7 +22,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_dob_col Column that contains the patient's date of birth. This
+#' @param patient_DOB_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col Column representing the patient's numeric age agnostic
@@ -76,7 +76,7 @@
 #'          response_table = nemsqar_response_table,
 #'          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
 #'          incident_date_col = `Incident Date`,
-#'          patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+#'          patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
 #'          epatient_15_col = `Patient Age (ePatient.15)`,
 #'          epatient_16_col = `Patient Age Units (ePatient.16)`,
 #'          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
@@ -101,7 +101,7 @@ airway_05_population <- function(df = NULL,
                       vitals_table = NULL,
                       erecord_01_col,
                       incident_date_col = NULL,
-                      patient_dob_col = NULL,
+                      patient_DOB_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       earrest_01_col,
@@ -151,7 +151,7 @@ airway_05_population <- function(df = NULL,
 
       missing(erecord_01_col),
       missing(incident_date_col),
-      missing(patient_dob_col),
+      missing(patient_DOB_col),
       missing(epatient_15_col),
       missing(epatient_16_col),
       missing(earrest_01_col),
@@ -391,12 +391,12 @@ airway_05_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
     incident_date <- rlang::enquo(incident_date_col)
-    patient_dob <- rlang::enquo(patient_dob_col)
+    patient_dob <- rlang::enquo(patient_DOB_col)
 
     if (
       (!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
@@ -405,7 +405,7 @@ airway_05_population <- function(df = NULL,
        !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_dob)]]))
     ) {
       cli::cli_abort(
-        "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+        "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
       )
     }
   }
@@ -447,7 +447,7 @@ airway_05_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -461,8 +461,8 @@ airway_05_population <- function(df = NULL,
           tolower({{ epatient_16_col }}),
         TRUE ~ "years" # Replace invalid units with NA
       ),
-      {{ patient_dob_col }} := dplyr::if_else(
-        is.na({{ patient_dob_col }}) &
+      {{ patient_DOB_col }} := dplyr::if_else(
+        is.na({{ patient_DOB_col }}) &
           !is.na({{ epatient_15_col }}) &
           !is.na(CLEANED_AGE_UNITS),
         {{ incident_date_col }} - dplyr::case_when(
@@ -474,11 +474,11 @@ airway_05_population <- function(df = NULL,
           CLEANED_AGE_UNITS == "minutes" ~ lubridate::dminutes({{ epatient_15_col }}) / (24 * 60), # Convert to days
           CLEANED_AGE_UNITS == "seconds" ~ lubridate::dseconds({{ epatient_15_col }}) / (24 * 3600) # Convert to days
         ),
-        {{ patient_dob_col }}
+        {{ patient_DOB_col }}
       )
     ) |>
     dplyr::mutate(patient_age_in_years = as.numeric(difftime({{ incident_date_col }},
-                                                             {{ patient_dob_col }},
+                                                             {{ patient_DOB_col }},
                                                              units = "days")/365)) |>
     dplyr::mutate(patient_age_in_years = dplyr::case_when(!is.na(patient_age_in_years) ~ patient_age_in_years,
                                                           grepl(pattern = year_values,
@@ -505,7 +505,7 @@ airway_05_population <- function(df = NULL,
   } else if ( # condition where the user does not pass the incident date nor the patient DOB
     all(
       rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 

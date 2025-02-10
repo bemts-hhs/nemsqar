@@ -20,7 +20,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_dob_col Column that contains the patient's date of birth. This
+#' @param patient_DOB_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column name for patient age in numeric form.
@@ -48,7 +48,7 @@ seizure_02_population <- function(df = NULL,
                        medications_table = NULL,
                        erecord_01_col,
                        incident_date_col = NULL,
-                       patient_dob_col = NULL,
+                       patient_DOB_col = NULL,
                        epatient_15_col,
                        epatient_16_col,
                        eresponse_05_col,
@@ -91,7 +91,7 @@ seizure_02_population <- function(df = NULL,
     any(
       missing(erecord_01_col),
       missing(incident_date_col),
-      missing(patient_dob_col),
+      missing(patient_DOB_col),
       missing(epatient_15_col),
       missing(epatient_16_col),
       missing(eresponse_05_col),
@@ -182,11 +182,11 @@ seizure_02_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
       incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_dob_col)
+      patient_dob <- rlang::enquo(patient_DOB_col)
 
       if (
         (!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
@@ -195,7 +195,7 @@ seizure_02_population <- function(df = NULL,
          !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_dob)]]))
       ) {
         cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
         )
       }
     }
@@ -212,7 +212,7 @@ seizure_02_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
 
@@ -223,7 +223,7 @@ seizure_02_population <- function(df = NULL,
 
     mutate(patient_age_in_years_col = as.numeric(difftime(
       time1 = {{incident_date_col}},
-      time2 = {{patient_dob_col}},
+      time2 = {{patient_DOB_col}},
       units = "days"
     )) / 365,
 
@@ -244,7 +244,7 @@ seizure_02_population <- function(df = NULL,
 
       all(
         is.null(incident_date_col),
-        is.null(patient_dob_col)
+        is.null(patient_DOB_col)
       )) {
 
   # filter the table to get the initial population regardless of age
@@ -346,7 +346,7 @@ seizure_02_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -364,7 +364,7 @@ seizure_02_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     )) {
 
     # filter adult
@@ -445,7 +445,7 @@ seizure_02_population <- function(df = NULL,
     if(
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     )
 
@@ -453,7 +453,7 @@ seizure_02_population <- function(df = NULL,
 
     # use quasiquotation on the date variables to check format
     incident_date <- rlang::enquo(incident_date_col)
-    patient_dob <- rlang::enquo(patient_dob_col)
+    patient_dob <- rlang::enquo(patient_DOB_col)
 
     if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
          !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
@@ -461,7 +461,7 @@ seizure_02_population <- function(df = NULL,
          !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))) {
 
       cli::cli_abort(
-        "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_dob_col} to class {.cls Date} or similar class."
+        "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
       )
 
     }
@@ -486,7 +486,7 @@ seizure_02_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
 
@@ -503,7 +503,7 @@ seizure_02_population <- function(df = NULL,
 
     mutate(patient_age_in_years_col = as.numeric(difftime(
       time1 = {{incident_date_col}},
-      time2 = {{patient_dob_col}},
+      time2 = {{patient_DOB_col}},
       units = "days"
     )) / 365,
 
@@ -524,7 +524,7 @@ seizure_02_population <- function(df = NULL,
 
       all(
         is.null(incident_date_col),
-        is.null(patient_dob_col)
+        is.null(patient_DOB_col)
       )) {
 
   # filter the table to get the initial population regardless of age
@@ -635,7 +635,7 @@ seizure_02_population <- function(df = NULL,
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -653,7 +653,7 @@ seizure_02_population <- function(df = NULL,
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     )) {
 
     # filter adult

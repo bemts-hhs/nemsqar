@@ -13,7 +13,7 @@ trauma_01_population(
   vitals_table = NULL,
   erecord_01_col,
   incident_date_col = NULL,
-  patient_dob_col = NULL,
+  patient_DOB_col = NULL,
   epatient_15_col,
   epatient_16_col,
   esituation_02_col,
@@ -49,7 +49,7 @@ needed for this measure's calculations. Default is \code{NULL}.}
 \item{incident_date_col}{Column name for the incident date. Default is
 \code{NULL}.}
 
-\item{patient_dob_col}{Column name for the patient's date of birth. Default
+\item{patient_DOB_col}{Column name for the patient's date of birth. Default
 is \code{NULL}.}
 
 \item{epatient_15_col}{Column name for the patient's age in numeric format.}

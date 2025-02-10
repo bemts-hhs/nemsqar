@@ -22,7 +22,7 @@
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param patient_dob_col Column that contains the patient's date of birth. This
+#' @param patient_DOB_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param epatient_15_col Column name in df with the patient’s age value.
@@ -61,7 +61,7 @@ tbi_01_population <- function(df = NULL,
                    vitals_table = NULL,
                    erecord_01_col,
                    incident_date_col = NULL,
-                   patient_dob_col = NULL,
+                   patient_DOB_col = NULL,
                    epatient_15_col,
                    epatient_16_col,
                    eresponse_05_col,
@@ -141,7 +141,7 @@ tbi_01_population <- function(df = NULL,
     total = 15,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   progress_bar_population
@@ -209,11 +209,11 @@ tbi_01_population <- function(df = NULL,
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
       incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_dob_col)
+      patient_dob <- rlang::enquo(patient_DOB_col)
 
       if (
         (!lubridate::is.Date(patient_scene_table[[rlang::as_name(incident_date)]]) &
@@ -222,7 +222,7 @@ tbi_01_population <- function(df = NULL,
          !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(patient_dob)]]))
       ) {
         cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
         )
       }
     }
@@ -238,7 +238,7 @@ cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
 if (
   all(
     !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-    !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+    !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
   )
 ) {
 
@@ -246,7 +246,7 @@ final_data <- patient_scene_table |>
   dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
   dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
         time1 = {{ incident_date_col }},
-        time2 = {{ patient_dob_col }},
+        time2 = {{ patient_DOB_col }},
         units = "days"
       )) / 365,
 
@@ -265,7 +265,7 @@ final_data <- patient_scene_table |>
 
   all(
     is.null(incident_date_col),
-    is.null(patient_dob_col)
+    is.null(patient_DOB_col)
   )) {
 
   final_data <- patient_scene_table |>
@@ -318,12 +318,14 @@ cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
 # vitals
 vitals_data <- vitals_table |>
   dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}, {{ evitals_06_col }}, {{ evitals_16_col }}) |>
-  dplyr::distinct() |>
-  dplyr::filter(
-
-    dplyr::if_all(c({{ evitals_12_col }}, {{ evitals_06_col }}, {{ evitals_16_col }}), ~ !is.na(.))
-
+  dplyr::summarize(
+    sbp = max(!is.na({{ evitals_06_col }})),
+    sp02 = max(!is.na({{ evitals_12_col }})),
+    etc02 = max(!is.na({{ evitals_16_col }})),
+    vitals = max(sbp & sp02 & etc02, na.rm = TRUE),
+    .by = {{ erecord_01_col }}
   ) |>
+  dplyr::filter(vitals == 1) |>
   dplyr::distinct({{ erecord_01_col }}) |>
   dplyr::pull({{ erecord_01_col }})
 
@@ -389,7 +391,7 @@ transport_data <- disposition_table |>
   # get the initial population
   initial_population <- computing_population |>
   dplyr::filter(
-    (GCS | AVPU),
+    GCS | AVPU,
       PROVIDER_IMPRESSION,
       CALL_911,
       TRANSPORT
@@ -402,7 +404,7 @@ transport_data <- disposition_table |>
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
 
@@ -420,7 +422,7 @@ peds_pop <- initial_population |>
 
     all(
       is.null(incident_date_col),
-      is.null(patient_dob_col)
+      is.null(patient_DOB_col)
     )) {
 
     # filter adult
@@ -509,7 +511,7 @@ peds_pop <- initial_population |>
     if(
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     )
 
@@ -517,7 +519,7 @@ peds_pop <- initial_population |>
 
       # use quasiquotation on the date variables to check format
       incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_dob_col)
+      patient_dob <- rlang::enquo(patient_DOB_col)
 
       if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
            !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
@@ -525,7 +527,7 @@ peds_pop <- initial_population |>
            !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))) {
 
         cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_dob_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_dob_col} to class {.cls Date} or similar class."
+          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
         )
 
       }
@@ -543,7 +545,7 @@ peds_pop <- initial_population |>
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
 
@@ -561,7 +563,7 @@ peds_pop <- initial_population |>
         dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
         dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
           time1 = {{ incident_date_col }},
-          time2 = {{ patient_dob_col }},
+          time2 = {{ patient_DOB_col }},
           units = "days"
         )) / 365,
 
@@ -580,7 +582,7 @@ peds_pop <- initial_population |>
 
       all(
         is.null(incident_date_col),
-        is.null(patient_dob_col)
+        is.null(patient_DOB_col)
       )) {
 
       final_data <- df |>
@@ -641,14 +643,16 @@ peds_pop <- initial_population |>
     cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
 
     # vitals
-    vitals_data <- df |>
+    vitals_data <- vitals_table |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}, {{ evitals_06_col }}, {{ evitals_16_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-
-        dplyr::if_all(c({{ evitals_12_col }}, {{ evitals_06_col }}, {{ evitals_16_col }}), ~ !is.na(.))
-
+      dplyr::summarize(
+        sbp = max(!is.na({{ evitals_06_col }})),
+        sp02 = max(!is.na({{ evitals_12_col }})),
+        etc02 = max(!is.na({{ evitals_16_col }})),
+        vitals = max(sbp & sp02 & etc02, na.rm = TRUE),
+        .by = {{ erecord_01_col }}
       ) |>
+      dplyr::filter(vitals == 1) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
@@ -714,7 +718,7 @@ peds_pop <- initial_population |>
     # get the initial population
     initial_population <- computing_population |>
       dplyr::filter(
-        (GCS | AVPU),
+        GCS | AVPU,
         PROVIDER_IMPRESSION,
         CALL_911,
         TRANSPORT
@@ -727,7 +731,7 @@ peds_pop <- initial_population |>
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_dob_col))
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
 
@@ -745,7 +749,7 @@ peds_pop <- initial_population |>
 
       all(
         is.null(incident_date_col),
-        is.null(patient_dob_col)
+        is.null(patient_DOB_col)
       )) {
 
       # filter adult

@@ -27,7 +27,7 @@
 #'   identifier.
 #' @param incident_date_col Column name containing the incident date. Default is
 #'   `NULL`.
-#' @param patient_dob_col Column name containing the patient's date of birth.
+#' @param patient_DOB_col Column name containing the patient's date of birth.
 #'   Default is `NULL`.
 #' @param epatient_15_col Column name for patient information (exact purpose
 #'   unclear).
@@ -89,7 +89,7 @@
 #'          response_table = nemsqar_response_table,
 #'          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
 #'          incident_date_col = `Incident Date`,
-#'          patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+#'          patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
 #'          epatient_15_col = `Patient Age (ePatient.15)`,
 #'          epatient_16_col = `Patient Age Units (ePatient.16)`,
 #'          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
@@ -121,7 +121,7 @@
 #'          response_table = NULL,
 #'          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
 #'          incident_date_col = `Incident Date`,
-#'          patient_dob_col = `Patient Date Of Birth (ePatient.17)`,
+#'          patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
 #'          epatient_15_col = `Patient Age (ePatient.15)`,
 #'          epatient_16_col = `Patient Age Units (ePatient.16)`,
 #'          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
@@ -150,7 +150,7 @@ airway_18 <- function(df = NULL,
                       response_table = NULL,
                       erecord_01_col,
                       incident_date_col = NULL,
-                      patient_dob_col = NULL,
+                      patient_DOB_col = NULL,
                       epatient_15_col,
                       epatient_16_col,
                       eresponse_05_col,
@@ -194,7 +194,7 @@ airway_18 <- function(df = NULL,
                                                   response_table = response_table,
                                                   erecord_01_col = {{ erecord_01_col }},
                                                   incident_date_col = {{ incident_date_col }},
-                                                  patient_dob_col = {{ patient_dob_col }},
+                                                  patient_DOB_col = {{ patient_DOB_col }},
                                                   epatient_15_col = {{ epatient_15_col }},
                                                   epatient_16_col = {{ epatient_16_col }},
                                                   eresponse_05_col = {{ eresponse_05_col }},
@@ -287,7 +287,7 @@ airway_18 <- function(df = NULL,
     airway_18_populations <- airway_18_population(df = df,
                                                   erecord_01_col = {{ erecord_01_col }},
                                                   incident_date_col = {{ incident_date_col }},
-                                                  patient_dob_col = {{ patient_dob_col }},
+                                                  patient_DOB_col = {{ patient_DOB_col }},
                                                   epatient_15_col = {{ epatient_15_col }},
                                                   epatient_16_col = {{ epatient_16_col }},
                                                   eresponse_05_col = {{ eresponse_05_col }},
