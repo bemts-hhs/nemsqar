@@ -53,7 +53,7 @@ attempt is successful with no peri-intubation hypoxia or hypotension.</p>
 <span>  vitals_table <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">erecord_01_col</span>,</span>
 <span>  incident_date_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  patient_dob_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  patient_DOB_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">epatient_15_col</span>,</span>
 <span>  <span class="va">epatient_16_col</span>,</span>
 <span>  <span class="va">earrest_01_col</span>,</span>
@@ -115,7 +115,7 @@ defaults to <code>NULL</code> as it is optional in case not available due to PII
 restrictions.</p></dd>
 
 
-<dt id="arg-patient-dob-col">patient_dob_col<a class="anchor" aria-label="anchor" href="#arg-patient-dob-col"></a></dt>
+<dt id="arg-patient-dob-col">patient_DOB_col<a class="anchor" aria-label="anchor" href="#arg-patient-dob-col"></a></dt>
 <dd><p>Column that contains the patient's date of birth. This
 defaults to <code>NULL</code> as it is optional in case not available due to PII
 restrictions.</p></dd>
@@ -225,7 +225,7 @@ decimal places.</p>
 <span class="r-in"><span>         response_table <span class="op">=</span> <span class="va">nemsqar_response_table</span>,</span></span>
 <span class="r-in"><span>         erecord_01_col <span class="op">=</span> <span class="va">`Incident Patient Care Report Number - PCR (eRecord.01)`</span>,</span></span>
 <span class="r-in"><span>         incident_date_col <span class="op">=</span> <span class="va">`Incident Date`</span>,</span></span>
-<span class="r-in"><span>         patient_dob_col <span class="op">=</span> <span class="va">`Patient Date Of Birth (ePatient.17)`</span>,</span></span>
+<span class="r-in"><span>         patient_DOB_col <span class="op">=</span> <span class="va">`Patient Date Of Birth (ePatient.17)`</span>,</span></span>
 <span class="r-in"><span>         epatient_15_col <span class="op">=</span> <span class="va">`Patient Age (ePatient.15)`</span>,</span></span>
 <span class="r-in"><span>         epatient_16_col <span class="op">=</span> <span class="va">`Patient Age Units (ePatient.16)`</span>,</span></span>
 <span class="r-in"><span>         eresponse_05_col <span class="op">=</span> <span class="va">`Response Type Of Service Requested With Code (eResponse.05)`</span>,</span></span>
