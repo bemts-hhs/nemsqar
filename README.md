@@ -21,7 +21,7 @@ researchers dedicated to improving patient outcomes.
 
 ## Installation
 
-You can install the development version of nemsqar from
+You can install the development version of `nemsqar` from
 [GitHub](https://github.com/bemts-hhs/nemsqar) with:
 
 ``` r
@@ -31,7 +31,7 @@ pak::pak("bemts-hhs/nemsqar")
 
 ## Functionality
 
-nemsqar has functions that will always automate the calculation of a
+`nemsqar` has functions that will always automate the calculation of a
 service’s performance (or even a system’s) against the currently
 approved list of NEMSQA Measures (see below). Given the large number of
 these functions, please check the full package documentation resource
@@ -99,7 +99,7 @@ after creating a free user profile.
 | Trauma-03 | Percentage of EMS transports from a 911 request for patients whose pain score decreased during EMS encounter. | Outcome | Patient Experience | :heavy_check_mark: |
 | Trauma-04 | Percentage of EMS responses from a 911 request for patients meeting CDC trauma criteria transported to a trauma center. | Process | Clinical Process – Effectiveness | ✔️ |
 | Trauma-08 | Percentage of EMS transports from a 911 request for trauma patients with documented GCS, systolic BP, and respiratory rate. | Process | Clinical Process – Effectiveness | ✔️ |
-| Trauma-14 | Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert. | Process | Clinical Process – Effectiveness | :wrench: |
+| Trauma-14 | Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert. | Process | Clinical Process – Effectiveness | :heavy_check_mark: |
 | TTR-01 | Percentage of EMS responses from a 911 request for non-transported patients with documented vital signs. | Process | Clinical Process – Effectiveness | ✔️ |
 
 ------------------------------------------------------------------------
