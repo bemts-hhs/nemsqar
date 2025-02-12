@@ -73,12 +73,12 @@ impression.}
 \item{transport_disposition_col}{Column name in df with the transport
 disposition.}
 
-\item{evitals_06_col}{Column name in df with systolic blood pressure (SBP)
-values.}
+\item{evitals_06_col}{Column name in df with systolic blood pressure (SBP).}
 
 \item{evitals_12_col}{Column name in df with pulse oximetry values.}
 
-\item{evitals_16_col}{Column name in df with ETCO2 values.}
+\item{evitals_16_col}{Column name in df with ETCO2 values.
+values.}
 
 \item{evitals_23_col}{Column name in df with Glasgow Coma Scale (GCS) scores.}
 

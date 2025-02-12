@@ -33,7 +33,7 @@ columns for analysis.}
 
 \item{medications_table}{A data.frame or tibble containing only the emedications fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> The column containing unique record identifiers for each encounter.}
+\item{erecord_01_col}{The column containing unique record identifiers for each encounter.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -43,17 +43,17 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for patient age in numeric form.}
+\item{epatient_15_col}{Column name for patient age in numeric form.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for age unit (e.g., \code{"Years"} or \code{"Months"}).}
+\item{epatient_16_col}{Column name for age unit (e.g., \code{"Years"} or \code{"Months"}).}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for response codes; "911" call codes are filtered.}
+\item{eresponse_05_col}{Column name for response codes; "911" call codes are filtered.}
 
-\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for primary impressions.}
+\item{esituation_11_col}{Column name for primary impressions.}
 
-\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for secondary impressions.}
+\item{esituation_12_col}{Column name for secondary impressions.}
 
-\item{emedications_03_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for medications administered; ideally a list column
+\item{emedications_03_col}{Column name for medications administered; ideally a list column
 or string with comma-separated values.}
 }
 \value{

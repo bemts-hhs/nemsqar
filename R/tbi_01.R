@@ -36,13 +36,13 @@
 #'   impression.
 #' @param transport_disposition_col Column name in df with the transport
 #'   disposition.
+#' @param evitals_06_col Column name in df with systolic blood pressure (SBP).
+#' @param evitals_12_col Column name in df with pulse oximetry values.
+#' @param evitals_16_col Column name in df with ETCO2 values.
+#'   values.
 #' @param evitals_23_col Column name in df with Glasgow Coma Scale (GCS) scores.
 #' @param evitals_26_col Column name in df with AVPU (alert, verbal, painful,
 #'   unresponsive) values.
-#' @param evitals_12_col Column name in df with pulse oximetry values.
-#' @param evitals_16_col Column name in df with ETCO2 values.
-#' @param evitals_06_col Column name in df with systolic blood pressure (SBP)
-#'   values.
 #' @param ... Additional parameters passed to `dplyr::summarize` or other dplyr
 #'   functions.
 #'

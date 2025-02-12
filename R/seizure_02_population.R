@@ -16,19 +16,19 @@
 #' @param response_table A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is `NULL`.
 #' @param situation_table A data.frame or tibble containing only the esituation fields needed for this measure's calculations. Default is `NULL`.
 #' @param medications_table A data.frame or tibble containing only the emedications fields needed for this measure's calculations. Default is `NULL`.
-#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> The column containing unique record identifiers for each encounter.
+#' @param erecord_01_col The column containing unique record identifiers for each encounter.
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param patient_DOB_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column name for patient age in numeric form.
-#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column name for age unit (e.g., `"Years"` or `"Months"`).
-#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column name for response codes; "911" call codes are filtered.
-#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column name for primary impressions.
-#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column name for secondary impressions.
-#' @param emedications_03_col <['tidy-select'][dplyr_tidy_select]> Column name for medications administered; ideally a list column
+#' @param epatient_15_col Column name for patient age in numeric form.
+#' @param epatient_16_col Column name for age unit (e.g., `"Years"` or `"Months"`).
+#' @param eresponse_05_col Column name for response codes; "911" call codes are filtered.
+#' @param esituation_11_col Column name for primary impressions.
+#' @param esituation_12_col Column name for secondary impressions.
+#' @param emedications_03_col Column name for medications administered; ideally a list column
 #' or string with comma-separated values.
 #'
 #' @return
@@ -119,7 +119,7 @@ seizure_02_population <- function(df = NULL,
     total = 10,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   progress_bar_population
@@ -130,7 +130,7 @@ seizure_02_population <- function(df = NULL,
   codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
 
   # get codes as a regex to filter primary/secondary impression fields
-  epilepsy_pattern <- "epilepsy.*?with status epilepticus|(?:G40\\.\\d{1,3})"
+  epilepsy_pattern <- "(?:\\bepilep(sy|tic)\\b)(?!.*without)(?:status\\epilepticus)?|(?:neuro|seizure)(?!.*without).*status\\sepilepticus|other\\sseizure|G40(?!\\.[a-z\\d]\\d[249])"
 
   # medication values for seizure_02
 
@@ -201,7 +201,7 @@ seizure_02_population <- function(df = NULL,
     }
 
     # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
   # fact table
@@ -218,10 +218,10 @@ seizure_02_population <- function(df = NULL,
 
   # filter the table to get the initial population regardless of age
   final_data <- patient_scene_table |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
     # create the age in years variable
 
-    mutate(patient_age_in_years_col = as.numeric(difftime(
+    dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
       time1 = {{incident_date_col}},
       time2 = {{patient_DOB_col}},
       units = "days"
@@ -229,9 +229,9 @@ seizure_02_population <- function(df = NULL,
 
 
     # system age checks
-    system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor = system_age_minor1 | system_age_minor2,
 
     # calculated age checks
@@ -249,13 +249,13 @@ seizure_02_population <- function(df = NULL,
 
   # filter the table to get the initial population regardless of age
   final_data <- patient_scene_table |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
-    mutate(
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
+    dplyr::mutate(
 
     # system age checks
-    system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor = system_age_minor1 | system_age_minor2
 
     )
@@ -263,7 +263,7 @@ seizure_02_population <- function(df = NULL,
     }
 
     # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
   ### dimension tables
@@ -279,29 +279,31 @@ seizure_02_population <- function(df = NULL,
       dplyr::distinct() |>
       dplyr::filter(
 
-        grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)
+        grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = TRUE)
 
       ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
-    cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
 
     # seizure
     seizure_data <- situation_table |>
       dplyr::select({{ erecord_01_col }}, {{ esituation_11_col }}, {{ esituation_12_col }}) |>
       dplyr::distinct() |>
       dplyr::filter(
-        if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
+
+        dplyr::if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
                 pattern = epilepsy_pattern,
                 x = .,
-                ignore.case = T
+                ignore.case = TRUE,
+                perl = TRUE
               ))
       ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
-    cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 4, id = progress_bar_population, force = TRUE)
 
     # benzodiazepine check
     benzodiazepine_data <- medications_table |>
@@ -309,13 +311,13 @@ seizure_02_population <- function(df = NULL,
       dplyr::distinct() |>
       dplyr::filter(
 
-        grepl(pattern = medication_pattern, x = {{emedications_03_col}}, ignore.case = T)
+        grepl(pattern = medication_pattern, x = {{emedications_03_col}}, ignore.case = TRUE)
 
       ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
-    cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
 
     # get the computing population that is the full dataset with identified categories
     computing_population <- final_data |>
@@ -324,7 +326,7 @@ seizure_02_population <- function(df = NULL,
                     BENZO_MED = {{ erecord_01_col }} %in% benzodiazepine_data
                     )
 
-    cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
 
     # get the initial population
     initial_population <- computing_population |>
@@ -341,7 +343,7 @@ seizure_02_population <- function(df = NULL,
 
   # Adult and Pediatric Populations
 
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
 
   if (
     all(
@@ -354,7 +356,7 @@ seizure_02_population <- function(df = NULL,
   adult_pop <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
 
-  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
   # filter peds
   peds_pop <- initial_population |>
@@ -371,7 +373,7 @@ seizure_02_population <- function(df = NULL,
     adult_pop <- initial_population |>
       dplyr::filter(system_age_adult)
 
-    cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
     # filter peds
     peds_pop <- initial_population |>
@@ -379,7 +381,7 @@ seizure_02_population <- function(df = NULL,
 
   }
 
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
 
     # summarize counts for populations filtered
     filter_counts <- tibble::tibble(
@@ -392,9 +394,9 @@ seizure_02_population <- function(df = NULL,
                  "Total dataset"
       ),
       count = c(
-        sum(computing_population$CALL_911, na.rm = T),
-        sum(computing_population$SEIZURE, na.rm = T),
-        sum(computing_population$BENZO_MED, na.rm = T),
+        sum(computing_population$CALL_911, na.rm = TRUE),
+        sum(computing_population$SEIZURE, na.rm = TRUE),
+        sum(computing_population$BENZO_MED, na.rm = TRUE),
         nrow(adult_pop),
         nrow(peds_pop),
         nrow(initial_population),
@@ -404,7 +406,7 @@ seizure_02_population <- function(df = NULL,
 
     # get the populations of interest
 
-    cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
 
     # gather data into a list for multi-use output
     seizure.02.population <- list(
@@ -470,7 +472,7 @@ seizure_02_population <- function(df = NULL,
     progress_bar_population
 
     # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
 
     ###_____________________________________________________________________________
     # from the full dataframe with all variables
@@ -498,10 +500,10 @@ seizure_02_population <- function(df = NULL,
                      {{ emedications_03_col }}
 
     )) |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
     # create the age in years variable
 
-    mutate(patient_age_in_years_col = as.numeric(difftime(
+    dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
       time1 = {{incident_date_col}},
       time2 = {{patient_DOB_col}},
       units = "days"
@@ -509,9 +511,9 @@ seizure_02_population <- function(df = NULL,
 
 
     # system age checks
-    system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor = system_age_minor1 | system_age_minor2,
 
     # calculated age checks
@@ -535,13 +537,13 @@ seizure_02_population <- function(df = NULL,
                      {{ emedications_03_col }}
 
     )) |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
-    mutate(
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
+    dplyr::mutate(
 
     # system age checks
-    system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor = system_age_minor1 | system_age_minor2
 
     )
@@ -549,7 +551,7 @@ seizure_02_population <- function(df = NULL,
     }
 
     # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
   ### dimension tables
@@ -568,29 +570,31 @@ seizure_02_population <- function(df = NULL,
       dplyr::distinct() |>
       dplyr::filter(
 
-        grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)
+        grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = TRUE)
 
       ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
-    cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
 
     # seizure
     seizure_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ esituation_11_col }}, {{ esituation_12_col }}) |>
       dplyr::distinct() |>
       dplyr::filter(
-        if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
+
+        dplyr::if_any(c({{esituation_11_col}}, {{esituation_12_col}}), ~ grepl(
                 pattern = epilepsy_pattern,
                 x = .,
-                ignore.case = T
+                ignore.case = TRUE,
+                perl = TRUE
               ))
       ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
-    cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 4, id = progress_bar_population, force = TRUE)
 
     # benzodiazepine check
     benzodiazepine_data <- df |>
@@ -598,13 +602,13 @@ seizure_02_population <- function(df = NULL,
       dplyr::distinct() |>
       dplyr::filter(
 
-        grepl(pattern = medication_pattern, x = {{emedications_03_col}}, ignore.case = T)
+        grepl(pattern = medication_pattern, x = {{emedications_03_col}}, ignore.case = TRUE)
 
       ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
-    cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
 
     # get the computing population that is the full dataset with identified categories
     computing_population <- final_data |>
@@ -613,7 +617,7 @@ seizure_02_population <- function(df = NULL,
                     BENZO_MED = {{ erecord_01_col }} %in% benzodiazepine_data
                     )
 
-    cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
 
     # get the initial population
     initial_population <- computing_population |>
@@ -630,7 +634,7 @@ seizure_02_population <- function(df = NULL,
 
   # Adult and Pediatric Populations
 
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
 
   if (
     all(
@@ -643,7 +647,7 @@ seizure_02_population <- function(df = NULL,
   adult_pop <- initial_population |>
     dplyr::filter(system_age_adult | calc_age_adult)
 
-  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
   # filter peds
   peds_pop <- initial_population |>
@@ -660,7 +664,7 @@ seizure_02_population <- function(df = NULL,
     adult_pop <- initial_population |>
       dplyr::filter(system_age_adult)
 
-    cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
     # filter peds
     peds_pop <- initial_population |>
@@ -668,7 +672,7 @@ seizure_02_population <- function(df = NULL,
 
   }
 
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
 
     # summarize counts for populations filtered
     filter_counts <- tibble::tibble(
@@ -681,9 +685,9 @@ seizure_02_population <- function(df = NULL,
                  "Total dataset"
       ),
       count = c(
-        sum(computing_population$CALL_911, na.rm = T),
-        sum(computing_population$SEIZURE, na.rm = T),
-        sum(computing_population$BENZO_MED, na.rm = T),
+        sum(computing_population$CALL_911, na.rm = TRUE),
+        sum(computing_population$SEIZURE, na.rm = TRUE),
+        sum(computing_population$BENZO_MED, na.rm = TRUE),
         nrow(adult_pop),
         nrow(peds_pop),
         nrow(initial_population),
@@ -693,7 +697,7 @@ seizure_02_population <- function(df = NULL,
 
     # get the populations of interest
 
-    cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
 
     # gather data into a list for multi-use output
     seizure.02.population <- list(

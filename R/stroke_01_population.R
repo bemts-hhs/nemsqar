@@ -122,7 +122,7 @@ stroke_01_population <- function(df = NULL,
     total = 11,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   progress_bar_population
@@ -133,7 +133,7 @@ stroke_01_population <- function(df = NULL,
   codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
 
   # primary and secondary provider impression values
-  stroke_pattern <- "(?:I6[013]|G4[56])"
+  stroke_pattern <- "(?:I6[013]|G4[56])|Nontraumatic subarachnoid hemorrhage|Nontraumatic intracerebral hemorrhage|Cerebral infarction|Transient cerebral ischemic attacks|Vascular syndromes of brain in cerebrovascular diseases"
 
   # AVPU exclusion
   avpu_pattern <- "3326007|Unresponsive"
