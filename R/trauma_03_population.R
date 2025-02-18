@@ -146,7 +146,7 @@ trauma_03_population <- function(df = NULL,
     total = 17,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   progress_bar_population
@@ -205,7 +205,7 @@ trauma_03_population <- function(df = NULL,
     ) {
 
       cli::cli_abort(
-        "One or more of the tables passed to {.fn tbi_01_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
+        "One or more of the tables passed to {.fn trauma_03_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
       )
 
     }
@@ -373,7 +373,6 @@ trauma_03_population <- function(df = NULL,
       dplyr::select({{ erecord_01_col }}, {{ evitals_27_initial_col }}, {{ evitals_27_last_col }}, {{ evitals_01_col}}) |>
       dplyr::distinct() |>
       dplyr::group_by({{ erecord_01_col }}) |>
-      dplyr::arrange({{ evitals_01_col }}) |>
       dplyr::mutate(
 
         # Initial and last pain scale times
@@ -427,7 +426,6 @@ trauma_03_population <- function(df = NULL,
       dplyr::select({{ erecord_01_col }}, {{ evitals_27_col }}, {{ evitals_01_col}}) |>
       dplyr::distinct() |>
       dplyr::group_by({{ erecord_01_col }}) |>
-      dplyr::arrange({{ evitals_01_col }}) |>
       dplyr::mutate(
 
         # Initial and last pain scales
@@ -882,7 +880,6 @@ trauma_03_population <- function(df = NULL,
             dplyr::select({{ erecord_01_col }}, {{ evitals_27_initial_col }}, {{ evitals_27_last_col }}, {{ evitals_01_col}}) |>
             dplyr::distinct() |>
             dplyr::group_by({{ erecord_01_col }}) |>
-            dplyr::arrange({{ evitals_01_col }}) |>
             dplyr::mutate(
 
               # Initial and last pain scale times
@@ -936,7 +933,6 @@ trauma_03_population <- function(df = NULL,
             dplyr::select({{ erecord_01_col }}, {{ evitals_27_col }}, {{ evitals_01_col}}) |>
             dplyr::distinct() |>
             dplyr::group_by({{ erecord_01_col }}) |>
-            dplyr::arrange({{ evitals_01_col }}) |>
             dplyr::mutate(
 
               # Initial and last pain scales

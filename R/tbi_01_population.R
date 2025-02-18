@@ -643,7 +643,7 @@ peds_pop <- initial_population |>
     cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
 
     # vitals
-    vitals_data <- vitals_table |>
+    vitals_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}, {{ evitals_06_col }}, {{ evitals_16_col }}) |>
       dplyr::summarize(
         sbp = max(!is.na({{ evitals_06_col }})),

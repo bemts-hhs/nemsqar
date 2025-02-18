@@ -235,7 +235,7 @@ safety_04_population <- function(df = NULL,
     ) {
 
       cli::cli_abort(
-        "One or more of the tables passed to {.fn safety_02_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
+        "One or more of the tables passed to {.fn safety_04_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
       )
 
     }

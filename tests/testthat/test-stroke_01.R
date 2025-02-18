@@ -153,12 +153,13 @@ testthat::test_that("stroke_01 returns empty result for non-matching criteria", 
     esituation_11_col = esituation_11,
     esituation_12_col = esituation_12,
     emedications_03_col = emedications_03,
-    evitals_29_col = evitals_29,
     evitals_23_col = evitals_23,
     evitals_26_col = evitals_26,
+    evitals_29_col = evitals_29,
     evitals_30_col = evitals_30
   )
 
   testthat::expect_equal(sum(result$denominator), 0)
+
 })
 

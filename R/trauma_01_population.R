@@ -141,7 +141,7 @@ trauma_01_population <- function(df = NULL,
     total = 14,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   progress_bar_population
@@ -205,7 +205,7 @@ trauma_01_population <- function(df = NULL,
     ) {
 
       cli::cli_abort(
-        "One or more of the tables passed to {.fn tbi_01_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
+        "One or more of the tables passed to {.fn trauma_01_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
       )
 
     }
@@ -305,8 +305,8 @@ GCS_data <- vitals_table |>
   dplyr::select({{ erecord_01_col }}, {{ evitals_23_col }}) |>
   dplyr::distinct() |>
   dplyr::filter({{ evitals_23_col }} == 15) |>
-  distinct({{ erecord_01_col }}) |>
-  pull({{ erecord_01_col }})
+  dplyr::distinct({{ erecord_01_col }}) |>
+  dplyr::pull({{ erecord_01_col }})
 
 cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
 
@@ -651,8 +651,8 @@ return(trauma.01.population)
       dplyr::select({{ erecord_01_col }}, {{ evitals_23_col }}) |>
       dplyr::distinct() |>
       dplyr::filter({{ evitals_23_col }} == 15) |>
-      distinct({{ erecord_01_col }}) |>
-      pull({{ erecord_01_col }})
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
 
     cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
 
