@@ -187,8 +187,14 @@ dispositions.</p></dd>
 <span class="r-in"><span>  <span class="va">patient_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    incident_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2025-01-01"</span>, <span class="st">"2025-01-05"</span>, <span class="st">"2025-02-01"</span>, <span class="st">"2025-01-01"</span>, <span class="st">"2025-06-01"</span><span class="op">)</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>    patient_dob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2000-01-01"</span>, <span class="st">"2020-01-01"</span>, <span class="st">"2023-02-01"</span>, <span class="st">"2023-01-01"</span>, <span class="st">"1970-06-01"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    incident_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2025-01-01"</span>, <span class="st">"2025-01-05"</span>,</span></span>
+<span class="r-in"><span>                              <span class="st">"2025-02-01"</span>, <span class="st">"2025-01-01"</span>,</span></span>
+<span class="r-in"><span>                              <span class="st">"2025-06-01"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                              <span class="op">)</span>,</span></span>
+<span class="r-in"><span>    patient_dob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2000-01-01"</span>, <span class="st">"2020-01-01"</span>,</span></span>
+<span class="r-in"><span>                            <span class="st">"2023-02-01"</span>, <span class="st">"2023-01-01"</span>,</span></span>
+<span class="r-in"><span>                            <span class="st">"1970-06-01"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>                            <span class="op">)</span>,</span></span>
 <span class="r-in"><span>    epatient_15 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">5</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">55</span><span class="op">)</span>,  <span class="co"># Ages</span></span></span>
 <span class="r-in"><span>    epatient_16 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -235,6 +241,8 @@ dispositions.</p></dd>
 <span class="r-in"><span>                        procedures_table <span class="op">=</span> <span class="va">procedures_table</span>,</span></span>
 <span class="r-in"><span>                        disposition_table <span class="op">=</span> <span class="va">disposition_table</span>,</span></span>
 <span class="r-in"><span>                        erecord_01_col <span class="op">=</span> <span class="va">erecord_01</span>,</span></span>
+<span class="r-in"><span>                        incident_date_col <span class="op">=</span> <span class="va">incident_date</span>,</span></span>
+<span class="r-in"><span>                        patient_DOB_col <span class="op">=</span> <span class="va">patient_dob</span>,</span></span>
 <span class="r-in"><span>                        epatient_15_col <span class="op">=</span> <span class="va">epatient_15</span>,</span></span>
 <span class="r-in"><span>                        epatient_16_col <span class="op">=</span> <span class="va">epatient_16</span>,</span></span>
 <span class="r-in"><span>                        eresponse_05_col <span class="op">=</span> <span class="va">eresponse_05</span>,</span></span>
@@ -244,13 +252,36 @@ dispositions.</p></dd>
 <span class="r-in"><span>                        transport_disposition_col <span class="op">=</span> <span class="va">edisposition_30</span>,</span></span>
 <span class="r-in"><span>                        eprocedures_03_col <span class="op">=</span> <span class="va">eprocedures_03</span></span></span>
 <span class="r-in"><span>                        <span class="op">)</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in safety_04_population(patient_scene_table = patient_table, response_table = response_table,     arrest_table = arrest_table, injury_table = injury_table,     procedures_table = procedures_table, disposition_table = disposition_table,     erecord_01_col = erecord_01, epatient_15_col = epatient_15,     epatient_16_col = epatient_16, eresponse_05_col = eresponse_05,     earrest_01_col = earrest_01, einjury_03_col = einjury_03,     edisposition_14_col = edisposition_14, transport_disposition_col = edisposition_30,     eprocedures_03_col = eprocedures_03):</span> One or more of the *_col arguments is missing.  Please make sure you</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> pass an unquoted column to each of the *_col arguments to run</span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> `safety_04_population()`.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 1 of 13 tasks] <span style="color: #00BB00;">●●●</span><span style="color: #FFFFFF;">───────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 2 of 13 tasks] <span style="color: #00BB00;">●●●●●●</span><span style="color: #FFFFFF;">────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 3 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●</span><span style="color: #FFFFFF;">──────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 4 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●</span><span style="color: #FFFFFF;">────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 5 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">─────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 6 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">───</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 7 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">─</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 8 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 9 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 10 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 11 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 12 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_04_population()`  [Working on 13 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># show the results of filtering at each step</span></span></span>
 <span class="r-in"><span><span class="va">result</span><span class="op">$</span><span class="va">filter_process</span></span></span>
-<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'result' not found</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 10 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    filter                              count</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                               <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Transport runs                          5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> Interfacility runs                      0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Cardiac arrest calls                    0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Severe injury calls                     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Calls involving long board              0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Calls involving an airway procedure     0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Car seat used                           5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Peds denominator                        3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Initial population                      3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Total dataset                           5</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

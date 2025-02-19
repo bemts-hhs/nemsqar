@@ -72,7 +72,7 @@ oxygenation.</p>
 
 
 <dl><dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
-<dd><p>A dataframe or tibble contianing EMS data where each row represents
+<dd><p>A dataframe or tibble containing EMS data where each row represents
 an observation and columns represent features. Default is <code>NULL</code>.</p></dd>
 
 
@@ -204,16 +204,22 @@ decimal places.</p>
 <span class="r-in"><span>         vitals_table <span class="op">=</span> <span class="va">nemsqar_vitals_table</span>,</span></span>
 <span class="r-in"><span>         arrest_table <span class="op">=</span> <span class="va">nemsqar_arrest_table</span>,</span></span>
 <span class="r-in"><span>         response_table <span class="op">=</span> <span class="va">nemsqar_response_table</span>,</span></span>
-<span class="r-in"><span>         erecord_01_col <span class="op">=</span> <span class="va">`Incident Patient Care Report Number - PCR (eRecord.01)`</span>,</span></span>
+<span class="r-in"><span>         erecord_01_col <span class="op">=</span></span></span>
+<span class="r-in"><span>         <span class="va">`Incident Patient Care Report Number - PCR (eRecord.01)`</span>,</span></span>
 <span class="r-in"><span>         incident_date_col <span class="op">=</span> <span class="va">`Incident Date`</span>,</span></span>
 <span class="r-in"><span>         patient_DOB_col <span class="op">=</span> <span class="va">`Patient Date Of Birth (ePatient.17)`</span>,</span></span>
 <span class="r-in"><span>         epatient_15_col <span class="op">=</span> <span class="va">`Patient Age (ePatient.15)`</span>,</span></span>
 <span class="r-in"><span>         epatient_16_col <span class="op">=</span> <span class="va">`Patient Age Units (ePatient.16)`</span>,</span></span>
-<span class="r-in"><span>         eresponse_05_col <span class="op">=</span> <span class="va">`Response Type Of Service Requested With Code (eResponse.05)`</span>,</span></span>
-<span class="r-in"><span>         eprocedures_01_col <span class="op">=</span> <span class="va">`Procedure Performed Date Time (eProcedures.01)`</span>,</span></span>
-<span class="r-in"><span>         eprocedures_02_col <span class="op">=</span> <span class="va">`Procedure Performed Prior To EMS Care (eProcedures.02)`</span>,</span></span>
-<span class="r-in"><span>         eprocedures_03_col <span class="op">=</span> <span class="va">`Procedure Performed Description And Code (eProcedures.03)`</span>,</span></span>
-<span class="r-in"><span>         earrest_01_col <span class="op">=</span> <span class="va">`Cardiac Arrest During EMS Event With Code (eArrest.01)`</span>,</span></span>
+<span class="r-in"><span>         eresponse_05_col <span class="op">=</span></span></span>
+<span class="r-in"><span>         <span class="va">`Response Type Of Service Requested With Code (eResponse.05)`</span>,</span></span>
+<span class="r-in"><span>         eprocedures_01_col <span class="op">=</span></span></span>
+<span class="r-in"><span>         <span class="va">`Procedure Performed Date Time (eProcedures.01)`</span>,</span></span>
+<span class="r-in"><span>         eprocedures_02_col <span class="op">=</span></span></span>
+<span class="r-in"><span>         <span class="va">`Procedure Performed Prior To EMS Care (eProcedures.02)`</span>,</span></span>
+<span class="r-in"><span>         eprocedures_03_col <span class="op">=</span></span></span>
+<span class="r-in"><span>         <span class="va">`Procedure Performed Description And Code (eProcedures.03)`</span>,</span></span>
+<span class="r-in"><span>         earrest_01_col <span class="op">=</span></span></span>
+<span class="r-in"><span>         <span class="va">`Cardiac Arrest During EMS Event With Code (eArrest.01)`</span>,</span></span>
 <span class="r-in"><span>         evitals_01_col <span class="op">=</span> <span class="va">`Vitals Signs Taken Date Time (eVitals.01)`</span>,</span></span>
 <span class="r-in"><span>         evitals_012_col <span class="op">=</span> <span class="va">`Vitals Pulse Oximetry (eVitals.12)`</span></span></span>
 <span class="r-in"><span>         <span class="op">)</span></span></span>

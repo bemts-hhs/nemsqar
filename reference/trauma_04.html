@@ -276,6 +276,116 @@ of decimal places.</p>
     <p>Nicolas Foss, Ed.D., MS</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># Synthetic test data</span></span></span>
+<span class="r-in"><span>  <span class="va">test_data</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    epatient_15 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">34</span>, <span class="fl">5</span>, <span class="fl">45</span>, <span class="fl">2</span>, <span class="fl">60</span><span class="op">)</span>,  <span class="co"># Ages</span></span></span>
+<span class="r-in"><span>    epatient_16 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Months"</span>, <span class="st">"Years"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eresponse_05 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2205001</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eresponse_10 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2210011</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    esituation_02 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_06 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">90</span>, <span class="fl">80</span>, <span class="fl">70</span>, <span class="fl">85</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_10 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">110</span>, <span class="fl">89</span>, <span class="fl">88</span>, <span class="fl">71</span>, <span class="fl">85</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_12 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">50</span>, <span class="fl">60</span>, <span class="fl">70</span>, <span class="fl">80</span>, <span class="fl">75</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_14 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">9</span>, <span class="fl">8</span>, <span class="fl">7</span>, <span class="fl">31</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_15 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"apneic"</span>, <span class="st">"labored"</span>, <span class="st">"rapid"</span>, <span class="st">"shallow"</span>, <span class="st">"weak/agonal"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_21 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">4</span>, <span class="fl">3</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eexam_16 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3516043</span>, <span class="fl">3516067</span>, <span class="fl">3516043</span>, <span class="fl">3516067</span>, <span class="fl">3516067</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eexam_20 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3520045</span>, <span class="fl">3520043</span>, <span class="fl">3520019</span>, <span class="fl">3520017</span>, <span class="fl">3520017</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eexam_23 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3523011</span>, <span class="fl">3523003</span>, <span class="fl">3523001</span>, <span class="fl">3523011</span>, <span class="fl">3523003</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eexam_25 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">3525039</span>, <span class="fl">3525023</span>, <span class="fl">3525005</span>, <span class="fl">3525039</span>, <span class="fl">3525023</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    edisposition_23 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">9908029</span>, <span class="fl">9908027</span>, <span class="fl">9908025</span>, <span class="fl">9908023</span>, <span class="fl">9908021</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    edisposition_30 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4230001</span>, <span class="fl">4230003</span>, <span class="fl">4230001</span>, <span class="fl">4230007</span>, <span class="fl">4230007</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eprocedures_03 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">424979004</span>, <span class="fl">427753009</span>, <span class="fl">429705000</span>, <span class="fl">47545007</span>, <span class="fl">243142003</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    einjury_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"V20"</span>, <span class="st">"V36"</span>, <span class="st">"V86"</span>, <span class="st">"V39"</span>, <span class="st">"V32"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    einjury_03 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2903011</span>, <span class="fl">2903009</span>, <span class="fl">2903005</span>, <span class="fl">3903003</span>, <span class="fl">2903001</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    einjury_04 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">2904013</span>, <span class="fl">2904011</span>, <span class="fl">2904009</span>, <span class="fl">2904007</span>, <span class="fl">2904001</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    einjury_09 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">11</span>, <span class="fl">12</span>, <span class="fl">13</span>, <span class="fl">14</span>, <span class="fl">15</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Run function with the first and last pain score columns</span></span></span>
+<span class="r-in"><span>  <span class="fu">trauma_04</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    df <span class="op">=</span> <span class="va">test_data</span>,</span></span>
+<span class="r-in"><span>    erecord_01_col <span class="op">=</span> <span class="va">erecord_01</span>,</span></span>
+<span class="r-in"><span>    epatient_15_col <span class="op">=</span> <span class="va">epatient_15</span>,</span></span>
+<span class="r-in"><span>    epatient_16_col <span class="op">=</span> <span class="va">epatient_16</span>,</span></span>
+<span class="r-in"><span>    eresponse_05_col <span class="op">=</span> <span class="va">eresponse_05</span>,</span></span>
+<span class="r-in"><span>    eresponse_10_col <span class="op">=</span> <span class="va">eresponse_10</span>,</span></span>
+<span class="r-in"><span>    esituation_02_col <span class="op">=</span> <span class="va">esituation_02</span>,</span></span>
+<span class="r-in"><span>    evitals_06_col <span class="op">=</span> <span class="va">evitals_06</span>,</span></span>
+<span class="r-in"><span>    evitals_10_col <span class="op">=</span> <span class="va">evitals_10</span>,</span></span>
+<span class="r-in"><span>    evitals_12_col <span class="op">=</span> <span class="va">evitals_12</span>,</span></span>
+<span class="r-in"><span>    evitals_14_col <span class="op">=</span> <span class="va">evitals_14</span>,</span></span>
+<span class="r-in"><span>    evitals_15_col <span class="op">=</span> <span class="va">evitals_15</span>,</span></span>
+<span class="r-in"><span>    evitals_21_col <span class="op">=</span> <span class="va">evitals_21</span>,</span></span>
+<span class="r-in"><span>    eexam_16_col <span class="op">=</span> <span class="va">eexam_16</span>,</span></span>
+<span class="r-in"><span>    eexam_20_col <span class="op">=</span> <span class="va">eexam_20</span>,</span></span>
+<span class="r-in"><span>    eexam_23_col <span class="op">=</span> <span class="va">eexam_23</span>,</span></span>
+<span class="r-in"><span>    eexam_25_col <span class="op">=</span> <span class="va">eexam_25</span>,</span></span>
+<span class="r-in"><span>    edisposition_23_col <span class="op">=</span> <span class="va">edisposition_23</span>,</span></span>
+<span class="r-in"><span>    transport_disposition_col <span class="op">=</span> <span class="va">edisposition_30</span>,</span></span>
+<span class="r-in"><span>    eprocedures_03_col <span class="op">=</span> <span class="va">eprocedures_03</span>,</span></span>
+<span class="r-in"><span>    einjury_01_col <span class="op">=</span> <span class="va">einjury_01</span>,</span></span>
+<span class="r-in"><span>    einjury_03_col <span class="op">=</span> <span class="va">einjury_03</span>,</span></span>
+<span class="r-in"><span>    einjury_04_col <span class="op">=</span> <span class="va">einjury_04</span>,</span></span>
+<span class="r-in"><span>    einjury_09_col <span class="op">=</span> <span class="va">einjury_09</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Trauma-04</span> <span style="color: #00BBBB;">───────────────────────────────────────────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Gathering Records for Trauma-04</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 1 of 31 tasks] <span style="color: #00BB00;">●●</span><span style="color: #FFFFFF;">────────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 2 of 31 tasks] <span style="color: #00BB00;">●●●</span><span style="color: #FFFFFF;">───────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 3 of 31 tasks] <span style="color: #00BB00;">●●●●</span><span style="color: #FFFFFF;">──────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 4 of 31 tasks] <span style="color: #00BB00;">●●●●●</span><span style="color: #FFFFFF;">─────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 5 of 31 tasks] <span style="color: #00BB00;">●●●●●●</span><span style="color: #FFFFFF;">────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 6 of 31 tasks] <span style="color: #00BB00;">●●●●●●●</span><span style="color: #FFFFFF;">───────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 7 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●</span><span style="color: #FFFFFF;">──────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 8 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●</span><span style="color: #FFFFFF;">─────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 9 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●</span><span style="color: #FFFFFF;">────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 10 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●</span><span style="color: #FFFFFF;">──────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 11 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●</span><span style="color: #FFFFFF;">─────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 12 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 13 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">───</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 14 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">──</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 15 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">─</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 16 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">─</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 17 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 18 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 19 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 20 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 21 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 22 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 23 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 24 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 25 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 26 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 27 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 28 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 29 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 30 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_04_population()`  [Working on 31 of 31 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Calculating Trauma-04</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Function completed in <span style="color: #00BB00;">0.45s</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 6</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   measure   pop       numerator denominator  prop prop_label</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Trauma-04 &gt;= 65 yrs         0           0     0 0%        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Trauma-04 10-64 yrs         3           3     1 100%      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Trauma-04 &lt; 10 yrs          2           2     1 100%      </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
