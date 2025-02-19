@@ -60,8 +60,14 @@
 #'   patient_table <- tibble::tibble(
 #'
 #'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
-#'     incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01", "2025-01-01", "2025-06-01")),
-#'     patient_dob = as.Date(c("2000-01-01", "2020-01-01", "2023-02-01", "2023-01-01", "1970-06-01")),
+#'     incident_date = as.Date(c("2025-01-01", "2025-01-05",
+#'                               "2025-02-01", "2025-01-01",
+#'                               "2025-06-01")
+#'                               ),
+#'     patient_dob = as.Date(c("2000-01-01", "2020-01-01",
+#'                             "2023-02-01", "2023-01-01",
+#'                             "1970-06-01")
+#'                             ),
 #'     epatient_15 = c(25, 5, 2, 2, 55),  # Ages
 #'     epatient_16 = c("Years", "Years", "Years", "Years", "Years")
 #'
@@ -86,13 +92,17 @@
 #'   vitals_table <- tibble::tibble(
 #'
 #'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
-#'     evitals_01 = lubridate::as_datetime(c("2025-01-01 12:00:00", "2025-01-05 18:00:00", "2025-02-01 06:00:00", "2025-01-01 01:00:00", "2025-06-01 14:00:00"))
+#'     evitals_01 = lubridate::as_datetime(c("2025-01-01 12:00:00", "2025-01-05
+#'     18:00:00", "2025-02-01 06:00:00", "2025-01-01 01:00:00", "2025-06-01
+#'     14:00:00"))
 #'   ) |>
 #'     tidyr::uncount(weights = 2) |>  # Duplicate each row twice
-#'     dplyr::mutate(evitals_27 = c(0, 0, 2, 1, 4, 3, 6, 5, 8, 7)) |> # Assign pain scores
+#'     # Assign pain scores
+#'     dplyr::mutate(evitals_27 = c(0, 0, 2, 1, 4, 3, 6, 5, 8, 7)) |>
 #'     dplyr::group_by(erecord_01) |>
 #'     dplyr::mutate(
-#'       time_offset = dplyr::if_else(dplyr::row_number() == 1, -5, 0),  # Lower score = later time
+#'     # Lower score = later time
+#'       time_offset = dplyr::if_else(dplyr::row_number() == 1, -5, 0),
 #'       evitals_01 = evitals_01 + lubridate::dminutes(time_offset)
 #'     ) |>
 #'     dplyr::ungroup() |>
@@ -110,9 +120,11 @@
 #'   result <- trauma_03_population(patient_scene_table = patient_table,
 #'                         response_table = response_table,
 #'                         situation_table = situation_table,
-#'                         vitals_table = vitals_table_2,
+#'                         vitals_table = vitals_table,
 #'                         disposition_table = disposition_table,
 #'                         erecord_01_col = erecord_01,
+#'                         incident_date_col = incident_date,
+#'                         patient_DOB_col = patient_dob,
 #'                         epatient_15_col = epatient_15,
 #'                         epatient_16_col = epatient_16,
 #'                         eresponse_05_col = eresponse_05,

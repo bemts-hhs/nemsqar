@@ -148,7 +148,7 @@ ttr_01 <- function(df = NULL,
     # adults
     adult_population <- ttr_01_populations$adults |>
       summarize_measure(measure_name = "TTR_01",
-                        population_name = "Adult",
+                        population_name = "Adults",
                         VITALS,
                         ...)
 
@@ -238,7 +238,7 @@ ttr_01 <- function(df = NULL,
     # adults
     adult_population <- ttr_01_populations$adults |>
       summarize_measure(measure_name = "TTR_01",
-                        population_name = "Adult",
+                        population_name = "Adults",
                         VITALS,
                         ...)
 

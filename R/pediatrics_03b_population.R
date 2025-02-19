@@ -48,10 +48,16 @@
 #' patient_table <- tibble::tibble(
 #'
 #'   erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
-#'   incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01", "2025-06-01", "2025-12-15")),
-#'   patient_dob = as.Date(c("2021-01-01", "2020-01-01", "2022-02-01", "2023-06-01", "2019-12-15")),
-#'   epatient_15 = c(4, 5, 3, 2, 6),  # Ages
-#'   epatient_16 = c("Years", "Years", "Years", "Years", "Years"),
+#'     incident_date = as.Date(c("2025-01-01", "2025-01-05",
+#'                               "2025-02-01", "2025-01-01",
+#'                               "2025-06-01")
+#'                               ),
+#'     patient_dob = as.Date(c("2000-01-01", "2020-01-01",
+#'                             "2023-02-01", "2023-01-01",
+#'                             "1970-06-01")
+#'                             ),
+#'     epatient_15 = c(25, 5, 2, 2, 55),  # Ages
+#'     epatient_16 = c("Years", "Years", "Years", "Years", "Years")
 #'
 #' )
 #'

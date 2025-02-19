@@ -156,7 +156,7 @@ testthat::test_that("airway_01 calculates values correctly for different age gro
                       )
 
   testthat::expect_s3_class(result, "data.frame")
-  testthat::expect_true(all(result$pop %in% c("Adult", "Peds")))  # Check expected population groups
+  testthat::expect_true(all(result$pop %in% c("Adults", "Peds")))  # Check expected population groups
 })
 
 testthat::test_that("airway_01 correctly processes complete fact tables", {
@@ -204,7 +204,7 @@ testthat::test_that("airway_01 correctly processes complete fact tables", {
   testthat::expect_true(all(result$prop >= 0 & result$prop <= 1, na.rm = TRUE))
 
   # Check that results exist for Adults and Peds populations
-  testthat::expect_true(all(c("Adult", "Peds") %in% result$pop))
+  testthat::expect_true(all(c("Adults", "Peds") %in% result$pop))
 
   # Ensure denominator is non-zero (indicating valid patient inclusion)
   testthat::expect_true(all(result$denominator > 0, na.rm = TRUE))

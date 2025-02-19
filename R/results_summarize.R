@@ -22,8 +22,6 @@
 #'
 #' @author Samuel Kordik, BBA, BS
 #'
-#' @export
-#'
 results_summarize <- function(total_population,
                               adult_population,
                               peds_population,

@@ -153,7 +153,7 @@ syncope_01 <- function(df = NULL,
   # adults
   adult_population <- syncope_01_populations$adults |>
     summarize_measure(measure_name = "Syncope-01",
-                      population_name = "Adult",
+                      population_name = "Adults",
                       ECG_PERFORMED,
                       ...)
 
@@ -239,7 +239,7 @@ syncope_01 <- function(df = NULL,
     # adults
     adult_population <- syncope_01_populations$adults |>
       summarize_measure(measure_name = "Syncope-01",
-                        population_name = "Adult",
+                        population_name = "Adults",
                         ECG_PERFORMED,
                         ...)
 

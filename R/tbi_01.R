@@ -174,7 +174,7 @@ tbi_01 <- function(df = NULL,
     # adults
     adult_population <- tbi_01_populations$adults |>
       summarize_measure(measure_name = "TBI-01",
-                        population_name = "Adult",
+                        population_name = "Adults",
                         VITALS_CHECK,
                         ...)
 
@@ -262,7 +262,7 @@ tbi_01 <- function(df = NULL,
     # adults
     adult_population <- tbi_01_populations$adults |>
       summarize_measure(measure_name = "TBI-01",
-                        population_name = "Adult",
+                        population_name = "Adults",
                         VITALS_CHECK,
                         ...)
 

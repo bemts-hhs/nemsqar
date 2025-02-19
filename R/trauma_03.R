@@ -67,7 +67,9 @@
 #'     epatient_16 = c("Years", "Years", "Years", "Months", "Years"),
 #'     eresponse_05 = rep(2205001, 5),
 #'     esituation_02 = rep("Yes", 5),
-#'     evitals_01 = lubridate::as_datetime(c("2025-01-01 12:00:00", "2025-01-05 18:00:00", "2025-02-01 06:00:00", "2025-01-01 01:00:00", "2025-06-01 14:00:00")),
+#'     evitals_01 = lubridate::as_datetime(c("2025-01-01 12:00:00", "2025-01-05
+#'     18:00:00", "2025-02-01 06:00:00", "2025-01-01 01:00:00", "2025-06-01
+#'     14:00:00")),
 #'     edisposition_28 = rep(4228001, 5),
 #'     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
 #'   )
@@ -75,10 +77,12 @@
 #'   # Expand data so each erecord_01 has 2 rows (one for each pain score)
 #'   test_data_expanded2 <- test_data2 |>
 #'     tidyr::uncount(weights = 2) |>  # Duplicate each row twice
-#'     dplyr::mutate(evitals_27 = c(0, 0, 2, 1, 4, 3, 6, 5, 8, 7)) |> # Assign pain scores
+#'     # Assign pain scores
+#'     dplyr::mutate(evitals_27 = c(0, 0, 2, 1, 4, 3, 6, 5, 8, 7)) |>
 #'     dplyr::group_by(erecord_01) |>
 #'     dplyr::mutate(
-#'       time_offset = dplyr::if_else(dplyr::row_number() == 1, -5, 0),  # Lower score = later time
+#'     # Lower score = later time
+#'       time_offset = dplyr::if_else(dplyr::row_number() == 1, -5, 0),
 #'       evitals_01 = evitals_01 + lubridate::dminutes(time_offset)
 #'     ) |>
 #'     dplyr::ungroup() |>

@@ -288,7 +288,7 @@ testthat::test_that("airway_18 correctly identifies advanced airway attempts", {
                                      )
 
   adult_denom <- result |>
-    dplyr::filter(pop == "Adult") |>
+    dplyr::filter(pop == "Adults") |>
     dplyr::pull(denominator)
 
   population_adult_denom <- result_pop$filter_process |>

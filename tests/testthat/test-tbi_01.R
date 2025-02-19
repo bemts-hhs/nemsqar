@@ -40,7 +40,7 @@ testthat::test_that("tbi_01 produces expected results", {
   # Check calculations
   testthat::expect_equal(sum(result$numerator), 5)
   testthat::expect_equal(sum(result$denominator), 5)
-  testthat::expect_equal(result$prop[result$pop == "Adult"], 1)
+  testthat::expect_equal(result$prop[result$pop == "Adults"], 1)
   testthat::expect_equal(nrow(result), 2)
 
   # create tables to test correct functioning
@@ -109,7 +109,7 @@ testthat::test_that("tbi_01 produces expected results", {
   # Check calculations
   testthat::expect_equal(sum(result_2$numerator), 5)
   testthat::expect_equal(sum(result_2$denominator), 5)
-  testthat::expect_equal(result_2$prop[result_2$pop == "Adult"], 1)
+  testthat::expect_equal(result_2$prop[result_2$pop == "Adults"], 1)
   testthat::expect_equal(nrow(result_2), 2)
 
 

@@ -5,7 +5,7 @@
 #' Calculates the proportion of times when the first endotracheal intubation
 #' attempt is successful with no peri-intubation hypoxia or hypotension.
 #'
-#' @param df A dataframe or tibble contianing EMS data where each row represents
+#' @param df A dataframe or tibble containing EMS data where each row represents
 #'   an observation and columns represent features.
 #' @param patient_scene_table A data.frame or tibble containing at least
 #'   epatient, escene, and earrest.01 fields as a fact table.
@@ -81,18 +81,26 @@
 #'          vitals_table = nemsqar_vitals_table,
 #'          arrest_table = nemsqar_arrest_table,
 #'          response_table = nemsqar_response_table,
-#'          erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+#'         erecord_01_col =
+#'         `Incident Patient Care Report Number - PCR (eRecord.01)`,
 #'          incident_date_col = `Incident Date`,
 #'          patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
 #'          epatient_15_col = `Patient Age (ePatient.15)`,
 #'          epatient_16_col = `Patient Age Units (ePatient.16)`,
-#'          eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
-#'          eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
-#'          eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
-#'          eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
-#'          eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
-#'          eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
-#'          earrest_01_col = `Cardiac Arrest During EMS Event With Code (eArrest.01)`,
+#'          eresponse_05_col =
+#'          `Response Type Of Service Requested With Code (eResponse.05)`,
+#'          eprocedures_01_col =
+#'          `Procedure Performed Date Time (eProcedures.01)`,
+#'          eprocedures_02_col =
+#'          `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+#'          eprocedures_03_col =
+#'          `Procedure Performed Description And Code (eProcedures.03)`,
+#'          eprocedures_05_col =
+#'          `Procedure Number Of Attempts (eProcedures.05)`,
+#'          eprocedures_06_col =
+#'          `Procedure Successful (eProcedures.06)`,
+#'          earrest_01_col =
+#'          `Cardiac Arrest During EMS Event With Code (eArrest.01)`,
 #'          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
 #'          evitals_06_col = `Vitals Systolic Blood Pressure SBP (eVitals.06)`,
 #'          evitals_12_col = `Vitals Pulse Oximetry (eVitals.12)`
@@ -184,7 +192,7 @@ airway_01 <- function(df = NULL,
     # adults
     adult_population <- airway_01_population$adults |>
       summarize_measure(measure_name = "Airway-01",
-                        population_name = "Adult",
+                        population_name = "Adults",
                         numerator_1,
                         ...)
 
@@ -276,7 +284,7 @@ airway_01 <- function(df = NULL,
       # adults
       adult_population <- airway_01_population$adults |>
         summarize_measure(measure_name = "Airway-01",
-                          population_name = "Adult",
+                          population_name = "Adults",
                           numerator_1,
                           ...)
 

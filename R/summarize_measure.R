@@ -15,8 +15,6 @@
 #'
 #' @author Samuel Kordik, BBA, BS
 #'
-#' @export
-#'
 summarize_measure <- function(data,
                               measure_name,
                               population_name,

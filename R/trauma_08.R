@@ -131,7 +131,7 @@ trauma_08 <- function(df = NULL,
     # adults
     adult_population <- trauma_08_populations$adults |>
       summarize_measure(measure_name = "Trauma-08",
-                        population_name = "Adult",
+                        population_name = "Adults",
                         VITALS,
                         ...)
 
@@ -143,7 +143,7 @@ trauma_08 <- function(df = NULL,
                         ...)
 
     # bind rows
-    trauma.08 <- bind_rows(adult_population, peds_population)
+    trauma.08 <- dplyr::bind_rows(adult_population, peds_population)
 
     # create a separator
     cli::cli_text("\n")
@@ -217,7 +217,7 @@ trauma_08 <- function(df = NULL,
     # adults
     adult_population <- trauma_08_populations$adults |>
       summarize_measure(measure_name = "Trauma-08",
-                        population_name = "Adult",
+                        population_name = "Adults",
                         VITALS,
                         ...)
 
@@ -229,7 +229,7 @@ trauma_08 <- function(df = NULL,
                         ...)
 
     # bind rows
-    trauma.08 <- bind_rows(adult_population, peds_population)
+    trauma.08 <- dplyr::bind_rows(adult_population, peds_population)
 
     # create a separator
     cli::cli_text("\n")

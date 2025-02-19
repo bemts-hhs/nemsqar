@@ -138,19 +138,28 @@ airway_18(df = NULL,
          vitals_table = nemsqar_vitals_table,
          airway_table = nemsqar_airway_table,
          response_table = nemsqar_response_table,
-         erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+         erecord_01_col =
+         `Incident Patient Care Report Number - PCR (eRecord.01)`,
          incident_date_col = `Incident Date`,
          patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
          epatient_15_col = `Patient Age (ePatient.15)`,
          epatient_16_col = `Patient Age Units (ePatient.16)`,
-         eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
-         eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
-         eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
-         eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
-         eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
-         eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
-         eairway_02_col = `Airway Device Placement Confirmation Date Time (eAirway.02)`,
-         eairway_04_col = `Airway Device Placement Confirmed Method List (eAirway.04)`,
+         eresponse_05_col =
+         `Response Type Of Service Requested With Code (eResponse.05)`,
+         eprocedures_01_col =
+         `Procedure Performed Date Time (eProcedures.01)`,
+         eprocedures_02_col =
+         `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+         eprocedures_03_col =
+         `Procedure Performed Description And Code (eProcedures.03)`,
+         eprocedures_05_col =
+         `Procedure Number Of Attempts (eProcedures.05)`,
+         eprocedures_06_col =
+         `Procedure Successful (eProcedures.06)`,
+         eairway_02_col =
+         `Airway Device Placement Confirmation Date Time (eAirway.02)`,
+         eairway_04_col =
+         `Airway Device Placement Confirmed Method List (eAirway.04)`,
          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
          evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`
          )
@@ -170,19 +179,27 @@ airway_18(df = nemsqar_airway_18_df,
          vitals_table = NULL,
          airway_table = NULL,
          response_table = NULL,
-         erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+         erecord_01_col =
+         `Incident Patient Care Report Number - PCR (eRecord.01)`,
          incident_date_col = `Incident Date`,
          patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
          epatient_15_col = `Patient Age (ePatient.15)`,
          epatient_16_col = `Patient Age Units (ePatient.16)`,
-         eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
-         eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
-         eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
-         eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
-         eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
+         eresponse_05_col =
+         `Response Type Of Service Requested With Code (eResponse.05)`,
+         eprocedures_01_col =
+         `Procedure Performed Date Time (eProcedures.01)`,
+         eprocedures_02_col =
+         `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+         eprocedures_03_col =
+         `Procedure Performed Description And Code (eProcedures.03)`,
+         eprocedures_05_col =
+         `Procedure Number Of Attempts (eProcedures.05)`,
          eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
-         eairway_02_col = `Airway Device Placement Confirmation Date Time (eAirway.02)`,
-         eairway_04_col = `Airway Device Placement Confirmed Method List (eAirway.04)`,
+         eairway_02_col =
+         `Airway Device Placement Confirmation Date Time (eAirway.02)`,
+         eairway_04_col =
+         `Airway Device Placement Confirmed Method List (eAirway.04)`,
          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
          evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`
          )

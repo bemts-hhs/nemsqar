@@ -22,18 +22,24 @@ seizure_02_population(
 )
 }
 \arguments{
-\item{df}{A data frame where each row is an observation, containing all necessary
-columns for analysis.}
+\item{df}{A data frame where each row is an observation, containing all
+necessary columns for analysis.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data frame or tibble containing only epatient
+and escene fields as a fact table. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data frame or tibble containing only the eresponse
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{situation_table}{A data.frame or tibble containing only the esituation fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data.frame or tibble containing only the esituation
+fields needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{medications_table}{A data.frame or tibble containing only the emedications fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{medications_table}{A data.frame or tibble containing only the
+emedications fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{erecord_01_col}{The column containing unique record identifiers for each encounter.}
+\item{erecord_01_col}{The column containing unique record identifiers for
+each encounter.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -45,16 +51,18 @@ restrictions.}
 
 \item{epatient_15_col}{Column name for patient age in numeric form.}
 
-\item{epatient_16_col}{Column name for age unit (e.g., \code{"Years"} or \code{"Months"}).}
+\item{epatient_16_col}{Column name for age unit (e.g., \code{"Years"} or
+\code{"Months"}).}
 
-\item{eresponse_05_col}{Column name for response codes; "911" call codes are filtered.}
+\item{eresponse_05_col}{Column name for response codes; "911" call codes are
+filtered.}
 
 \item{esituation_11_col}{Column name for primary impressions.}
 
 \item{esituation_12_col}{Column name for secondary impressions.}
 
-\item{emedications_03_col}{Column name for medications administered; ideally a list column
-or string with comma-separated values.}
+\item{emedications_03_col}{Column name for medications administered; ideally
+a list column or string with comma-separated values.}
 }
 \value{
 #' A list that contains the following:
@@ -68,10 +76,10 @@ or string with comma-separated values.}
 Filters data down to the target populations for Seizure-02, and categorizes
 records to identify needed information for the calculations.
 
-Identifies key categories related to asthma-related incidents in an EMS dataset,
-specifically focusing on cases where 911 was called for respiratory distress,
-and certain medications were administered. This function segments the data by
-age into adult and pediatric populations.
+Identifies key categories related to asthma-related incidents in an EMS
+dataset, specifically focusing on cases where 911 was called for respiratory
+distress, and certain medications were administered. This function segments
+the data by age into adult and pediatric populations.
 }
 \examples{
 
@@ -81,8 +89,14 @@ age into adult and pediatric populations.
   patient_table <- tibble::tibble(
 
     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
-    incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01", "2025-01-01", "2025-06-01")),
-    patient_dob = as.Date(c("2000-01-01", "2020-01-01", "2023-02-01", "2023-01-01", "1970-06-01")),
+    incident_date = as.Date(c("2025-01-01", "2025-01-05",
+                              "2025-02-01", "2025-01-01",
+                              "2025-06-01")
+                              ),
+    patient_dob = as.Date(c("2000-01-01", "2020-01-01",
+                            "2023-02-01", "2023-01-01",
+                            "1970-06-01")
+                            ),
     epatient_15 = c(25, 5, 2, 2, 55),  # Ages
     epatient_16 = c("Years", "Years", "Years", "Years", "Years")
 
