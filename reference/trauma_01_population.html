@@ -176,6 +176,79 @@ details.</p></dd>
     <p>Nicolas Foss, Ed.D., MS</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># create tables to test correct functioning</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># patient table</span></span></span>
+<span class="r-in"><span>  <span class="va">patient_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    incident_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2025-01-01"</span>, <span class="st">"2025-01-05"</span>, <span class="st">"2025-02-01"</span>, <span class="st">"2025-01-01"</span>, <span class="st">"2025-06-01"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    patient_dob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2000-01-01"</span>, <span class="st">"2020-01-01"</span>, <span class="st">"2023-02-01"</span>, <span class="st">"2023-01-01"</span>, <span class="st">"1970-06-01"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    epatient_15 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">5</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">55</span><span class="op">)</span>,  <span class="co"># Ages</span></span></span>
+<span class="r-in"><span>    epatient_16 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># response table</span></span></span>
+<span class="r-in"><span>  <span class="va">response_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eresponse_05 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2205001</span>, <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># situation table</span></span></span>
+<span class="r-in"><span>  <span class="va">situation_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    esituation_02 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># vitals table</span></span></span>
+<span class="r-in"><span>  <span class="va">vitals_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_23 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">15</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_26 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Alert"</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_27 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">2</span>, <span class="fl">4</span>, <span class="fl">6</span>, <span class="fl">8</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># disposition table</span></span></span>
+<span class="r-in"><span>  <span class="va">disposition_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    edisposition_28 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">4228001</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    edisposition_30 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4230001</span>, <span class="fl">4230003</span>, <span class="fl">4230001</span>, <span class="fl">4230007</span>, <span class="fl">4230007</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># test the success of the function</span></span></span>
+<span class="r-in"><span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">trauma_01_population</span><span class="op">(</span>patient_scene_table <span class="op">=</span> <span class="va">patient_table</span>,</span></span>
+<span class="r-in"><span>                     response_table <span class="op">=</span> <span class="va">response_table</span>,</span></span>
+<span class="r-in"><span>                     situation_table <span class="op">=</span> <span class="va">situation_table</span>,</span></span>
+<span class="r-in"><span>                     vitals_table <span class="op">=</span> <span class="va">vitals_table</span>,</span></span>
+<span class="r-in"><span>                     disposition_table <span class="op">=</span> <span class="va">disposition_table</span>,</span></span>
+<span class="r-in"><span>                     erecord_01_col <span class="op">=</span> <span class="va">erecord_01</span>,</span></span>
+<span class="r-in"><span>                     epatient_15_col <span class="op">=</span> <span class="va">epatient_15</span>,</span></span>
+<span class="r-in"><span>                     epatient_16_col <span class="op">=</span> <span class="va">epatient_16</span>,</span></span>
+<span class="r-in"><span>                     eresponse_05_col <span class="op">=</span> <span class="va">eresponse_05</span>,</span></span>
+<span class="r-in"><span>                     esituation_02_col <span class="op">=</span> <span class="va">esituation_02</span>,</span></span>
+<span class="r-in"><span>                     evitals_23_col <span class="op">=</span> <span class="va">evitals_23</span>,</span></span>
+<span class="r-in"><span>                     evitals_26_col <span class="op">=</span> <span class="va">evitals_26</span>,</span></span>
+<span class="r-in"><span>                     evitals_27_col <span class="op">=</span> <span class="va">evitals_27</span>,</span></span>
+<span class="r-in"><span>                     edisposition_28_col <span class="op">=</span> <span class="va">edisposition_28</span>,</span></span>
+<span class="r-in"><span>                     transport_disposition_col <span class="op">=</span> <span class="va">edisposition_30</span></span></span>
+<span class="r-in"><span>                     <span class="op">)</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error in trauma_01_population(patient_scene_table = patient_table, response_table = response_table,     situation_table = situation_table, vitals_table = vitals_table,     disposition_table = disposition_table, erecord_01_col = erecord_01,     epatient_15_col = epatient_15, epatient_16_col = epatient_16,     eresponse_05_col = eresponse_05, esituation_02_col = esituation_02,     evitals_23_col = evitals_23, evitals_26_col = evitals_26,     evitals_27_col = evitals_27, edisposition_28_col = edisposition_28,     transport_disposition_col = edisposition_30):</span> One or more of the *_col arguments is missing. Please ensure you pass an</span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> unquoted column to each of the *_col arguments to run `trauma_01_population()`.</span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># show the results of filtering at each step</span></span></span>
+<span class="r-in"><span><span class="va">result</span><span class="op">$</span><span class="va">filter_process</span></span></span>
+<span class="r-err co"><span class="r-pr">#&gt;</span> <span class="error">Error:</span> object 'result' not found</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

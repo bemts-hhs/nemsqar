@@ -147,6 +147,81 @@ edisposition.12, edisposition.30) containing transport disposition details.</p><
     <p>Nicolas Foss, Ed.D., MS</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># create tables to test correct functioning</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># patient table</span></span></span>
+<span class="r-in"><span>  <span class="va">patient_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    incident_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2025-01-01"</span>, <span class="st">"2025-01-05"</span>, <span class="st">"2025-02-01"</span>, <span class="st">"2025-01-01"</span>, <span class="st">"2025-06-01"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    patient_dob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2000-01-01"</span>, <span class="st">"2020-01-01"</span>, <span class="st">"2023-02-01"</span>, <span class="st">"2023-01-01"</span>, <span class="st">"1970-06-01"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    epatient_15 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">5</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">55</span><span class="op">)</span>,  <span class="co"># Ages</span></span></span>
+<span class="r-in"><span>    epatient_16 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># response table</span></span></span>
+<span class="r-in"><span>  <span class="va">response_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eresponse_05 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2205001</span>, <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># disposition table</span></span></span>
+<span class="r-in"><span>  <span class="va">disposition_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    edisposition_18 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">4218015</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    edisposition_28 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">4228001</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    edisposition_30 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">4230001</span>, <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># test the success of the function</span></span></span>
+<span class="r-in"><span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">safety_02_population</span><span class="op">(</span>patient_scene_table <span class="op">=</span> <span class="va">patient_table</span>,</span></span>
+<span class="r-in"><span>                        response_table <span class="op">=</span> <span class="va">response_table</span>,</span></span>
+<span class="r-in"><span>                        disposition_table <span class="op">=</span> <span class="va">disposition_table</span>,</span></span>
+<span class="r-in"><span>                        erecord_01_col <span class="op">=</span> <span class="va">erecord_01</span>,</span></span>
+<span class="r-in"><span>                        incident_date_col <span class="op">=</span> <span class="va">incident_date</span>,</span></span>
+<span class="r-in"><span>                        patient_DOB_col <span class="op">=</span> <span class="va">patient_dob</span>,</span></span>
+<span class="r-in"><span>                        epatient_15_col <span class="op">=</span> <span class="va">epatient_15</span>,</span></span>
+<span class="r-in"><span>                        epatient_16_col <span class="op">=</span> <span class="va">epatient_16</span>,</span></span>
+<span class="r-in"><span>                        eresponse_05_col <span class="op">=</span> <span class="va">eresponse_05</span>,</span></span>
+<span class="r-in"><span>                        edisposition_18_col <span class="op">=</span> <span class="va">edisposition_18</span>,</span></span>
+<span class="r-in"><span>                        edisposition_28_col <span class="op">=</span> <span class="va">edisposition_28</span>,</span></span>
+<span class="r-in"><span>                        transport_disposition_cols <span class="op">=</span> <span class="va">edisposition_30</span></span></span>
+<span class="r-in"><span>                        <span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 1 of 11 tasks] <span style="color: #00BB00;">●●●●</span><span style="color: #FFFFFF;">──────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 2 of 11 tasks] <span style="color: #00BB00;">●●●●●●</span><span style="color: #FFFFFF;">────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 3 of 11 tasks] <span style="color: #00BB00;">●●●●●●●●●</span><span style="color: #FFFFFF;">─────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 4 of 11 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●</span><span style="color: #FFFFFF;">──────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 5 of 11 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">───</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 6 of 11 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">─</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 7 of 11 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 8 of 11 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 9 of 11 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 10 of 11 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 11 of 11 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># show the results of filtering at each step</span></span></span>
+<span class="r-in"><span><span class="va">result</span><span class="op">$</span><span class="va">filter_process</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 8 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   filter                               count</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 911 calls                                5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Patients evaluated and care provided     5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Transport runs                           5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> No lights and sirens                     5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> Adults denominator                       2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> Peds denominator                         3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> Initial population                       5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">8</span> Total dataset                            5</span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

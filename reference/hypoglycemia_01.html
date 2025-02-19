@@ -196,6 +196,80 @@ places.</p>
     <p>Nicolas Foss, Ed.D., MS</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Synthetic test data</span></span></span>
+<span class="r-in"><span><span class="va">test_data</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  epatient_15 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">34</span>, <span class="fl">5</span>, <span class="fl">45</span>, <span class="fl">2</span>, <span class="fl">60</span><span class="op">)</span>,  <span class="co"># Ages</span></span></span>
+<span class="r-in"><span>  epatient_16 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Months"</span>, <span class="st">"Years"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  eresponse_05 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2205001</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  esituation_11 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"E13.64"</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"E16.2"</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  esituation_12 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"E13.64"</span>, <span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"E16.2"</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  emedications_03 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">372326</span>, <span class="fl">376937</span>,</span></span>
+<span class="r-in"><span>                      <span class="fl">377980</span>, <span class="fl">4850</span>,</span></span>
+<span class="r-in"><span>                      <span class="fl">4832</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  evitals_18 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">60</span>, <span class="fl">59</span>, <span class="fl">58</span>, <span class="fl">57</span>, <span class="fl">56</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  evitals_23 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16</span>, <span class="fl">15</span>, <span class="fl">14</span>, <span class="fl">13</span>, <span class="fl">12</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  evitals_26 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Alert"</span>, <span class="st">"Painful"</span>, <span class="st">"Verbal"</span>, <span class="st">"Unresponsive"</span>, <span class="st">"Alert"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  eprocedures_03 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"710925007"</span>, <span class="fl">5</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Run the function</span></span></span>
+<span class="r-in"><span><span class="fu">hypoglycemia_01</span><span class="op">(</span></span></span>
+<span class="r-in"><span>  df <span class="op">=</span> <span class="va">test_data</span>,</span></span>
+<span class="r-in"><span>  erecord_01_col <span class="op">=</span> <span class="va">erecord_01</span>,</span></span>
+<span class="r-in"><span>  epatient_15_col <span class="op">=</span> <span class="va">epatient_15</span>,</span></span>
+<span class="r-in"><span>  epatient_16_col <span class="op">=</span> <span class="va">epatient_16</span>,</span></span>
+<span class="r-in"><span>  eresponse_05_col <span class="op">=</span> <span class="va">eresponse_05</span>,</span></span>
+<span class="r-in"><span>  esituation_11_col <span class="op">=</span> <span class="va">esituation_11</span>,</span></span>
+<span class="r-in"><span>  esituation_12_col <span class="op">=</span> <span class="va">esituation_12</span>,</span></span>
+<span class="r-in"><span>  emedications_03_col <span class="op">=</span> <span class="va">emedications_03</span>,</span></span>
+<span class="r-in"><span>  evitals_18_col <span class="op">=</span> <span class="va">evitals_18</span>,</span></span>
+<span class="r-in"><span>  evitals_23_col <span class="op">=</span> <span class="va">evitals_23</span>,</span></span>
+<span class="r-in"><span>  evitals_26_col <span class="op">=</span> <span class="va">evitals_26</span>,</span></span>
+<span class="r-in"><span>  eprocedures_03_col <span class="op">=</span> <span class="va">eprocedures_03</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Hypoglycemia-01</span> <span style="color: #00BBBB;">─────────────────────────────────────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Gathering Records for Hypoglycemia-01</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 1 of 17 tasks] <span style="color: #00BB00;">●●●</span><span style="color: #FFFFFF;">─────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 2 of 17 tasks] <span style="color: #00BB00;">●●●●●</span><span style="color: #FFFFFF;">───────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 3 of 17 tasks] <span style="color: #00BB00;">●●●●●●</span><span style="color: #FFFFFF;">──────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 4 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●</span><span style="color: #FFFFFF;">────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 5 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●</span><span style="color: #FFFFFF;">──</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 6 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 7 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 8 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 9 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 10 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 11 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 12 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 13 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 14 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 15 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 16 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `hypoglycemia_01_population()`  [Working on 17 of 17 tasks] <span style="color: #00BB00;">●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Calculating Hypoglycemia-01</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Function completed in <span style="color: #00BB00;">0.26s</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 6</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   measure         pop    numerator denominator  prop prop_label</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Hypoglycemia-01 Adults         2           2     1 100%      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Hypoglycemia-01 Peds           2           2     1 100%      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Hypoglycemia-01 All            4           4     1 100%      </span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
