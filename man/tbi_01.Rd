@@ -108,6 +108,42 @@ This function screens for potential traumatic brain injury (TBI) cases based
 on specific criteria in a patient dataset. It produces a subset of the data
 with calculated variables for TBI identification.
 }
+\examples{
+
+# Synthetic test data
+  test_data <- tibble::tibble(
+    erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+    epatient_15 = c(34, 5, 45, 2, 60),  # Ages
+    epatient_16 = c("Years", "Years", "Years", "Months", "Years"),
+    eresponse_05 = rep(2205001, 5),
+    esituation_11 = c(rep("S02", 3), rep("S06", 2)),
+    esituation_12 = c(rep("S09.90", 2), rep("S06.0X9", 3)),
+    evitals_06 = c(85, 80, 100, 90, 82),
+    evitals_12 = c(95, 96, 97, 98, 99),
+    evitals_16 = c(35, 36, 37, 38, 39),
+    evitals_23 = rep(8, 5),
+    evitals_26 = c("Verbal", "Painful", "Unresponsive", "Verbal", "Painful"),
+    edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
+  )
+
+  # Run function
+  tbi_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    esituation_11_col = esituation_11,
+    esituation_12_col = esituation_12,
+    evitals_06_col = evitals_06,
+    evitals_12_col = evitals_12,
+    evitals_16_col = evitals_16,
+    evitals_23_col = evitals_23,
+    evitals_26_col = evitals_26,
+    transport_disposition_col = edisposition_30
+  )
+
+}
 \author{
 Nicolas Foss, Ed.D., MS
 }

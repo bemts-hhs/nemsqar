@@ -66,6 +66,118 @@
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
 #'
+#' @examples
+#'
+#' # create tables to test correct functioning
+#'
+#'   # patient table
+#'   patient_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01", "2025-01-01", "2025-06-01")),
+#'     patient_dob = as.Date(c("2000-01-01", "2020-01-01", "2023-02-01", "2023-01-01", "1970-06-01")),
+#'     epatient_15 = c(25, 5, 2, 2, 55),  # Ages
+#'     epatient_16 = c("Years", "Years", "Years", "Years", "Years")
+#'
+#'   )
+#'
+#'   # response table
+#'   response_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     eresponse_05 = rep(2205001, 5),
+#'     eresponse_10 = rep(2210011, 5)
+#'   )
+#'
+#'   # situation table
+#'   situation_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     esituation_02 = rep("Yes", 5),
+#'   )
+#'
+#'   # vitals table
+#'   vitals_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     evitals_06 = c(100, 90, 80, 70, 85),
+#'     evitals_10 = c(110, 89, 88, 71, 85),
+#'     evitals_12 = c(50, 60, 70, 80, 75),
+#'     evitals_14 = c(30, 9, 8, 7, 31),
+#'     evitals_15 = c("apneic", "labored", "rapid", "shallow", "weak/agonal"),
+#'     evitals_21 = c(5, 4, 3, 2, 1)
+#'   )
+#'
+#'   # disposition table
+#'   disposition_table <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     edisposition_23 = c(9908029, 9908027, 9908025, 9908023, 9908021),
+#'     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
+#'   )
+#'
+#'   # injury table
+#'   injury_table <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     einjury_01 = c("V20", "V36", "V86", "V39", "V32"),
+#'     einjury_03 = c(2903011, 2903009, 2903005, 3903003, 2903001),
+#'     einjury_04 = c(2904013, 2904011, 2904009, 2904007, 2904001),
+#'     einjury_09 = c(11, 12, 13, 14, 15)
+#'   )
+#'
+#'   # exam table
+#'   exam_table <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     eexam_16 = c(3516043, 3516067, 3516043, 3516067, 3516067),
+#'     eexam_20 = c(3520045, 3520043, 3520019, 3520017, 3520017),
+#'     eexam_23 = c(3523011, 3523003, 3523001, 3523011, 3523003),
+#'     eexam_25 = c(3525039, 3525023, 3525005, 3525039, 3525023)
+#'   )
+#'
+#'   # procedures table
+#'   procedures_table <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     eprocedures_03 = c(424979004, 427753009, 429705000, 47545007, 243142003)
+#'   )
+#'
+#'   # test the success of the function
+#'   result <- trauma_04_population(patient_scene_table = patient_table,
+#'                         response_table = response_table,
+#'                         situation_table = situation_table,
+#'                         vitals_table = vitals_table,
+#'                         disposition_table = disposition_table,
+#'                       exam_table = exam_table,
+#'                       injury_table = injury_table,
+#'                       procedures_table = procedures_table,
+#'                       erecord_01_col = erecord_01,
+#'                       incident_date_col = incident_date,
+#'                       patient_DOB_col = patient_dob,
+#'                       epatient_15_col = epatient_15,
+#'                       epatient_16_col = epatient_16,
+#'                       eresponse_05_col = eresponse_05,
+#'                       eresponse_10_col = eresponse_10,
+#'                       esituation_02_col = esituation_02,
+#'                       evitals_06_col = evitals_06,
+#'                       evitals_10_col = evitals_10,
+#'                       evitals_12_col = evitals_12,
+#'                       evitals_14_col = evitals_14,
+#'                       evitals_15_col = evitals_15,
+#'                       evitals_21_col = evitals_21,
+#'                       eexam_16_col = eexam_16,
+#'                       eexam_20_col = eexam_20,
+#'                       eexam_23_col = eexam_23,
+#'                       eexam_25_col = eexam_25,
+#'                       edisposition_23_col = edisposition_23,
+#'                       transport_disposition_col = edisposition_30,
+#'                       eprocedures_03_col = eprocedures_03,
+#'                       einjury_01_col = einjury_01,
+#'                       einjury_03_col = einjury_03,
+#'                       einjury_04_col = einjury_04,
+#'                       einjury_09_col = einjury_09
+#'                       )
+#'
+#' # show the results of filtering at each step
+#' result$filter_process
+#'
 #' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export
@@ -203,7 +315,7 @@ trauma_04_population <- function(df = NULL,
     total = 31,
     type = "tasks",
     clear = F,
-    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {col_blue('Progress')}: {cli::pb_percent} | {col_blue('Runtime')}: [{cli::pb_elapsed}]"
+    format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   # Create objects that are filter helpers throughout the function
@@ -227,20 +339,20 @@ trauma_04_population <- function(df = NULL,
   chest_assessment_values <- "3525005|Accessory Muscles Used with Breathing|3525023|Flail Segment|3525039|Retraction"
 
   # respiratory effort values
-  respiratory_effort_values <- "Apneic|Labored|Mechanically Assisted \\(BVM, CPAP, etc\\.\\)|Rapid|Shallow|Weak/Agonal|3315001|3315003|3315005|3315009|3315011|3315013"
+  respiratory_effort_values <- "Apneic|Labored|Mechanically Assisted|Rapid|Shallow|Weak/Agonal|3315001|3315003|3315005|3315009|3315011|3315013"
 
   # airway management values
-  airway_management_values <- "243142003|Dual pressure spontaneous ventilation support \\(regime/therapy\\)|47545007|Continuous positive airway pressure ventilation treatment \\(regime/therapy\\)|429705000|Insertion of esophageal tracheal combitube \\(procedure\\)|427753009|Insertion of esophageal tracheal double lumen supraglottic airway \\(procedure\\)|424979004|Laryngeal mask airway insertion \\(procedure\\)|23674004|Orotracheal intubation \\(procedure\\)|450601000124103|Orotracheal intubation using bougie device \\(procedure\\)|241689008|Rapid sequence induction \\(procedure\\)|450611000124100|Insertion of single lumen supraglottic airway device \\(procedure\\)"
+  airway_management_values <- "243142003|Dual pressure spontaneous ventilation support|47545007|Continuous positive airway pressure ventilation treatment|429705000|Insertion of esophageal tracheal combitube|427753009|Insertion of esophageal tracheal double lumen supraglottic airway|424979004|Laryngeal mask airway insertion|23674004|Orotracheal intubation|450601000124103|Orotracheal intubation using bougie device|241689008|Rapid sequence induction|450611000124100|Insertion of single lumen supraglottic airway device"
 
 
   # trauma triage criteria values for 65+ age group
-  trauma_triage_1_2_values_65 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity \\(e.g., flail chest\\)|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|2903017|Respiratory Rate <10 or >29 breaths per minute \\(<20 in infants aged <1\\) or need for ventilatory support|3903021|Two or more proximal long-bone fractures"
+  trauma_triage_1_2_values_65 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|2903017|Respiratory Rate <10 or >29 breaths per minute \\(<20 in infants aged <1\\) or need for ventilatory support|3903021|Two or more proximal long-bone fractures"
 
   # trauma triage criteria values
-  trauma_triage_1_2_values_10_64 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity \\(e.g., flail chest\\)|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|2903017|Respiratory Rate <10 or >29 breaths per minute \\(<20 in infants aged <1\\) or need for ventilatory support|3903021|Two or more proximal long-bone fractures|2903019|Systolic Blood Pressure <90 mmHg"
+  trauma_triage_1_2_values_10_64 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|2903017|Respiratory Rate <10 or >29 breaths per minute \\(<20 in infants aged <1\\) or need for ventilatory support|3903021|Two or more proximal long-bone fractures|2903019|Systolic Blood Pressure <90 mmHg"
 
   # trauma triage criteria values for < 10 age group
-  trauma_triage_1_2_values_10 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity \\(e.g., flail chest\\)|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|3903021|Two or more proximal long-bone fractures"
+  trauma_triage_1_2_values_10 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|3903021|Two or more proximal long-bone fractures"
 
   # extremities assessment values
   extremities_assessment_values <- "3516043|Motor Function-Abnormal/Weakness|3516067|Sensation-Absent"
@@ -249,7 +361,7 @@ trauma_04_population <- function(df = NULL,
   neurological_assessment_values <- "3520017|Hemiplegia-Left|3520019|Hemiplegia-Right|3520043|Weakness-Left Sided|3520045|Weakness-Right Sided"
 
   # procedures values
-  tourniquet_values <- "20655006|Application of tourniquet \\(procedure\\)|24173005|Tourniquet procedure \\(procedure\\)|241731009|Tourniquet positioning \\(uninflated\\) \\(procedure\\)|241733007|Tourniquet cuff inflation \\(procedure\\)|241734001|Upper tourniquet cuff inflation \\(procedure\\)|241735000|Lower tourniquet cuff inflation \\(procedure\\)|241736004|Manual tourniquet application \\(procedure\\)|398260007|Tourniquet positioned on patient \\(procedure\\)|447686008|Application of pressure to wound \\(procedure\\)"
+  tourniquet_values <- "20655006|Application of tourniquet|24173005|Tourniquet procedure|241731009|Tourniquet positioning|241733007|Tourniquet cuff inflation|241734001|Upper tourniquet cuff inflation|241735000|Lower tourniquet cuff inflation|241736004|Manual tourniquet application|398260007|Tourniquet positioned on patient|447686008|Application of pressure to wound"
 
   # trauma triage criteria (steps 3 and 4) values
   trauma_triage_3_4_values <- "2904001|Auto v\\. Pedestrian/Bicyclist Thrown, Run Over, or >20 MPH Accident|2904007|Crash Death in Same Passenger Compartment|2904009|Crash Ejection \\(partial or complete\\) from automobile|2904011|Crash Intrusion, Including roof: > 12 in\\. occupant site; > 18 in\\. any site|2904013|Crash Vehicle Telemetry Data \\(AACN\\) Consistent with High Risk of Injury"
@@ -740,7 +852,7 @@ trauma_04_population <- function(df = NULL,
     dplyr::select({{ erecord_01_col }}, system_age_10, calc_age_10, {{ epatient_15_col }}) |>
     dplyr::distinct() |>
     dplyr::filter(system_age_10 | calc_age_10) |>
-    dplyr::left_join(vitals_table |> dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |> distinct(),
+    dplyr::left_join(vitals_table |> dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |> dplyr::distinct(),
 
                      by = rlang::as_name(rlang::enquo(erecord_01_col))
 
@@ -771,7 +883,7 @@ trauma_04_population <- function(df = NULL,
     dplyr::select({{ erecord_01_col }}, system_age_10, {{ epatient_15_col }}) |>
     dplyr::distinct() |>
     dplyr::filter(system_age_10) |>
-    dplyr::left_join(vitals_table |> dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |> distinct(),
+    dplyr::left_join(vitals_table |> dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |> dplyr::distinct(),
 
                      by = rlang::as_name(rlang::enquo(erecord_01_col))
 
@@ -1050,7 +1162,7 @@ trauma_04_population <- function(df = NULL,
                "Fall > 10 ft.",
                "Transported to a Trauma Center",
                "Patients 65+ yrs denominator",
-               "Patients 10-65 yrs denominator",
+               "Patients 10-64 yrs denominator",
                "Patients < 10 yrs denominator",
                "Initial population",
                "Total dataset"
@@ -1603,7 +1715,7 @@ trauma_04_population <- function(df = NULL,
   SBP_age_10_data <- df |>
     dplyr::select({{ erecord_01_col }}, {{ epatient_15_col }}, {{ evitals_06_col }}) |>
     dplyr::distinct() |>
-    dplyr::left_join(final_data |> dplyr::select({{ erecord_01_col }}, system_age_10, calc_age_10) |> distinct(),
+    dplyr::left_join(final_data |> dplyr::select({{ erecord_01_col }}, system_age_10, calc_age_10) |> dplyr::distinct(),
 
                     by = rlang::as_name(rlang::enquo(erecord_01_col))
 
@@ -1914,7 +2026,7 @@ trauma_04_population <- function(df = NULL,
                "Fall > 10 ft.",
                "Transported to a Trauma Center",
                "Patients 65+ yrs denominator",
-               "Patients 10-65 yrs denominator",
+               "Patients 10-64 yrs denominator",
                "Patients < 10 yrs denominator",
                "Initial population",
                "Total dataset"

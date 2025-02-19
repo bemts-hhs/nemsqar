@@ -49,6 +49,35 @@
 #'   `prop_label`: Proportion formatted as a percentage with a specified number
 #'   of decimal places.
 #'
+#' @examples
+#'
+#' # Synthetic test data
+#'   test_data <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     epatient_15 = c(34, 5, 45, 2, 60),  # Ages
+#'     epatient_16 = c("Years", "Years", "Years", "Months", "Years"),
+#'     eresponse_05 = rep(2205001, 5),
+#'     esituation_11 = c(rep("I60", 3), rep("I61", 2)),
+#'     esituation_12 = c(rep("I63", 2), rep("I64", 3)),
+#'     evitals_23 = c(16, 15, 14, 13, 12),
+#'     evitals_26 = c("Alert", "Painful", "Verbal", "Unresponsive", "Alert"),
+#'     evitals_29 = rep("positive", 5),
+#'     evitals_30 = rep("a pain scale", 5)
+#'   )
+#'
+#'   # Run the function
+#'   stroke_01(
+#'     df = test_data,
+#'     erecord_01_col = erecord_01,
+#'     eresponse_05_col = eresponse_05,
+#'     esituation_11_col = esituation_11,
+#'     esituation_12_col = esituation_12,
+#'     evitals_23_col = evitals_23,
+#'     evitals_26_col = evitals_26,
+#'     evitals_29_col = evitals_29,
+#'     evitals_30_col = evitals_30
+#'   )
+#'
 #' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export

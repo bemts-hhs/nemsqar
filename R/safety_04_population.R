@@ -50,6 +50,75 @@
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
 #'
+#' @examples
+#'
+#' # create tables to test correct functioning
+#'
+#'   # patient table
+#'   patient_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01", "2025-01-01", "2025-06-01")),
+#'     patient_dob = as.Date(c("2000-01-01", "2020-01-01", "2023-02-01", "2023-01-01", "1970-06-01")),
+#'     epatient_15 = c(25, 5, 2, 2, 55),  # Ages
+#'     epatient_16 = c("Years", "Years", "Years", "Years", "Years")
+#'
+#'   )
+#'
+#'   # response table
+#'   response_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     eresponse_05 = rep(2205001, 5)
+#'
+#'   )
+#'
+#'   # disposition table
+#'   disposition_table <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     edisposition_14 = rep(4214001, 5),
+#'     edisposition_30 = rep(4230001, 5),
+#'   )
+#'
+#'   # arrest table
+#'   arrest_table <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     earrest_01 = rep("No", 5)
+#'   )
+#'
+#'   # injury table
+#'   injury_table <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     einjury_03 = rep("non-injury", 5)
+#'   )
+#'
+#'   # procedures table
+#'   procedures_table <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     eprocedures_03 = rep("other response", 5)
+#'   )
+#'
+#'   # test the success of the function
+#'   result <- safety_04_population(patient_scene_table = patient_table,
+#'                         response_table = response_table,
+#'                         arrest_table = arrest_table,
+#'                         injury_table = injury_table,
+#'                         procedures_table = procedures_table,
+#'                         disposition_table = disposition_table,
+#'                         erecord_01_col = erecord_01,
+#'                         epatient_15_col = epatient_15,
+#'                         epatient_16_col = epatient_16,
+#'                         eresponse_05_col = eresponse_05,
+#'                         earrest_01_col = earrest_01,
+#'                         einjury_03_col = einjury_03,
+#'                         edisposition_14_col = edisposition_14,
+#'                         transport_disposition_col = edisposition_30,
+#'                         eprocedures_03_col = eprocedures_03
+#'                         )
+#'
+#' # show the results of filtering at each step
+#' result$filter_process
+#'
 #' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export

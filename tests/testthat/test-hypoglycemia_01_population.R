@@ -130,7 +130,7 @@ testthat::test_that("hypoglycemia_01_population fails with unknown columns", {
     eresponse_05 = c("911", "911", "911"),
     esituation_11 = c("weakness", "asthma", "bronchospasm"),
     esituation_12 = c("asthma", "weakness", "weakness"),
-    emedications_03 = c("albuterol", "levalbuterol", "metaproterenol"),
+    emedications_03 = c(372326, 376937, 377980),
     evitals_18 = c(60, 59, 58),
     evitals_23 = c(16, 15, 14),
     evitals_26 = c("Alert", "Painful", "Unresponsive"),
@@ -165,7 +165,7 @@ testthat::test_that("hypoglycemia_01_population correctly classifies patient age
     eresponse_05 = c("911", "911", "911"),
     esituation_11 = c("weakness", "asthma", "bronchospasm"),
     esituation_12 = c("asthma", "weakness", "weakness"),
-    emedications_03 = c("albuterol", "levalbuterol", "metaproterenol"),
+    emedications_03 = c(372326, 376937, 377980),
     evitals_18 = c(60, 59, 58),
     evitals_23 = c(16, 15, 14),
     evitals_26 = c("Alert", "Painful", "Unresponsive"),
@@ -202,7 +202,7 @@ testthat::test_that("hypoglycemia_01_population correctly filters 911 calls", {
     eresponse_05 = c("2205001", "2205009", "2205003"),
     esituation_11 = c("weakness", "asthma", "bronchospasm"),
     esituation_12 = c("asthma", "weakness", "weakness"),
-    emedications_03 = c("albuterol", "levalbuterol", "metaproterenol"),
+    emedications_03 = c(372326, 376937, 377980),
     evitals_18 = c(60, 59, 58),
     evitals_23 = c(16, 15, 14),
     evitals_26 = c("Alert", "Painful", "Unresponsive"),
@@ -264,7 +264,7 @@ testthat::test_that("hypoglycemia_01_population runs correctly with table inputs
   medications_table <- tibble::tibble(
 
     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
-    emedications_03 = c("Albuterol", "Albuterol", "Epinephrine", "None", "Albuterol")
+    emedications_03 = c(372326, 376937, 377980, NA_integer_, 4832),
 
   )
 

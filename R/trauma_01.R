@@ -55,6 +55,37 @@
 #'   `prop_label`: Proportion formatted as a percentage with a specified number
 #'   of decimal places.
 #'
+#' @examples
+#'
+#' # Synthetic test data
+#'   test_data <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     epatient_15 = c(34, 5, 45, 2, 60),  # Ages
+#'     epatient_16 = c("Years", "Years", "Years", "Months", "Years"),
+#'     eresponse_05 = rep(2205001, 5),
+#'     esituation_02 = rep("Yes", 5),
+#'     evitals_23 = rep(15, 5),
+#'     evitals_26 = rep("Alert", 5),
+#'     evitals_27 = c(0, 2, 4, 6, 8),
+#'     edisposition_28 = rep(4228001, 5),
+#'     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
+#'   )
+#'
+#'   # Run function
+#'   trauma_01(
+#'     df = test_data,
+#'     erecord_01_col = erecord_01,
+#'     epatient_15_col = epatient_15,
+#'     epatient_16_col = epatient_16,
+#'     eresponse_05_col = eresponse_05,
+#'     esituation_02_col = esituation_02,
+#'     evitals_23_col = evitals_23,
+#'     evitals_26_col = evitals_26,
+#'     evitals_27_col = evitals_27,
+#'     edisposition_28_col = edisposition_28,
+#'     transport_disposition_col = edisposition_30
+#'   )
+#'
 #' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export

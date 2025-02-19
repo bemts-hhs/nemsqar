@@ -76,8 +76,8 @@ testthat::test_that("trauma_03 produces expected results", {
   testthat::expect_true(all(c("measure", "pop", "numerator", "denominator", "prop", "prop_label") %in% names(result_1)))
 
   # Check calculations
-  testthat::expect_equal(sum(result_1$numerator), 7)  # Three cases had Albuterol
-  testthat::expect_equal(sum(result_1$denominator), 7)  # Four cases met inclusion criteria
+  testthat::expect_equal(sum(result_1$numerator), 7)
+  testthat::expect_equal(sum(result_1$denominator), 7)
   testthat::expect_equal(result_1$prop[result_1$pop == "Adults"], 1)
   testthat::expect_equal(nrow(result_1), 3)
 
@@ -102,8 +102,8 @@ testthat::test_that("trauma_03 produces expected results", {
   testthat::expect_true(all(c("measure", "pop", "numerator", "denominator", "prop", "prop_label") %in% names(result_2)))
 
   # Check calculations
-  testthat::expect_equal(sum(result_2$numerator), 7)  # Three cases had Albuterol
-  testthat::expect_equal(sum(result_2$denominator), 7)  # Four cases met inclusion criteria
+  testthat::expect_equal(sum(result_2$numerator), 7)
+  testthat::expect_equal(sum(result_2$denominator), 7)
   testthat::expect_equal(result_2$prop[result_2$pop == "Adults"], 1)
   testthat::expect_equal(nrow(result_2), 3)
 
@@ -198,8 +198,8 @@ testthat::test_that("trauma_03 produces expected results", {
                         )
 
   # Check calculations
-  testthat::expect_equal(sum(result_3$numerator), 8)  # Three cases had Albuterol
-  testthat::expect_equal(sum(result_3$denominator), 8)  # Four cases met inclusion criteria
+  testthat::expect_equal(sum(result_3$numerator), 8)
+  testthat::expect_equal(sum(result_3$denominator), 8)
   testthat::expect_equal(result_3$prop[result_3$pop == "Adults"], 1)
   testthat::expect_equal(nrow(result_3), 3)
 
@@ -224,8 +224,8 @@ testthat::test_that("trauma_03 produces expected results", {
                         )
 
   # Check calculations
-  testthat::expect_equal(sum(result_4$numerator), 8)  # Three cases had Albuterol
-  testthat::expect_equal(sum(result_4$denominator), 8)  # Four cases met inclusion criteria
+  testthat::expect_equal(sum(result_4$numerator), 8)
+  testthat::expect_equal(sum(result_4$denominator), 8)
   testthat::expect_equal(result_4$prop[result_4$pop == "Adults"], 1)
   testthat::expect_equal(nrow(result_4), 3)
 

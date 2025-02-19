@@ -81,6 +81,64 @@ diabetes/hypoglycemia distress, certain medications were administered, and a
 weight is taken. This function segments the data into pediatric populations,
 computing the proportion of cases that have a documented weight.
 }
+\examples{
+
+# create tables to test correct functioning
+patient_table <- tibble::tibble(
+
+  erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+  incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01", "2025-06-01", "2025-12-15")),
+  patient_dob = as.Date(c("2021-01-01", "2020-01-01", "2022-02-01", "2023-06-01", "2019-12-15")),
+  epatient_15 = c(4, 5, 3, 2, 6),  # Ages
+  epatient_16 = c("Years", "Years", "Years", "Years", "Years"),
+
+)
+
+response_table <- tibble::tibble(
+
+  erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+  eresponse_05 = rep(2205001, 5)
+
+)
+
+exam_table <- tibble::tibble(
+
+  erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+  eexam_01 = c(60, 59, 58, 57, 56),
+  eexam_02 = c("Red", "Purple", "Grey", "Yellow", "Orange")
+)
+
+medications_table <- tibble::tibble(
+
+  erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+  emedications_03 = rep("stuff", 5),
+  emedications_04 = c("Inhalation", "pill", "liquid", "pill", "liquid"),
+
+)
+
+# test the success of the function
+
+result <- pediatrics_03b_population(patient_scene_table = patient_table,
+                           response_table = response_table,
+                           exam_table = exam_table,
+                           medications_table = medications_table,
+                           erecord_01_col = erecord_01,
+                           incident_date_col = incident_date,
+                           patient_DOB_col = patient_dob,
+                           epatient_15_col = epatient_15,
+                           epatient_16_col = epatient_16,
+                           eresponse_05_col = eresponse_05,
+                           emedications_03_col = emedications_03,
+                           emedications_04_col = emedications_04,
+                           eexam_01_col = eexam_01,
+                           eexam_02_col = eexam_02
+                           )
+
+# show the results of filtering at each step
+result$filter_process
+
+
+}
 \author{
 Nicolas Foss, Ed.D., MS
 }

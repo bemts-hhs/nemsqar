@@ -92,6 +92,36 @@ measures. This function dplyr::filters data for 911 response calls, assesses
 primary and associated symptoms for syncope, determines age-based populations
 (adult and pediatric), and aggregates results by unique patient encounters.
 }
+\examples{
+
+# Synthetic test data
+  test_data <- tibble::tibble(
+    erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+    epatient_15 = c(34, 5, 45, 2, 60),  # Ages
+    epatient_16 = c("Years", "Years", "Years", "Months", "Years"),
+    eresponse_05 = rep(2205001, 5),
+    esituation_09 = c(rep("R55", 3), rep("R40.4", 2)),
+    esituation_10 = c(rep("R40.4", 2), rep("R55", 3)),
+    esituation_11 = c(rep("R55", 3), rep("R40.4", 2)),
+    esituation_12 = c(rep("R40.4", 2), rep("R55", 3)),
+    evitals_04 = rep("15 Lead", 5)
+  )
+
+  # Run function
+  syncope_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    esituation_09_col = esituation_09,
+    esituation_10_col = esituation_10,
+    esituation_11_col = esituation_11,
+    esituation_12_col = esituation_12,
+    evitals_04_col = evitals_04
+  )
+
+}
 \author{
 Nicolas Foss, Ed.D., MS
 }

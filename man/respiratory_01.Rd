@@ -92,6 +92,33 @@ response codes, primary and secondary impressions, and vital signs to
 calculate the proportion of cases with complete vital signs recorded,
 stratified by age.
 }
+\examples{
+# Synthetic test data
+test_data <- tibble::tibble(
+  erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+  epatient_15 = c(34, 5, 45, 2, 60),  # Ages
+  epatient_16 = c("Years", "Years", "Years", "Months", "Years"),
+  eresponse_05 = rep(2205001, 5),
+  esituation_11 = c(rep("J80", 3), rep("I50.9", 2)),
+  esituation_12 = c(rep("J80", 2), rep("I50.9", 3)),
+  evitals_12 = c(60, 59, 58, 57, 56),
+  evitals_14 = c(16, 15, 14, 13, 12)
+)
+
+# Run the function
+respiratory_01(
+  df = test_data,
+  erecord_01_col = erecord_01,
+  epatient_15_col = epatient_15,
+  epatient_16_col = epatient_16,
+  eresponse_05_col = eresponse_05,
+  esituation_11_col = esituation_11,
+  esituation_12_col = esituation_12,
+  evitals_12_col = evitals_12,
+  evitals_14_col = evitals_14
+)
+
+}
 \author{
 Nicolas Foss, Ed.D., MS
 }

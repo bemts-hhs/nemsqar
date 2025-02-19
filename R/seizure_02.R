@@ -51,6 +51,31 @@
 #'   `prop_label`: Proportion formatted as a percentage with a specified number
 #'   of decimal places.
 #'
+#' @examples
+#'
+#' # Synthetic test data
+#'   test_data <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     epatient_15 = c(34, 5, 45, 2, 60),  # Ages
+#'     epatient_16 = c("Years", "Years", "Years", "Months", "Years"),
+#'     eresponse_05 = rep(2205001, 5),
+#'     esituation_11 = rep("G40", 5),
+#'     esituation_12 = rep("r56", 5),
+#'     emedications_03 = rep(3322, 5)
+#'   )
+#'
+#'   # Run the function
+#'   seizure_02(
+#'     df = test_data,
+#'     erecord_01_col = erecord_01,
+#'     epatient_15_col = epatient_15,
+#'     epatient_16_col = epatient_16,
+#'     eresponse_05_col = eresponse_05,
+#'     esituation_11_col = esituation_11,
+#'     esituation_12_col = esituation_12,
+#'     emedications_03_col = emedications_03,
+#'   )
+#'
 #' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export

@@ -18,30 +18,89 @@
 #'   esituation fields needed for this measure's calculations.
 #' @param vitals_table A data.frame or tibble containing at least the evitals
 #'   fields needed for this measure's calculations.
-#' @param erecord_01_col <['tidy-select'][dplyr_tidy_select]> Unique Patient ID
+#' @param erecord_01_col Unique Patient ID
 #' @param incident_date_col Column that contains the incident date. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
 #' @param patient_DOB_col Column that contains the patient's date of birth. This
 #'   defaults to `NULL` as it is optional in case not available due to PII
 #'   restrictions.
-#' @param epatient_15_col <['tidy-select'][dplyr_tidy_select]> Column giving the
+#' @param epatient_15_col Column giving the
 #'   calculated age value.
-#' @param epatient_16_col <['tidy-select'][dplyr_tidy_select]> Column giving the
+#' @param epatient_16_col Column giving the
 #'   provided age unit value.
-#' @param eresponse_05_col <['tidy-select'][dplyr_tidy_select]> Column name for
+#' @param eresponse_05_col Column name for
 #'   911 response codes (e.g., 2205001, 2205003, 2205009).
-#' @param esituation_11_col <['tidy-select'][dplyr_tidy_select]> Column name for
+#' @param esituation_11_col Column name for
 #'   primary impression codes related to respiratory distress.
-#' @param esituation_12_col <['tidy-select'][dplyr_tidy_select]> Column name for
+#' @param esituation_12_col Column name for
 #'   secondary impression codes related to respiratory distress.
-#' @param evitals_12_col <['tidy-select'][dplyr_tidy_select]> Column name for
+#' @param evitals_12_col Column name for
 #'   the first vital sign measurement.
-#' @param evitals_14_col <['tidy-select'][dplyr_tidy_select]> Column name for
+#' @param evitals_14_col Column name for
 #'   the second vital sign measurement.
 #'
 #' @return Returns a data frame summarizing the proportion of cases with
 #'   complete vital sign data, divided by population
+#'
+#' @examples
+#' # create tables to test correct functioning
+#'
+#' # patient table
+#' patient_table <- tibble::tibble(
+#'
+#'   erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'   incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01", "2025-01-01", "2025-06-01")),
+#'   patient_dob = as.Date(c("2000-01-01", "2020-01-01", "2023-02-01", "2023-01-01", "1970-06-01")),
+#'   epatient_15 = c(25, 5, 2, 2, 55),  # Ages
+#'   epatient_16 = c("Years", "Years", "Years", "Years", "Years")
+#'
+#' )
+#'
+#' # response table
+#' response_table <- tibble::tibble(
+#'
+#'   erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'   eresponse_05 = rep(2205001, 5)
+#'
+#' )
+#'
+#' # situation table
+#' situation_table <- tibble::tibble(
+#'
+#'   erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'   esituation_11 = c(rep("J80", 3), rep("I50.9", 2)),
+#'   esituation_12 = c(rep("J80", 2), rep("I50.9", 3))
+#' )
+#'
+#' # vitals table
+#' vitals_table <- tibble::tibble(
+#'
+#'   erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'   evitals_12 = c(60, 59, 58, 57, 56),
+#'   evitals_14 = c(16, 15, 14, 13, 12)
+#'
+#' )
+#'
+#' # Run the function
+#' result <- respiratory_01_population(patient_scene_table = patient_table,
+#'                               response_table = response_table,
+#'                               situation_table = situation_table,
+#'                               vitals_table = vitals_table,
+#'                               erecord_01_col = erecord_01,
+#'                               incident_date_col = incident_date,
+#'                               patient_DOB_col = patient_dob,
+#'                               epatient_15_col = epatient_15,
+#'                               epatient_16_col = epatient_16,
+#'                               eresponse_05_col = eresponse_05,
+#'                               esituation_11_col = esituation_11,
+#'                               esituation_12_col = esituation_12,
+#'                               evitals_12_col = evitals_12,
+#'                               evitals_14_col = evitals_14
+#'                              )
+#'
+#' # show the results of filtering at each step
+#' result$filter_process
 #'
 #' @author Nicolas Foss, Ed.D., MS
 #'

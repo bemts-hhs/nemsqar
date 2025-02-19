@@ -38,7 +38,7 @@ esituation fields needed for this measure's calculations.}
 \item{vitals_table}{A data.frame or tibble containing at least the evitals
 fields needed for this measure's calculations.}
 
-\item{erecord_01_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Unique Patient ID}
+\item{erecord_01_col}{Unique Patient ID}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -48,25 +48,25 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving the
+\item{epatient_15_col}{Column giving the
 calculated age value.}
 
-\item{epatient_16_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column giving the
+\item{epatient_16_col}{Column giving the
 provided age unit value.}
 
-\item{eresponse_05_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for
+\item{eresponse_05_col}{Column name for
 911 response codes (e.g., 2205001, 2205003, 2205009).}
 
-\item{esituation_11_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for
+\item{esituation_11_col}{Column name for
 primary impression codes related to respiratory distress.}
 
-\item{esituation_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for
+\item{esituation_12_col}{Column name for
 secondary impression codes related to respiratory distress.}
 
-\item{evitals_12_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for
+\item{evitals_12_col}{Column name for
 the first vital sign measurement.}
 
-\item{evitals_14_col}{<\link[=dplyr_tidy_select]{'tidy-select'}> Column name for
+\item{evitals_14_col}{Column name for
 the second vital sign measurement.}
 }
 \value{
@@ -79,6 +79,66 @@ emergency 911 respiratory distress incidents, providing the adult, pediatric,
 and initial populations. This function uses specific data columns for 911
 response codes, primary and secondary impressions, and vital signs to filter
 a dataset down to the populations of interest.
+}
+\examples{
+# create tables to test correct functioning
+
+# patient table
+patient_table <- tibble::tibble(
+
+  erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+  incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01", "2025-01-01", "2025-06-01")),
+  patient_dob = as.Date(c("2000-01-01", "2020-01-01", "2023-02-01", "2023-01-01", "1970-06-01")),
+  epatient_15 = c(25, 5, 2, 2, 55),  # Ages
+  epatient_16 = c("Years", "Years", "Years", "Years", "Years")
+
+)
+
+# response table
+response_table <- tibble::tibble(
+
+  erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+  eresponse_05 = rep(2205001, 5)
+
+)
+
+# situation table
+situation_table <- tibble::tibble(
+
+  erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+  esituation_11 = c(rep("J80", 3), rep("I50.9", 2)),
+  esituation_12 = c(rep("J80", 2), rep("I50.9", 3))
+)
+
+# vitals table
+vitals_table <- tibble::tibble(
+
+  erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+  evitals_12 = c(60, 59, 58, 57, 56),
+  evitals_14 = c(16, 15, 14, 13, 12)
+
+)
+
+# Run the function
+result <- respiratory_01_population(patient_scene_table = patient_table,
+                              response_table = response_table,
+                              situation_table = situation_table,
+                              vitals_table = vitals_table,
+                              erecord_01_col = erecord_01,
+                              incident_date_col = incident_date,
+                              patient_DOB_col = patient_dob,
+                              epatient_15_col = epatient_15,
+                              epatient_16_col = epatient_16,
+                              eresponse_05_col = eresponse_05,
+                              esituation_11_col = esituation_11,
+                              esituation_12_col = esituation_12,
+                              evitals_12_col = evitals_12,
+                              evitals_14_col = evitals_14
+                             )
+
+# show the results of filtering at each step
+result$filter_process
+
 }
 \author{
 Nicolas Foss, Ed.D., MS

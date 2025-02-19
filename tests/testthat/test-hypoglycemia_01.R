@@ -8,7 +8,7 @@ testthat::test_that("hypoglycemia_01 produces expected results", {
     eresponse_05 = rep(2205001, 5),
     esituation_11 = c(rep("E13.64", 3), rep("E16.2", 2)),
     esituation_12 = c(rep("E13.64", 2), rep("E16.2", 3)),
-    emedications_03 = c("Albuterol", "Albuterol", "Epinephrine", "None", "Albuterol"),
+    emedications_03 = c(372326, 376937, 377980, 4850, 4832),
     evitals_18 = c(60, 59, 58, 57, 56),
     evitals_23 = c(16, 15, 14, 13, 12),
     evitals_26 = c("Alert", "Painful", "Verbal", "Unresponsive", "Alert"),
@@ -36,9 +36,9 @@ testthat::test_that("hypoglycemia_01 produces expected results", {
   testthat::expect_true(all(c("measure", "pop", "numerator", "denominator", "prop", "prop_label") %in% names(result)))
 
   # Check calculations
-  testthat::expect_equal(sum(result$numerator), 0)  # Three cases had Albuterol
-  testthat::expect_equal(sum(result$denominator), 8)  # Four cases met inclusion criteria
-  testthat::expect_equal(result$prop[result$pop == "All"], 0)
+  testthat::expect_equal(sum(result$numerator), 8)
+  testthat::expect_equal(sum(result$denominator), 8)
+  testthat::expect_equal(result$prop[result$pop == "All"], 1)
   testthat::expect_equal(nrow(result), 3)
 
   # create tables to test correct functioning
@@ -69,7 +69,7 @@ testthat::test_that("hypoglycemia_01 produces expected results", {
   medications_table <- tibble::tibble(
 
     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
-    emedications_03 = c("Albuterol", "Albuterol", "Epinephrine", "None", "Albuterol")
+    emedications_03 = c(372326, 376937, 377980, 4850, 4832),
 
   )
 
@@ -113,9 +113,9 @@ testthat::test_that("hypoglycemia_01 produces expected results", {
   )
 
   # Check calculations
-  testthat::expect_equal(sum(result_2$numerator), 0)  # Three cases had Albuterol
-  testthat::expect_equal(sum(result_2$denominator), 8)  # Four cases met inclusion criteria
-  testthat::expect_equal(result_2$prop[result_2$pop == "All"], 0)
+  testthat::expect_equal(sum(result_2$numerator), 8)
+  testthat::expect_equal(sum(result_2$denominator), 8)
+  testthat::expect_equal(result_2$prop[result_2$pop == "All"], 1)
   testthat::expect_equal(nrow(result_2), 3)
 
 
@@ -131,7 +131,7 @@ testthat::test_that("hypoglycemia_01 handles missing data correctly", {
       eresponse_05 = rep(2205001, 5),
       esituation_11 = c(rep("E13.64", 3), rep(NA_character_, 2)),
       esituation_12 = c(rep("E13.64", 2), rep(NA_character_, 3)),
-      emedications_03 = c("Albuterol", NA, "Epinephrine", "None", "Albuterol"),
+      emedications_03 = c(372326, 376937, 377980, 4850, 4832),
       evitals_18 = c(60, 59, 58, 57, NA),
       evitals_23 = c(16, 15, 14, 13, NA),
       evitals_26 = c("Alert", "Painful", NA, "Unresponsive", "Alert"),

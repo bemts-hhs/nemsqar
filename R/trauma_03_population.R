@@ -52,6 +52,82 @@
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
 #'
+#' @examples
+#'
+#' # create tables to test correct functioning
+#'
+#'   # patient table
+#'   patient_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01", "2025-01-01", "2025-06-01")),
+#'     patient_dob = as.Date(c("2000-01-01", "2020-01-01", "2023-02-01", "2023-01-01", "1970-06-01")),
+#'     epatient_15 = c(25, 5, 2, 2, 55),  # Ages
+#'     epatient_16 = c("Years", "Years", "Years", "Years", "Years")
+#'
+#'   )
+#'
+#'   # response table
+#'   response_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     eresponse_05 = rep(2205001, 5)
+#'
+#'   )
+#'
+#'   # situation table
+#'   situation_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     esituation_02 = rep("Yes", 5),
+#'   )
+#'
+#'   # vitals table for a single pain scale column
+#'   vitals_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     evitals_01 = lubridate::as_datetime(c("2025-01-01 12:00:00", "2025-01-05 18:00:00", "2025-02-01 06:00:00", "2025-01-01 01:00:00", "2025-06-01 14:00:00"))
+#'   ) |>
+#'     tidyr::uncount(weights = 2) |>  # Duplicate each row twice
+#'     dplyr::mutate(evitals_27 = c(0, 0, 2, 1, 4, 3, 6, 5, 8, 7)) |> # Assign pain scores
+#'     dplyr::group_by(erecord_01) |>
+#'     dplyr::mutate(
+#'       time_offset = dplyr::if_else(dplyr::row_number() == 1, -5, 0),  # Lower score = later time
+#'       evitals_01 = evitals_01 + lubridate::dminutes(time_offset)
+#'     ) |>
+#'     dplyr::ungroup() |>
+#'     dplyr::select(-time_offset)  # Remove temporary column
+#'
+#'   # disposition table
+#'   disposition_table <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     edisposition_28 = rep(4228001, 5),
+#'     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
+#'   )
+#'
+#' # test the success of the function
+#' # use the single pain scale column
+#'   result <- trauma_03_population(patient_scene_table = patient_table,
+#'                         response_table = response_table,
+#'                         situation_table = situation_table,
+#'                         vitals_table = vitals_table_2,
+#'                         disposition_table = disposition_table,
+#'                         erecord_01_col = erecord_01,
+#'                         epatient_15_col = epatient_15,
+#'                         epatient_16_col = epatient_16,
+#'                         eresponse_05_col = eresponse_05,
+#'                         esituation_02_col = esituation_02,
+#'                         evitals_01_col = evitals_01,
+#'                         evitals_27_initial_col = NULL,
+#'                         evitals_27_last_col = NULL,
+#'                         evitals_27_col = evitals_27,
+#'                         edisposition_28_col = edisposition_28,
+#'                         transport_disposition_col = edisposition_30
+#'                         )
+#'
+#' # show the results of filtering at each step
+#' result$filter_process
+#'
 #' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export

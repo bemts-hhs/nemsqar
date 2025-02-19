@@ -155,11 +155,11 @@ trauma_08 <- function(df = NULL,
 
     if (run_time_secs >= 60) {
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 
@@ -241,11 +241,11 @@ trauma_08 <- function(df = NULL,
 
     if (run_time_secs >= 60) {
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 

@@ -81,6 +81,63 @@
 #'   `prop_label`: Proportion formatted as a percentage with a specified number
 #'   of decimal places.
 #'
+#' @examples
+#' # Synthetic test data
+#'   test_data <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     epatient_15 = c(34, 5, 45, 2, 60),  # Ages
+#'     epatient_16 = c("Years", "Years", "Years", "Months", "Years"),
+#'     eresponse_05 = rep(2205001, 5),
+#'     eresponse_10 = rep(2210011, 5),
+#'     esituation_02 = rep("Yes", 5),
+#'     evitals_06 = c(100, 90, 80, 70, 85),
+#'     evitals_10 = c(110, 89, 88, 71, 85),
+#'     evitals_12 = c(50, 60, 70, 80, 75),
+#'     evitals_14 = c(30, 9, 8, 7, 31),
+#'     evitals_15 = c("apneic", "labored", "rapid", "shallow", "weak/agonal"),
+#'     evitals_21 = c(5, 4, 3, 2, 1),
+#'     eexam_16 = c(3516043, 3516067, 3516043, 3516067, 3516067),
+#'     eexam_20 = c(3520045, 3520043, 3520019, 3520017, 3520017),
+#'     eexam_23 = c(3523011, 3523003, 3523001, 3523011, 3523003),
+#'     eexam_25 = c(3525039, 3525023, 3525005, 3525039, 3525023),
+#'     edisposition_23 = c(9908029, 9908027, 9908025, 9908023, 9908021),
+#'     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007),
+#'     eprocedures_03 = c(424979004, 427753009, 429705000, 47545007, 243142003),
+#'     einjury_01 = c("V20", "V36", "V86", "V39", "V32"),
+#'     einjury_03 = c(2903011, 2903009, 2903005, 3903003, 2903001),
+#'     einjury_04 = c(2904013, 2904011, 2904009, 2904007, 2904001),
+#'     einjury_09 = c(11, 12, 13, 14, 15)
+#'   )
+#'
+#'   # Run function with the first and last pain score columns
+#'   trauma_04(
+#'     df = test_data,
+#'     erecord_01_col = erecord_01,
+#'     epatient_15_col = epatient_15,
+#'     epatient_16_col = epatient_16,
+#'     eresponse_05_col = eresponse_05,
+#'     eresponse_10_col = eresponse_10,
+#'     esituation_02_col = esituation_02,
+#'     evitals_06_col = evitals_06,
+#'     evitals_10_col = evitals_10,
+#'     evitals_12_col = evitals_12,
+#'     evitals_14_col = evitals_14,
+#'     evitals_15_col = evitals_15,
+#'     evitals_21_col = evitals_21,
+#'     eexam_16_col = eexam_16,
+#'     eexam_20_col = eexam_20,
+#'     eexam_23_col = eexam_23,
+#'     eexam_25_col = eexam_25,
+#'     edisposition_23_col = edisposition_23,
+#'     transport_disposition_col = edisposition_30,
+#'     eprocedures_03_col = eprocedures_03,
+#'     einjury_01_col = einjury_01,
+#'     einjury_03_col = einjury_03,
+#'     einjury_04_col = einjury_04,
+#'     einjury_09_col = einjury_09
+#'   )
+#'
+#'
 #' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export
@@ -229,12 +286,12 @@ trauma_04 <- function(df = NULL,
     if (run_time_secs >= 60) {
 
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, m))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
 
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, s))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 
@@ -343,12 +400,12 @@ trauma_04 <- function(df = NULL,
     if (run_time_secs >= 60) {
 
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, m))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
 
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, s))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 

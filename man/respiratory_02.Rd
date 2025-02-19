@@ -88,6 +88,33 @@ saturation and specific medication or procedure codes. It returns a summary
 table of the overall, pediatric, and adult populations, showing counts and
 proportions.
 }
+\examples{
+
+# Synthetic test data
+  test_data <- tibble::tibble(
+    erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+    epatient_15 = c(34, 5, 45, 2, 60),  # Ages
+    epatient_16 = c("Years", "Years", "Years", "Months", "Years"),
+    eresponse_05 = rep(2205001, 5),
+    emedications_03 = c("Oxygen", "Oxygen", "Oxygen", "Oxygen", "Oxygen"),
+    evitals_12 = c(60, 59, 58, 57, 56),
+    eprocedures_03 = rep("applicable thing", 5)
+  )
+
+  # Run the function
+  respiratory_02(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    emedications_03_col = emedications_03,
+    evitals_12_col = evitals_12,
+    eprocedures_03_col = eprocedures_03
+  )
+
+
+}
 \author{
 Nicolas Foss, Ed.D., MS
 }

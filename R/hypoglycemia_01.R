@@ -61,6 +61,41 @@
 #'   Proportion formatted as a percentage with a specified number of decimal
 #'   places.
 #'
+#' @examples
+#'
+#' # Synthetic test data
+#' test_data <- tibble::tibble(
+#'   erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'   epatient_15 = c(34, 5, 45, 2, 60),  # Ages
+#'   epatient_16 = c("Years", "Years", "Years", "Months", "Years"),
+#'   eresponse_05 = rep(2205001, 5),
+#'   esituation_11 = c(rep("E13.64", 3), rep("E16.2", 2)),
+#'   esituation_12 = c(rep("E13.64", 2), rep("E16.2", 3)),
+#'   emedications_03 = c(372326, 376937,
+#'                       377980, 4850,
+#'                       4832),
+#'   evitals_18 = c(60, 59, 58, 57, 56),
+#'   evitals_23 = c(16, 15, 14, 13, 12),
+#'   evitals_26 = c("Alert", "Painful", "Verbal", "Unresponsive", "Alert"),
+#'   eprocedures_03 = rep("710925007", 5)
+#' )
+#'
+#' # Run the function
+#' hypoglycemia_01(
+#'   df = test_data,
+#'   erecord_01_col = erecord_01,
+#'   epatient_15_col = epatient_15,
+#'   epatient_16_col = epatient_16,
+#'   eresponse_05_col = eresponse_05,
+#'   esituation_11_col = esituation_11,
+#'   esituation_12_col = esituation_12,
+#'   emedications_03_col = emedications_03,
+#'   evitals_18_col = evitals_18,
+#'   evitals_23_col = evitals_23,
+#'   evitals_26_col = evitals_26,
+#'   eprocedures_03_col = eprocedures_03
+#' )
+#'
 #' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export

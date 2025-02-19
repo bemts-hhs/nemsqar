@@ -70,6 +70,28 @@ The \code{safety_01} function calculates the proportion of 911 responses where
 population summaries, calculating the count and proportion of "lights and
 sirens" responses among all incidents, and within adult and pediatric groups.
 }
+\examples{
+
+# Synthetic test data
+  test_data <- tibble::tibble(
+    erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+    epatient_15 = c(34, 5, 45, 2, 60),  # Ages
+    epatient_16 = c("Years", "Years", "Years", "Months", "Years"),
+    eresponse_05 = rep(2205001, 5),
+    eresponse_24 = rep("No Lights or Sirens", 5)
+  )
+
+  # Run the function
+  safety_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    eresponse_24_col = eresponse_24
+  )
+
+}
 \author{
 Nicolas Foss, Ed.D., MS
 }

@@ -24,8 +24,8 @@ testthat::test_that("safety_01 produces expected results", {
   testthat::expect_true(all(c("measure", "pop", "numerator", "denominator", "prop", "prop_label") %in% names(result)))
 
   # Check calculations
-  testthat::expect_equal(sum(result$numerator), 9)  # Three cases had Albuterol
-  testthat::expect_equal(sum(result$denominator), 9)  # Four cases met inclusion criteria
+  testthat::expect_equal(sum(result$numerator), 9)
+  testthat::expect_equal(sum(result$denominator), 9)
   testthat::expect_equal(result$prop[result$pop == "All"], 1)
   testthat::expect_equal(nrow(result), 3)
 
@@ -59,11 +59,11 @@ testthat::test_that("safety_01 produces expected results", {
                               epatient_16_col = epatient_16,
                               eresponse_05_col = eresponse_05,
                               eresponse_24_col = eresponse_24
-  )
+                        )
 
   # Check calculations
-  testthat::expect_equal(sum(result_2$numerator), 10)  # Three cases had Albuterol
-  testthat::expect_equal(sum(result_2$denominator), 10)  # Four cases met inclusion criteria
+  testthat::expect_equal(sum(result_2$numerator), 10)
+  testthat::expect_equal(sum(result_2$denominator), 10)
   testthat::expect_equal(result_2$prop[result_2$pop == "All"], 1)
   testthat::expect_equal(nrow(result_2), 3)
 

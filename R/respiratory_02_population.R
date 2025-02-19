@@ -40,6 +40,71 @@
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
 #'
+#' @examples
+#' # create tables to test correct functioning
+#' # patient table
+#'   patient_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01", "2025-01-01", "2025-06-01")),
+#'     patient_dob = as.Date(c("2000-01-01", "2020-01-01", "2023-02-01", "2023-01-01", "1970-06-01")),
+#'     epatient_15 = c(25, 5, 2, 2, 55),  # Ages
+#'     epatient_16 = c("Years", "Years", "Years", "Years", "Years")
+#'
+#'   )
+#'
+#'   # response table
+#'   response_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     eresponse_05 = rep(2205001, 5)
+#'
+#'   )
+#'
+#'   # medications table
+#'   medications_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     emedications_03 = c("Oxygen", "Oxygen", "Oxygen", "Oxygen", "Oxygen")
+#'
+#'   )
+#'
+#'   # vitals table
+#'   vitals_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     evitals_12 = c(60, 59, 58, 57, 56),
+#'
+#'   )
+#'
+#'   # procedures table
+#'   procedures_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     eprocedures_03 = rep("applicable thing", 5)
+#'
+#'   )
+#'
+#' # Run the function
+#' result <- respiratory_02_population(patient_scene_table = patient_table,
+#'                               response_table = response_table,
+#'                               medications_table = medications_table,
+#'                               vitals_table = vitals_table,
+#'                               procedures_table = procedures_table,
+#'                               erecord_01_col = erecord_01,
+#'                               incident_date_col = incident_date,
+#'                               patient_DOB_col = patient_dob,
+#'                               epatient_15_col = epatient_15,
+#'                               epatient_16_col = epatient_16,
+#'                               eresponse_05_col = eresponse_05,
+#'                               emedications_03_col = emedications_03,
+#'                               evitals_12_col = evitals_12,
+#'                               eprocedures_03_col = eprocedures_03
+#'                              )
+#'
+#' # show the results of filtering at each step
+#' result$filter_process
+#'
 #' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export
