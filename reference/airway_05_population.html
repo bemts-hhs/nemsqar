@@ -158,16 +158,11 @@ procedure names.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A data.frame summarizing results for three population groups (All,
-Adults, and Peds) with the following columns:
-<code>pop</code>: Population type (All, Adults, or Peds).
-<code>numerator</code>: Count of incidents where beta-agonist medications were
-administered.
-<code>denominator</code>: Total count of incidents.
-<code>prop</code>: Proportion of incidents involving beta-agonist medications.
-<code>prop_label</code>: Proportion formatted as a percentage with a specified number of
-decimal places.</p>
-    </div>
+    <p>A list that contains the following:</p><ul><li><p>a tibble with counts for each filtering step,</p></li>
+<li><p>a tibble for each population of interest</p></li>
+<li><p>a tibble for the initial population</p></li>
+<li><p>a tibble for the total dataset with computations</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>Samuel Kordik, BBA, BS, Nicolas Foss Ed.D., MS</p>
