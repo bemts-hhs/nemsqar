@@ -154,7 +154,7 @@ safety_01_population <- function(df = NULL,
   no_lights_and_sirens <- "No Lights or Sirens|2224019"
 
   # minor values
-  minor_values <- "days|hours|minutes|months"
+  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
 
   year_values <- "2516009|years"
 

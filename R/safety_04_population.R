@@ -248,7 +248,7 @@ safety_04_population <- function(df = NULL,
   car_seat <- "4214001|Car Seat"
 
   # minor values
-  minor_values <- "days|hours|minutes"
+  minor_values <- "days|hours|minutes|2516001|2516003|2516005"
 
   year_values <- "2516009|years"
 

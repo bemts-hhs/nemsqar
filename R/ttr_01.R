@@ -147,14 +147,14 @@ ttr_01 <- function(df = NULL,
 
     # adults
     adult_population <- ttr_01_populations$adults |>
-      summarize_measure(measure_name = "TTR_01",
+      summarize_measure(measure_name = "TTR-01",
                         population_name = "Adults",
                         VITALS,
                         ...)
 
     # peds
     peds_population <- ttr_01_populations$peds |>
-      summarize_measure(measure_name = "TTR_01",
+      summarize_measure(measure_name = "TTR-01",
                         population_name = "Peds",
                         VITALS,
                         ...)
@@ -172,11 +172,11 @@ ttr_01 <- function(df = NULL,
 
     if (run_time_secs >= 60) {
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 
@@ -237,14 +237,14 @@ ttr_01 <- function(df = NULL,
 
     # adults
     adult_population <- ttr_01_populations$adults |>
-      summarize_measure(measure_name = "TTR_01",
+      summarize_measure(measure_name = "TTR-01",
                         population_name = "Adults",
                         VITALS,
                         ...)
 
     # peds
     peds_population <- ttr_01_populations$peds |>
-      summarize_measure(measure_name = "TTR_01",
+      summarize_measure(measure_name = "TTR-01",
                         population_name = "Peds",
                         VITALS,
                         ...)
@@ -262,11 +262,11 @@ ttr_01 <- function(df = NULL,
 
     if (run_time_secs >= 60) {
       run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 'm'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
 
     } else {
       run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli_alert_success("Function completed in {col_green(paste0(run_time, 's'))}.")
+      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
 
     }
 

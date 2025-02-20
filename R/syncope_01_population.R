@@ -209,7 +209,7 @@ syncope_01_population <- function(df = NULL,
   ecg_pattern <- "12 Lead-Left Sided \\(Normal\\)|12 Lead-Right Sided|15 Lead|18 Lead|3304007|3304009|3304011|3304013"
 
   # minor values
-  minor_values <- "days|hours|minutes|months"
+  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
 
   year_values <- "2516009|years"
 

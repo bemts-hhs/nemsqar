@@ -254,7 +254,7 @@ trauma_03_population <- function(df = NULL,
   transport_responses <- "Transport by This EMS Unit \\(This Crew Only\\)|Transport by This EMS Unit, with a Member of Another Crew|Transport by Another EMS Unit, with a Member of This Crew|Patient Treated, Transported by this EMS Unit|Patient Treated, Transported with this EMS Crew in Another Vehicle|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Mutual Aid Tx & Transport|4212033|4230001|4230003|4230007|itDisposition\\.112\\.116|it4212\\.142|itDisposition\\.112\\.165|itDisposition\\.112\\.141|Treat / Transport BLS by this unit|itDisposition\\.112\\.142"
 
   # minor values
-  minor_values <- "days|hours|minutes|months"
+  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
 
   year_values <- "2516009|years"
 

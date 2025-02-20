@@ -209,7 +209,7 @@ seizure_02_population <- function(df = NULL,
   medication_pattern = "3322|6960|203128|6470|diazepam|midazolam|midazolam hydrochloride|lorazepam"
 
   # minor values
-  minor_values <- "days|hours|minutes|months"
+  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
 
   year_values <- "2516009|years"
 
@@ -302,7 +302,7 @@ seizure_02_population <- function(df = NULL,
 
     # system age checks
     system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor1 = ({{epatient_15_col}} < 18 & {{ epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor = system_age_minor1 | system_age_minor2,
 
@@ -326,7 +326,7 @@ seizure_02_population <- function(df = NULL,
 
     # system age checks
     system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor1 = ({{epatient_15_col}} < 18 & {{ epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor = system_age_minor1 | system_age_minor2
 
@@ -584,7 +584,7 @@ seizure_02_population <- function(df = NULL,
 
     # system age checks
     system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor1 = ({{epatient_15_col}} < 18 & {{ epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor = system_age_minor1 | system_age_minor2,
 
@@ -614,7 +614,7 @@ seizure_02_population <- function(df = NULL,
 
     # system age checks
     system_age_adult = {{epatient_15_col}} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-    system_age_minor1 = {{epatient_15_col}} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor1 = ({{epatient_15_col}} < 18 & {{ epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor2 = {{epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor = system_age_minor1 | system_age_minor2
 

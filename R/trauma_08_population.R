@@ -51,6 +51,74 @@
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
 #'
+#' @examples
+#'
+#' # create tables to test correct functioning
+#'
+#'   # patient table
+#'   patient_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01",
+#'     "2025-01-01", "2025-06-01")),
+#'     patient_dob = as.Date(c("2000-01-01", "2020-01-01", "2023-02-01",
+#'     "2023-01-01", "1970-06-01")),
+#'     epatient_15 = c(25, 5, 2, 2, 55),  # Ages
+#'     epatient_16 = c("Years", "Years", "Years", "Years", "Years")
+#'
+#'   )
+#'
+#'   # response table
+#'   response_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     eresponse_05 = rep(2205001, 5)
+#'   )
+#'
+#'   # situation table
+#'   situation_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     esituation_02 = rep("Yes", 5)
+#'   )
+#'
+#'   # vitals table
+#'   vitals_table <- tibble::tibble(
+#'
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     evitals_06 = c(100, 90, 80, 70, 85),
+#'     evitals_14 = c(30, 9, 8, 7, 31),
+#'     evitals_23 = c(6, 7, 8, 8, 7),
+#'   )
+#'
+#'   # disposition table
+#'   disposition_table <- tibble::tibble(
+#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
+#'   )
+#'
+#' # test the success of the function
+#'   result <- trauma_08_population(patient_scene_table = patient_table,
+#'                       response_table = response_table,
+#'                       situation_table = situation_table,
+#'                       vitals_table = vitals_table,
+#'                       disposition_table = disposition_table,
+#'                       erecord_01_col = erecord_01,
+#'                       incident_date_col = incident_date,
+#'                       patient_DOB_col = patient_dob,
+#'                       epatient_15_col = epatient_15,
+#'                       epatient_16_col = epatient_16,
+#'                       eresponse_05_col = eresponse_05,
+#'                       esituation_02_col = esituation_02,
+#'                       evitals_06_col = evitals_06,
+#'                       evitals_14_col = evitals_14,
+#'                       evitals_23_col = evitals_23,
+#'                       transport_disposition_col = edisposition_30
+#'                       )
+#'
+#' # show the results of filtering at each step
+#' result$filter_process
+#'
 #' @author Nicolas Foss, Ed.D., MS
 #'
 #' @export
@@ -161,7 +229,7 @@ trauma_08_population <- function(df = NULL,
   transport_responses <- "Transport by This EMS Unit \\(This Crew Only\\)|Transport by This EMS Unit, with a Member of Another Crew|Transport by Another EMS Unit, with a Member of This Crew|Patient Treated, Transported by this EMS Unit|Patient Treated, Transported with this EMS Crew in Another Vehicle|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Mutual Aid Tx & Transport|4212033|4230001|4230003|4230007|itDisposition\\.112\\.116|it4212\\.142|itDisposition\\.112\\.165|itDisposition\\.112\\.141|Treat / Transport BLS by this unit|itDisposition\\.112\\.142"
 
   # minor values
-  minor_values <- "days|hours|minutes|months"
+  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
 
   year_values <- "2516009|years"
 
@@ -251,7 +319,7 @@ trauma_08_population <- function(df = NULL,
 
     # system age check
     system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor1 = ({{ epatient_15_col }} < 18 & {{ epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
     system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
     system_age_minor = system_age_minor1 | system_age_minor2,
 
@@ -273,7 +341,7 @@ trauma_08_population <- function(df = NULL,
 
       # system age check
       system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-      system_age_minor1 = ({{ epatient_15_col }} < 18 & {{ epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
+      system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
       system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
       system_age_minor = system_age_minor1 | system_age_minor2
 
@@ -529,7 +597,7 @@ trauma_08_population <- function(df = NULL,
 
         # system age check
         system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-        system_age_minor1 = ({{ epatient_15_col }} < 18 & {{ epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
+        system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
         system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
         system_age_minor = system_age_minor1 | system_age_minor2,
 
@@ -559,7 +627,7 @@ trauma_08_population <- function(df = NULL,
 
           # system age check
           system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-          system_age_minor1 = ({{ epatient_15_col }} < 18 & {{ epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
+          system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
           system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
           system_age_minor = system_age_minor1 | system_age_minor2
 

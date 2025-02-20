@@ -198,9 +198,6 @@ respiratory_02_population <- function(df = NULL,
   # 911 codes for eresponse.05
   codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
 
-  # minor values
-  minor_values <- "days|hours|minutes|months"
-
   # oxygen
   oxygen_values <- "7806|Oxygen"
 
@@ -214,7 +211,6 @@ respiratory_02_population <- function(df = NULL,
   not_proc <- "8801001|8801023|8801003|8801027|8801019|Contraindicated Noted|Unable to Complete|Denied By Order|Order Criteria Not Met|Refused"
 
   # days, hours, minutes, months
-
   minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
 
   year_values <- "2516009|years"
