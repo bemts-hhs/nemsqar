@@ -173,6 +173,68 @@ of decimal places.</p>
     <p>Nicolas Foss, Ed.D., MS</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Synthetic test data</span></span></span>
+<span class="r-in"><span>  <span class="va">test_data</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    epatient_15 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">34</span>, <span class="fl">5</span>, <span class="fl">45</span>, <span class="fl">2</span>, <span class="fl">60</span><span class="op">)</span>,  <span class="co"># Ages</span></span></span>
+<span class="r-in"><span>    epatient_16 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Months"</span>, <span class="st">"Years"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eresponse_05 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2205001</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    esituation_02 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"Yes"</span>, <span class="fl">5</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_06 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">100</span>, <span class="fl">90</span>, <span class="fl">80</span>, <span class="fl">70</span>, <span class="fl">85</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_14 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">30</span>, <span class="fl">9</span>, <span class="fl">8</span>, <span class="fl">7</span>, <span class="fl">31</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_23 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">6</span>, <span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">8</span>, <span class="fl">7</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    edisposition_30 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">4230001</span>, <span class="fl">4230003</span>, <span class="fl">4230001</span>, <span class="fl">4230007</span>, <span class="fl">4230007</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># Run function with the first and last pain score columns</span></span></span>
+<span class="r-in"><span>  <span class="fu">trauma_08</span><span class="op">(</span></span></span>
+<span class="r-in"><span>    df <span class="op">=</span> <span class="va">test_data</span>,</span></span>
+<span class="r-in"><span>    erecord_01_col <span class="op">=</span> <span class="va">erecord_01</span>,</span></span>
+<span class="r-in"><span>    incident_date_col <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>    patient_DOB_col <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>    epatient_15_col <span class="op">=</span> <span class="va">epatient_15</span>,</span></span>
+<span class="r-in"><span>    epatient_16_col <span class="op">=</span> <span class="va">epatient_16</span>,</span></span>
+<span class="r-in"><span>    eresponse_05_col <span class="op">=</span> <span class="va">eresponse_05</span>,</span></span>
+<span class="r-in"><span>    esituation_02_col <span class="op">=</span> <span class="va">esituation_02</span>,</span></span>
+<span class="r-in"><span>    evitals_06_col <span class="op">=</span> <span class="va">evitals_06</span>,</span></span>
+<span class="r-in"><span>    evitals_14_col <span class="op">=</span> <span class="va">evitals_14</span>,</span></span>
+<span class="r-in"><span>    evitals_23_col <span class="op">=</span> <span class="va">evitals_23</span>,</span></span>
+<span class="r-in"><span>    transport_disposition_col <span class="op">=</span> <span class="va">edisposition_30</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Trauma-08</span> <span style="color: #00BBBB;">───────────────────────────────────────────────────────────────────</span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Gathering Records for Trauma-08</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_08_population()`  [Working on 1 of 12 tasks] <span style="color: #00BB00;">●●●</span><span style="color: #FFFFFF;">───────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_08_population()`  [Working on 2 of 12 tasks] <span style="color: #00BB00;">●●●●●●</span><span style="color: #FFFFFF;">────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_08_population()`  [Working on 3 of 12 tasks] <span style="color: #00BB00;">●●●●●●●●●</span><span style="color: #FFFFFF;">─────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_08_population()`  [Working on 4 of 12 tasks] <span style="color: #00BB00;">●●●●●●●●●●●</span><span style="color: #FFFFFF;">───────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_08_population()`  [Working on 7 of 12 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_08_population()`  [Working on 8 of 12 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_08_population()`  [Working on 9 of 12 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_08_population()`  [Working on 10 of 12 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_08_population()`  [Working on 11 of 12 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_08_population()`  [Working on 12 of 12 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Calculating Trauma-08</span> ──</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Function completed in <span style="color: #00BB00;">0.15s</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 6</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   measure   pop    numerator denominator  prop prop_label</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Trauma-08 Adults         3           3     1 100%      </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Trauma-08 Peds           2           2     1 100%      </span>
+<span class="r-in"><span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
