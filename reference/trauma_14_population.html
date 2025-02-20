@@ -330,7 +330,7 @@ information.</p></dd>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co"># test the success of the function</span></span></span>
-<span class="r-in"><span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="trauma_14.html">trauma_14</a></span><span class="op">(</span>patient_scene_table <span class="op">=</span> <span class="va">patient_table</span>,</span></span>
+<span class="r-in"><span>  <span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">trauma_14_population</span><span class="op">(</span>patient_scene_table <span class="op">=</span> <span class="va">patient_table</span>,</span></span>
 <span class="r-in"><span>                      response_table <span class="op">=</span> <span class="va">response_table</span>,</span></span>
 <span class="r-in"><span>                      situation_table <span class="op">=</span> <span class="va">situation_table</span>,</span></span>
 <span class="r-in"><span>                      vitals_table <span class="op">=</span> <span class="va">vitals_table</span>,</span></span>
@@ -364,11 +364,6 @@ information.</p></dd>
 <span class="r-in"><span>                      einjury_04_col <span class="op">=</span> <span class="va">einjury_04</span>,</span></span>
 <span class="r-in"><span>                      einjury_09_col <span class="op">=</span> <span class="va">einjury_09</span></span></span>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Trauma-14</span> <span style="color: #00BBBB;">───────────────────────────────────────────────────────────────────</span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Gathering Records for Trauma-14</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_14_population()`  [Working on 1 of 33 tasks] <span style="color: #00BB00;">●●</span><span style="color: #FFFFFF;">────────────────</span>…</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_14_population()`  [Working on 2 of 33 tasks] <span style="color: #00BB00;">●●●</span><span style="color: #FFFFFF;">───────────────</span>…</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_14_population()`  [Working on 3 of 33 tasks] <span style="color: #00BB00;">●●●●</span><span style="color: #FFFFFF;">──────────────</span>…</span>
@@ -403,18 +398,23 @@ information.</p></dd>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_14_population()`  [Working on 32 of 33 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `trauma_14_population()`  [Working on 33 of 33 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Calculating Trauma-14</span> ──</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Function completed in <span style="color: #00BB00;">0.59s</span>.</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># show the results of filtering at each step</span></span></span>
 <span class="r-in"><span><span class="va">result</span><span class="op">$</span><span class="va">filter_process</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>Unknown or uninitialised column: `filter_process`.</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> NULL</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 30 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    filter                                                                  count</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                                   <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Situation possible injury                                                   5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 911 calls                                                                   5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Transports                                                                  5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> GCS Motor 1-5                                                               5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> Breath sounds absent, decreased, increased respiratory effort               5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Flail segment, retraction, accessory muscles used in breathing              5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Respiratory effort apneic, labored, mech. assist, rapid, shallow, weak…     5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Airway management procedures                                                5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Pulse oximetry &lt; 90                                                         5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> SBP &lt; 110                                                                   5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 20 more rows</span></span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
