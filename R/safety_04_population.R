@@ -45,10 +45,11 @@
 #' @param transport_disposition_col Columns for primary and secondary transport
 #'   dispositions.
 #'
-#' @return #' A list that contains the following:
+#' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
+#' * a tibble for the total dataset with computations
 #'
 #' @examples
 #'
@@ -611,7 +612,8 @@ safety_04_population <- function(df = NULL,
   safety.04.population <- list(
     filter_process = filter_counts,
     peds = peds_pop,
-    initial_population = initial_population
+    initial_population = initial_population,
+    computing_population = computing_population
   )
 
   cli::cli_progress_done(id = progress_bar_population)
@@ -951,7 +953,8 @@ safety_04_population <- function(df = NULL,
   safety.04.population <- list(
     filter_process = filter_counts,
     peds = peds_pop,
-    initial_population = initial_population
+    initial_population = initial_population,
+    computing_population = computing_population
   )
 
   cli::cli_progress_done(id = progress_bar_population)

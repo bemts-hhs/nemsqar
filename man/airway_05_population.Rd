@@ -80,15 +80,13 @@ performed prior to EMS care being provided.}
 procedure names.}
 }
 \value{
-A data.frame summarizing results for three population groups (All,
-Adults, and Peds) with the following columns:
-\code{pop}: Population type (All, Adults, or Peds).
-\code{numerator}: Count of incidents where beta-agonist medications were
-administered.
-\code{denominator}: Total count of incidents.
-\code{prop}: Proportion of incidents involving beta-agonist medications.
-\code{prop_label}: Proportion formatted as a percentage with a specified number of
-decimal places.
+A list that contains the following:
+\itemize{
+\item a tibble with counts for each filtering step,
+\item a tibble for each population of interest
+\item a tibble for the initial population
+\item a tibble for the total dataset with computations
+}
 }
 \description{
 This function processes and analyzes the dataset to generate the populations

@@ -37,10 +37,11 @@
 #' @param emedications_03_col Column indicating medication administration.
 #' @param emedications_04_col Column listing medications administered.
 #'
-#' @return #' A list that contains the following:
+#' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
+#' * a tibble for the total dataset with computations
 #'
 #' @examples
 #'
@@ -510,7 +511,8 @@ pediatrics_03b_population <- function(df = NULL,
       # get the population of interest
       pediatrics.03b.population <- list(
         filter_process = filter_counts,
-        initial_population = initial_population
+        initial_population = initial_population,
+        computing_population = computing_population
       )
 
       # get the summary of results, already filtered down to the target age group for the measure
@@ -822,7 +824,8 @@ pediatrics_03b_population <- function(df = NULL,
       # get the population of interest
       pediatrics.03b.population <- list(
         filter_process = filter_counts,
-        initial_population = initial_population
+        initial_population = initial_population,
+        computing_population = computing_population
       )
 
       # get the summary of results, already filtered down to the target age group for the measure

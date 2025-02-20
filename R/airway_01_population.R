@@ -51,6 +51,7 @@
 #' * a tibble with counts for each filtering step,
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
+#' * a tibble for the total dataset with computations
 #'
 #' @examples
 #'
@@ -911,7 +912,9 @@ airway_01_population <- function(df = NULL,
 
     peds = peds_pop,
 
-    initial_population = initial_population
+    initial_population = initial_population,
+
+    computing_population = computing_population
 
   )
 

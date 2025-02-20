@@ -36,10 +36,11 @@
 #' @param evitals_30_col The column containing stroke scale type descriptors
 #'   (e.g., FAST, NIH, etc.).
 #'
-#' @return #' A list that contains the following:
+#' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
+#' * a tibble for the total dataset with computations
 #'
 #' @examples
 #'
@@ -427,7 +428,8 @@ stroke_01_population <- function(df = NULL,
   # gather data into a list for multi-use output
   stroke.01.population <- list(
     filter_process = filter_counts,
-    initial_population = initial_population
+    initial_population = initial_population,
+    computing_population = computing_population
   )
 
   cli::cli_progress_done(id = progress_bar_population)
@@ -652,7 +654,8 @@ stroke_01_population <- function(df = NULL,
   # gather data into a list for multi-use output
   stroke.01.population <- list(
     filter_process = filter_counts,
-    initial_population = initial_population
+    initial_population = initial_population,
+    computing_population = computing_population
   )
 
   cli::cli_progress_done(id = progress_bar_population)

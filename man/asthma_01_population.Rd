@@ -68,11 +68,12 @@ data.}
 a single comma-separated list.}
 }
 \value{
-#' A list that contains the following:
+A list that contains the following:
 \itemize{
 \item a tibble with counts for each filtering step,
 \item a tibble for each population of interest
 \item a tibble for the initial population
+\item a tibble for the total dataset with computations
 }
 }
 \description{

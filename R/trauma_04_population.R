@@ -61,10 +61,11 @@
 #'   information.
 #' @param einjury_09_col Column name containing fall height information.
 #'
-#' @return #' A list that contains the following:
+#' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
+#' * a tibble for the total dataset with computations
 #'
 #' @examples
 #'
@@ -1214,7 +1215,8 @@ trauma_04_population <- function(df = NULL,
     population_65 = pop_65,
     population_10_64 = pop_10_64,
     population_10 = pop_10,
-    initial_population = initial_population
+    initial_population = initial_population,
+    computing_population = computing_population
   )
 
   cli::cli_progress_done(id = progress_bar_population)
@@ -2078,7 +2080,8 @@ trauma_04_population <- function(df = NULL,
     population_65 = pop_65,
     population_10_64 = pop_10_64,
     population_10 = pop_10,
-    initial_population = initial_population
+    initial_population = initial_population,
+    computing_population = computing_population
   )
 
   cli::cli_progress_done(id = progress_bar_population)

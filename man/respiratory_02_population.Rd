@@ -65,11 +65,12 @@ restrictions.}
 \item{eprocedures_03_col}{Column name for procedure codes.}
 }
 \value{
-#' A list that contains the following:
+A list that contains the following:
 \itemize{
 \item a tibble with counts for each filtering step,
 \item a tibble for each population of interest
 \item a tibble for the initial population
+\item a tibble for the total dataset with computations
 }
 }
 \description{

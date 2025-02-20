@@ -70,8 +70,13 @@ the first vital sign measurement.}
 the second vital sign measurement.}
 }
 \value{
-Returns a data frame summarizing the proportion of cases with
-complete vital sign data, divided by population
+A list that contains the following:
+\itemize{
+\item a tibble with counts for each filtering step,
+\item a tibble for each population of interest
+\item a tibble for the initial population
+\item a tibble for the total dataset with computations
+}
 }
 \description{
 The \code{respiratory_01_population} function filters and analyzes data related to

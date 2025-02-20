@@ -41,15 +41,11 @@
 #' @param eprocedures_03_col Column containing procedure codes with or without
 #'   procedure names.
 #'
-#' @return A data.frame summarizing results for three population groups (All,
-#' Adults, and Peds) with the following columns:
-#' `pop`: Population type (All, Adults, or Peds).
-#' `numerator`: Count of incidents where beta-agonist medications were
-#'  administered.
-#' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents involving beta-agonist medications.
-#' `prop_label`: Proportion formatted as a percentage with a specified number of
-#' decimal places.
+#' @return A list that contains the following:
+#' * a tibble with counts for each filtering step,
+#' * a tibble for each population of interest
+#' * a tibble for the initial population
+#' * a tibble for the total dataset with computations
 #'
 #' @examples
 #'
@@ -717,7 +713,9 @@ airway_05_population <- function(df = NULL,
 
     peds = peds_pop,
 
-    initial_population = initial_population
+    initial_population = initial_population,
+
+    computing_population = computing_population
   )
 
   cli::cli_progress_done(id = progress_bar_population)

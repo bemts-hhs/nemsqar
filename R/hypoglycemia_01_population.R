@@ -50,10 +50,11 @@
 #' @param emedications_03_col Column for administered medications.
 #' @param eprocedures_03_col Column for procedures performed.
 #'
-#' @return #' A list that contains the following:
+#' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
+#' * a tibble for the total dataset with computations
 #'
 #' @examples
 #'
@@ -699,7 +700,8 @@ hypoglycemia_01_population <- function(df = NULL,
     filter_process = filter_counts,
     adults = adult_pop,
     peds = peds_pop,
-    initial_population = initial_population
+    initial_population = initial_population,
+    computing_population = computing_population
   )
 
   cli::cli_progress_done(id = progress_bar_population)
@@ -1127,7 +1129,8 @@ hypoglycemia_01_population <- function(df = NULL,
     filter_process = filter_counts,
     adults = adult_pop,
     peds = peds_pop,
-    initial_population = initial_population
+    initial_population = initial_population,
+    computing_population = computing_population
   )
 
   cli::cli_progress_done(id = progress_bar_population)
