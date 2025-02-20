@@ -512,7 +512,7 @@ testthat::test_that("Test for correct input handling (table method)", {
   )
 
   testthat::expect_type(result, "list")
-  testthat::expect_true(all(names(result) %in% c("filter_process", "adults", "peds", "initial_population")))
+  testthat::expect_true(all(names(result) %in% c("filter_process", "adults", "peds", "initial_population", "computing_population")))
 
 })
 
