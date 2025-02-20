@@ -371,7 +371,7 @@ ttr_01_population <- function(df = NULL,
           c({{ evitals_06_col }}, {{ evitals_07_col }}, {{ evitals_10_col }}, {{ evitals_12_col }}, {{ evitals_14_col }}), ~ !is.na(.)
         ),
 
-       !is.na({{ evitals_23_col }}) | !is.na({{ evitals_26_col }})
+       dplyr::if_any(c({{ evitals_23_col }}, {{ evitals_26_col }}), ~ !is.na(.))
 
       ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
@@ -676,16 +676,15 @@ ttr_01_population <- function(df = NULL,
                       {{ evitals_12_col }}, {{ evitals_14_col }}, {{ evitals_23_col }}, {{ evitals_26_col }}
         ) |>
         dplyr::distinct() |>
-        dplyr::mutate(
+        dplyr::filter(
 
-          vitals = dplyr::if_all(
+          dplyr::if_all(
             c({{ evitals_06_col }}, {{ evitals_07_col }}, {{ evitals_10_col }}, {{ evitals_12_col }}, {{ evitals_14_col }}), ~ !is.na(.)
           ),
 
-            !is.na({{ evitals_23_col }}) | !is.na({{ evitals_26_col }})
+          dplyr::if_any(c({{ evitals_23_col }}, {{ evitals_26_col }}), ~ !is.na(.))
 
         ) |>
-        dplyr::filter(vitals) |>
         dplyr::distinct({{ erecord_01_col }}) |>
         dplyr::pull({{ erecord_01_col }})
 
