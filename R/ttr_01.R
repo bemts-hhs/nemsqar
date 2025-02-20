@@ -68,6 +68,10 @@
 #' # Synthetic test data
 #'   test_data <- tibble::tibble(
 #'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'     incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01",
+#'     "2025-01-01", "2025-06-01")),
+#'     patient_dob = as.Date(c("2000-01-01", "2020-01-01", "2023-02-01",
+#'     "2023-01-01", "1970-06-01")),
 #'     epatient_15 = c(34, 5, 45, 2, 60),  # Ages
 #'     epatient_16 = c("Years", "Years", "Years", "Months", "Years"),
 #'     eresponse_05 = rep(2205001, 5),
@@ -86,6 +90,8 @@
 #'   ttr_01(
 #'     df = test_data,
 #'     erecord_01_col = erecord_01,
+#'     incident_date_col = incident_date,
+#'     patient_DOB_col = patient_dob,
 #'     epatient_15_col = epatient_15,
 #'     epatient_16_col = epatient_16,
 #'     eresponse_05_col = eresponse_05,
