@@ -144,7 +144,7 @@
 #'   )
 #'
 #'   # test the success of the function
-#'   result <- trauma_14(patient_scene_table = patient_table,
+#'   result <- trauma_14_population(patient_scene_table = patient_table,
 #'                       response_table = response_table,
 #'                       situation_table = situation_table,
 #'                       vitals_table = vitals_table,
