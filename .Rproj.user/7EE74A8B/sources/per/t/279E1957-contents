@@ -1,0 +1,749 @@
+###_____________________________________________________________________________
+### Data to build the Brain Injury Alliance of Iowa (BIAIA) Presentation
+### Working with Dr. Torner
+###_____________________________________________________________________________
+
+# package
+library(tidyverse)
+library(traumar)
+library(nemsqar)
+
+# working dir
+setwd("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Desktop/Analytics/Analytics Builds/biaia 2025/")
+
+# data
+trauma_all <- read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/TRAUMA DATA/SEQIC/trauma_all.csv")
+
+# get target years
+trauma_19_23 <- trauma_all |>
+  dplyr::filter(Year %in% 2019:2023)
+
+
+# get applicable columns
+trauma_final <- trauma_19_23 |>
+  dplyr::select(Year, Unique_Patient_ID, Unique_Incident_ID, Patient_Age_Years,
+                Patient_Gender, Patient_Race, Patient_County,
+                Injury_County, County, Initial_Assessment_GCS_Total,
+                Initial_Assessment_GCS_Total_Final, ICD_10_Diagnosis_Codes_List,
+                Nature_Injury_1_code, Nature_Injury_2_code, Nature_Injury_3_code,
+                CAUSE_OF_INJURY_AR_1, ISS_Calculated, ISS_Range,
+                Time_From_Injury_to_Arrival, ED_Acute_Care_Admission_Date,
+                ED_Acute_Care_Admission_Time, ED_Acute_Care_Admission_DateTime,
+                ED_Acute_Care_Discharge_Date, ED_Acute_Care_Discharge_Time,
+                ED_Acute_Care_Discharge_Date_Time,
+                Facility_Admission_Date, Facility_Admission_Time,
+                Facility_Admission_DateTime,
+                Facility_Discharge_Date, Facility_Discharge_Time,
+                Facility_Discharge_DateTime,
+                ED_Acute_Care_Length_Of_Stay_Days,
+                ED_Acute_Care_Length_Of_Stay_Hours,
+                ED_Acute_Care_LOS_Total_Minutes,
+                Length_of_Stay,
+                Facility_Length_of_Stay_Days,
+                Facility_Length_of_Stay_Hours,
+                Facility_Length_of_Stay_Minutes,
+                Facility_Length_of_Stay_Total_Minutes,
+                InterFacility_Transfer,
+                Transport_To_Your_Facility_By, Arrived_From,
+                Referring_Facility_Name, ED_Facility_Transferred_To,
+                Facility_Transferred_To, ED_Acute_Care_Disposition,
+                Facility_Discharge_Disposition, Discharge_Location, 
+                Transfer_Out, Receiving, Death
+                )
+
+# manipulations to get
+# GCS ranges
+# ICD-10-CM TBI code classifications
+# length of stay work
+trauma_final_calc <- trauma_final |>
+  dplyr::mutate(
+    Facility_Length_of_Stay_Total_Minutes = abs(Facility_Length_of_Stay_Total_Minutes),
+    Initial_Assessment_GCS_Total_Final = dplyr::if_else(
+      is.na(Initial_Assessment_GCS_Total_Final),
+      Initial_Assessment_GCS_Total,
+      Initial_Assessment_GCS_Total_Final
+      ),
+    Patient_Age_Range = dplyr::case_when(Patient_Age_Years >= 0 & Patient_Age_Years < 15 ~ "0-14",
+                                         Patient_Age_Years >= 15 & Patient_Age_Years < 26 ~ "15-25",
+                                         Patient_Age_Years >= 26 & Patient_Age_Years < 51 ~ "26-50",
+                                         Patient_Age_Years >= 51 & Patient_Age_Years < 66 ~ "51-65",
+                                         Patient_Age_Years >= 66 ~ "66+",
+                                         TRUE ~ "Missing"
+                                         ),
+    Patient_Age_Range = factor(Patient_Age_Range, levels = c("0-14", "15-25", "26-50", "51-65", "66+", "Missing")),
+    GCS_range = dplyr::case_when(Initial_Assessment_GCS_Total_Final >= 3 & Initial_Assessment_GCS_Total_Final < 9 ~ "3-8",
+                                 Initial_Assessment_GCS_Total_Final >= 9 & Initial_Assessment_GCS_Total_Final < 13 ~ "9-12",
+                                 Initial_Assessment_GCS_Total_Final >= 13 & Initial_Assessment_GCS_Total_Final < 15 ~ "13-14",
+                                 Initial_Assessment_GCS_Total_Final >= 15 ~ "15",
+                                 TRUE ~ "Missing"
+                                 ),
+    GCS_range = factor(GCS_range, levels = c("3-8", "9-12", "13-14", "15", "Missing")),
+    `Fracture of vault of skull` = grepl(pattern = "s02\\.0xx[ab]", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE),
+    `Fracture of base of skull` = grepl(pattern = "s02\\.1(?:[0-9])", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE),
+    `Unspecified fracture of skull` = grepl(pattern = "s02\\.91Xa", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE),
+    Concussion = grepl(pattern = "s06\\.0x.A", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE),
+    `Traumatic cerebral edema` = grepl(pattern = "s06\\.1", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE),
+    `Diffuse traumatic brain injury` = grepl(pattern = "s06\\.2", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE),
+    `Focal traumatic brain injury` = grepl(pattern = "s06\\.3", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE),
+    `Epidural hemorrhage` = grepl(pattern = "s06\\.4", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE),
+    `Traumatic subdural hemorrhage` = grepl(pattern = "s06\\.5", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE),
+    `Traumatic subarachnoid hemorrhage` = grepl(pattern = "s06\\.6", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE),
+    `Other specified intracranial injuries and unspecified intracranial injuries` = grepl(pattern = "s06\\.[89]", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE),
+    `Contusion and laceration of cerebrum` = grepl(pattern = "s06\\.3(?:[1-3])", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE),
+    `Traumatic hemorrhage of cerebrum, unspecified` = grepl(pattern = "s06\\.36", x = ICD_10_Diagnosis_Codes_List, ignore.case = TRUE)
+  ) |>
+  dplyr::distinct(Unique_Incident_ID, .keep_all = TRUE)
+
+###_____________________________________________________________________________
+### Produce tables
+###_____________________________________________________________________________
+
+###_____________________________________________________________________________
+# get a patient lookup table
+###_____________________________________________________________________________
+
+tbi_patient_lookup <- trauma_final_calc |>
+  dplyr::summarize(dplyr::across(`Fracture of vault of skull`:`Traumatic hemorrhage of cerebrum, unspecified`, ~ max(., na.rm = TRUE)),
+                   .by = c(Year, Unique_Patient_ID)
+                   ) |>
+  dplyr::mutate(IAC_TBI = dplyr::if_else(dplyr::if_any(`Fracture of vault of skull`:`Traumatic hemorrhage of cerebrum, unspecified`, ~ . == TRUE), TRUE, FALSE, missing = FALSE),
+                .by = c(Year, Unique_Patient_ID)
+                )
+
+# get the patient-level table
+tbi_patient_table <- trauma_final_calc |>
+  dplyr::select(-c(`Fracture of vault of skull`:`Traumatic hemorrhage of cerebrum, unspecified`)
+                ) |>
+  dplyr::distinct(Year, Unique_Patient_ID, .keep_all = TRUE) |>
+  dplyr::left_join(tbi_patient_lookup, by = dplyr::join_by(Year, Unique_Patient_ID))
+
+###_____________________________________________________________________________
+# get counts of patients over the years by gender
+# TBI cases only via IAC
+# 2019-2023
+###_____________________________________________________________________________
+
+patient_tbi_counts_years_gender <- tbi_patient_table |>
+  dplyr::mutate(Patient_Gender = dplyr::case_when(is.na(Patient_Gender) ~ "Unknown",
+                                                  grepl(pattern = "non-binary", x = Patient_Gender, ignore.case = TRUE) ~ "Non-binary",
+                                                  TRUE ~ Patient_Gender
+                                                  )
+                ) |>
+  dplyr::summarize(Count = sum(IAC_TBI, na.rm = TRUE),
+                   .by = c(Year, Patient_Gender)
+                   ) |>
+  tidyr::complete(Year, Patient_Gender, fill = list(Count = 0)) |>
+  tidyr::pivot_wider(id_cols = Patient_Gender,
+                     names_from = Year,
+                     values_from = Count
+                     ) |>
+  dplyr::mutate(across(-Patient_Gender, ~ traumar::small_count_label(., cutoff = 6, replacement = "*")
+                       )
+                )
+
+# create the file for patient_tbi_counts_years_gender
+readr::write_csv(patient_tbi_counts_years_gender, file = "patient_tbi_counts_years_gender.csv")
+
+###_____________________________________________________________________________
+# get counts of patients over the years by race
+# TBI cases only via IAC
+# 2019-2023
+###_____________________________________________________________________________
+
+patient_tbi_counts_years_race <- tbi_patient_table |>
+  dplyr::mutate(Patient_Race = dplyr::case_when(is.na(Patient_Race) ~ "Unknown",
+                                                grepl(pattern = "not |select", x = Patient_Race, ignore.case = TRUE) ~ "Unknown",
+                                                grepl(pattern = "american indian", x = Patient_Race, ignore.case = TRUE) ~ "AIAN",
+                                                grepl(pattern = "native hawaiian", x = Patient_Race, ignore.case = TRUE) ~ "NHOPI",
+                                                grepl(pattern = "more than one", x = Patient_Race, ignore.case = TRUE) ~ "Other Race",
+                                                  TRUE ~ Patient_Race
+                                                  )
+                ) |>
+  dplyr::summarize(Count = sum(IAC_TBI, na.rm = TRUE),
+                   .by = c(Year, Patient_Race)
+                   ) |>
+  tidyr::complete(Year, Patient_Race, fill = list(Count = 0)) |>
+  tidyr::pivot_wider(id_cols = Patient_Race,
+                     names_from = Year,
+                     values_from = Count
+                     ) |>
+  dplyr::mutate(across(-Patient_Race, ~ traumar::small_count_label(., cutoff = 6, replacement = "*")
+                       )
+                )
+
+# create the file for patient_tbi_counts_years_race
+readr::write_csv(patient_tbi_counts_years_race, file = "patient_tbi_counts_years_race.csv")
+
+###_____________________________________________________________________________
+# get counts of patients over the years by age group
+# TBI cases only via IAC
+# 2019-2023
+###_____________________________________________________________________________
+
+patient_tbi_counts_years_age <- tbi_patient_table |>
+  dplyr::summarize(Count = sum(IAC_TBI, na.rm = TRUE),
+                   .by = c(Year, Patient_Age_Range)
+                   ) |>
+  tidyr::complete(Year, Patient_Age_Range, fill = list(Count = 0)) |>
+  tidyr::pivot_wider(id_cols = Patient_Age_Range,
+                     names_from = Year,
+                     values_from = Count
+                     ) |>
+  dplyr::mutate(across(-Patient_Age_Range, ~ traumar::small_count_label(., cutoff = 6, replacement = "*")
+                       )
+                )
+
+# create the file for patient_tbi_counts_years_age
+readr::write_csv(patient_tbi_counts_years_age, file = "patient_tbi_counts_years_age.csv")
+
+###_____________________________________________________________________________
+# get proportion of patients over years that have TBI
+# IAC TBI definition only
+# 2019-2023
+###_____________________________________________________________________________
+
+patient_tbi_proportion_years <- tbi_patient_table |>
+  dplyr::summarize(`TBI Patients` = sum(IAC_TBI, na.rm = TRUE),
+                   `Total Patients` = n(),
+                   Percent = round(`TBI Patients` / `Total Patients`, digits = 3),
+                   .by = Year
+                   ) |>
+  tidyr::pivot_longer(cols = -Year,
+                      names_to = "Measure",
+                      values_to = "Value"
+                      ) |>
+  tidyr::pivot_wider(id_cols = Measure,
+                     names_from = Year,
+                     values_from = Value
+                     )
+
+# create file for patient_tbi_proportion_years
+readr::write_csv(patient_tbi_proportion_years, file = "patient_tbi_proportion_years.csv")
+
+###_____________________________________________________________________________
+# ICD-10 classifiction by code and faceted by GCS range
+# this counts the number of times these ICD-10-CM groups were assigned
+# does not equal number of patients or incidents
+# 2019-2023
+###_____________________________________________________________________________
+
+icd_10_by_gcs <- trauma_final_calc |>
+  dplyr::summarize(
+    across(c(`Fracture of vault of skull`:`Traumatic hemorrhage of cerebrum, unspecified`), ~ sum(., na.rm = TRUE)),
+    .by = GCS_range
+  ) |>
+  dplyr::arrange(GCS_range) |>
+  tidyr::pivot_longer(cols = -GCS_range,
+                      names_to = "Classification",
+                      values_to = "Count"
+                      ) |>
+  tidyr::pivot_wider(id_cols = Classification,
+                     names_from = GCS_range,
+                     values_from = Count
+                     ) |>
+  janitor::adorn_totals(where = c("col")) |>
+  dplyr::arrange(desc(Total)) |> 
+  janitor::adorn_totals(where = "row") |> 
+  dplyr::mutate(across(-Classification, ~ traumar::small_count_label(., cutoff = 6, replacement = "*")
+                       )
+                )
+
+# create the file for icd_10_by_gcs
+readr::write_csv(icd_10_by_gcs, file = "icd_10_by_gcs.csv")
+
+###_____________________________________________________________________________
+# Cause of injury by GCS range
+# number of trauma center visits involved TBI
+# 2019 - 2023
+###_____________________________________________________________________________
+
+cause_by_gcs <- trauma_final_calc |>
+  tidyr::replace_na(list(CAUSE_OF_INJURY_AR_1 = "Other")) |>
+  dplyr::summarize(
+    Count = sum(dplyr::if_any(`Fracture of vault of skull`:`Traumatic hemorrhage of cerebrum, unspecified`, ~ . == TRUE), na.rm = TRUE),
+    .by = c(CAUSE_OF_INJURY_AR_1, GCS_range)
+  ) |>
+  dplyr::arrange(GCS_range) |>
+  dplyr::rename(Classification = CAUSE_OF_INJURY_AR_1) |>
+  tidyr::complete(Classification, GCS_range, fill = list(Count = 0)) |>
+  tidyr::pivot_wider(id_cols = Classification,
+                     names_from = GCS_range,
+                     values_from = Count,
+                     names_glue = "GCS {GCS_range}"
+  ) |>
+  janitor::adorn_totals(where = c("col")) |>
+  dplyr::arrange(desc(Total)) |> 
+  janitor::adorn_totals(where = "row") |> 
+  dplyr::mutate(across(-Classification, ~ traumar::small_count_label(., cutoff = 6, replacement = "*")
+                       )
+                )
+
+# create the file for cause_by_gcs
+readr::write_csv(cause_by_gcs, file = "cause_by_gcs.csv")
+
+###_____________________________________________________________________________
+# cause of injury by age range
+# number of trauma center visits involved TBI
+# 2019 - 2023
+###_____________________________________________________________________________
+
+cause_by_age <- trauma_final_calc |>
+  tidyr::replace_na(list(CAUSE_OF_INJURY_AR_1 = "Other")) |>
+  dplyr::summarize(
+    Count = sum(dplyr::if_any(`Fracture of vault of skull`:`Traumatic hemorrhage of cerebrum, unspecified`, ~ . == TRUE), na.rm = TRUE),
+    .by = c(CAUSE_OF_INJURY_AR_1, Patient_Age_Range)
+  ) |>
+  dplyr::arrange(Patient_Age_Range) |>
+  dplyr::rename(Classification = CAUSE_OF_INJURY_AR_1) |>
+  tidyr::complete(Classification, Patient_Age_Range, fill = list(Count = 0)) |>
+  tidyr::pivot_wider(id_cols = Classification,
+                     names_from = Patient_Age_Range,
+                     values_from = Count
+  ) |>
+  janitor::adorn_totals(where = c("col")) |>
+  dplyr::arrange(desc(Total)) |> 
+  janitor::adorn_totals(where = "row") |> 
+  dplyr::mutate(across(-Classification, ~ traumar::small_count_label(., cutoff = 6, replacement = "*")
+                       )
+                )
+
+# create the file for cause_by_age
+readr::write_csv(cause_by_age, file = "cause_by_age.csv")
+
+###_____________________________________________________________________________
+### Analyses of first vs. last hospital and transfers
+###_____________________________________________________________________________
+
+# dataframe for final analyses with handling of missing values and outliers
+# for key variables
+trauma_transfers <- trauma_final_calc |> 
+    dplyr::mutate(Receiving = dplyr::if_else(is.na(Receiving), "No", Receiving),
+                  Transfer_Out = dplyr::if_else(is.na(Transfer_Out), "No", Transfer_Out)
+                ) |> 
+  dplyr::mutate(
+    Death_ED = dplyr::if_else(ED_Acute_Care_Disposition == "Deceased/Expired", TRUE, FALSE),
+    Death_Hospital = dplyr::if_else(ED_Acute_Care_Disposition != "Deceased/Expired" & Facility_Discharge_Disposition == "Deceased/Expired", TRUE, FALSE),
+    Death_3 = dplyr::if_else(Death == TRUE & (Length_of_Stay < 72 | Facility_Length_of_Stay_Total_Minutes < 72), TRUE, FALSE)
+  ) |> 
+  dplyr::mutate(Time_From_Injury_to_Arrival = traumar::impute(Time_From_Injury_to_Arrival, focus = "skew", method = "iqr"),
+                Time_From_Injury_to_Arrival = traumar::impute(Time_From_Injury_to_Arrival, "missing", "median"),
+                .by = Year
+                )
+
+# classify first hospital
+first_hospitals <- trauma_transfers |>
+  dplyr::filter(
+    Receiving == "No",
+    dplyr::if_any(`Fracture of vault of skull`:`Traumatic hemorrhage of cerebrum, unspecified`, ~ . == TRUE)
+    )
+
+# classify last hospital
+last_hospitals <- trauma_transfers |>
+  dplyr::filter(Transfer_Out == "No",
+                dplyr::if_any(`Fracture of vault of skull`:`Traumatic hemorrhage of cerebrum, unspecified`, ~ . == TRUE)
+                )
+
+###_____________________________________________________________________________
+# first hospital table
+# by whether or not there was a transfer
+# 2019-2023
+# first table
+###_____________________________________________________________________________
+
+first_hospitals_times <- first_hospitals |> 
+  dplyr::summarize(
+    `Mean ISS` = mean(ISS_Calculated, na.rm = TRUE),
+    `ISS St. Dev` = sd(ISS_Calculated, na.rm = TRUE),
+    `Median Time Injury to Arrival` = median(Time_From_Injury_to_Arrival, na.rm = TRUE),
+    `Time Injury to Arrival St. Dev` = sd(Time_From_Injury_to_Arrival, na.rm = TRUE),
+    .by = Transfer_Out
+  ) |> 
+  tidyr::pivot_longer(cols = -Transfer_Out,
+                      names_to = "Statistic",
+                      values_to = "Value"
+                      ) |> 
+  tidyr::pivot_wider(id_cols = Statistic,
+                     names_from = Transfer_Out,
+                     values_from = Value,
+                     names_glue = "Transfer Out: {Transfer_Out}"
+                     )
+
+# second table
+first_hospital_gcs <- first_hospitals |> 
+  dplyr::count(Transfer_Out, Statistic = GCS_range) |> 
+  dplyr::arrange(desc(Transfer_Out)) |> 
+  tidyr::pivot_wider(id_cols = Statistic,
+                     names_from = Transfer_Out,
+                     values_from = n,
+                     names_glue = "Transfer Out: {Transfer_Out}"
+                     ) |> 
+  dplyr::mutate(Statistic = paste0("GCS: ", Statistic)
+                ) |> 
+  janitor::adorn_totals(where = "row")
+
+# bind rows
+first_hospital_table <- dplyr::bind_rows(first_hospitals_times, first_hospital_gcs)
+
+# create the file for first_hospital_table
+readr::write_csv(first_hospital_table, file = "first_hospital_table.csv")
+
+###_____________________________________________________________________________
+# last hospital table # 1
+# by whether or not there was a transfer
+# 2019-2023
+# first table
+###_____________________________________________________________________________
+
+last_hospitals_times <- last_hospitals |> 
+  dplyr::summarize(
+    `Mean ISS` = mean(ISS_Calculated, na.rm = TRUE),
+    `ISS St. Dev` = sd(ISS_Calculated, na.rm = TRUE),
+    `Median Time Injury to Arrival` = median(Time_From_Injury_to_Arrival, na.rm = TRUE),
+    `Time Injury to Arrival St. Dev` = sd(Time_From_Injury_to_Arrival, na.rm = TRUE),
+    .by = Receiving
+  ) |> 
+  tidyr::pivot_longer(cols = -Receiving,
+                      names_to = "Statistic",
+                      values_to = "Value"
+                      ) |> 
+  tidyr::pivot_wider(id_cols = Statistic,
+                     names_from = Receiving,
+                     values_from = Value,
+                     names_glue = "Transfer In: {Receiving}"
+                     )
+
+# second table
+last_hospital_gcs <- last_hospitals |> 
+  dplyr::count(Receiving, Statistic = GCS_range) |> 
+  tidyr::pivot_wider(id_cols = Statistic,
+                     names_from = Receiving,
+                     values_from = n,
+                     names_glue = "Transfer In: {Receiving}"
+                     ) |> 
+  dplyr::mutate(Statistic = paste0("GCS: ", Statistic)
+                ) |> 
+  janitor::adorn_totals(where = "row")
+
+# bind rows
+last_hospital_table <- dplyr::bind_rows(last_hospitals_times, last_hospital_gcs)
+
+# create the file for first_hospital_table
+readr::write_csv(last_hospital_table, file = "last_hospital_table.csv")
+
+###_____________________________________________________________________________
+### Last hospital mortality
+###_____________________________________________________________________________
+
+# get times
+last_hospital_mortality_times <- last_hospitals |> 
+  dplyr::summarize(
+    `Death in ED` = sum(Death_ED, na.rm = TRUE),
+    `Death in 72 hrs` = sum(Death_3, na.rm = TRUE),
+    `Death in Hospital` = sum(Death_Hospital, na.rm = TRUE),
+    .by = Receiving
+  ) |> 
+  tidyr::pivot_longer(cols = -Receiving,
+                      names_to = "Type",
+                      values_to = "Count"
+                      ) |> 
+  tidyr::pivot_wider(id_cols = Type,
+                     names_from = Receiving,
+                     values_from = Count,
+                     names_glue = "Transfer In: {Receiving}"
+                     ) |> 
+  janitor::adorn_totals(where = "col") |> 
+  dplyr::arrange(desc(Total))
+
+# counts of discharge disposition
+last_hospital_mortality <- last_hospitals |> 
+  dplyr::mutate(Disposition = dplyr::if_else(Discharge_Location == "ED Discharge", ED_Acute_Care_Disposition,
+                                             dplyr::if_else(Discharge_Location == "Hospital Discharge", Facility_Discharge_Disposition,
+                                                            dplyr::if_else(Discharge_Location == "Same Day Discharge", ED_Acute_Care_Disposition, ED_Acute_Care_Disposition)
+                                                            )
+                                             ),
+                Disposition = dplyr::if_else(grepl(pattern = "not (known|applicable)|select", x = Disposition, ignore.case = TRUE), "Missing", Disposition)
+      ) |> 
+  dplyr::count(Receiving, Type = Disposition) |>
+  dplyr::arrange(Receiving, desc(n)) |> 
+  tidyr::complete(Receiving, Type, fill = list(n = 0)) |> 
+  tidyr::pivot_wider(id_cols = Type,
+                     names_from = Receiving,
+                     values_from = n,
+                     names_glue = "Transfer In: {Receiving}"
+                     ) |> 
+  janitor::adorn_totals(where = "col") |> 
+  dplyr::arrange(desc(Total))
+
+# bind rows for the last hospital mortality table
+last_hospital_mortality_table <- dplyr::bind_rows(last_hospital_mortality_times, last_hospital_mortality) |> 
+  dplyr::mutate(dplyr::across(-Type, ~ traumar::small_count_label(., cutoff = 6, replacement = "*")
+                              ),
+                Total = dplyr::if_else(rowSums(across(c(-Total, -Type), ~ grepl(pattern = "\\*", x = .)), na.rm = TRUE) == 1, "*", as.character(Total))
+                )
+
+# create the fiile for last_hospital_mortality_table
+readr::write_csv(last_hospital_mortality_table, file = "last_hospital_mortality_table.csv")
+
+###_____________________________________________________________________________
+### Last hospital mortality - no transfer
+###_____________________________________________________________________________
+
+# last hospital mortality where there was no transfer in
+# get times
+last_hospital_mortality_times_no <- last_hospitals |> 
+  dplyr::filter(Receiving == "No") |> 
+  dplyr::summarize(
+    `Death in ED` = sum(Death_ED, na.rm = TRUE),
+    `Death in 72 hrs` = sum(Death_3, na.rm = TRUE),
+    `Death in Hospital` = sum(Death_Hospital, na.rm = TRUE),
+    .by = GCS_range
+  ) |> 
+  dplyr::arrange(GCS_range) |> 
+  tidyr::pivot_longer(cols = -GCS_range,
+                      names_to = "Type",
+                      values_to = "Count"
+                      ) |> 
+  tidyr::pivot_wider(id_cols = Type,
+                     names_from = GCS_range,
+                     values_from = Count,
+                     names_glue = "GCS {GCS_range}"
+                     ) |> 
+  janitor::adorn_totals(where = "col") |> 
+  dplyr::arrange(desc(Total))
+
+# counts of discharge disposition
+last_hospital_mortality_no <- last_hospitals |> 
+  dplyr::filter(Receiving == "No") |> 
+  dplyr::mutate(Disposition = dplyr::if_else(Discharge_Location == "ED Discharge", ED_Acute_Care_Disposition,
+                                             dplyr::if_else(Discharge_Location == "Hospital Discharge", Facility_Discharge_Disposition,
+                                                            dplyr::if_else(Discharge_Location == "Same Day Discharge", ED_Acute_Care_Disposition, ED_Acute_Care_Disposition)
+                                                            )
+                                             ),
+                Disposition = dplyr::if_else(grepl(pattern = "not (known|applicable)|select", x = Disposition, ignore.case = TRUE), "Missing", Disposition)
+      ) |> 
+  dplyr::count(GCS_range, Type = Disposition) |>
+  dplyr::arrange(GCS_range, desc(n)) |> 
+  tidyr::complete(GCS_range, Type, fill = list(n = 0)) |> 
+  tidyr::pivot_wider(id_cols = Type,
+                     names_from = GCS_range,
+                     values_from = n,
+                     names_glue = "GCS {GCS_range}"
+                     ) |> 
+  janitor::adorn_totals(where = "col") |> 
+  dplyr::arrange(desc(Total))
+
+# bind rows for the last hospital mortality table
+last_hospital_mortality_table_no <- dplyr::bind_rows(last_hospital_mortality_times_no, last_hospital_mortality_no) |> 
+  dplyr::mutate(dplyr::across(-Type, ~ traumar::small_count_label(., cutoff = 6, replacement = "*")
+                              ),
+                Total = dplyr::if_else(rowSums(across(c(-Total, -Type), ~ grepl(pattern = "\\*", x = .)), na.rm = TRUE) == 1, "*", as.character(Total))
+                )
+
+# create the fiile for last_hospital_mortality_table
+readr::write_csv(last_hospital_mortality_table_no, file = "last_hospital_mortality_table_no_transfer.csv")
+
+###_____________________________________________________________________________
+### Last hospital mortality - transfer
+###_____________________________________________________________________________
+
+# last hospital mortality where there was a transfer in
+# get times
+last_hospital_mortality_times_yes <- last_hospitals |> 
+  dplyr::filter(Receiving == "Yes") |> 
+  dplyr::summarize(
+    `Death in ED` = sum(Death_ED, na.rm = TRUE),
+    `Death in 72 hrs` = sum(Death_3, na.rm = TRUE),
+    `Death in Hospital` = sum(Death_Hospital, na.rm = TRUE),
+    .by = GCS_range
+  ) |> 
+  dplyr::arrange(GCS_range) |> 
+  tidyr::pivot_longer(cols = -GCS_range,
+                      names_to = "Type",
+                      values_to = "Count"
+  ) |> 
+  tidyr::pivot_wider(id_cols = Type,
+                     names_from = GCS_range,
+                     values_from = Count,
+                     names_glue = "GCS {GCS_range}"
+                     ) |> 
+  janitor::adorn_totals(where = "col") |> 
+  dplyr::arrange(desc(Total))
+
+# counts of discharge disposition
+last_hospital_mortality_yes <- last_hospitals |> 
+  dplyr::filter(Receiving == "Yes") |> 
+  dplyr::mutate(Disposition = dplyr::if_else(Discharge_Location == "ED Discharge", ED_Acute_Care_Disposition,
+                                             dplyr::if_else(Discharge_Location == "Hospital Discharge", Facility_Discharge_Disposition,
+                                                            dplyr::if_else(Discharge_Location == "Same Day Discharge", ED_Acute_Care_Disposition, ED_Acute_Care_Disposition)
+                                             )
+  ),
+  Disposition = dplyr::if_else(grepl(pattern = "not (known|applicable)|select", x = Disposition, ignore.case = TRUE), "Missing", Disposition)
+  ) |> 
+  dplyr::count(GCS_range, Type = Disposition) |>
+  dplyr::arrange(GCS_range, desc(n)) |> 
+  tidyr::complete(GCS_range, Type, fill = list(n = 0)) |> 
+  tidyr::pivot_wider(id_cols = Type,
+                     names_from = GCS_range,
+                     values_from = n,
+                     names_glue = "GCS {GCS_range}"
+                     ) |> 
+  janitor::adorn_totals(where = "col") |> 
+  dplyr::arrange(desc(Total))
+
+# bind rows for the last hospital mortality table
+last_hospital_mortality_table_yes <- dplyr::bind_rows(last_hospital_mortality_times_yes, last_hospital_mortality_yes) |> 
+  dplyr::mutate(dplyr::across(-Type, ~ traumar::small_count_label(., cutoff = 6, replacement = "*")
+                              ),
+                Total = dplyr::if_else(rowSums(across(c(-Total, -Type), ~ grepl(pattern = "\\*", x = .)), na.rm = TRUE) == 1, "*", as.character(Total))
+                )
+
+# create the fiile for last_hospital_mortality_table
+readr::write_csv(last_hospital_mortality_table_yes, file = "last_hospital_mortality_table_transfer.csv")
+
+###_____________________________________________________________________________
+### Last hospital statistics - transfers only over the years
+###_____________________________________________________________________________
+
+last_hospitals_times_transfer <- last_hospitals |> 
+  dplyr::filter(Receiving == "Yes") |> 
+  dplyr::summarize(
+    `Mean ISS` = mean(ISS_Calculated, na.rm = TRUE),
+    `ISS St. Dev` = sd(ISS_Calculated, na.rm = TRUE),
+    `Median Time Injury to Arrival` = median(Time_From_Injury_to_Arrival, na.rm = TRUE),
+    `Time Injury to Arrival St. Dev` = sd(Time_From_Injury_to_Arrival, na.rm = TRUE),
+    .by = Year
+  ) |> 
+  tidyr::pivot_longer(cols = -Year,
+                      names_to = "Statistic",
+                      values_to = "Value"
+                      ) |> 
+  tidyr::pivot_wider(id_cols = Statistic,
+                     names_from = Year,
+                     values_from = Value
+                     )
+
+# second table
+last_hospital_gcs_transfer <- last_hospitals |> 
+  dplyr::filter(Receiving == "Yes") |> 
+  dplyr::count(Year, Statistic = GCS_range) |> 
+  tidyr::pivot_wider(id_cols = Statistic,
+                     names_from = Year,
+                     values_from = n
+                     ) |> 
+  dplyr::mutate(Statistic = paste0("GCS: ", Statistic)
+                ) |> 
+  janitor::adorn_totals(where = "row")
+
+# bind rows
+last_hospital_table_transfer <- dplyr::bind_rows(last_hospitals_times_transfer, last_hospital_gcs_transfer)
+
+# create the file for first_hospital_table
+readr::write_csv(last_hospital_table_transfer, file = "last_hospital_table_transfer.csv")
+
+###_____________________________________________________________________________
+### Injury location comparisons
+###_____________________________________________________________________________
+
+injury_location_transfers_all <- trauma_transfers |>
+  dplyr::filter(
+    dplyr::if_any(`Fracture of vault of skull`:`Traumatic hemorrhage of cerebrum, unspecified`, ~ . == TRUE)
+    ) |> 
+  dplyr::mutate(Injury_Same_County = Injury_County == Patient_County,
+                Injury_Different_County = Injury_County != Patient_County
+                ) |> 
+  dplyr::summarize(`Injury Same County` = sum(Injury_Same_County, na.rm = TRUE),
+                   `Injury Different County` = sum(Injury_Different_County, na.rm = TRUE),
+                   .by = Year
+                   ) |> 
+  tidyr::pivot_longer(cols = -Year,
+                      names_to = "Type",
+                      values_to = "Count"
+                      ) |> 
+  tidyr::pivot_wider(id_cols = Type,
+                     names_from = Year,
+                     values_from = Count
+                     )
+
+# get 1st hospital counts
+injury_location_transfers_1st <- trauma_transfers |>
+  dplyr::filter(
+    Receiving == "No",
+    dplyr::if_any(`Fracture of vault of skull`:`Traumatic hemorrhage of cerebrum, unspecified`, ~ . == TRUE)
+    ) |> 
+  dplyr::filter(Receiving == "No") |> 
+  dplyr::mutate(Hospital_Same_County = County == Patient_County,
+                Hospital_Different_County = County != Patient_County
+                ) |> 
+  dplyr::summarize(`Hospital Same County` = sum(Hospital_Same_County, na.rm = TRUE),
+                   `Hospital Different County` = sum(Hospital_Different_County, na.rm = TRUE),
+                   .by = Year
+                   ) |> 
+  tidyr::pivot_longer(cols = -Year,
+                      names_to = "Type",
+                      values_to = "Count"
+                      ) |> 
+  tidyr::pivot_wider(id_cols = Type,
+                     names_from = Year,
+                     values_from = Count
+                     )
+
+# bind rows for the injury location data
+injury_location_data <- dplyr::bind_rows(injury_location_transfers_all, injury_location_transfers_1st) |> 
+  dplyr::mutate(dplyr::across(-Type, ~ traumar::small_count_label(., cutoff = 6, replacement = "*")
+                              )
+                )
+
+# create the file for injury_location_data
+readr::write_csv(injury_location_data, file = "injury_location_data.csv")
+
+###_____________________________________________________________________________
+### Last hospital mortality over the years
+###_____________________________________________________________________________
+
+# get times
+last_hospital_mortality_times_years <- last_hospitals |> 
+  dplyr::summarize(
+    `Death in ED` = sum(Death_ED, na.rm = TRUE),
+    `Death in 72 hrs` = sum(Death_3, na.rm = TRUE),
+    `Death in Hospital` = sum(Death_Hospital, na.rm = TRUE),
+    .by = Year
+  ) |> 
+  tidyr::pivot_longer(cols = -Year,
+                      names_to = "Type",
+                      values_to = "Count"
+                      ) |> 
+  tidyr::pivot_wider(id_cols = Type,
+                     names_from = Year,
+                     values_from = Count
+                     ) |> 
+  janitor::adorn_totals(where = "col") |> 
+  dplyr::arrange(desc(Total))
+
+# counts of discharge disposition
+last_hospital_mortality_years <- last_hospitals |> 
+  dplyr::mutate(Disposition = dplyr::if_else(Discharge_Location == "ED Discharge", ED_Acute_Care_Disposition,
+                                             dplyr::if_else(Discharge_Location == "Hospital Discharge", Facility_Discharge_Disposition,
+                                                            dplyr::if_else(Discharge_Location == "Same Day Discharge", ED_Acute_Care_Disposition, ED_Acute_Care_Disposition)
+                                                            )
+                                             ),
+                Disposition = dplyr::if_else(grepl(pattern = "not (known|applicable)|select", x = Disposition, ignore.case = TRUE), "Missing", Disposition)
+      ) |> 
+  dplyr::count(Year, Type = Disposition) |>
+  dplyr::arrange(Year, desc(n)) |> 
+  tidyr::complete(Year, Type, fill = list(n = 0)) |> 
+  tidyr::pivot_wider(id_cols = Type,
+                     names_from = Year,
+                     values_from = n
+                     ) |> 
+  janitor::adorn_totals(where = "col") |> 
+  dplyr::arrange(desc(Total))
+
+# bind rows for the last hospital mortality table
+last_hospital_mortality_table_years <- dplyr::bind_rows(last_hospital_mortality_times_years, last_hospital_mortality_years) |> 
+  dplyr::mutate(dplyr::across(-Type, ~ traumar::small_count_label(., cutoff = 6, replacement = "*")
+                              ),
+                Total = dplyr::if_else(rowSums(across(c(-Total, -Type), ~ grepl(pattern = "\\*", x = .)), na.rm = TRUE) == 1, "*", as.character(Total))
+                )
+
+# create the fiile for last_hospital_mortality_table
+readr::write_csv(last_hospital_mortality_table_years, file = "last_hospital_mortality_table_years.csv")
