@@ -6,7 +6,7 @@
 \alias{nemsqar-package}
 \title{nemsqar: National EMS Quality Alliance Measure Calculations}
 \description{
-nemsqar is an R package designed to automate the calculation of EMS quality metrics as defined by the National EMS Quality Alliance (NEMSQA). With a focus on enhancing EMS service performance through reliable, evidence-based quality measures, nemsqar aims to streamline metric calculation for healthcare providers, EMS agencies, and researchers dedicated to improving patient outcomes.
+Designed to automate the calculation of EMS quality metrics, 'nemsqar' implements measures defined by the National EMS Quality Alliance (NEMSQA). By providing reliable, evidence-based quality assessments, the package supports EMS agencies, healthcare providers, and researchers in evaluating and improving patient outcomes. Users can find details on all approved NEMSQA measures at \url{https://www.nemsqa.org/measures}. Full technical specifications, including documentation and pseudocode used to develop 'nemsqar', are available on the NEMSQA website after creating a user profile at \url{https://www.nemsqa.org}.
 }
 \seealso{
 Useful links:

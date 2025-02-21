@@ -71,7 +71,7 @@ agencies in collecting data to assess and improve patient care. Below
 are the measures approved by the NEMSQA Measure Development Committee
 and Board of Trustees as of August 2019. Access to the full technical
 specifications for these measures is available on the NEMSQA website
-after creating a free user profile.
+after creating a user profile.
 
 ### Key for **`Developed in Package?`** Column
 
