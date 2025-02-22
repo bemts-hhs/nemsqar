@@ -380,7 +380,7 @@ trauma_04_population <- function(df = NULL,
   cause_of_injury_values <- "(?:V20|V21|V22|V23|V24|V25|V26|V27|V28|V29|V30|V31|V32|V33|V34|V35|V36|V37|V38|V39|V80|V86)|Motorcycle rider injured in collision with pedestrian or animal|Motorcycle rider injured in collision with pedal cycle|Motorcycle rider injured in collision with two- or three- wheeled motor vehicle|Motorcycle rider injured in collision with car, pick-up truck or van|Motorcycle rider injured in collision with heavy transport vehicle or bus|Motorcycle rider injured in collision with railway train or railway vehicle|Motorcycle rider injured in collision with other nonmotor vehicle|Motorcycle rider injured in collision with fixed or stationary object|Motorcycle rider injured in noncollision transport accident|Motorcycle rider injured in other and unspecified transport accidents|Occupant of three-wheeled motor vehicle injured in collision with pedestrian or animal|Occupant of three-wheeled motor vehicle injured in collision with pedal cycle|Occupant of three-wheeled motor vehicle injured in collision with two- or three- wheeled motor vehicle|Occupant of three-wheeled motor vehicle injured in collision with car, pick-up truck or van|Occupant of three-wheeled motor vehicle injured in collision with heavy transport vehicle or bus|Occupant of three-wheeled motor vehicle injured in collision with railway train or railway vehicle|Occupant of three-wheeled motor vehicle injured in collision with other nonmotor vehicle|Occupant of three-wheeled motor vehicle injured in collision with fixed or stationary object|Occupant of three-wheeled motor vehicle injured in noncollision transport accident|Occupant of three-wheeled motor vehicle injured in other and unspecified transport accidents|Animal-rider or occupant of animal drawn vehicle injured in transport accident|Occupant of special all-terrain or other off-road motor vehicle, injured in transport accident"
 
   # hospital capability values
-  hospital_capability_values <- "9908021|Trauma Center Level 1|9908023|Trauma Center Level 2|9908025|Trauma Center Level 3|9908027|Trauma Center Level 4|9908029|Trauma Center Level 5"
+  hospital_capability_values <- "9908021|9908023|9908025|9908027|9908029|trauma center"
 
   # days, hours, minutes, months
   minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
@@ -560,7 +560,13 @@ trauma_04_population <- function(df = NULL,
     dplyr::distinct() |>
     dplyr::filter(
 
-      grepl(pattern = transport_responses, x = {{ transport_disposition_col }}, ignore.case = T)
+      dplyr::if_any(
+
+        {{ transport_disposition_col }},
+
+        ~ grepl(pattern = transport_responses, x = ., ignore.case = T)
+
+      )
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
@@ -1425,7 +1431,13 @@ trauma_04_population <- function(df = NULL,
     dplyr::distinct() |>
     dplyr::filter(
 
-      grepl(pattern = transport_responses, x = {{ transport_disposition_col }}, ignore.case = T)
+      dplyr::if_any(
+
+        {{ transport_disposition_col }},
+
+        ~ grepl(pattern = transport_responses, x = ., ignore.case = T)
+
+      )
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>

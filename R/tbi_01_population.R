@@ -38,7 +38,7 @@
 #'   disposition.
 #' @param evitals_06_col Column name in df with systolic blood pressure (SBP).
 #' @param evitals_12_col Column name in df with pulse oximetry values.
-#' @param evitals_16_col Column name in df with ETCO2 values.
+#' @param evitals_16_col Column name in df with ETC02 values.
 #'   values.
 #' @param evitals_23_col Column name in df with Glasgow Coma Scale (GCS) scores.
 #' @param evitals_26_col Column name in df with AVPU (alert, verbal, painful,
@@ -524,7 +524,7 @@ peds_pop <- initial_population |>
                "GCS < 15",
                "AVPU is verbal, painful, or unresponsive",
                "Transports",
-               "Oxygen level, ETCO2, SBP are documented",
+               "Oxygen level, ETC02, SBP are documented",
                "Adults denominator",
                "Peds denominator",
                "Initial population",
@@ -852,7 +852,7 @@ peds_pop <- initial_population |>
                  "GCS < 15",
                  "AVPU is verbal, painful, or unresponsive",
                  "Transports",
-                 "Oxygen level, ETCO2, SBP are documented",
+                 "Oxygen level, ETC02, SBP are documented",
                  "Adults denominator",
                  "Peds denominator",
                  "Initial population",
