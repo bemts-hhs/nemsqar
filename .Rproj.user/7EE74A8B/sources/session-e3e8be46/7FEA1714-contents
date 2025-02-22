@@ -1,0 +1,105 @@
+################################################################################
+### Test for Pediatrics-03b using table inputs  ################################
+################################################################################
+
+# data import
+
+# patient table
+pediatrics_03b_patient_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_patient_scene_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(dplyr::across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~  lubridate::mdy(stringr::str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  )))
+
+# response table
+pediatrics_03b_response_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_response_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# medications table
+pediatrics_03b_medications_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_medications_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# exam table
+
+pediatrics_03b_exam_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_exam_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# run function
+
+pediatrics_03b(
+    patient_scene_table = pediatrics_03b_patient_table,
+    response_table = pediatrics_03b_response_table,
+    medications_table = pediatrics_03b_medications_table,
+    exam_table = pediatrics_03b_exam_table,
+    erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+    incident_date_col = INCIDENT_DATE,
+    patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+    epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+    epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+    eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+    eexam_01_col = PATIENT_WEIGHT_IN_KILOGRAMS_E_EXAM_01,
+    eexam_02_col = PATIENT_LENGTH_BASED_COLOR_E_EXAM_02,
+    emedications_03_col = PATIENT_MEDICATION_GIVEN_OR_ADMINISTERED_DESCRIPTION_AND_RXCUI_CODES_LIST_E_MEDICATIONS_03,
+    emedications_04_col = MEDICATION_ADMINISTERED_ROUTE_E_MEDICATIONS_04
+  )
+
+# run function with only system generated ages
+
+pediatrics_03b(
+    patient_scene_table = pediatrics_03b_patient_table,
+    response_table = pediatrics_03b_response_table,
+    medications_table = pediatrics_03b_medications_table,
+    exam_table = pediatrics_03b_exam_table,
+    erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+    incident_date_col = NULL,
+    patient_DOB_col = NULL,
+    epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+    epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+    eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+    eexam_01_col = PATIENT_WEIGHT_IN_KILOGRAMS_E_EXAM_01,
+    eexam_02_col = PATIENT_LENGTH_BASED_COLOR_E_EXAM_02,
+    emedications_03_col = PATIENT_MEDICATION_GIVEN_OR_ADMINISTERED_DESCRIPTION_AND_RXCUI_CODES_LIST_E_MEDICATIONS_03,
+    emedications_04_col = MEDICATION_ADMINISTERED_ROUTE_E_MEDICATIONS_04
+  )
+
+# run the population function with tables
+pediatrics_population_tables <- pediatrics_03b_population(
+  patient_scene_table = pediatrics_03b_patient_table,
+  response_table = pediatrics_03b_response_table,
+  medications_table = pediatrics_03b_medications_table,
+  exam_table = pediatrics_03b_exam_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = INCIDENT_DATE,
+  patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  eexam_01_col = PATIENT_WEIGHT_IN_KILOGRAMS_E_EXAM_01,
+  eexam_02_col = PATIENT_LENGTH_BASED_COLOR_E_EXAM_02,
+  emedications_03_col = PATIENT_MEDICATION_GIVEN_OR_ADMINISTERED_DESCRIPTION_AND_RXCUI_CODES_LIST_E_MEDICATIONS_03,
+  emedications_04_col = MEDICATION_ADMINISTERED_ROUTE_E_MEDICATIONS_04
+  )
+
+# run the population function with tables and only system generated ages
+
+pediatrics_population_tables_ages <- pediatrics_03b_population(
+  patient_scene_table = pediatrics_03b_patient_table,
+  response_table = pediatrics_03b_response_table,
+  medications_table = pediatrics_03b_medications_table,
+  exam_table = pediatrics_03b_exam_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  eexam_01_col = PATIENT_WEIGHT_IN_KILOGRAMS_E_EXAM_01,
+  eexam_02_col = PATIENT_LENGTH_BASED_COLOR_E_EXAM_02,
+  emedications_03_col = PATIENT_MEDICATION_GIVEN_OR_ADMINISTERED_DESCRIPTION_AND_RXCUI_CODES_LIST_E_MEDICATIONS_03,
+  emedications_04_col = MEDICATION_ADMINISTERED_ROUTE_E_MEDICATIONS_04
+  )
