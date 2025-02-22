@@ -664,9 +664,9 @@ airway_01_population <- function(df = NULL,
   # only those that match patients in the
   # procedures table with the target procedures
   vitals_table_filter <- vitals_table |>
-    dplyr::filter(!is.na({{ evitals_06_col }}),
-                  !is.na({{ evitals_12_col }}),
-                  {{ erecord_01_col }} %in% procedures_ID
+    dplyr::filter({{ erecord_01_col }} %in% procedures_ID,
+                  !is.na({{ evitals_06_col }}),
+                  !is.na({{ evitals_12_col }})
                   )
 
   ###_____________________________________________________________________________
@@ -777,8 +777,11 @@ airway_01_population <- function(df = NULL,
                     # final numerator 1 part 1
                     numerator_all_spo2 = as.integer((numerator1_all_spo2 + numerator2_all_spo2) > 1),
 
+                    # final numerator 1 part 2
+                    numerator_sbp_age = as.integer((numerator1_sbp + numerator2_sbp) > 1),
+
                     # final numerator 1
-                    numerator_1 = as.integer((numerator_all_spo2 + numerator1_sbp + numerator2_sbp) > 1),
+                    numerator_1 = as.integer((numerator_all_spo2 + numerator_sbp_age) > 1),
 
                     # numerator 2 part 2 final
                     numerator_all_sbp = as.integer((numerator1_all_sbp + numerator2_all_sbp) > 1),
@@ -831,9 +834,18 @@ airway_01_population <- function(df = NULL,
                     non_missing_procedure_time,
                     exclude_pta_ca
                     ) |>
+
+      # get the first procedure
+      # some patients have the same time on more than one procedure's data
       dplyr::filter({{ eprocedures_01_col }} == min({{ eprocedures_01_col }}, na.rm = TRUE),
                     .by = {{ erecord_01_col }}
-                    )
+                    ) |>
+
+      # upon investigation, once you get the earliest airway time, the
+      # performance on all procedures with that time will be the same
+      # so to get the correct count of first airways, we run dplyr::distinct
+      # down to the erecord.01 level
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
     cli::cli_progress_update(set = 17, id = progress_bar_population, force = T)
 
@@ -845,9 +857,18 @@ airway_01_population <- function(df = NULL,
                     exclude_pta_ca,
                     exclude_newborns
                     ) |>
+
+      # get the first procedure
+      # some patients have the same time on more than one procedure's data
       dplyr::filter({{ eprocedures_01_col }} == min({{ eprocedures_01_col }}, na.rm = TRUE),
                     .by = {{ erecord_01_col }}
-                    )
+                    ) |>
+
+      # upon investigation, once you get the earliest airway time, the
+      # performance on all procedures with that time will be the same
+      # so to get the correct count of first airways, we run dplyr::distinct
+      # down to the erecord.01 level
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
     cli::cli_progress_update(set = 18, id = progress_bar_population, force = T)
 

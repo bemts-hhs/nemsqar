@@ -709,9 +709,9 @@ airway_18_population <- function(df = NULL,
             dplyr::left_join(airway_table_filter, by = dplyr::join_by({{ erecord_01_col }})) |>
             dplyr::left_join(vitals_table_filter, by = dplyr::join_by({{ erecord_01_col }})) |>
             dplyr::mutate(waveform_etc02_used = grepl(pattern = waveform_etc02_codes, x = {{ eairway_04_col }}, ignore.case = TRUE),
-                          airway_after_procedure = {{ eairway_02_col}} > {{ eprocedures_01_col }},
+                          airway_after_procedure = {{ eairway_02_col}} >= {{ eprocedures_01_col }},
                           airway_after_procedure_waveform = airway_after_procedure & waveform_etc02_used,
-                          vitals_after_procedure = ({{ evitals_01_col }} > {{ eprocedures_01_col }}),
+                          vitals_after_procedure = ({{ evitals_01_col }} >= {{ eprocedures_01_col }}),
                           waveform_etc02_5 = {{ evitals_16_col }} >= 5,
                           vitals_after_procedure_waveform = vitals_after_procedure & waveform_etc02_5
                             ) |>
@@ -754,7 +754,7 @@ airway_18_population <- function(df = NULL,
           procedures_ordered |>
             dplyr::filter(target_procedures) |>
             dplyr::left_join(vitals_table_filter, by = dplyr::join_by({{ erecord_01_col }})) |>
-            dplyr::mutate(vitals_after_procedure = ({{ evitals_01_col }} > {{ eprocedures_01_col }}),
+            dplyr::mutate(vitals_after_procedure = ({{ evitals_01_col }} >= {{ eprocedures_01_col }}),
                           waveform_etc02_5 = {{ evitals_16_col }} >= 5,
                           vitals_after_procedure_waveform = vitals_after_procedure & waveform_etc02_5
             ) |>
@@ -822,7 +822,8 @@ airway_18_population <- function(df = NULL,
                         ) |>
           dplyr::filter({{ eprocedures_01_col }} == max({{ eprocedures_01_col }}, na.rm = TRUE),
                         .by = {{ erecord_01_col }}
-                        )
+                        ) |>
+          dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
         cli::cli_progress_update(set = 11, id = progress_bar_population, force = TRUE)
 
@@ -834,7 +835,8 @@ airway_18_population <- function(df = NULL,
                         ) |>
           dplyr::filter({{ eprocedures_01_col }} == max({{ eprocedures_01_col }}, na.rm = TRUE),
                         .by = {{ erecord_01_col }}
-                        )
+                        ) |>
+          dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
       # summarize
 
