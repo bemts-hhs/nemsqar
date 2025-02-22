@@ -1,0 +1,503 @@
+###_____________________________________________________________________________
+### Airway-01 test using the new table functions
+###_____________________________________________________________________________
+
+# data import
+
+# patient table
+airway_01_patient_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_patient_scene_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(dplyr::across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~  lubridate::mdy(stringr::str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))) |>
+  dplyr::distinct()
+
+# response table
+airway_01_response_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_response_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  )) |>
+  dplyr::select(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01, RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05) |>
+  dplyr::distinct()
+
+# arrest table
+airway_01_arrest_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_arrest_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  )) |>
+  dplyr::select(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01, CARDIAC_ARREST_DURING_EMS_EVENT_WITH_CODE_E_ARREST_01) |>
+  dplyr::distinct()
+
+# vitals table
+airway_01_vitals_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_vitals_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ),
+  VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01 = lubridate::mdy_hms(stringr::str_remove_all(VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01, pattern = "\\s(?:AM|PM)$"))
+  ) |>
+  dplyr::select(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+                VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01,
+                VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06,
+                VITALS_PULSE_OXIMETRY_E_VITALS_12
+                )
+
+# procedures table
+airway_01_procedures_table <- readr::read_csv(
+  "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_procedures_data_Export_2023.csv"
+) |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(
+    INCIDENT_DATE = lubridate::mdy(
+      stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+    ),
+    PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01 = lubridate::mdy_hms(
+      stringr::str_remove_all(PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01, pattern = "\\s(?:AM|PM)$")
+    )
+  ) |>
+  dplyr::select(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+                PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01,
+                PROCEDURE_PERFORMED_PRIOR_TO_EMS_CARE_E_PROCEDURES_02,
+                PROCEDURE_PERFORMED_DESCRIPTION_AND_CODE_E_PROCEDURES_03,
+                PROCEDURE_NUMBER_OF_ATTEMPTS_E_PROCEDURES_05,
+                PROCEDURE_SUCCESSFUL_E_PROCEDURES_06
+                )
+
+###### CODES ######
+
+procedures_code <- paste("673005|Indirect laryngoscopy",
+                         "49077009|Flexible fiberoptic laryngoscopy",
+                         "78121007|Direct laryngoscopy",
+                         "112798008|Insertion of endotracheal tube",
+                         "16883004|Endotracheal intubation, emergency procedure",
+                         "182682004|Emergency laryngeal intubation",
+                         "232674004|Orotracheal intubation",
+                         "232677006|Tracheal intubation using rigid bronchoscope",
+                         "232678001|Orotracheal fiberoptic intubation",
+                         "232679009|Nasotracheal intubation",
+                         "232682004|Nasotracheal fiberoptic intubation",
+                         "232680007|Nasal intubation awake",
+                         "241689008|Intubation, Rapid Sequence Intubation",
+                         "304341005|Awake intubation",
+                         "397892004|Retrograde intubation",
+                         "429161001|Insertion of endotracheal tube using laryngoscope",
+                         "450601000124103|Orotracheal intubation using bougie device",
+                         "1141752008|Flexible video intubation laryngoscope",
+                         "285696003|Fiberoptic laryngoscope",
+                         "420311007|Flexible fiberoptic laryngoscope",
+                         "421100004|Rigid fiberoptic laryngoscope",
+                         "44738004|Laryngoscope device",
+                         "469919007|Flexible video laryngoscope",
+                         "700640001|Rigid intubation laryngoscope",
+                         "701054002|Flexible fiberoptic intubation laryngoscope",
+                         "706013009|Intubation laryngoscope",
+                         "734928009|Rigid non-bladed video intubation laryngoscope",
+                         "879788006|Channeled video intubation laryngoscope",
+                         sep = "|")
+
+# 911 codes for eresponse.05
+codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
+
+year_values <- "2516009|years"
+
+day_values <- "days|2516001"
+
+hour_values <- "hours|2516003"
+
+minute_values <- "minutes|2516005"
+
+month_values <- "months|2516007"
+
+# Get first intubation procedure & time intervals for vitals
+airway_01_procedures_table |>
+  dplyr::mutate(
+    non_missing_procedure_time = !is.na(PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01), # Procedure date/time not null
+    not_performed_prior = !grepl(pattern = "9923003|Yes", x = PROCEDURE_PERFORMED_PRIOR_TO_EMS_CARE_E_PROCEDURES_02) |
+      is.na(PROCEDURE_PERFORMED_PRIOR_TO_EMS_CARE_E_PROCEDURES_02), # Procedure PTA is not Yes
+    target_procedures = grepl(pattern = procedures_code, x = PROCEDURE_PERFORMED_DESCRIPTION_AND_CODE_E_PROCEDURES_03), # Procedure name/code in list
+    PROCEDURE_NUMBER_OF_ATTEMPTS_E_PROCEDURES_05 = dplyr::if_else(is.na(PROCEDURE_NUMBER_OF_ATTEMPTS_E_PROCEDURES_05), 1, PROCEDURE_NUMBER_OF_ATTEMPTS_E_PROCEDURES_05)
+    ) |>
+  dplyr::mutate(
+    vitals_range_start = PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01 - lubridate::dminutes(10),
+    vitals_range_end = PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01 + lubridate::dminutes(10),
+    range_bounds_before = lubridate::interval(vitals_range_start, PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01),
+    range_bounds_after = lubridate::interval(PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01, vitals_range_end),
+    successful_procedure = grepl(pattern = "9923003|Yes", x = PROCEDURE_SUCCESSFUL_E_PROCEDURES_06, ignore.case = TRUE),
+    first_procedure = PROCEDURE_NUMBER_OF_ATTEMPTS_E_PROCEDURES_05 == 1,
+    first_successful_procedure = first_procedure & successful_procedure
+  ) |>
+  dplyr::distinct() -> procedures_ordered
+
+  # Add calculated age in years
+  patient_data <- airway_01_patient_table |>
+    dplyr::mutate(
+      CLEANED_AGE_UNITS = dplyr::case_when(
+        stringr::str_to_lower(PATIENT_AGE_UNITS_E_PATIENT_16) %in% c("seconds", "minutes", "hours", "days", "weeks", "months", "years") ~
+          stringr::str_to_lower(PATIENT_AGE_UNITS_E_PATIENT_16),
+        TRUE ~ "years" # Replace invalid units with NA
+      ),
+      PATIENT_DATE_OF_BIRTH_E_PATIENT_17 = dplyr::if_else(
+        is.na(PATIENT_DATE_OF_BIRTH_E_PATIENT_17) &
+          !is.na(PATIENT_AGE_E_PATIENT_15) &
+          !is.na(CLEANED_AGE_UNITS),
+        INCIDENT_DATE - dplyr::case_when(
+          CLEANED_AGE_UNITS == "years"  ~ lubridate::dyears(PATIENT_AGE_E_PATIENT_15),
+          CLEANED_AGE_UNITS == "months" ~ lubridate::dmonths(PATIENT_AGE_E_PATIENT_15),
+          CLEANED_AGE_UNITS == "weeks"  ~ lubridate::dweeks(PATIENT_AGE_E_PATIENT_15),
+          CLEANED_AGE_UNITS == "days"   ~ lubridate::ddays(PATIENT_AGE_E_PATIENT_15),
+          CLEANED_AGE_UNITS == "hours"  ~ lubridate::dhours(PATIENT_AGE_E_PATIENT_15) / 24, # Convert to days
+          CLEANED_AGE_UNITS == "minutes" ~ lubridate::dminutes(PATIENT_AGE_E_PATIENT_15) / (24 * 60), # Convert to days
+          CLEANED_AGE_UNITS == "seconds" ~ lubridate::dseconds(PATIENT_AGE_E_PATIENT_15) / (24 * 3600) # Convert to days
+        ),
+        PATIENT_DATE_OF_BIRTH_E_PATIENT_17
+      )
+    ) |>
+    dplyr::mutate(patient_age_in_years = as.numeric(difftime(INCIDENT_DATE,
+                                                             PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+                                                             units = "days")/365)) |>
+    dplyr::mutate(patient_age_in_years = dplyr::case_when(!is.na(patient_age_in_years) ~ patient_age_in_years,
+
+                                                          is.na(patient_age_in_years) &
+                                                            grepl(pattern = year_values,
+                                                                x = PATIENT_AGE_UNITS_E_PATIENT_16,
+                                                                ignore.case = TRUE) ~ PATIENT_AGE_E_PATIENT_15,
+
+                                                          is.na(patient_age_in_years) &
+                                                            grepl(pattern = month_values,
+                                                                x = PATIENT_AGE_UNITS_E_PATIENT_16,
+                                                                ignore.case = TRUE) ~ PATIENT_AGE_E_PATIENT_15 / 12,
+
+                                                          is.na(patient_age_in_years) &
+                                                            grepl(pattern = day_values,
+                                                                x = PATIENT_AGE_UNITS_E_PATIENT_16,
+                                                                ignore.case = TRUE) ~ PATIENT_AGE_E_PATIENT_15 / 365,
+
+                                                          is.na(patient_age_in_years) &
+                                                            grepl(pattern = hour_values,
+                                                                x = PATIENT_AGE_UNITS_E_PATIENT_16,
+                                                                ignore.case = TRUE) ~ PATIENT_AGE_E_PATIENT_15 / (365 * 24),
+
+                                                          is.na(patient_age_in_years) &
+                                                            grepl(pattern = minute_values,
+                                                                x = PATIENT_AGE_UNITS_E_PATIENT_16,
+                                                                ignore.case = TRUE) ~ PATIENT_AGE_E_PATIENT_15 / (365 * 24 * 60)
+    ))
+
+# Get 911 responses
+airway_01_response_table |>
+  dplyr::mutate(call_911 = grepl(pattern = codes_911,
+                                                x = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+                                                ignore.case = TRUE
+                                                )
+                ) |>
+  dplyr::select(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01, call_911) |>
+  dplyr::filter(call_911) |>
+  dplyr::distinct(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01, .keep_all = TRUE) |>
+  dplyr::pull(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01) -> call_911_data
+
+# get arrest table with needed exclusion classifications
+arrest_table_filter <- airway_01_arrest_table |>
+  dplyr::mutate(exclude_pta_ca = !grepl(pattern = "3001003|Yes, Prior",
+                                        x = CARDIAC_ARREST_DURING_EMS_EVENT_WITH_CODE_E_ARREST_01) |
+                  is.na(CARDIAC_ARREST_DURING_EMS_EVENT_WITH_CODE_E_ARREST_01)
+  ) |>
+  dplyr::select(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01, exclude_pta_ca) |>
+  dplyr::filter(exclude_pta_ca) |>
+  dplyr::distinct(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01, .keep_all = TRUE) |>
+  dplyr::pull(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01)
+
+# Initial manipulations of patient data for filters
+patient_data |>
+  dplyr::mutate(call_911 = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01 %in% call_911_data,
+                exclude_newborns = patient_age_in_years > 1/365,
+                adult_population = patient_age_in_years >= 18,
+                pedi_population = patient_age_in_years < 18,
+                exclude_pta_ca = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01 %in% arrest_table_filter,
+                patient_age_in_years_1_9 = patient_age_in_years >= 1 & patient_age_in_years <= 9,
+                patient_age_in_years_10_plus = patient_age_in_years >= 10,
+                patient_age_in_years_multiplied = dplyr::if_else(patient_age_in_years < 10, patient_age_in_years * 2, 1),
+                patient_age_in_days = patient_age_in_years * 365,
+                patient_age_28_days_1_year = patient_age_in_days < 365 & patient_age_in_days > 28,
+                patient_age_days_28 = patient_age_in_days < 28
+  ) -> patient_data
+
+# Numerator
+procedures_ordered |>
+  dplyr::left_join(patient_data |> dplyr::select(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01, matches("patient_age")), by = dplyr::join_by(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01), relationship = "many-to-many"
+                   ) |>
+  dplyr::left_join(airway_01_vitals_table, by = dplyr::join_by(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01), relationship = "many-to-many") |>
+  dplyr::mutate(within_range_before = do.call(lubridate::`%within%`, list(VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01, range_bounds_before)),
+                within_range_after = do.call(lubridate::`%within%`, list(VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01, range_bounds_after))
+  ) |>
+  dplyr::filter(first_successful_procedure) |>
+  dplyr::mutate(
+
+    # numerator 1 part 1 for all patients with pulse oximetry >= 90
+    # numerator 2 part 1 for all patients with pulse oximetry >= 90
+    numerator1_all_spo2 = dplyr::if_else(
+
+        first_successful_procedure &
+
+        within_range_before & VITALS_PULSE_OXIMETRY_E_VITALS_12 >= 90 , 1, 0
+
+    ),
+
+    numerator2_all_spo2 = dplyr::if_else(
+
+        first_successful_procedure &
+
+        within_range_after & VITALS_PULSE_OXIMETRY_E_VITALS_12 >= 90, 1, 0
+
+    ),
+
+    # final numerator 1 part 1
+    numerator_all_spo2 = dplyr::if_else(rowSums(dplyr::across(c(numerator1_all_spo2, numerator2_all_spo2)), na.rm = TRUE) > 1, 1, 0),
+
+    # start calculation of numerator 1 part 2, ages >= 10
+    numerator1_10 = dplyr::if_else(
+
+      patient_age_in_years_10_plus &
+
+        first_successful_procedure &
+
+        within_range_before & VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06 >= 90, 1, 0
+
+    ),
+
+    numerator2_10 = dplyr::if_else(
+
+      patient_age_in_years_10_plus &
+
+        first_successful_procedure &
+
+        within_range_after & VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06 >= 90, 1, 0
+
+    ),
+
+    # final numerator 1 part 2
+    numerator_10 = dplyr::if_else(rowSums(dplyr::across(c(numerator1_10, numerator2_10)), na.rm = TRUE) > 1, 1, 0),
+
+    # start calculation of numerator 1 part 3, ages 1-9 yrs
+    numerator1_1_9 = dplyr::if_else(
+
+      patient_age_in_years_1_9 &
+
+        first_successful_procedure &
+
+        within_range_before & VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06 >= (70 + patient_age_in_years_multiplied), 1, 0
+
+    ),
+
+    numerator2_1_9 = dplyr::if_else(
+
+      patient_age_in_years_1_9 &
+
+        first_successful_procedure &
+
+        within_range_after & VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06 >= (70 + patient_age_in_years_multiplied), 1, 0
+
+    ),
+
+    # final numerator 1 part 3
+    numerator_1_9 = dplyr::if_else(rowSums(dplyr::across(c(numerator1_1_9, numerator2_1_9)), na.rm = TRUE) > 1, 1, 0),
+
+    # start calculation of numerator 1 part 4, ages < 1 yr & > 28 days
+    numerator1_1_28 = dplyr::if_else(
+
+      patient_age_28_days_1_year &
+
+        first_successful_procedure &
+
+        within_range_before & VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06 >= 70, 1, 0
+
+    ),
+
+    numerator2_1_28 = dplyr::if_else(
+
+      patient_age_28_days_1_year &
+
+        first_successful_procedure &
+
+        within_range_after & VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06 >= 70, 1, 0
+
+    ),
+
+    # final numerator 1 part 4 ages < 1 yr & > 28 days
+    numerator_1_28 = dplyr::if_else(rowSums(dplyr::across(c(numerator1_1_28, numerator2_1_28)), na.rm = TRUE) > 1, 1, 0),
+
+    # start calculation of numerator 1 part 5, ages < 28 days
+    numerator3_1_28 = dplyr::if_else(
+
+      patient_age_days_28 &
+
+        first_successful_procedure &
+
+        within_range_before & VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06 >= 60, 1, 0
+
+    ),
+
+    numerator4_1_28 = dplyr::if_else(
+
+      patient_age_days_28 &
+
+        first_successful_procedure &
+
+        within_range_after & VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06 >= 60, 1, 0
+
+    ),
+
+    # final numerator 1 part 5
+    numerator_28 = dplyr::if_else(rowSums(dplyr::across(c(numerator3_1_28, numerator4_1_28)), na.rm = TRUE) > 1, 1, 0),
+
+    # final numerator 1
+    numerator_1 = dplyr::if_else(rowSums(dplyr::across(c(numerator_all_spo2, numerator_10, numerator_1_9, numerator_1_28, numerator_28)), na.rm = TRUE) > 1, 1, 0),
+
+    # start numerator 2 part 2 calculations, sbp >= 90 among all patients
+    numerator1_all_sbp = dplyr::if_else(
+
+        first_successful_procedure &
+
+        within_range_before & VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06 >= 90, 1, 0
+
+    ),
+
+    numerator2_all_sbp = dplyr::if_else(
+
+        first_successful_procedure &
+
+        within_range_after & VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06 >= 90, 1, 0
+
+    ),
+
+    # numerator 2 part 2 final
+    numerator_all_sbp = dplyr::if_else(rowSums(dplyr::across(c(numerator1_all_sbp, numerator2_all_sbp)), na.rm = TRUE) > 1, 1, 0),
+
+    # numerator 2 final
+    numerator_2 = dplyr::if_else(rowSums(dplyr::across(c(numerator_all_spo2, numerator_all_sbp)), na.rm = TRUE) > 1, 1, 0)
+
+
+  ) -> computing_population_dev
+
+# Get the final computing population containing all pertinent data
+computing_population_num <- computing_population_dev |>
+
+  # deal with NA values in the numerator calculations
+  dplyr::mutate(across(matches("numerator"), ~ dplyr::if_else(is.na(.), 0, .))) |>
+
+  # summarize the numerators to remove the vitals data, and get the highest numerator value
+  # for each unique procedure record in the procedures table
+  dplyr::summarize(across(matches("numerator"), ~ max(.)),
+                   .by = c(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+                           PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01,
+                           PROCEDURE_PERFORMED_PRIOR_TO_EMS_CARE_E_PROCEDURES_02,
+                           PROCEDURE_PERFORMED_DESCRIPTION_AND_CODE_E_PROCEDURES_03,
+                           PROCEDURE_NUMBER_OF_ATTEMPTS_E_PROCEDURES_05,
+                           PROCEDURE_SUCCESSFUL_E_PROCEDURES_06,
+                           first_procedure,
+                           successful_procedure,
+                           first_successful_procedure,
+                           target_procedures,
+                           non_missing_procedure_time,
+                           not_performed_prior
+                           )
+                   ) |>
+
+  # recalculate the final numerators to ensure they are accurate, this may not be completely necessary, but is a fail safe
+  dplyr::mutate(numerator_all_spo2 = dplyr::if_else(rowSums(dplyr::across(c(numerator1_all_spo2, numerator2_all_spo2)), na.rm = TRUE) > 1, 1, 0),
+                numerator_10 = dplyr::if_else(rowSums(dplyr::across(c(numerator1_10, numerator2_10)), na.rm = TRUE) > 1, 1, 0),
+                numerator_1_9 = dplyr::if_else(rowSums(dplyr::across(c(numerator1_1_9, numerator2_1_9)), na.rm = TRUE) > 1, 1, 0),
+                numerator_1_28 = dplyr::if_else(rowSums(dplyr::across(c(numerator1_1_28, numerator2_1_28)), na.rm = TRUE) > 1, 1, 0),
+                numerator_28 = dplyr::if_else(rowSums(dplyr::across(c(numerator3_1_28, numerator4_1_28)), na.rm = TRUE) > 1, 1, 0),
+                numerator_1 = dplyr::if_else(rowSums(dplyr::across(c(numerator_all_spo2, numerator_10, numerator_1_9, numerator_1_28, numerator_28)), na.rm = TRUE) > 1, 1, 0),
+                numerator_2 = dplyr::if_else(rowSums(dplyr::across(c(numerator_all_spo2, numerator_all_sbp)), na.rm = TRUE) > 1, 1, 0)
+  )
+
+# final join for the computing population
+# will have the same number of rows as the
+# initial procedures table if ran through dplyr::distinct()
+computing_population <- computing_population_num |>
+  dplyr::left_join(patient_data, by = dplyr::join_by(INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01), relationship = "many-to-many")
+
+# get the initial population
+initial_population <- computing_population |>
+  dplyr::filter(
+    target_procedures,
+    call_911
+  )
+
+# get the adult population
+adult_pop <- initial_population |>
+  dplyr::filter(adult_population,
+                first_successful_procedure,
+                not_performed_prior,
+                non_missing_procedure_time,
+                exclude_pta_ca
+                )
+
+# get the peds population
+peds_pop <- initial_population |>
+  dplyr::filter(pedi_population,
+                first_successful_procedure,
+                not_performed_prior,
+                non_missing_procedure_time,
+                exclude_pta_ca,
+                exclude_newborns
+                )
+
+# summarize counts for populations filtered
+filter_counts <- tibble::tibble(
+  filter = c("Invasive airway procedures",
+             "Successful invasive airway procedures",
+             "First successful invasive airway procedures",
+             "911 calls",
+             "Excluded cardiac arrests",
+             "Excluded newborns",
+             "All initial population successful intubation with no hypoxia",
+             "All initial population successful intubation with no hypotension",
+             "Initial population ages >= 10 yrs successful intubation with no hypotension",
+             "Initial population ages 1-9 yrs successful intubation with no hypotension",
+             "Initial population ages < 1 yrs & > 28 days successful intubation with no hypotension",
+             "Initial population ages < 28 days successful intubation with no hypotension",
+             "All initial population successful intubation with no hypoxia or hypotension",
+             "Adults successful intubation no hypoxia or hypotension",
+             "Peds successful intubation no hypoxia or hypotension",
+             "Adults denominator",
+             "Peds denominator",
+             "Initial Population",
+             "Total procedures in dataset"
+  ),
+  count = c(
+    sum(computing_population$target_procedures, na.rm = T),
+    sum(computing_population$target_procedures & computing_population$successful_procedure, na.rm = T),
+    sum(computing_population$first_successful_procedure, na.rm = T),
+    sum(patient_data$call_911, na.rm = T),
+    sum(patient_data$exclude_pta_ca == FALSE, na.rm = T),
+    sum(patient_data$exclude_newborns == FALSE, na.rm = T),
+    sum(initial_population$numerator_all_spo2, na.rm = T),
+    sum(initial_population$numerator_all_sbp, na.rm = T),
+    sum(initial_population$numerator_10, na.rm = T),
+    sum(initial_population$numerator_1_9, na.rm = T),
+    sum(initial_population$numerator_1_28, na.rm = T),
+    sum(initial_population$numerator_28, na.rm = T),
+    sum(initial_population$numerator_1, na.rm = T),
+    sum(adult_pop$numerator_1, na.rm = T),
+    sum(peds_pop$numerator_1, na.rm = T),
+    nrow(adult_pop),
+    nrow(peds_pop),
+    nrow(initial_population),
+    nrow(computing_population)
+  )
+)
+
+cli::cli_progress_update(set = 13, id = progress_bar_population, force = T)
+
+# Get populations
+airway.01.population <- list(
+  filter_process = filter_counts,
+
+  adults = calculated_data |> filter(adult_population == 1) |>
+    dplyr::select(-contains("pedi"), -contains("adult")),
+
+  peds = calculated_data |> filter(pedi_population == 1) |>
+    dplyr::select(-contains("pedi"), -contains("adult")),
+
+  initial_population = calculated_data
+)
