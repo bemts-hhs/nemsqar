@@ -1,3 +1,187 @@
+# all NULL arguments to tables and df
+# expect an error
+testthat::test_that("airway_05_population correctly identifies intubation cases", {
+
+  testthat::expect_error(airway_05_population(
+    df = tibble::tibble(),
+    patient_scene_table = tibble::tibble(),
+    arrest_table = tibble::tibble(),
+    response_table = tibble::tibble(),
+    vitals_table = tibble::tibble(),
+    procedures_table = tibble::tibble(),
+    erecord_01_col = character(),
+    incident_date_col = date(),
+    patient_DOB_col = date(),
+    epatient_15_col = character(),
+    epatient_16_col = character(),
+    earrest_01_col = character(),
+    eresponse_05_col = character(),
+    evitals_01_col = date(),
+    evitals_12_col = numeric(),
+    eprocedures_01_col = date(),
+    eprocedures_02_col = character(),
+    eprocedures_03_col = character()
+  ))
+
+  testthat::expect_error(airway_05_population(
+    df = NULL,
+    patient_scene_table = list(),
+    arrest_table = tibble::tibble(),
+    response_table = tibble::tibble(),
+    vitals_table = tibble::tibble(),
+    procedures_table = tibble::tibble(),
+    erecord_01_col = character(),
+    incident_date_col = date(),
+    patient_DOB_col = date(),
+    epatient_15_col = character(),
+    epatient_16_col = character(),
+    earrest_01_col = character(),
+    eresponse_05_col = character(),
+    evitals_01_col = date(),
+    evitals_12_col = numeric(),
+    eprocedures_01_col = date(),
+    eprocedures_02_col = character(),
+    eprocedures_03_col = character()
+  ))
+
+  testthat::expect_error(airway_05_population(
+    df = NULL,
+    patient_scene_table = list(),
+    arrest_table = tibble::tibble(),
+    response_table = tibble::tibble(),
+    vitals_table = tibble::tibble(),
+    procedures_table = tibble::tibble(),
+    erecord_01_col = character(),
+    incident_date_col = character(),
+    patient_DOB_col = character(),
+    epatient_15_col = character(),
+    epatient_16_col = character(),
+    earrest_01_col = character(),
+    eresponse_05_col = character(),
+    evitals_01_col = date(),
+    evitals_12_col = numeric(),
+    eprocedures_01_col = date(),
+    eprocedures_02_col = character(),
+    eprocedures_03_col = character()
+  ))
+
+  testthat::expect_error(airway_05_population(
+    df = NULL,
+    patient_scene_table = tibble::tibble(),
+    arrest_table = tibble::tibble(),
+    response_table = tibble::tibble(),
+    vitals_table = tibble::tibble(),
+    procedures_table = tibble::tibble(),
+    erecord_01_col = character(),
+    incident_date_col = date(),
+    patient_DOB_col = date(),
+    epatient_15_col = character(),
+    epatient_16_col = character(),
+    earrest_01_col = character(),
+    eresponse_05_col = character(),
+    evitals_01_col = character(),
+    evitals_12_col = numeric(),
+    eprocedures_01_col = character(),
+    eprocedures_02_col = character(),
+    eprocedures_03_col = character()
+  ))
+
+  testthat::expect_error(airway_05_population(
+    df = NULL,
+    patient_scene_table = tibble::tibble(),
+    arrest_table = tibble::tibble(),
+    response_table = tibble::tibble(),
+    vitals_table = tibble::tibble(),
+    procedures_table = tibble::tibble(),
+    erecord_01_col = character(),
+    incident_date_col = date(),
+    patient_DOB_col = date(),
+    epatient_15_col = character(),
+    epatient_16_col = character(),
+    earrest_01_col = character(),
+    eresponse_05_col = character(),
+    evitals_01_col = date(),
+    evitals_12_col = numeric(),
+    eprocedures_01_col = date(),
+    eprocedures_02_col = character(),
+    eprocedures_03_col = character()
+  ))
+
+  testthat::expect_error(airway_05_population(
+    erecord_01_col = character(),
+    incident_date_col = date(),
+    patient_DOB_col = date(),
+    epatient_15_col = character(),
+    epatient_16_col = character(),
+    earrest_01_col = character(),
+    eresponse_05_col = character(),
+    evitals_01_col = date(),
+    evitals_12_col = numeric(),
+    eprocedures_01_col = date(),
+    eprocedures_02_col = character(),
+    eprocedures_03_col = character()
+  ))
+
+  testthat::expect_error(airway_05_population(
+    df = NULL,
+    patient_scene_table = tibble::tibble(),
+    arrest_table = tibble::tibble(),
+    response_table = tibble::tibble(),
+    vitals_table = tibble::tibble(),
+    procedures_table = tibble::tibble(),
+    erecord_01_col = character(),
+    incident_date_col = date(),
+    patient_DOB_col = date(),
+    epatient_15_col = character(),
+    epatient_16_col = character(),
+    earrest_01_col = character(),
+    eresponse_05_col = character(),
+    evitals_01_col = date(),
+    evitals_12_col = numeric(),
+    eprocedures_01_col = date(),
+    eprocedures_02_col = character(),
+    eprocedures_03_col = character()
+  ))
+
+  testthat::expect_error(airway_05_population(
+    df = list(),
+    erecord_01_col = character(),
+    incident_date_col = date(),
+    patient_DOB_col = date(),
+    epatient_15_col = character(),
+    epatient_16_col = character(),
+    earrest_01_col = character(),
+    eresponse_05_col = character(),
+    evitals_01_col = date(),
+    evitals_12_col = numeric(),
+    eprocedures_01_col = date(),
+    eprocedures_02_col = character(),
+    eprocedures_03_col = character()
+  ))
+
+  testthat::expect_error(airway_05_population(
+    df = NULL,
+    patient_scene_table = list(),
+    arrest_table = tibble::tibble(),
+    response_table = tibble::tibble(),
+    vitals_table = tibble::tibble(),
+    procedures_table = tibble::tibble(),
+    erecord_01_col = character(),
+    incident_date_col = date(),
+    patient_DOB_col = date(),
+    epatient_15_col = character(),
+    epatient_16_col = character(),
+    earrest_01_col = character(),
+    eresponse_05_col = character(),
+    evitals_01_col = date(),
+    evitals_12_col = numeric(),
+    eprocedures_01_col = date(),
+    eprocedures_02_col = character(),
+    eprocedures_03_col = character()
+  ))
+
+})
+
 # Function should correctly classify airway cases
 testthat::test_that("airway_05_population correctly identifies intubation cases", {
   # Sample synthetic test data
