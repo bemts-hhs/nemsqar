@@ -21,12 +21,11 @@ researchers dedicated to improving patient outcomes.
 
 ## Installation
 
-You can install the development version of `nemsqar` from
-[GitHub](https://github.com/bemts-hhs/nemsqar) with:
+You can install the development version of `nemsqar` with:
 
 ``` r
-# install.packages("devtools")
-devtools::install_github("bemts-hhs/nemsqar")
+# install.packages("remotes")
+remotes::install_github("bemts-hhs/nemsqar")
 ```
 
 Additionally, you may install the current version of `nemsqar` on CRAN
