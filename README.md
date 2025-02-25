@@ -26,7 +26,7 @@ You can install the development version of `nemsqar` from
 
 ``` r
 # install.packages("pak")
-pak::pak("bemts-hhs/nemsqar")
+devtools::install_github("bemts-hhs/nemsqar")
 ```
 
 Additionally, you may install the current version of `nemsqar` on CRAN
