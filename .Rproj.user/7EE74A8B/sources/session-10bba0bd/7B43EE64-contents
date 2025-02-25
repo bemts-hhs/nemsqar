@@ -1,0 +1,1333 @@
+################################################################################
+### Out of Hospital Indicator calculations #####################################
+################################################################################
+
+###_____________________________________________________________________________
+# Set the working directory
+###_____________________________________________________________________________
+
+setwd("C:/Users/nfoss00/OneDrive - State of Iowa HHS/Desktop/Analytics/Analytics Builds/GitHub/Out-of-Hospital-Indicators/")
+
+################################################################################
+### Install your custom functions via background process #######################
+### favorite packages installed / loaded as well ###############################
+################################################################################
+
+###_____________________________________________________________________________
+# after the background script created the packages object, load them with sapply
+# 'packages' is a string vector defined in the background job script
+# and can be called through 'packages' to get the packages that are loaded
+###_____________________________________________________________________________
+
+###_____________________________________________________________________________
+# Get files into memory
+###_____________________________________________________________________________
+
+# look for the ems_data_final file
+
+if (file.exists("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/ems_data.csv")) {
+
+  ems_data_final <-
+    readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/ems_data.csv")
+
+} else { # if it isn't there, complete the usual analyses
+
+  # 2018 file
+
+  ems_2018_raw <-
+    readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/EMS_data_2018.csv") |>
+    dplyr::distinct()
+
+  # 2019 file
+
+  ems_2019_raw <-
+    readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/EMS_data_2019.csv") |>
+    dplyr::distinct()
+
+  # 2020 file
+
+  ems_2020_raw <-
+    readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/EMS_data_2020.csv") |>
+    dplyr::distinct()
+
+  # 2021 file
+
+  ems_2021_raw <-
+    readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/EMS_data_2021.csv") |>
+    dplyr::distinct()
+
+  # 2022 file
+
+  ems_2022_raw <-
+    readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/EMS_data_2022.csv") |>
+    dplyr::distinct()
+
+  # 2023 file
+
+  ems_2023_raw <-
+    readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/EMS_data_2023.csv") |>
+    dplyr::distinct()
+
+  # 2024 file
+
+  ems_2024_raw <-
+    readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/EMS_data_2024.csv") |>
+    dplyr::distinct()
+
+  # column names for the function below, update the function below as needed
+
+  column_names <-
+    as.data.frame(names(ems_2018_raw)) |> dplyr::pull(`names(ems_2018_raw)`)
+
+  ###_____________________________________________________________________________
+  # get the unique injury values as a character vector to create a more accurate
+  # injury designation column - this is the regex check referenced in the
+  # clean_ems_data function below
+  ###_____________________________________________________________________________
+
+  injury_data <-
+    get_unique_injury_values(
+      column_name = "Incident Complaint Reported By Dispatch/Dispatch Reason (eDispatch.01)",
+      ems_2018_raw,
+      ems_2019_raw,
+      ems_2020_raw,
+      ems_2021_raw,
+      ems_2022_raw,
+      ems_2023_raw,
+      ems_2024_raw
+    )
+
+  ###_____________________________________________________________________________
+  # Get location and zipcode data
+  # zipcode data via zipcodeR
+  ###_____________________________________________________________________________
+
+  # Counties currently known to be essential services
+
+  county_data <- readxl::read_excel(path = "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Desktop/Analytics/Analytics Builds/GitHub/Reference-Files/IA Counties, Regions.xlsx")
+
+  essential_counties <- county_data |>
+    dplyr::filter(`EMS Essential Service` == TRUE) |>
+    dplyr::pull(County)
+
+  # local file with regions / state / counties
+
+  location <-
+    readxl::read_excel(
+      "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Desktop/Analytics/Analytics Builds/GitHub/Reference-Files/IA Counties, Regions.xlsx"
+    ) |>
+    dplyr::select(County,
+                  `Region: Preparedness`,
+                  Pop:Designation,
+                  `EMS Essential Service`) |>
+    dplyr::mutate(`EMS Essential Service` = dplyr::if_else(County %in% essential_counties, TRUE, FALSE))
+
+  # get zipcodes
+
+  zipcodes <- zipcodeR::zip_code_db |>
+    dplyr::mutate(county = stringr::str_remove_all(county, pattern = "(?:\\sCounty)")) |>
+    dplyr::select(major_city, state, county, zipcode, lat, lng) |>
+    dplyr::mutate(county = if_else(state == "IA" &
+                              county == "", "Polk", county)) |>
+    dplyr::rename("new_city" = "major_city") |>
+    dplyr::rename("new_state" = "state") |>
+    dplyr::rename("new_county" = "county") |>
+    dplyr::rename("new_zipcode" = "zipcode")
+
+  # define transport responses
+
+  transport_responses <-
+    c(
+      "Patient Refused Evaluation/Care (With Transport)",
+      "Patient Treated, Transported by this EMS Unit",
+      "TX W/Mutual Aid Transported",
+      "Treat / Transport ALS by this unit",
+      "Treat / Transport BLS by this unit",
+      "Transport by This EMS Unit (This Crew Only)",
+      "Transport by This EMS Unit, with a Member of Another Crew"
+    )
+
+  # define scene responses
+
+  scene_responses <- c(
+    "Emergency Response (Primary Response Area)",
+    "911 Response (Scene)",
+    "Emergency Response (Intercept)",
+    "Emergency Response (Mutual Aid)",
+    "Intercept",
+    "Mutual Aid"
+  )
+
+  ###_____________________________________________________________________________
+  # mechanism of injury data
+  ###_____________________________________________________________________________
+
+  mechanism_of_injury <-
+    readr::read_csv(
+      "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Desktop/Analytics/Analytics Builds/GitHub/Reference-Files/icd10cm_injury_poisoning_nonpoisoning_2023.csv"
+    ) |>
+    dplyr::select(2, 14) |>
+    dplyr::mutate(TRIM_CODE = stringr::str_extract(UPPER_CODE, pattern = "^.{3,4}")) |>
+    dplyr::select(-UPPER_CODE) |>
+    dplyr::distinct(TRIM_CODE, .keep_all = TRUE) |>
+    dplyr::relocate(TRIM_CODE, .before = MECHANISM) |>
+    dplyr::rename("MECHANISM_NATURE" = "MECHANISM")
+
+  # join the diagnosis code mapping tables
+  # some of the codes only have 3 characters, so include those as well
+
+  char_3_codes <- mechanism_of_injury |>
+    dplyr::mutate(TRIM_CODE = stringr::str_extract(TRIM_CODE, pattern = "^.{3}")) |>
+    dplyr::distinct(TRIM_CODE, .keep_all = TRUE)
+
+  mechanism_nature_injury <-
+    dplyr::bind_rows(mechanism_of_injury, char_3_codes) |>
+    dplyr::distinct()
+
+  ###_____________________________________________________________________________
+  # Cleaning and then
+  # Bind the rows of the tables
+  ###_____________________________________________________________________________
+
+  # 2018
+
+  ems_2018_clean <- ems_2018_raw |>
+    clean_ems_data(year_var = 2018) |>
+    dplyr::distinct(Unique_Run_ID, .keep_all = TRUE)
+
+  # 2019
+
+  ems_2019_clean <- ems_2019_raw |>
+    clean_ems_data(year_var = 2019) |>
+    dplyr::distinct(Unique_Run_ID, .keep_all = TRUE)
+
+  # 2020
+
+  ems_2020_clean <- ems_2020_raw |>
+    clean_ems_data(year_var = 2020) |>
+    dplyr::distinct(Unique_Run_ID, .keep_all = TRUE)
+
+  # 2021
+
+  ems_2021_clean <- ems_2021_raw |>
+    clean_ems_data(year_var = 2021) |>
+    dplyr::distinct(Unique_Run_ID, .keep_all = TRUE)
+
+  # 2022
+
+  ems_2022_clean <- ems_2022_raw |>
+    clean_ems_data(year_var = 2022) |>
+    dplyr::distinct(Unique_Run_ID, .keep_all = TRUE)
+
+  # 2023
+
+  ems_2023_clean <- ems_2023_raw |>
+    clean_ems_data(year_var = 2023) |>
+    dplyr::distinct(Unique_Run_ID, .keep_all = TRUE)
+
+  # 2024
+
+  ems_2024_clean <- ems_2024_raw |>
+    clean_ems_data(year_var = 2024) |>
+    dplyr::distinct(Unique_Run_ID, .keep_all = TRUE)
+
+  # bind rows
+
+  ems_data <- bind_rows(
+    ems_2018_clean,
+    ems_2019_clean,
+    ems_2020_clean,
+    ems_2021_clean,
+    ems_2022_clean,
+    ems_2023_clean,
+    ems_2024_clean
+  )
+
+  # create a list of data.frames to easily perform summary statistics over
+
+  ems_list <- list(
+    ems_2018_clean,
+    ems_2019_clean,
+    ems_2020_clean,
+    ems_2021_clean,
+    ems_2022_clean,
+    ems_2023_clean,
+    ems_2024_clean
+  )
+
+  ###_____________________________________________________________________________
+  # Deal with states and counties that do not have consistent formatting
+  ###_____________________________________________________________________________
+
+  # get the list of ems data.frames with only iowa as the state, using regex
+
+  iowa_list <-
+    purrr::map(ems_list, ~ dplyr::filter(
+      .x,
+      grepl(
+        pattern = "(?:iowa$|^ia.*$)",
+        Scene_Incident_State_Name,
+        ignore.case = TRUE
+      )
+    )) |>
+    purrr::set_names(
+      nm = c(
+        "ems_2018_clean",
+        "ems_2019_clean",
+        "ems_2020_clean",
+        "ems_2021_clean",
+        "ems_2022_clean",
+        "ems_2023_clean",
+        "ems_2024_clean"
+      )
+    )
+
+  # return those named list elements to data.frames
+
+  # 2018
+  ems_2018_iowa <- as.data.frame(iowa_list[1]) |>
+    dplyr::rename_all(~ stringr::str_remove(., pattern = "(?:^ems_[0-9]+_clean[.])"))
+
+  # 2019
+
+  ems_2019_iowa <- as.data.frame(iowa_list[2]) |>
+    dplyr::rename_all(~ stringr::str_remove(., pattern = "(?:^ems_[0-9]+_clean[.])"))
+
+  # 2020
+
+  ems_2020_iowa <- as.data.frame(iowa_list[3]) |>
+    dplyr::rename_all(~ stringr::str_remove(., pattern = "(?:^ems_[0-9]+_clean[.])"))
+
+  # 2021
+
+  ems_2021_iowa <- as.data.frame(iowa_list[4]) |>
+    dplyr::rename_all(~ stringr::str_remove(., pattern = "(?:^ems_[0-9]+_clean[.])"))
+
+  # 2022
+
+  ems_2022_iowa <- as.data.frame(iowa_list[5]) |>
+    dplyr::rename_all(~ stringr::str_remove(., pattern = "(?:^ems_[0-9]+_clean[.])"))
+
+  # 2023
+
+  ems_2023_iowa <- as.data.frame(iowa_list[6]) |>
+    dplyr::rename_all(~ stringr::str_remove(., pattern = "(?:^ems_[0-9]+_clean[.])"))
+
+  # 2024
+
+  ems_2024_iowa <- as.data.frame(iowa_list[7]) |>
+    dplyr::rename_all(~ stringr::str_remove(., pattern = "(?:^ems_[0-9]+_clean[.])"))
+
+  ###_____________________________________________________________________________
+  # get a vector of the unique county names in a data.frame object
+  # use this to help identify county names in the state of Iowa that are
+  # out of place
+  ###_____________________________________________________________________________
+
+  county_df <- get_unique_values(
+    "Scene_Incident_County_Name",
+    ems_2018_iowa,
+    ems_2019_iowa,
+    ems_2020_iowa,
+    ems_2021_iowa,
+    ems_2022_iowa,
+    ems_2023_iowa,
+    ems_2024_iowa
+  ) |>
+    as.data.frame() |>
+    dplyr::rename("county" = 1) |>
+    dplyr::arrange(county)
+
+  ###_____________________________________________________________________________
+  # get a vector of the unique iowa state names in a data.frame object
+  # use this to help identify iowa state names that are
+  # out of place
+  ###_____________________________________________________________________________
+
+  state_df <- get_unique_values(
+    "Scene_Incident_State_Name",
+    ems_2018_iowa,
+    ems_2019_iowa,
+    ems_2020_iowa,
+    ems_2021_iowa,
+    ems_2022_iowa,
+    ems_2023_iowa,
+    ems_2024_iowa
+  ) |>
+    as.data.frame() |>
+    dplyr::rename("state" = 1) |>
+    arrange(state)
+
+  # These objects are no longer needed
+
+  rm(
+    list = c(
+      "ems_2018_iowa",
+      "ems_2019_iowa",
+      "ems_2020_iowa",
+      "ems_2021_iowa",
+      "ems_2022_iowa",
+      "ems_2023_iowa",
+      "ems_2024_iowa"
+    )
+  )
+
+  ###_____________________________________________________________________________
+  # After observing the different problems with Iowa counties, we can
+  # clean these county names so they are uniform and spelled correctly using
+  # regex within a custom map() function
+  # add nature of injury data
+  ###_____________________________________________________________________________
+
+  ###_____________________________________________________________________________
+  # clean up the ems data.frame in the Scene Incident County Name column
+  # to continue with the analyses
+  ###_____________________________________________________________________________
+
+  # cleaning!
+
+  ems_data_final <- ems_data |>
+    clean_county_names_1(
+      county_column = Scene_Incident_County_Name,
+      city_column = Scene_Incident_City_Name,
+      zip_column = Scene_Incident_Postal_Code
+    ) |>
+    clean_county_names_2(
+      county_column = Scene_Incident_County_Name,
+      zip_column = Scene_Incident_Postal_Code
+    ) |>
+    finalize_ems_data() |>
+    dplyr::mutate(Season = traumar::season(Incident_Date),
+           .before = Year)
+
+  # export the final files for future use as needed
+
+  readr::write_csv(ems_data_final, file = "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/ems_data.csv")
+
+  # create an abbreviated version of the larger file, with 4 years of data
+  ems_data_filtered <- ems_data_final |>
+    dplyr::filter(Year %in% 2021:2024)
+
+  # export the abbreviated file for solutions that require a lighter file
+  readr::write_csv(ems_data_filtered, file = "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/ems_data_filtered.csv")
+
+
+}
+
+################################################################################
+### OOH Analyses ###############################################################
+################################################################################
+
+# use gt() to create the output and then
+# develop separate objects for each year
+# at the state level and region
+# then, join those objects for the state and regions for
+# each indicator to be able to plot performance over time using
+# gtsummary / gtExtras
+
+###_____________________________________________________________________________
+# Get all the gt() tables for presentation purposes for a specific year
+# change the year within the loop within the out_of_hospital_indicator() function
+###_____________________________________________________________________________
+
+# create a new environment so as to avoid putting more stuff in the global env
+local_env <- new.env()
+
+# print all the state level gt() tables
+with(local_env, {
+  for (i in c(1, 2, 3, 4.1, 4.2, 5.1, 5.2, 5.3, 5.4, 6.1, 6.2)) {
+    output <- list()
+
+    # Use a unique name for each list element
+    output_name <- paste0("output_", i)
+
+    # Call the function and store the result in the list
+    output[[output_name]] <-
+      out_of_hospital_indicator(
+        df = ems_data_final,
+        year = 2023,
+        level = "state",
+        indicator = i,
+        output = "gt"
+      )
+
+    print(output[[output_name]])
+
+  }
+
+})
+
+# region level printing of the gt() tables
+with(local_env, {
+  for (i in c(1, 2, 3, 4.1, 4.2, 5.1, 5.2, 5.3, 5.4, 6.1, 6.2)) {
+    output <- list()
+
+    # Use a unique name for each list element
+    output_name <- paste0("output_", i)
+
+    # Call the function and store the result in the list
+    output[[output_name]] <-
+      out_of_hospital_indicator(
+        df = ems_data_final,
+        year = 2023,
+        level = "region",
+        indicator = i,
+        output = "gt"
+      )
+
+    print(output[[output_name]])
+
+  }
+})
+
+rm(local_env)
+
+################################################################################
+### Longitudinal OOH ###########################################################
+################################################################################
+
+###_____________________________________________________________________________
+# Open a for loop that will put all the combinations of years, levels, and
+# indicators into data.frames and nest those in one list.
+###_____________________________________________________________________________
+
+# Create an empty list to store dataframes
+output_list <- list()
+
+for (y in 2018:2023) {
+  for (i in c(1, 2, 3, 4.1, 4.2, 5.1, 5.2, 5.3, 5.4, 6.1, 6.2)) {
+    for (x in c("state", "region")) {
+      # Call the function and store the result in a dataframe
+      output_df <- out_of_hospital_indicator(
+        ems_data_final,
+        year = y,
+        level = x,
+        indicator = i
+      )
+
+      # Create a new temp_df for each combination of year, indicator, and level
+      temp_df <- data.frame(
+        Year = y,
+        Indicator = i,
+        Level = x,
+        output_df
+      )
+
+      # Generate a dynamic name for the data.frame
+      df_name <- glue("output_{i}_{x}")
+
+      if (df_name %in% names(output_list)) {
+        # If it exists, bind the new data to the existing data frame
+        output_list[[df_name]] <-
+          bind_rows(output_list[[df_name]], temp_df)
+      } else {
+        # If it doesn't exist, assign the data.frame to the list
+        output_list[[df_name]] <- temp_df
+      }
+    }
+  }
+}
+
+###_____________________________________________________________________________
+# use purrr to clean up the column names in the data.frames
+# use purrr to manipulate the state data.frames to be ready for plotting
+# by pivoting wider
+# no pivoting on the region data.frames
+# use list2env from base R to export those list items into the global env
+# as data.frames
+# Plot all the different time series of interest and save those to the
+# directory C:/Users/nfoss00/OneDrive - State of Iowa HHS/Desktop/Analytics/Analytics Builds/GitHub/Out-of-Hospital-Indicators/output
+###_____________________________________________________________________________
+
+# Use purrr to clean column names in each data frame, the for loop and list
+# creation process resulted in names with any spaces replaced by "\\."
+# this code will apply title case through the janitor::clean_names function
+# to remove those, but will subsequently create column names like 4 2 when it
+# should be 4.2
+output_list_cleaned <-
+  purrr::map(output_list, clean_names, case = "title")
+
+# clean_names created errors such as 4\\s2 instead of 4.2 so...fix it!
+output_list_cleaned <-
+  purrr::map(output_list_cleaned, ~ dplyr::rename_all(
+    .,
+    ~ stringr::str_replace(., pattern = "(\\d)\\s(\\d)", replacement = "\\1\\.\\2")
+  ))
+
+# little custom function to make things faster
+pivot_df <- function(df) {
+  df |>
+    pivot_wider(id_cols = Year,
+                names_from = Calculation,
+                values_from = Statistic)
+}
+
+# pivot the state data.frames
+output_list_state <-
+  purrr::map(output_list_cleaned[seq(1, 21, by = 2)], pivot_df)
+
+# get the region data frames
+output_list_region <- output_list_cleaned[seq(2, 22, by = 2)]
+
+# Iterate over each data frame in output_list and bring them into the global environment
+list2env(output_list_state, envir = .GlobalEnv)
+list2env(output_list_region, envir = .GlobalEnv)
+
+################################################################################
+### Create the plots ###########################################################
+################################################################################
+
+###_____________________________________________________________________________
+# Indicator 1
+###_____________________________________________________________________________
+
+ooh_plot(
+  output_1_state,
+  indicator = 1,
+  caption_text = 1,
+  level = "state",
+  digits = 0.01,
+  y_scale = c(0, 0.006),
+  axis_lines = F
+)
+
+ooh_plot(
+  output_1_region,
+  indicator = 1,
+  caption_text = 1,
+  level = "region",
+  nudge = 0.65
+)
+
+###_____________________________________________________________________________
+# Indicator 2
+###_____________________________________________________________________________
+
+ooh_plot(
+  output_2_state,
+  indicator = 2,
+  caption_text = 2,
+  level = "state",
+  digits = 0.01,
+  y_scale = c(0, 0.008),
+  axis_lines = F
+)
+
+ooh_plot(
+  output_2_region,
+  indicator = 2,
+  caption_text = 2,
+  level = "region",
+  nudge = 0.65
+)
+
+###_____________________________________________________________________________
+# Indicator 3
+###_____________________________________________________________________________
+
+ooh_plot(
+  output_3_state,
+  indicator = paste0(3, " Ground"),
+  caption_text = 3,
+  level = "state",
+  digits = 0.1,
+  nudge = 0.01,
+  y_scale = c(0, 0.15),
+  wide = 15,
+  axis_lines = F
+)
+
+ooh_plot(
+  output_3_state,
+  indicator = paste0(3, " Air"),
+  caption_text = 3,
+  level = "state",
+  nudge = 0.03,
+  digits = 0.1,
+  y_scale = c(0, 0.6),
+  wide = 15,
+  axis_lines = F
+)
+
+ooh_plot(
+  output_3_region,
+  indicator = paste0(3, " Ground"),
+  caption_text = 3,
+  level = "region",
+  nudge = 0.2,
+  wide = 15,
+  digits = 0.1
+)
+
+ooh_plot(
+  output_3_region,
+  indicator = paste0(3, " Air"),
+  caption_text = 3,
+  level = "region",
+  nudge = 0.2,
+  wide = 15,
+  digits = 0.1
+)
+
+###_____________________________________________________________________________
+# Indicator 4.1
+###_____________________________________________________________________________
+
+ooh_plot(
+  output_4.1_state,
+  indicator = 4.1,
+  caption_text = 4.1,
+  level = "state",
+  nudge = 0.0015,
+  y_scale = c(0.7, 0.9),
+  axis_lines = F
+)
+
+ooh_plot(
+  output_4.1_region,
+  indicator = 4.1,
+  caption_text = 4.1,
+  level = "region",
+  nudge = 0.035
+)
+
+###_____________________________________________________________________________
+# Indicator 4.2
+###_____________________________________________________________________________
+
+ooh_plot(
+  output_4.2_state,
+  indicator = 4.2,
+  caption_text = 4.2,
+  level = "state",
+  nudge = 0.008,
+  y_scale = c(0.15, 0.35),
+  axis_lines = F
+)
+
+ooh_plot(
+  output_4.2_region,
+  indicator = 4.2,
+  caption_text = 4.2,
+  level = "region",
+  nudge = 0.065
+)
+
+###_____________________________________________________________________________
+# Indicator 5.1
+###_____________________________________________________________________________
+
+ooh_plot(
+  output_5.1_state,
+  indicator = 5.1,
+  caption_text = 5.1,
+  level = "state",
+  nudge = 0.002,
+  y_scale = c(0.6, 0.8),
+  axis_lines = F
+)
+
+ooh_plot(
+  output_5.1_region,
+  indicator = 5.1,
+  caption_text = 5.1,
+  level = "region",
+  nudge = 0.04
+)
+
+###_____________________________________________________________________________
+# Indicator 5.2
+###_____________________________________________________________________________
+
+ooh_plot(
+  output_5.2_state,
+  indicator = 5.2,
+  caption_text = 5.2,
+  level = "state",
+  nudge = 0.005,
+  y_scale = c(0.1, 0.25),
+  axis_lines = F
+)
+
+ooh_plot(
+  output_5.2_region,
+  indicator = 5.2,
+  caption_text = 5.2,
+  level = "region",
+  nudge = 0.04
+)
+
+###_____________________________________________________________________________
+# Indicator 5.3
+###_____________________________________________________________________________
+
+ooh_plot(
+  output_5.3_state,
+  indicator = 5.3,
+  caption_text = 5.3,
+  level = "state",
+  nudge = 0.0005,
+  y_scale = c(0.9, 1),
+  axis_lines = F
+)
+
+ooh_plot(
+  output_5.3_region,
+  indicator = 5.3,
+  caption_text = 5.3,
+  level = "region",
+  nudge = 0.004
+)
+
+###_____________________________________________________________________________
+# Indicator 5.4
+###_____________________________________________________________________________
+
+ooh_plot(
+  output_5.4_state,
+  indicator = 5.4,
+  caption_text = 5.4,
+  level = "state",
+  nudge = 0.005,
+  y_scale = c(0.6, 1),
+  y_breaks = c(0.6, 0.8, 1),
+  axis_lines = F
+)
+
+ooh_plot(
+  output_5.4_region,
+  indicator = 5.4,
+  caption_text = 5.4,
+  level = "region",
+  nudge = 0.03
+)
+
+###_____________________________________________________________________________
+# Indicator 6.1
+###_____________________________________________________________________________
+
+ooh_plot(
+  output_6.1_state,
+  indicator = 6.1,
+  caption_text = 6.1,
+  level = "state",
+  nudge = 0.009,
+  y_scale = c(0.09, 0.18),
+  y_breaks = seq(0.09, 0.18, by = 0.03),
+  axis_lines = F
+)
+
+ooh_plot(
+  output_6.1_region,
+  indicator = 6.1,
+  caption_text = 6.1,
+  level = "region",
+  nudge = 0.095
+)
+
+###_____________________________________________________________________________
+# Indicator 6.2
+###_____________________________________________________________________________
+
+ooh_plot(
+  output_6.2_state,
+  indicator = 6.2,
+  caption_text = 6.2,
+  level = "state",
+  nudge = 0.008,
+  y_scale = c(0.3, 0.5),
+  y_breaks = seq(0.3, 0.5, by = 0.05),
+  axis_lines = F
+)
+
+ooh_plot(
+  output_6.2_region,
+  indicator = 6.2,
+  caption_text = 6.2,
+  level = "region",
+  nudge = 0.04
+)
+
+################################################################################
+### Attempt a regression model with regard to an explanatory model for #########
+### different time metrics. Try a simple linear regression model and ###########
+### a random forest model ######################################################
+################################################################################
+
+###_____________________________________________________________________________
+# EDA before modeling
+###_____________________________________________________________________________
+
+# utilize the corrr package to examine correlations among variables of interest
+
+#correlation matrix printed to console
+ems_data_final |>
+  dplyr::select(
+    Arrival_Time_Minutes,
+    Scene_Time_Minutes,
+    Response_Time_Minutes,
+    Transport_Time_Minutes,
+    Patient_Initial_Total_Glasgow_Coma_Score_GCS,
+    Patient_Initial_Revised_Trauma_Score_RTS,
+    Patient_Initial_Systolic_Blood_Pressure_SBP,
+    Patient_Initial_Respiratory_Rate
+  ) |>
+  correlate() |>
+  shave() |>
+  fashion()
+
+#correlation matrix printed as plot
+ems_data_final |>
+  dplyr::select(
+    Arrival_Time_Minutes,
+    Scene_Time_Minutes,
+    Response_Time_Minutes,
+    Transport_Time_Minutes,
+    Patient_Initial_Total_Glasgow_Coma_Score_GCS,
+    Patient_Initial_Revised_Trauma_Score_RTS,
+    Patient_Initial_Systolic_Blood_Pressure_SBP,
+    Patient_Initial_Respiratory_Rate
+  ) |>
+  dplyr::rename(
+    "SBP" = "Patient_Initial_Systolic_Blood_Pressure_SBP",
+    "GCS" = "Patient_Initial_Total_Glasgow_Coma_Score_GCS",
+    "RTS" = "Patient_Initial_Revised_Trauma_Score_RTS",
+    "Resp_Rate" = "Patient_Initial_Respiratory_Rate"
+  ) |>
+  correlate() |>
+  shave() |>
+  rplot(print_cor = TRUE) +
+  theme_cleaner(axis_lines = F) +
+  theme(axis.text.x = element_text(angle = 90))
+
+###_____________________________________________________________________________
+#build the linear regression model and generalized linear model
+###_____________________________________________________________________________
+
+# get a dataset with the dummy variables and scaled numeric predictors
+
+ems_data_scaled <- ems_data_final |>
+  dplyr::mutate(
+    Arrival_Time_Minutes_Scaled = normalize(Arrival_Time_Minutes),
+    Response_Time_Minutes_Scaled = normalize(Response_Time_Minutes),
+    Scene_Time_Minutes_Scaled = normalize(Scene_Time_Minutes),
+    Transport_Time_Minutes_Scaled = normalize(Transport_Time_Minutes),
+    Patient_Initial_Total_Glasgow_Coma_Score_GCS_Scaled = normalize(Patient_Initial_Total_Glasgow_Coma_Score_GCS),
+    Patient_Initial_Systolic_Blood_Pressure_SBP_Scaled = normalize(Patient_Initial_Systolic_Blood_Pressure_SBP),
+    Patient_Initial_Revised_Trauma_Score_RTS_Scaled = normalize(Patient_Initial_Revised_Trauma_Score_RTS),
+    Patient_Initial_Respiratory_Rate_Scaled = normalize(Patient_Initial_Respiratory_Rate)
+  )
+
+###_____________________________________________________________________________
+#split the data
+###_____________________________________________________________________________
+
+data_split <-
+  initial_split(
+    ems_data_scaled |> dplyr::filter(Arrival_Time_Minutes <= 500),
+    prop = 0.75,
+    strata = Year
+  )
+
+#create the training and test sets
+ems_training_data <- training(data_split)
+ems_testing_data <- testing(data_split)
+
+###_____________________________________________________________________________
+# Generate formulas for the different models to simplify edits
+# predict arrival time
+###_____________________________________________________________________________
+
+###
+
+arrival_formula_times <-
+  as.formula(
+    Arrival_Time_Minutes ~ Response_Time_Minutes + Scene_Time_Minutes + Transport_Time_Minutes + Trauma_Flag
+  )
+
+###
+
+arrival_formula_parts <-
+  as.formula(
+    Arrival_Time_Minutes_Scaled ~ Patient_Initial_Total_Glasgow_Coma_Score_GCS_Scaled + Patient_Initial_Systolic_Blood_Pressure_SBP_Scaled + Patient_Initial_Respiratory_Rate_Scaled
+  )
+
+###
+
+arrival_formula_parts_trauma <-
+  as.formula(
+    Arrival_Time_Minutes_Scaled ~ Patient_Initial_Total_Glasgow_Coma_Score_GCS_Scaled + Patient_Initial_Systolic_Blood_Pressure_SBP_Scaled + Patient_Initial_Respiratory_Rate_Scaled + Trauma_Flag
+  )
+
+###
+
+arrival_formula_rts <-
+  as.formula(
+    Arrival_Time_Minutes_Scaled ~ Patient_Initial_Revised_Trauma_Score_RTS_Scaled + Trauma_Flag
+  )
+
+###
+
+arrival_formula_levels_seasons <-
+  as.formula(Arrival_Time_Minutes ~ Season + Level_of_Care_Provided_per_Protocol)
+
+###
+
+arrival_formula_levels_season_trauma <-
+  as.formula(Arrival_Time_Minutes ~ Season + Level_of_Care_Provided_per_Protocol + Trauma_Flag)
+
+###
+
+arrival_formula_avpu <-
+  as.formula(Arrival_Time_Minutes ~ Vitals_Level_Of_Responsiveness_AVPU)
+
+###
+
+arrival_formula_response <-
+  as.formula(Arrival_Time_Minutes ~ Response_Mode_To_Scene)
+
+###
+
+arrival_formula_mixed <-
+  as.formula(
+    Arrival_Time_Minutes_Scaled ~ Response_Mode_To_Scene + Trauma_Flag + Level_of_Care_Provided_per_Protocol + Vitals_Level_Of_Responsiveness_AVPU + Patient_Initial_Total_Glasgow_Coma_Score_GCS_Scaled + Patient_Initial_Systolic_Blood_Pressure_SBP_Scaled + Patient_Initial_Respiratory_Rate_Scaled
+  )
+
+###
+
+###_____________________________________________________________________________
+# Generate formulas for the different models to simplify edits
+# predict scene time
+###_____________________________________________________________________________
+
+###
+
+scene_formula_levels_season_trauma <-
+  as.formula(Scene_Time_Minutes ~ Season + Level_of_Care_Provided_per_Protocol + Trauma_Flag)
+
+###
+
+scene_formula_parts <-
+  as.formula(
+    Scene_Time_Minutes_Scaled ~ Patient_Initial_Total_Glasgow_Coma_Score_GCS_Scaled + Patient_Initial_Systolic_Blood_Pressure_SBP_Scaled + Patient_Initial_Respiratory_Rate_Scaled
+  )
+
+###
+
+scene_formula_parts_trauma <-
+  as.formula(
+    Scene_Time_Minutes_Scaled ~ Patient_Initial_Total_Glasgow_Coma_Score_GCS_Scaled + Patient_Initial_Systolic_Blood_Pressure_SBP_Scaled + Patient_Initial_Respiratory_Rate_Scaled + Trauma_Flag
+  )
+
+###
+
+scene_formula_levels_seasons <-
+  as.formula(Scene_Time_Minutes ~ Season + Level_of_Care_Provided_per_Protocol)
+
+###
+
+scene_formula_levels_seasons_trauma <-
+  as.formula(Scene_Time_Minutes ~ Season + Level_of_Care_Provided_per_Protocol + Trauma_Flag)
+
+###
+
+scene_formula_rts <-
+  as.formula(
+    Scene_Time_Minutes_Scaled ~ Patient_Initial_Revised_Trauma_Score_RTS_Scaled + Trauma_Flag
+  )
+
+###
+
+scene_formula_avpu <-
+  as.formula(Scene_Time_Minutes ~ Vitals_Level_Of_Responsiveness_AVPU)
+
+###
+
+scene_formula_response <-
+  as.formula(Scene_Time_Minutes ~ Response_Time_Minutes)
+
+###
+
+scene_formula_response_mixed1 <-
+  as.formula(
+    Scene_Time_Minutes ~ Response_Time_Minutes + Season + Level_of_Care_Provided_per_Protocol + Trauma_Flag
+  )
+
+###
+
+scene_formula_response_mixed2 <-
+  as.formula(
+    Scene_Time_Minutes ~ Response_Time_Minutes + Season + Level_of_Care_Provided_per_Protocol + Trauma_Flag + Patient_Initial_Total_Glasgow_Coma_Score_GCS_Scaled + Patient_Initial_Systolic_Blood_Pressure_SBP_Scaled + Patient_Initial_Respiratory_Rate_Scaled
+  )
+
+###
+
+scene_formula_mixed <-
+  as.formula(
+    Scene_Time_Minutes_Scaled ~ Response_Time_Minutes_Scaled + Response_Mode_To_Scene + Trauma_Flag + Level_of_Care_Provided_per_Protocol + Vitals_Level_Of_Responsiveness_AVPU + Patient_Initial_Total_Glasgow_Coma_Score_GCS_Scaled + Patient_Initial_Systolic_Blood_Pressure_SBP_Scaled + Patient_Initial_Respiratory_Rate_Scaled
+  )
+
+###
+
+###_____________________________________________________________________________
+# Generate formulas for the different models to simplify edits
+# predict treatment time
+###_____________________________________________________________________________
+
+###
+
+treatment_formula_levels_season_trauma <-
+  as.formula(Treatment_Time_Minutes ~ Season + Level_of_Care_Provided_per_Protocol + Trauma_Flag)
+
+###
+
+treatment_formula_parts <-
+  as.formula(
+    Treatment_Time_Minutes_Scaled ~ Patient_Initial_Total_Glasgow_Coma_Score_GCS_Scaled + Patient_Initial_Systolic_Blood_Pressure_SBP_Scaled + Patient_Initial_Respiratory_Rate_Scaled
+  )
+
+###
+
+treatment_formula_parts_trauma <-
+  as.formula(
+    Treatment_Time_Minutes_Scaled ~ Patient_Initial_Total_Glasgow_Coma_Score_GCS_Scaled + Patient_Initial_Systolic_Blood_Pressure_SBP_Scaled + Patient_Initial_Respiratory_Rate_Scaled + Trauma_Flag
+  )
+
+###
+
+treatment_formula_levels_seasons <-
+  as.formula(Treatment_Time_Minutes ~ Season + Level_of_Care_Provided_per_Protocol)
+
+###
+
+treatment_formula_levels_seasons_trauma <-
+  as.formula(Treatment_Time_Minutes ~ Season + Level_of_Care_Provided_per_Protocol + Trauma_Flag)
+
+###
+
+treatment_formula_rts <-
+  as.formula(
+    Treatment_Time_Minutes_Scaled ~ Patient_Initial_Revised_Trauma_Score_RTS_Scaled + Trauma_Flag
+  )
+
+###
+
+treatment_formula_avpu <-
+  as.formula(Treatment_Time_Minutes ~ Vitals_Level_Of_Responsiveness_AVPU)
+
+###
+
+treatment_formula_response <-
+  as.formula(Treatment_Time_Minutes ~ Response_Time_Minutes)
+
+treatment_formula_response_mixed1 <-
+  as.formula(
+    Treatment_Time_Minutes ~ Response_Time_Minutes + Season + Level_of_Care_Provided_per_Protocol + Trauma_Flag
+  )
+
+###
+
+treatment_formula_response_mixed2 <-
+  as.formula(
+    Treatment_Time_Minutes ~ Response_Time_Minutes + Season + Level_of_Care_Provided_per_Protocol + Trauma_Flag + Patient_Initial_Total_Glasgow_Coma_Score_GCS_Scaled + Patient_Initial_Systolic_Blood_Pressure_SBP_Scaled + Patient_Initial_Respiratory_Rate_Scaled
+  )
+
+###
+
+treatment_formula_mixed <-
+  as.formula(
+    Treatment_Time_Minutes_Scaled ~ Response_Time_Minutes_Scaled + Response_Mode_To_Scene + Trauma_Flag + Level_of_Care_Provided_per_Protocol + Vitals_Level_Of_Responsiveness_AVPU + Patient_Initial_Total_Glasgow_Coma_Score_GCS_Scaled + Patient_Initial_Systolic_Blood_Pressure_SBP_Scaled + Patient_Initial_Respiratory_Rate_Scaled
+  )
+
+###
+
+###_____________________________________________________________________________
+#build the models for predicting arrival time
+###_____________________________________________________________________________
+
+# get the names for the formula list to be created next
+arrival_time_objects <-
+  objects()[grepl("^arrival_", objects())] |>
+  as.data.frame() |>
+  dplyr::rename("data" = ".") |>
+  dplyr::mutate(
+    data = stringr::str_remove_all(data, pattern = "arrival_formula_"),
+    data = stringr::str_c("arrival_model_", data)
+  ) |>
+  dplyr::pull(data)
+
+#create the arrival time formula list
+formula_arrival_list <- list(
+  arrival_formula_avpu,
+  arrival_formula_levels_season_trauma,
+  arrival_formula_levels_seasons,
+  arrival_formula_mixed,
+  arrival_formula_parts,
+  arrival_formula_parts_trauma,
+  arrival_formula_response,
+  arrival_formula_rts,
+  arrival_formula_times
+) |>
+  set_names(nm = arrival_time_objects)
+
+# create a for loop to create all the model objects and then examine
+
+arrival_model_list <- list()
+
+for (i in 1:length(formula_arrival_list)) {
+  # loops through the formulas to create different predictive models on arrival time
+  arrival_model <-
+    lm(formula = formula_arrival_list[[i]], data = ems_training_data)
+
+  #get each model into the list
+  arrival_model_list[[i]] <- arrival_model
+
+  #assign the name of the model object so it is dynamic
+  names(arrival_model_list)[i] <- names(formula_arrival_list[i])
+
+}
+
+#export the models from the list into the global environment
+list2env(arrival_model_list, envir = .GlobalEnv)
+
+#free up sapce
+rm(list = c("arrival_model", "i"))
+
+###_____________________________________________________________________________
+#examine the models using tidy, glance, and augment
+# plot using autoplot(model, which = vec)
+###_____________________________________________________________________________
+
+#use purrr to run glance() on all the models to get model statistics
+arrival_model_glance <- purrr::map(arrival_model_list, ~ glance(.))
+
+#bind rows on the list to get a df with all the model statistics together
+#use the vectors with model names and formulas to get those into the
+#df as well to identify the models more easily
+arrival_model_glance <- bind_rows(arrival_model_glance) |>
+  dplyr::mutate(
+    model_name = arrival_time_objects,
+    formula = as.character(formula_arrival_list[1:9]),
+    .before = r.squared
+  )
+
+# EDA - see what model or models seem to perform best and examine them
+
+#check the residuals using a custom function
+augment(arrival_model_times) |>
+  dplyr::filter(.fitted <= 500) |>
+  compare_is_it_normal(data_name = "arrival_model_times", x1 = ".fitted", x2 = ".resid")
+
+#check the residuals with leverage visualizations
+autoplot(arrival_model_times, which = 1:4)
+
+#test the model with the training data to see the performance of the predictions
+arrival_model_predicted <-
+  broom::augment(
+    arrival_model_times,
+    newdata = ems_testing_data,
+    se_fit = TRUE,
+    interval = "confidence"
+  )
+
+#visualize the model performance
+arrival_model_predicted |>
+  dplyr::filter(.fitted <= 500) |>
+  slice_sample(prop = 0.25) |>
+  ggplot(aes(.fitted, .resid)) +
+  geom_point(
+    shape = 1,
+    alpha = 0.8,
+    na.rm = TRUE,
+    color = "lightgreen"
+  ) +
+  geom_smooth(
+    method = "lm",
+    se = FALSE,
+    na.rm = TRUE,
+    color = "steelblue1"
+  ) +
+  theme_cleaner(base_family = "Bookman Old Style") +
+  guides(color = "none")
+
+###_____________________________________________________________________________
+#examine the linear regression objects for predicting arrival time
+###_____________________________________________________________________________
+
+###_____________________________________________________________________________
+#examine the linear regression objects for predicting scene time
+###_____________________________________________________________________________
+
+###_____________________________________________________________________________
+#examine the linear regression objects for predicting treatment time
+###_____________________________________________________________________________
+
+###_____________________________________________________________________________
+#set up the resampling scheme for cross validation via random forest
+###_____________________________________________________________________________
+
+#first set the seed for randomization
+set.seed(123)
+
+###_____________________________________________________________________________
+#set up the linear model and find best predictors
+###_____________________________________________________________________________
+
+rand_forest(mode = "regression") |>
+  set_engine("randomForest") |>
+  fit(Arrival_Time_Minutes ~ ., data = training_data)
+
+################################################################################
+### Attempt a Javascript implementation of #####################################
+### a peds datatable ###########################################################
+################################################################################
+
+# Use DT for a visualization
+
+ems_data_final |>
+  count(Year, Maturity) |>
+  group_by(Year) |>
+  dplyr::mutate(prop_year = paste0(percent(n / sum(n), accuracy = 0.1), " ", Maturity, " in ", Year)) |>
+  ungroup() |>
+  DT::datatable(
+    dplyr::filter = list(
+      position = 'bottom',
+      clear = FALSE,
+      plain = TRUE
+    ),
+    style = "default",
+    caption = htmltools::tags$caption(
+      style = 'caption-side: top; text-align: center;',
+      "ImageTrend Elite EMS Registry 2018 - 2023 || Trends in Peds vs. Adult"
+    ),
+    extensions = c("dplyr::Select", "Buttons"),
+    options = list(
+      dplyr::select = list(style = 'os', items = 'row'),
+      dom = 'Blfrtip',
+      rowId = 0,
+      buttons = list(
+        list(
+          extend = "collection",
+          buttons = c(
+            'dplyr::selectAll',
+            'dplyr::selectNone',
+            'dplyr::selectRows',
+            'dplyr::selectColumns',
+            'dplyr::selectCells'
+          ),
+          text = "dplyr::Select"
+        ),
+        'copy',
+        'print',
+        list(
+          extend = 'collection',
+          buttons = c('csv', 'excel', 'pdf'),
+          text = 'Download'
+        )
+      )
+    ),
+    dplyr::selection = "none"
+  ) |>
+  DT::formatStyle(1:4,
+                  color = 'darkblue',
+                  fontWeight = 'bold')
