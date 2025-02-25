@@ -29,6 +29,13 @@ You can install the development version of `nemsqar` from
 pak::pak("bemts-hhs/nemsqar")
 ```
 
+Additionally, you may install the current version of `nemsqar` on CRAN
+via:
+
+``` r
+install.packages("nemsqar")
+```
+
 ## Functionality
 
 `nemsqar` has functions that will always automate the calculation of a

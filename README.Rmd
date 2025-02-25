@@ -32,6 +32,12 @@ You can install the development version of `nemsqar` from [GitHub](https://githu
 pak::pak("bemts-hhs/nemsqar")
 ```
 
+Additionally, you may install the current version of `nemsqar` on CRAN via:
+
+```r
+install.packages("nemsqar")
+```
+
 ## Functionality
 
 `nemsqar` has functions that will always automate the calculation of a service's performance (or even a system's) against the currently approved list of NEMSQA Measures (see below).  Given the large number of these functions, please check the full package documentation resource [here](https://bemts-hhs.github.io/nemsqar/).
