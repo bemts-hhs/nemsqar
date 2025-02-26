@@ -1,0 +1,151 @@
+###_____________________________________________________________________________
+### Airway-18 test using the new table functions
+###_____________________________________________________________________________
+
+# data import
+
+# patient table
+airway_18_patient_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_patient_scene_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~  lubridate::mdy(stringr::str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  )))
+
+# response table
+airway_18_response_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_response_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# vitals table
+airway_18_vitals_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_vitals_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+                             ),
+         VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01 = lubridate::mdy_hms(stringr::str_remove_all(VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01, pattern = "\\s(?:AM|PM)$"))
+         )
+
+# procedures table
+airway_18_procedures_table <- readr::read_csv(
+  "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_procedures_data_Export_2023.csv"
+) |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(
+    INCIDENT_DATE = lubridate::mdy(
+      stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+    ),
+    PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01 = lubridate::mdy_hms(
+      stringr::str_remove_all(PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01, pattern = "\\s(?:AM|PM)$")
+    )
+  )
+
+
+# airway table
+airway_18_airway_table <- readr::read_csv(
+  "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_airway_data_Export_2023.csv"
+) |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(
+    INCIDENT_DATE = lubridate::mdy(
+      stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+    ),
+    AIRWAY_DEVICE_PLACEMENT_CONFIRMATION_DATE_TIME_E_AIRWAY_02 = lubridate::mdy_hms(
+      stringr::str_remove_all(
+        AIRWAY_DEVICE_PLACEMENT_CONFIRMATION_DATE_TIME_E_AIRWAY_02,
+        pattern = "\\s(?:AM|PM)$"
+      )
+    )
+  )
+
+# run the population function
+airway_population_18_table <- airway_18_population(
+
+  patient_scene_table = airway_18_patient_table,
+  response_table = airway_18_response_table,
+  airway_table = airway_18_airway_table,
+  vitals_table = airway_18_vitals_table,
+  procedures_table = airway_18_procedures_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = INCIDENT_DATE,
+  patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eprocedures_03_col = PROCEDURE_PERFORMED_DESCRIPTION_AND_CODE_E_PROCEDURES_03,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  eprocedures_06_col = PROCEDURE_SUCCESSFUL_E_PROCEDURES_06,
+  eprocedures_01_col = PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01,
+  eprocedures_02_col = PROCEDURE_PERFORMED_PRIOR_TO_EMS_CARE_E_PROCEDURES_02,
+  eairway_04_col = AIRWAY_DEVICE_PLACEMENT_CONFIRMED_METHOD_LIST_E_AIRWAY_04,
+  eairway_02_col = AIRWAY_DEVICE_PLACEMENT_CONFIRMATION_DATE_TIME_E_AIRWAY_02,
+  evitals_01_col = VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01,
+  evitals_16_col = VITALS_CARBON_DIOXIDE_CO2_E_VITALS_16
+  )
+
+# run the population function with no incident date or patient DOB
+airway_population_18_table_null <- airway_18_population(
+
+  patient_scene_table = airway_18_patient_table,
+  response_table = airway_18_response_table,
+  airway_table = airway_18_airway_table,
+  vitals_table = airway_18_vitals_table,
+  procedures_table = airway_18_procedures_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eprocedures_03_col = PROCEDURE_PERFORMED_DESCRIPTION_AND_CODE_E_PROCEDURES_03,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  eprocedures_06_col = PROCEDURE_SUCCESSFUL_E_PROCEDURES_06,
+  eprocedures_01_col = PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01,
+  eprocedures_02_col = PROCEDURE_PERFORMED_PRIOR_TO_EMS_CARE_E_PROCEDURES_02,
+  eairway_04_col = AIRWAY_DEVICE_PLACEMENT_CONFIRMED_METHOD_LIST_E_AIRWAY_04,
+  eairway_02_col = AIRWAY_DEVICE_PLACEMENT_CONFIRMATION_DATE_TIME_E_AIRWAY_02,
+  evitals_01_col = VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01,
+  evitals_16_col = VITALS_CARBON_DIOXIDE_CO2_E_VITALS_16
+  )
+
+# run the wrapper function with all arguments
+
+airway_18(patient_scene_table = airway_18_patient_table,
+          response_table = airway_18_response_table,
+          airway_table = airway_18_airway_table,
+          vitals_table = airway_18_vitals_table,
+          procedures_table = airway_18_procedures_table,
+          erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+          incident_date_col = INCIDENT_DATE,
+          patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+          epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+          epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+          eprocedures_03_col = PROCEDURE_PERFORMED_DESCRIPTION_AND_CODE_E_PROCEDURES_03,
+          eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+          eprocedures_06_col = PROCEDURE_SUCCESSFUL_E_PROCEDURES_06,
+          eprocedures_01_col = PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01,
+          eprocedures_02_col = PROCEDURE_PERFORMED_PRIOR_TO_EMS_CARE_E_PROCEDURES_02,
+          eairway_04_col = AIRWAY_DEVICE_PLACEMENT_CONFIRMED_METHOD_LIST_E_AIRWAY_04,
+          eairway_02_col = AIRWAY_DEVICE_PLACEMENT_CONFIRMATION_DATE_TIME_E_AIRWAY_02,
+          evitals_01_col = VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01,
+          evitals_16_col = VITALS_CARBON_DIOXIDE_CO2_E_VITALS_16
+          )
+
+# run the wrapper function with NULL date arguments
+
+airway_18(patient_scene_table = airway_18_patient_table,
+          response_table = airway_18_response_table,
+          airway_table = airway_18_airway_table,
+          vitals_table = airway_18_vitals_table,
+          procedures_table = airway_18_procedures_table,
+          erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+          incident_date_col = NULL,
+          patient_DOB_col = NULL,
+          epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+          epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+          eprocedures_03_col = PROCEDURE_PERFORMED_DESCRIPTION_AND_CODE_E_PROCEDURES_03,
+          eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+          eprocedures_06_col = PROCEDURE_SUCCESSFUL_E_PROCEDURES_06,
+          eprocedures_01_col = PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01,
+          eprocedures_02_col = PROCEDURE_PERFORMED_PRIOR_TO_EMS_CARE_E_PROCEDURES_02,
+          eairway_04_col = AIRWAY_DEVICE_PLACEMENT_CONFIRMED_METHOD_LIST_E_AIRWAY_04,
+          eairway_02_col = AIRWAY_DEVICE_PLACEMENT_CONFIRMATION_DATE_TIME_E_AIRWAY_02,
+          evitals_01_col = VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01,
+          evitals_16_col = VITALS_CARBON_DIOXIDE_CO2_E_VITALS_16
+          )
