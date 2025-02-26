@@ -172,41 +172,118 @@ procedure names.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If you are sourcing your data from a SQL database connection</span></span></span>
 <span class="r-in"><span><span class="co"># or if you have your data in several different tables,</span></span></span>
 <span class="r-in"><span><span class="co"># you can pass table inputs versus a single data.frame or tibble</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Get the applicable tables from `nemsqar`</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_arrest_table"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_patient_scene_table"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_response_table"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_vitals_table"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_procedures_table"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># create tables to test correct functioning</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># patient table</span></span></span>
+<span class="r-in"><span>  <span class="va">patient_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    incident_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2025-01-01"</span>, <span class="st">"2025-01-05"</span>, <span class="st">"2025-02-01"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"2025-01-01"</span>, <span class="st">"2025-06-01"</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    patient_dob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2000-01-01"</span>, <span class="st">"2020-01-01"</span>, <span class="st">"2023-02-01"</span>,</span></span>
+<span class="r-in"><span>                                <span class="st">"2023-01-01"</span>, <span class="st">"1970-06-01"</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    epatient_15 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">5</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">55</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,  <span class="co"># Ages</span></span></span>
+<span class="r-in"><span>    epatient_16 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span>, <span class="st">"Years"</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># response table</span></span></span>
+<span class="r-in"><span>  <span class="va">response_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eresponse_05 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fl">2205001</span>, <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># vitals table</span></span></span>
+<span class="r-in"><span>  <span class="va">vitals_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_01 <span class="op">=</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2025-01-01 22:59:00"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"2025-01-05 11:58:00"</span>, <span class="st">"2025-02-01 18:57:00"</span>, <span class="st">"2025-01-01 04:58:00"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"2025-06-01 12:57:00"</span>, <span class="st">"2025-01-01 23:05:00"</span>, <span class="st">"2025-01-05 12:04:00"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"2025-02-01 19:03:00"</span>, <span class="st">"2025-01-01 05:02:00"</span>, <span class="st">"2025-06-01 13:01:00"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    evitals_12 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">90</span>, <span class="fl">91</span>, <span class="fl">92</span>, <span class="fl">93</span>, <span class="fl">94</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># arrest table</span></span></span>
+<span class="r-in"><span>  <span class="va">arrest_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    earrest_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"No"</span>, <span class="fl">10</span><span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="co"># procedures table</span></span></span>
+<span class="r-in"><span>  <span class="va">procedures_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>    erecord_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"R1"</span>, <span class="st">"R2"</span>, <span class="st">"R3"</span>, <span class="st">"R4"</span>, <span class="st">"R5"</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eprocedures_01 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/as_date.html" class="external-link">as_datetime</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2025-01-01 23:00:00"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"2025-01-05 12:00:00"</span>, <span class="st">"2025-02-01 19:00:00"</span>, <span class="st">"2025-01-01 05:00:00"</span>,</span></span>
+<span class="r-in"><span>    <span class="st">"2025-06-01 13:00:00"</span><span class="op">)</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eprocedures_02 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="st">"No"</span>, <span class="fl">10</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>    eprocedures_03 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html" class="external-link">rep</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">16883004</span>, <span class="fl">112798008</span>, <span class="fl">78121007</span>, <span class="fl">49077009</span>,</span></span>
+<span class="r-in"><span>                           <span class="fl">673005</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run the function</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">airway_05_population</span><span class="op">(</span>df <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
-<span class="r-in"><span>         patient_scene_table <span class="op">=</span> <span class="va">nemsqar_patient_scene_table</span>,</span></span>
-<span class="r-in"><span>         procedures_table <span class="op">=</span> <span class="va">nemsqar_procedures_table</span>,</span></span>
-<span class="r-in"><span>         vitals_table <span class="op">=</span> <span class="va">nemsqar_vitals_table</span>,</span></span>
-<span class="r-in"><span>         arrest_table <span class="op">=</span> <span class="va">nemsqar_arrest_table</span>,</span></span>
-<span class="r-in"><span>         response_table <span class="op">=</span> <span class="va">nemsqar_response_table</span>,</span></span>
-<span class="r-in"><span>         erecord_01_col <span class="op">=</span> <span class="va">`Incident Patient Care Report Number - PCR (eRecord.01)`</span>,</span></span>
-<span class="r-in"><span>         incident_date_col <span class="op">=</span> <span class="va">`Incident Date`</span>,</span></span>
-<span class="r-in"><span>         patient_DOB_col <span class="op">=</span> <span class="va">`Patient Date Of Birth (ePatient.17)`</span>,</span></span>
-<span class="r-in"><span>         epatient_15_col <span class="op">=</span> <span class="va">`Patient Age (ePatient.15)`</span>,</span></span>
-<span class="r-in"><span>         epatient_16_col <span class="op">=</span> <span class="va">`Patient Age Units (ePatient.16)`</span>,</span></span>
-<span class="r-in"><span>         eresponse_05_col <span class="op">=</span> <span class="va">`Response Type Of Service Requested With Code (eResponse.05)`</span>,</span></span>
-<span class="r-in"><span>         eprocedures_01_col <span class="op">=</span> <span class="va">`Procedure Performed Date Time (eProcedures.01)`</span>,</span></span>
-<span class="r-in"><span>         eprocedures_02_col <span class="op">=</span> <span class="va">`Procedure Performed Prior To EMS Care (eProcedures.02)`</span>,</span></span>
-<span class="r-in"><span>         eprocedures_03_col <span class="op">=</span> <span class="va">`Procedure Performed Description And Code (eProcedures.03)`</span>,</span></span>
-<span class="r-in"><span>         earrest_01_col <span class="op">=</span> <span class="va">`Cardiac Arrest During EMS Event With Code (eArrest.01)`</span>,</span></span>
-<span class="r-in"><span>         evitals_01_col <span class="op">=</span> <span class="va">`Vitals Signs Taken Date Time (eVitals.01)`</span>,</span></span>
-<span class="r-in"><span>         evitals_012_col <span class="op">=</span> <span class="va">`Vitals Pulse Oximetry (eVitals.12)`</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">airway_05_population</span><span class="op">(</span>df <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>         patient_scene_table <span class="op">=</span> <span class="va">patient_table</span>,</span></span>
+<span class="r-in"><span>         procedures_table <span class="op">=</span> <span class="va">procedures_table</span>,</span></span>
+<span class="r-in"><span>         vitals_table <span class="op">=</span> <span class="va">vitals_table</span>,</span></span>
+<span class="r-in"><span>         arrest_table <span class="op">=</span> <span class="va">arrest_table</span>,</span></span>
+<span class="r-in"><span>         response_table <span class="op">=</span> <span class="va">response_table</span>,</span></span>
+<span class="r-in"><span>         erecord_01_col <span class="op">=</span> <span class="va">erecord_01</span>,</span></span>
+<span class="r-in"><span>         incident_date_col <span class="op">=</span> <span class="va">incident_date</span>,</span></span>
+<span class="r-in"><span>         patient_DOB_col <span class="op">=</span> <span class="va">patient_dob</span>,</span></span>
+<span class="r-in"><span>         epatient_15_col <span class="op">=</span> <span class="va">epatient_15</span>,</span></span>
+<span class="r-in"><span>         epatient_16_col <span class="op">=</span> <span class="va">epatient_16</span>,</span></span>
+<span class="r-in"><span>         eresponse_05_col <span class="op">=</span> <span class="va">eresponse_05</span>,</span></span>
+<span class="r-in"><span>         eprocedures_01_col <span class="op">=</span> <span class="va">eprocedures_01</span>,</span></span>
+<span class="r-in"><span>         eprocedures_02_col <span class="op">=</span> <span class="va">eprocedures_02</span>,</span></span>
+<span class="r-in"><span>         eprocedures_03_col <span class="op">=</span> <span class="va">eprocedures_03</span>,</span></span>
+<span class="r-in"><span>         earrest_01_col <span class="op">=</span> <span class="va">earrest_01</span>,</span></span>
+<span class="r-in"><span>         evitals_01_col <span class="op">=</span> <span class="va">evitals_01</span>,</span></span>
+<span class="r-in"><span>         evitals_12_col <span class="op">=</span> <span class="va">evitals_12</span></span></span>
 <span class="r-in"><span>         <span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 1 of 15 tasks] <span style="color: #00BB00;">●●●</span><span style="color: #FFFFFF;">───────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 2 of 15 tasks] <span style="color: #00BB00;">●●●●●</span><span style="color: #FFFFFF;">─────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 3 of 15 tasks] <span style="color: #00BB00;">●●●●●●●</span><span style="color: #FFFFFF;">───────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 4 of 15 tasks] <span style="color: #00BB00;">●●●●●●●●●</span><span style="color: #FFFFFF;">─────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 5 of 15 tasks] <span style="color: #00BB00;">●●●●●●●●●●●</span><span style="color: #FFFFFF;">───────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 6 of 15 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">─────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 7 of 15 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">───</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 8 of 15 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">─</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 9 of 15 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 10 of 15 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 11 of 15 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 12 of 15 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 13 of 15 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 14 of 15 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `airway_05_population()`  [Working on 15 of 15 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># show the results of filtering at each step</span></span></span>
+<span class="r-in"><span><span class="va">result</span><span class="op">$</span><span class="va">filter_process</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 11 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    filter                                                        count</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> Invasive airway procedures                                        5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> 911 calls                                                         5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> Excluded cardiac arrests                                          0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> Excluded newborns                                                 0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> All initial population intubation with adequate oxygen levels     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> Adults intubation with adequate oxygen levels                     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> Peds intubation with adequate oxygen levels                       0</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> Adults denominator                                                2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> Peds denominator                                                  3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> Initial Population                                                5</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">11</span> Total procedures in dataset                                       5</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
