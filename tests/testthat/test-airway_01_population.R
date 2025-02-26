@@ -369,3 +369,68 @@ testthat::test_that("airway_01_population handles non-numeric vital signs gracef
                                               eprocedures_06_col = `Procedure Successful (eProcedures.06)`
                                               ))
 })
+
+# Function should handle a dataframe as expected
+testthat::test_that("airway_01_population handles a dataframe input", {
+
+  # data
+  data <- tibble::tibble(
+
+    erecord_01 = rep(c("R1", "R2", "R3", "R4", "R5"), 2),
+    incident_date = rep(as.Date(c("2025-01-01", "2025-01-05", "2025-02-01",
+                                  "2025-01-01", "2025-06-01")), 2),
+    patient_dob = rep(as.Date(c("2000-01-01", "2020-01-01", "2023-02-01",
+                                "2023-01-01", "1970-06-01")), 2),
+    epatient_15 = rep(c(25, 5, 2, 2, 55), 2),  # Ages
+    epatient_16 = rep(c("Years", "Years", "Years", "Years", "Years"), 2),
+    eresponse_05 = rep(2205001, 10),
+    evitals_01 = lubridate::as_datetime(c("2025-01-01 22:59:00",
+                                          "2025-01-05 11:58:00", "2025-02-01 18:57:00", "2025-01-01 04:58:00",
+                                          "2025-06-01 12:57:00", "2025-01-01 23:05:00", "2025-01-05 12:04:00",
+                                          "2025-02-01 19:03:00", "2025-01-01 05:02:00", "2025-06-01 13:01:00")),
+    evitals_06 = rep(c(90, 100, 102, 103, 104), 2),
+    evitals_12 = rep(c(90, 91, 92, 93, 94), 2),
+    earrest_01 = rep("No", 10),
+    eprocedures_01 = rep(lubridate::as_datetime(c("2025-01-01 23:00:00",
+                                                  "2025-01-05 12:00:00", "2025-02-01 19:00:00", "2025-01-01 05:00:00",
+                                                  "2025-06-01 13:00:00")), 2),
+    eprocedures_02 = rep("No", 10),
+    eprocedures_03 = rep(c(16883004, 112798008, 78121007, 49077009,
+                           673005), 2),
+    eprocedures_05 = rep(1, 10),
+    eprocedures_06 = rep(9923003, 10),
+
+  )
+
+  # Run the function
+  result <- airway_01_population(df = data,
+                      erecord_01_col = erecord_01,
+                      incident_date_col = incident_date,
+                      patient_DOB_col = patient_dob,
+                      epatient_15_col = epatient_15,
+                      epatient_16_col = epatient_16,
+                      eresponse_05_col = eresponse_05,
+                      eprocedures_01_col = eprocedures_01,
+                      eprocedures_02_col = eprocedures_02,
+                      eprocedures_03_col = eprocedures_03,
+                      eprocedures_05_col = eprocedures_05,
+                      eprocedures_06_col = eprocedures_06,
+                      earrest_01_col = earrest_01,
+                      evitals_01_col = evitals_01,
+                      evitals_06_col = evitals_06,
+                      evitals_12_col = evitals_12
+  )
+
+  testthat::expect_true(!is.logical(result$initial_population))
+  testthat::expect_true(!is.logical(result$adults))
+  testthat::expect_true(!is.logical(result$peds))
+  testthat::expect_true(!is.logical(result$filter_process))
+  testthat::expect_equal(result$filter_process |>
+                           dplyr::filter(filter == "Total procedures in dataset") |>
+                           dplyr::pull(count),
+                         nrow(data) / 2
+  )
+
+})
+
+

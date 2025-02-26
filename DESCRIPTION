@@ -1,5 +1,5 @@
 Package: nemsqar
-Title: National EMS Quality Alliance Measure Calculations
+Title: National Emergency Medical Service Quality Alliance Measure Calculations
 Version: 1.0.0
 Authors@R: c(
     person("Nicolas", "Foss", email = "nicolas.foss@hhs.iowa.gov", role = c("aut", "cre")),
@@ -8,8 +8,8 @@ Authors@R: c(
     person("Alyssa", "Green", email = "awhim@nemsqa.org", role="ctb"),
     person("Iowa Department of Health and Human Services", role = "cph")
            )
-Description: Designed to automate the calculation of EMS quality metrics, 'nemsqar' implements 
-             measures defined by the National EMS Quality Alliance (NEMSQA). By providing 
+Description: Designed to automate the calculation of Emergency Medical Service (EMS) quality metrics, 
+             'nemsqar' implements measures defined by the National EMS Quality Alliance (NEMSQA). By providing 
              reliable, evidence-based quality assessments, the package supports EMS agencies, 
              healthcare providers, and researchers in evaluating and improving patient outcomes. 
              Users can find details on all approved NEMSQA measures at <https://www.nemsqa.org/measures>. 

@@ -39,7 +39,6 @@
 #' @param eprocedures_02_col Column name for whether or not the procedure was
 #'   performed prior to EMS care being provided.
 #' @param eprocedures_03_col Column name for procedure codes.
-#' @param eprocedures_05_col Column name for number of procedure attempts.
 #' @param eprocedures_06_col Column name for procedure success codes.
 #' @param eairway_02_col Column name for airway procedure data (datetime).
 #'   Default is `NULL`.
@@ -66,94 +65,91 @@
 #'
 #' @examples
 #'
-#'\dontrun{
-#'
 #' # If you are sourcing your data from a SQL database connection
 #' # or if you have your data in several different tables,
 #' # you can pass table inputs versus a single data.frame or tibble
 #'
-#' # Get the applicable tables from `nemsqar`
-#' data("nemsqar_airway_table")
-#' data("nemsqar_patient_scene_table")
-#' data("nemsqar_response_table")
-#' data("nemsqar_vitals_table")
-#' data("nemsqar_procedures_table")
+#' # create tables to test correct functioning
+#'
+#'   # patient table
+#'   patient_table <- tibble::tibble(
+#'
+#'     erecord_01 = rep(c("R1", "R2", "R3", "R4", "R5"), 2),
+#'     incident_date = rep(as.Date(c("2025-01-01", "2025-01-05", "2025-02-01",
+#'     "2025-01-01", "2025-06-01")), 2),
+#'     patient_dob = rep(as.Date(c("2000-01-01", "2020-01-01", "2023-02-01",
+#'                                 "2023-01-01", "1970-06-01")), 2),
+#'     epatient_15 = rep(c(25, 5, 2, 2, 55), 2),  # Ages
+#'     epatient_16 = rep(c("Years", "Years", "Years", "Years", "Years"), 2)
+#'
+#'   )
+#'
+#'   # response table
+#'   response_table <- tibble::tibble(
+#'
+#'     erecord_01 = rep(c("R1", "R2", "R3", "R4", "R5"), 2),
+#'     eresponse_05 = rep(2205001, 10)
+#'
+#'   )
+#'
+#'   # vitals table
+#'   vitals_table <- tibble::tibble(
+#'
+#'     erecord_01 = rep(c("R1", "R2", "R3", "R4", "R5"), 2),
+#'     evitals_01 = lubridate::as_datetime(c("2025-01-01 23:02:00",
+#'     "2025-01-05 12:03:00", "2025-02-01 19:04:00", "2025-01-01 05:05:00",
+#'     "2025-06-01 13:01:00", "2025-01-01 23:02:00",
+#'     "2025-01-05 12:03:00", "2025-02-01 19:04:00", "2025-01-01 05:05:00",
+#'     "2025-06-01 13:06:00")),
+#'     evitals_16 = rep(c(5, 6, 7, 8, 9), 2)
+#'
+#'   )
+#'
+#'   # airway table
+#'   airway_table <- tibble::tibble(
+#'   erecord_01 = rep(c("R1", "R2", "R3", "R4", "R5"), 2),
+#'   eairway_02 = rep(lubridate::as_datetime(c("2025-01-01 23:05:00",
+#'     "2025-01-05 12:02:00", "2025-02-01 19:03:00", "2025-01-01 05:04:00",
+#'     "2025-06-01 13:06:00")), 2),
+#'   eairway_04 = rep(4004019, 10)
+#'   )
+#'
+#'   # procedures table
+#'   procedures_table <- tibble::tibble(
+#'
+#'     erecord_01 = rep(c("R1", "R2", "R3", "R4", "R5"), 2),
+#'     eprocedures_01 = rep(lubridate::as_datetime(c("2025-01-01 23:00:00",
+#'     "2025-01-05 12:00:00", "2025-02-01 19:00:00", "2025-01-01 05:00:00",
+#'     "2025-06-01 13:00:00")), 2),
+#'     eprocedures_02 = rep("No", 10),
+#'     eprocedures_03 = rep(c(16883004, 112798008, 78121007, 49077009,
+#'                            673005), 2),
+#'     eprocedures_06 = rep(9923003, 10)
+#'
+#'   )
 #'
 #' # Run the function
-#'
 #' airway_18(df = NULL,
-#'          patient_scene_table = nemsqar_patient_scene_table,
-#'          procedures_table = nemsqar_procedures_table,
-#'          vitals_table = nemsqar_vitals_table,
-#'          airway_table = nemsqar_airway_table,
-#'          response_table = nemsqar_response_table,
-#'          erecord_01_col =
-#'          `Incident Patient Care Report Number - PCR (eRecord.01)`,
-#'          incident_date_col = `Incident Date`,
-#'          patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
-#'          epatient_15_col = `Patient Age (ePatient.15)`,
-#'          epatient_16_col = `Patient Age Units (ePatient.16)`,
-#'          eresponse_05_col =
-#'          `Response Type Of Service Requested With Code (eResponse.05)`,
-#'          eprocedures_01_col =
-#'          `Procedure Performed Date Time (eProcedures.01)`,
-#'          eprocedures_02_col =
-#'          `Procedure Performed Prior To EMS Care (eProcedures.02)`,
-#'          eprocedures_03_col =
-#'          `Procedure Performed Description And Code (eProcedures.03)`,
-#'          eprocedures_05_col =
-#'          `Procedure Number Of Attempts (eProcedures.05)`,
-#'          eprocedures_06_col =
-#'          `Procedure Successful (eProcedures.06)`,
-#'          eairway_02_col =
-#'          `Airway Device Placement Confirmation Date Time (eAirway.02)`,
-#'          eairway_04_col =
-#'          `Airway Device Placement Confirmed Method List (eAirway.04)`,
-#'          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
-#'          evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`
+#'          patient_scene_table = patient_table,
+#'          procedures_table = procedures_table,
+#'          vitals_table = vitals_table,
+#'          response_table = response_table,
+#'          airway_table = airway_table,
+#'          erecord_01_col = erecord_01,
+#'          incident_date_col = incident_date,
+#'          patient_DOB_col = patient_dob,
+#'          epatient_15_col = epatient_15,
+#'          epatient_16_col = epatient_16,
+#'          eresponse_05_col = eresponse_05,
+#'          eprocedures_01_col = eprocedures_01,
+#'          eprocedures_02_col = eprocedures_02,
+#'          eprocedures_03_col = eprocedures_03,
+#'          eprocedures_06_col = eprocedures_06,
+#'          evitals_01_col = evitals_01,
+#'          evitals_16_col = evitals_16,
+#'          eairway_02_col = eairway_02,
+#'          eairway_04_col = eairway_04
 #'          )
-#'
-#' # You can also pass a data.frame that has all the fields
-#' # necessary to calculate the measure, and `airway_18` will
-#' # take care of any one-to-many or many-to-many relationships for you
-#'
-#' # Load the data.frame from the package
-#' data("nemsqar_airway_18_df")
-#'
-#' # Run the function
-#'
-#' airway_18(df = nemsqar_airway_18_df,
-#'          patient_scene_table = NULL,
-#'          procedures_table = NULL,
-#'          vitals_table = NULL,
-#'          airway_table = NULL,
-#'          response_table = NULL,
-#'          erecord_01_col =
-#'          `Incident Patient Care Report Number - PCR (eRecord.01)`,
-#'          incident_date_col = `Incident Date`,
-#'          patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
-#'          epatient_15_col = `Patient Age (ePatient.15)`,
-#'          epatient_16_col = `Patient Age Units (ePatient.16)`,
-#'          eresponse_05_col =
-#'          `Response Type Of Service Requested With Code (eResponse.05)`,
-#'          eprocedures_01_col =
-#'          `Procedure Performed Date Time (eProcedures.01)`,
-#'          eprocedures_02_col =
-#'          `Procedure Performed Prior To EMS Care (eProcedures.02)`,
-#'          eprocedures_03_col =
-#'          `Procedure Performed Description And Code (eProcedures.03)`,
-#'          eprocedures_05_col =
-#'          `Procedure Number Of Attempts (eProcedures.05)`,
-#'          eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
-#'          eairway_02_col =
-#'          `Airway Device Placement Confirmation Date Time (eAirway.02)`,
-#'          eairway_04_col =
-#'          `Airway Device Placement Confirmed Method List (eAirway.04)`,
-#'          evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
-#'          evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`
-#'          )
-#'
-#'}
 #'
 #' @author Nicolas Foss, Ed.D., MS
 #'
@@ -174,7 +170,6 @@ airway_18 <- function(df = NULL,
                       eprocedures_01_col,
                       eprocedures_02_col,
                       eprocedures_03_col,
-                      eprocedures_05_col,
                       eprocedures_06_col,
                       eairway_02_col = NULL,
                       eairway_04_col = NULL,
@@ -218,7 +213,6 @@ airway_18 <- function(df = NULL,
                                                   eprocedures_01_col = {{ eprocedures_01_col }},
                                                   eprocedures_02_col = {{ eprocedures_02_col }},
                                                   eprocedures_03_col = {{ eprocedures_03_col }},
-                                                  eprocedures_05_col = {{ eprocedures_05_col }},
                                                   eprocedures_06_col = {{ eprocedures_06_col }},
                                                   eairway_02_col = {{ eairway_02_col }},
                                                   eairway_04_col = {{ eairway_04_col }},
@@ -311,7 +305,6 @@ airway_18 <- function(df = NULL,
                                                   eprocedures_01_col = {{ eprocedures_01_col }},
                                                   eprocedures_02_col = {{ eprocedures_02_col }},
                                                   eprocedures_03_col = {{ eprocedures_03_col }},
-                                                  eprocedures_05_col = {{ eprocedures_05_col }},
                                                   eprocedures_06_col = {{ eprocedures_06_col }},
                                                   eairway_02_col = {{ eairway_02_col }},
                                                   eairway_04_col = {{ eairway_04_col }},

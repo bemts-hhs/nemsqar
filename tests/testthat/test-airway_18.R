@@ -29,7 +29,6 @@ testthat::test_that("airway_18 returns expected structure with df argument", {
     ),
     `Procedure Performed Prior To EMS Care (eProcedures.02)` = rep("No", 5),
     `Procedure Performed Description And Code (eProcedures.03)` = rep("112798008", 5),
-    `Procedure Number Of Attempts (eProcedures.05)` = rep(1, 5),
     `Procedure Successful (eProcedures.06)` = rep("Yes", 5),
     `Airway Device Placement Confirmation Date Time (eAirway.02)` = c(
       lubridate::as_datetime("2023-01-01 15:05:00"),
@@ -63,7 +62,6 @@ testthat::test_that("airway_18 returns expected structure with df argument", {
                       eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
                       eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
                       eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
-                      eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
                       eprocedures_06_col = `Procedure Successful (eProcedures.06)`
                       )
 
@@ -114,7 +112,6 @@ testthat::test_that("airway_18 returns expected structure with table args", {
     ),
     `Procedure Performed Prior To EMS Care (eProcedures.02)` = rep("No", 5),
     `Procedure Performed Description And Code (eProcedures.03)` = rep("112798008", 5),
-    `Procedure Number Of Attempts (eProcedures.05)` = rep(1, 5),
     `Procedure Successful (eProcedures.06)` = rep("Yes", 5)
     )
 
@@ -162,7 +159,6 @@ testthat::test_that("airway_18 returns expected structure with table args", {
                       eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
                       eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
                       eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
-                      eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
                       eprocedures_06_col = `Procedure Successful (eProcedures.06)`
   )
 
@@ -213,7 +209,6 @@ testthat::test_that("airway_18 correctly identifies advanced airway attempts", {
     ),
     `Procedure Performed Prior To EMS Care (eProcedures.02)` = rep("No", 5),
     `Procedure Performed Description And Code (eProcedures.03)` = rep("112798008", 5),
-    `Procedure Number Of Attempts (eProcedures.05)` = rep(1, 5),
     `Procedure Successful (eProcedures.06)` = rep("Yes", 5)
   )
 
@@ -261,7 +256,6 @@ testthat::test_that("airway_18 correctly identifies advanced airway attempts", {
                       eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
                       eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
                       eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
-                      eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
                       eprocedures_06_col = `Procedure Successful (eProcedures.06)`
                       )
 
@@ -283,7 +277,6 @@ testthat::test_that("airway_18 correctly identifies advanced airway attempts", {
                                      eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
                                      eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
                                      eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
-                                     eprocedures_05_col = `Procedure Number Of Attempts (eProcedures.05)`,
                                      eprocedures_06_col = `Procedure Successful (eProcedures.06)`
                                      )
 
@@ -328,7 +321,6 @@ testthat::test_that("airway_18 handles empty input data", {
     eprocedures_01_col = character(),
     eprocedures_02_col = character(),
     eprocedures_03_col = character(),
-    eprocedures_05_col = character(),
     eprocedures_06_col = character(),
     eairway_02_col = character(),
     eairway_04_col = character(),
@@ -345,7 +337,6 @@ testthat::test_that("airway_18 handles empty input data", {
                       eprocedures_01_col = eprocedures_01_col,
                       eprocedures_02_col = eprocedures_02_col,
                       eprocedures_03_col = eprocedures_03_col,
-                      eprocedures_05_col = eprocedures_05_col,
                       eprocedures_06_col = eprocedures_06_col,
                       eairway_02_col = NULL,
                       eairway_04_col = NULL,
@@ -354,3 +345,4 @@ testthat::test_that("airway_18 handles empty input data", {
                       ))
 
 })
+

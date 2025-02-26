@@ -210,3 +210,74 @@ testthat::test_that("airway_01 correctly processes complete fact tables", {
   testthat::expect_true(all(result$denominator > 0, na.rm = TRUE))
 
 })
+
+testthat::test_that("airway_01 correctly processes a dataframe", {
+
+    # data
+    data <- tibble::tibble(
+
+      erecord_01 = rep(c("R1", "R2", "R3", "R4", "R5"), 2),
+      incident_date = rep(as.Date(c("2025-01-01", "2025-01-05", "2025-02-01",
+      "2025-01-01", "2025-06-01")), 2),
+      patient_dob = rep(as.Date(c("2000-01-01", "2020-01-01", "2023-02-01",
+                                  "2023-01-01", "1970-06-01")), 2),
+      epatient_15 = rep(c(25, 5, 2, 2, 55), 2),  # Ages
+      epatient_16 = rep(c("Years", "Years", "Years", "Years", "Years"), 2),
+      eresponse_05 = rep(2205001, 10),
+      evitals_01 = lubridate::as_datetime(c("2025-01-01 22:59:00",
+      "2025-01-05 11:58:00", "2025-02-01 18:57:00", "2025-01-01 04:58:00",
+      "2025-06-01 12:57:00", "2025-01-01 23:05:00", "2025-01-05 12:04:00",
+      "2025-02-01 19:03:00", "2025-01-01 05:02:00", "2025-06-01 13:01:00")),
+      evitals_06 = rep(c(90, 100, 102, 103, 104), 2),
+      evitals_12 = rep(c(90, 91, 92, 93, 94), 2),
+      earrest_01 = rep("No", 10),
+      eprocedures_01 = rep(lubridate::as_datetime(c("2025-01-01 23:00:00",
+      "2025-01-05 12:00:00", "2025-02-01 19:00:00", "2025-01-01 05:00:00",
+      "2025-06-01 13:00:00")), 2),
+      eprocedures_02 = rep("No", 10),
+      eprocedures_03 = rep(c(16883004, 112798008, 78121007, 49077009,
+                             673005), 2),
+      eprocedures_05 = rep(1, 10),
+      eprocedures_06 = rep(9923003, 10),
+
+    )
+
+  # Run the function
+  result <- airway_01(df = data,
+           erecord_01_col = erecord_01,
+           incident_date_col = incident_date,
+           patient_DOB_col = patient_dob,
+           epatient_15_col = epatient_15,
+           epatient_16_col = epatient_16,
+           eresponse_05_col = eresponse_05,
+           eprocedures_01_col = eprocedures_01,
+           eprocedures_02_col = eprocedures_02,
+           eprocedures_03_col = eprocedures_03,
+           eprocedures_05_col = eprocedures_05,
+           eprocedures_06_col = eprocedures_06,
+           earrest_01_col = earrest_01,
+           evitals_01_col = evitals_01,
+           evitals_06_col = evitals_06,
+           evitals_12_col = evitals_12
+           )
+
+  # Check that a data frame is returned
+  testthat::expect_s3_class(result, "data.frame")
+
+  # Check that the output contains expected columns
+  expected_cols <- c("pop", "numerator", "denominator", "prop", "prop_label")
+  testthat::expect_true(all(expected_cols %in% colnames(result)))
+
+  # Ensure at least some rows exist
+  testthat::expect_gt(nrow(result), 0)
+
+  # Validate that prop is between 0 and 1
+  testthat::expect_true(all(result$prop >= 0 & result$prop <= 1, na.rm = TRUE))
+
+  # Check that results exist for Adults and Peds populations
+  testthat::expect_true(all(c("Adults", "Peds") %in% result$pop))
+
+  # Ensure denominator is non-zero (indicating valid patient inclusion)
+  testthat::expect_true(all(result$denominator > 0, na.rm = TRUE))
+
+})
