@@ -151,7 +151,7 @@
 #'          eairway_04_col = eairway_04
 #'          )
 #'
-#' @author Nicolas Foss, Ed.D., MS
+#' @author Nicolas Foss, Ed.D., MS, Samuel Kordik, BBA, BS
 #'
 #' @export
 #'

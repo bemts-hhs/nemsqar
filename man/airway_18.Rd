@@ -202,5 +202,5 @@ airway_18(df = NULL,
 
 }
 \author{
-Nicolas Foss, Ed.D., MS
+Nicolas Foss, Ed.D., MS, Samuel Kordik, BBA, BS
 }
