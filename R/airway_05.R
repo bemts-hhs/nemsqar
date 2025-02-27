@@ -136,7 +136,7 @@
 #'          evitals_12_col = evitals_12
 #'          )
 #'
-#' @author Samuel Kordi, BBA, BS, Nicolas Foss Ed.D., MS
+#' @author Samuel Kordik, BBA, BS, Nicolas Foss Ed.D., MS
 #'
 #' @export
 #'
