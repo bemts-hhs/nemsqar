@@ -167,40 +167,86 @@ a single comma-separated list.</p></dd>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># \dontrun{</span></span></span>
-<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># If you are sourcing your data from a SQL database connection</span></span></span>
 <span class="r-in"><span><span class="co"># or if you have your data in several different tables,</span></span></span>
 <span class="r-in"><span><span class="co"># you can pass table inputs versus a single data.frame or tibble</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Get the applicable tables from `nemsqar`</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_medications_table"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_patient_scene_table"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_response_table"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="st">"nemsqar_situation_table"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># create tables to test correct functioning</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="fu">asthma_01_population</span><span class="op">(</span></span></span>
+<span class="r-in"><span><span class="co"># patient table</span></span></span>
+<span class="r-in"><span><span class="va">patient_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span>patient_scene_table <span class="op">=</span> <span class="va">nemsqar_patient_scene_table</span>,</span></span>
-<span class="r-in"><span>response_table <span class="op">=</span> <span class="va">nemsqar_response_table</span>,</span></span>
-<span class="r-in"><span>situation_table <span class="op">=</span> <span class="va">nemsqar_situation_table</span>,</span></span>
-<span class="r-in"><span>medications_table <span class="op">=</span> <span class="va">nemsqar_medications_table</span>,</span></span>
-<span class="r-in"><span>erecord_01_col <span class="op">=</span> <span class="va">`Incident Patient Care Report Number - PCR`</span>,</span></span>
-<span class="r-in"><span>incident_date_col <span class="op">=</span> <span class="va">`Incident Date`</span>,</span></span>
-<span class="r-in"><span>patient_DOB_col <span class="op">=</span> <span class="va">`Patient Date Of Birth`</span>,</span></span>
-<span class="r-in"><span>epatient_15_col <span class="op">=</span> <span class="va">`Patient Age`</span>,</span></span>
-<span class="r-in"><span>epatient_16_col <span class="op">=</span> <span class="va">`Patient Age Units`</span>,</span></span>
-<span class="r-in"><span>eresponse_05_col <span class="op">=</span> <span class="va">`Response Type Of Service Requested With Code`</span>,</span></span>
-<span class="r-in"><span>esituation_11_col <span class="op">=</span></span></span>
-<span class="r-in"><span><span class="va">`Situation Provider Primary Impression Code And Description`</span>,</span></span>
-<span class="r-in"><span>esituation_12_col <span class="op">=</span></span></span>
-<span class="r-in"><span><span class="va">`Situation Provider Secondary Impression Description And Code`</span>,</span></span>
-<span class="r-in"><span>emedications_03_col <span class="op">=</span></span></span>
-<span class="r-in"><span><span class="va">`Medication Given or Administered Description And RXCUI Code`</span></span></span>
+<span class="r-in"><span>  erecord_01 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span></span>
+<span class="r-in"><span>  incident_date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2025-01-01"</span>, <span class="st">"2025-01-05"</span>, <span class="st">"2025-02-01"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  patient_dob <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/as.Date.html" class="external-link">as.Date</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2000-01-01"</span>, <span class="st">"2020-01-01"</span>, <span class="st">"2023-01-01"</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  epatient_15 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">25</span>, <span class="fl">5</span>, <span class="fl">2</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  epatient_16 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"years"</span>, <span class="st">"years"</span>, <span class="st">"months"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="op">}</span> <span class="co"># }</span></span></span>
+<span class="r-in"><span><span class="co"># response table</span></span></span>
+<span class="r-in"><span><span class="va">response_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  erecord_01 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span></span>
+<span class="r-in"><span>  eresponse_05 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2205001"</span>, <span class="st">"2205009"</span>, <span class="st">"2205003"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># situation table</span></span></span>
+<span class="r-in"><span><span class="va">situation_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  erecord_01 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span></span>
+<span class="r-in"><span>  esituation_11 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"weakness"</span>, <span class="st">"asthma"</span>, <span class="st">"bronchospasm"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  esituation_12 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"asthma"</span>, <span class="st">"weakness"</span>, <span class="st">"weakness"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># medications table</span></span></span>
+<span class="r-in"><span><span class="va">medications_table</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span>  erecord_01 <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">3</span>,</span></span>
+<span class="r-in"><span>  emedications_03 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"albuterol"</span>, <span class="st">"levalbuterol"</span>, <span class="st">"metaproterenol"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># test the success of the function</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu">asthma_01_population</span><span class="op">(</span>patient_scene_table <span class="op">=</span> <span class="va">patient_table</span>,</span></span>
+<span class="r-in"><span>                               response_table <span class="op">=</span> <span class="va">response_table</span>,</span></span>
+<span class="r-in"><span>                               situation_table <span class="op">=</span> <span class="va">situation_table</span>,</span></span>
+<span class="r-in"><span>                               medications_table <span class="op">=</span> <span class="va">medications_table</span>,</span></span>
+<span class="r-in"><span>                               erecord_01_col <span class="op">=</span> <span class="va">erecord_01</span>,</span></span>
+<span class="r-in"><span>                               incident_date_col <span class="op">=</span> <span class="va">incident_date</span>,</span></span>
+<span class="r-in"><span>                               patient_DOB_col <span class="op">=</span> <span class="va">patient_dob</span>,</span></span>
+<span class="r-in"><span>                               epatient_15_col <span class="op">=</span> <span class="va">epatient_15</span>,</span></span>
+<span class="r-in"><span>                               epatient_16_col <span class="op">=</span> <span class="va">epatient_16</span>,</span></span>
+<span class="r-in"><span>                               eresponse_05_col <span class="op">=</span> <span class="va">eresponse_05</span>,</span></span>
+<span class="r-in"><span>                               esituation_11_col <span class="op">=</span> <span class="va">esituation_11</span>,</span></span>
+<span class="r-in"><span>                               esituation_12_col <span class="op">=</span> <span class="va">esituation_12</span>,</span></span>
+<span class="r-in"><span>                               emedications_03_col <span class="op">=</span> <span class="va">emedications_03</span></span></span>
+<span class="r-in"><span>                               <span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `asthma_01_population()`  [Working on 1 of 10 tasks] <span style="color: #00BB00;">●●●●</span><span style="color: #FFFFFF;">──────────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `asthma_01_population()`  [Working on 2 of 10 tasks] <span style="color: #00BB00;">●●●●●●●</span><span style="color: #FFFFFF;">───────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `asthma_01_population()`  [Working on 3 of 10 tasks] <span style="color: #00BB00;">●●●●●●●●●●</span><span style="color: #FFFFFF;">────────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `asthma_01_population()`  [Working on 4 of 10 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">─────</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `asthma_01_population()`  [Working on 5 of 10 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●</span><span style="color: #FFFFFF;">──</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `asthma_01_population()`  [Working on 6 of 10 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `asthma_01_population()`  [Working on 7 of 10 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `asthma_01_population()`  [Working on 8 of 10 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `asthma_01_population()`  [Working on 9 of 10 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `asthma_01_population()`  [Working on 10 of 10 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●●●●●</span>…</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># show the results of filtering at each step</span></span></span>
+<span class="r-in"><span><span class="va">result</span><span class="op">$</span><span class="va">filter_process</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 7 × 2</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   filter             count</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>              <span style="color: #949494; font-style: italic;">&lt;int&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> 911 calls              3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Asthma cases           2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">3</span> Beta agonist cases     3</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">4</span> Adults denominator     1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">5</span> Peds denominator       1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">6</span> Initial population     2</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">7</span> Total dataset          3</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>
