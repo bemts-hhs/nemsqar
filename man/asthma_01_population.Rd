@@ -88,40 +88,65 @@ proportion of cases that received beta-agonist treatment.
 }
 \examples{
 
-\dontrun{
-
 # If you are sourcing your data from a SQL database connection
 # or if you have your data in several different tables,
 # you can pass table inputs versus a single data.frame or tibble
 
-# Get the applicable tables from `nemsqar`
-data("nemsqar_medications_table")
-data("nemsqar_patient_scene_table")
-data("nemsqar_response_table")
-data("nemsqar_situation_table")
+# create tables to test correct functioning
 
-asthma_01_population(
+# patient table
+patient_table <- tibble::tibble(
 
-patient_scene_table = nemsqar_patient_scene_table,
-response_table = nemsqar_response_table,
-situation_table = nemsqar_situation_table,
-medications_table = nemsqar_medications_table,
-erecord_01_col = `Incident Patient Care Report Number - PCR`,
-incident_date_col = `Incident Date`,
-patient_DOB_col = `Patient Date Of Birth`,
-epatient_15_col = `Patient Age`,
-epatient_16_col = `Patient Age Units`,
-eresponse_05_col = `Response Type Of Service Requested With Code`,
-esituation_11_col =
-`Situation Provider Primary Impression Code And Description`,
-esituation_12_col =
-`Situation Provider Secondary Impression Description And Code`,
-emedications_03_col =
-`Medication Given or Administered Description And RXCUI Code`
+  erecord_01 = 1:3,
+  incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01")),
+  patient_dob = as.Date(c("2000-01-01", "2020-01-01", "2023-01-01")),
+  epatient_15 = c(25, 5, 2),
+  epatient_16 = c("years", "years", "months")
 
 )
 
-}
+# response table
+response_table <- tibble::tibble(
+
+  erecord_01 = 1:3,
+  eresponse_05 = c("2205001", "2205009", "2205003")
+
+)
+
+# situation table
+situation_table <- tibble::tibble(
+
+  erecord_01 = 1:3,
+  esituation_11 = c("weakness", "asthma", "bronchospasm"),
+  esituation_12 = c("asthma", "weakness", "weakness")
+)
+
+# medications table
+medications_table <- tibble::tibble(
+
+  erecord_01 = 1:3,
+  emedications_03 = c("albuterol", "levalbuterol", "metaproterenol")
+
+)
+
+# test the success of the function
+result <- asthma_01_population(patient_scene_table = patient_table,
+                               response_table = response_table,
+                               situation_table = situation_table,
+                               medications_table = medications_table,
+                               erecord_01_col = erecord_01,
+                               incident_date_col = incident_date,
+                               patient_DOB_col = patient_dob,
+                               epatient_15_col = epatient_15,
+                               epatient_16_col = epatient_16,
+                               eresponse_05_col = eresponse_05,
+                               esituation_11_col = esituation_11,
+                               esituation_12_col = esituation_12,
+                               emedications_03_col = emedications_03
+                               )
+
+# show the results of filtering at each step
+result$filter_process
 
 }
 \author{

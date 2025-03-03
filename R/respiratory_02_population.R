@@ -318,7 +318,7 @@ respiratory_02_population <- function(df = NULL,
   # the user should ensure that variables beyond those supplied for calculations
   # are distinct (i.e. one value or cell per patient)
 
-  cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
 
   if (
     all(
@@ -328,7 +328,7 @@ respiratory_02_population <- function(df = NULL,
   ) {
 
   final_data <- patient_scene_table |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
     dplyr::mutate(patient_age_in_years = as.numeric(difftime(
       time1 = {{ incident_date_col }},
       time2 = {{ patient_DOB_col }},
@@ -341,12 +341,12 @@ respiratory_02_population <- function(df = NULL,
     )),
 
     # system age checks
-    system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor = system_age_minor1 | system_age_minor2,
-    system_age_minor_exclusion1 = {{ epatient_15_col }} < 24 & grepl(pattern = hour_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor_exclusion2 = {{ epatient_15_col }} < 120 & grepl(pattern = minute_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_minor_exclusion1 = {{ epatient_15_col }} < 24 & grepl(pattern = hour_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor_exclusion2 = {{ epatient_15_col }} < 120 & grepl(pattern = minute_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor_exclusion = system_age_minor_exclusion1 | system_age_minor_exclusion2,
 
     # calculated age checks
@@ -364,16 +364,16 @@ respiratory_02_population <- function(df = NULL,
   {
 
     final_data <- patient_scene_table |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
     dplyr::mutate(
 
     # system age checks
-    system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor = system_age_minor1 | system_age_minor2,
-    system_age_minor_exclusion1 = {{ epatient_15_col }} < 24 & grepl(pattern = hour_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor_exclusion2 = {{ epatient_15_col }} < 120 & grepl(pattern = minute_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_minor_exclusion1 = {{ epatient_15_col }} < 24 & grepl(pattern = hour_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor_exclusion2 = {{ epatient_15_col }} < 120 & grepl(pattern = minute_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor_exclusion = system_age_minor_exclusion1 | system_age_minor_exclusion2
 
     )
@@ -389,7 +389,7 @@ respiratory_02_population <- function(df = NULL,
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
 
-  cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
 
   # pulse oximetry
   pulse_oximetry_data <- vitals_table |>
@@ -403,7 +403,7 @@ respiratory_02_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
 
   # oxygen med used
   oxygen_med_data <- medications_table |>
@@ -411,14 +411,14 @@ respiratory_02_population <- function(df = NULL,
     dplyr::distinct() |>
     dplyr::filter(
 
-      grepl(pattern = oxygen_values, x = {{ emedications_03_col }}) &
-        !grepl(pattern = not_med, x = {{ emedications_03_col }}, ignore.case = T)
+      grepl(pattern = oxygen_values, x = {{ emedications_03_col }}, ignore.case = TRUE) &
+        !grepl(pattern = not_med, x = {{ emedications_03_col }}, ignore.case = TRUE)
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 4, id = progress_bar_population, force = TRUE)
 
   # oxygen procedure used
   oxygen_proc_data <- procedures_table |>
@@ -426,24 +426,24 @@ respiratory_02_population <- function(df = NULL,
     dplyr::distinct() |>
     dplyr::filter(
 
-      grepl(pattern = oxygen_therapy_values, x = {{ eprocedures_03_col }}, ignore.case = T) &
-        !grepl(pattern = not_proc, x = {{ eprocedures_03_col }}, ignore.case = T)
+      grepl(pattern = oxygen_therapy_values, x = {{ eprocedures_03_col }}, ignore.case = TRUE) &
+        !grepl(pattern = not_proc, x = {{ eprocedures_03_col }}, ignore.case = TRUE)
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
 
   # 911 calls
   call_911_data <- response_table |>
     dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
     dplyr::distinct() |>
-    dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)) |>
+    dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = TRUE)) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
 
   # assign variables to final data
   computing_population <- final_data |>
@@ -454,7 +454,7 @@ respiratory_02_population <- function(df = NULL,
                   CALL_911 = {{ erecord_01_col }} %in% call_911_data
     )
 
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
 
   # get the initial population
   initial_population <- computing_population |>
@@ -468,7 +468,7 @@ respiratory_02_population <- function(df = NULL,
 
   # Adult and Pediatric Populations
 
-  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
   if(
 
@@ -488,7 +488,7 @@ respiratory_02_population <- function(df = NULL,
 
     )
 
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
 
   # get population 2 for respiratory-02, adults
   adult_pop <- initial_population |>
@@ -513,7 +513,7 @@ respiratory_02_population <- function(df = NULL,
 
       )
 
-    cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
 
     # get population 2 for respiratory-02, adults
     adult_pop <- initial_population |>
@@ -524,7 +524,7 @@ respiratory_02_population <- function(df = NULL,
   # summarize
 
   # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
 
   # summarize counts for populations filtered
   filter_counts <- tibble::tibble(
@@ -538,10 +538,10 @@ respiratory_02_population <- function(df = NULL,
                "Total dataset"
     ),
     count = c(
-      sum(computing_population$OXYGEN1, na.rm = T),
-      sum(computing_population$OXYGEN2, na.rm = T),
-      sum(computing_population$PULSE_OXIMETRY, na.rm = T),
-      sum(computing_population$CALL_911, na.rm = T),
+      sum(computing_population$OXYGEN1, na.rm = TRUE),
+      sum(computing_population$OXYGEN2, na.rm = TRUE),
+      sum(computing_population$PULSE_OXIMETRY, na.rm = TRUE),
+      sum(computing_population$CALL_911, na.rm = TRUE),
       nrow(adult_pop),
       nrow(peds_pop),
       nrow(initial_population),
@@ -549,7 +549,7 @@ respiratory_02_population <- function(df = NULL,
     )
   )
 
-  cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 11, id = progress_bar_population, force = TRUE)
 
   # get the population of interest
   respiratory.02.population <- list(
@@ -621,7 +621,7 @@ respiratory_02_population <- function(df = NULL,
   progress_bar_population
 
   # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
   # from the full dataframe with all variables
@@ -647,7 +647,7 @@ respiratory_02_population <- function(df = NULL,
                      {{ emedications_03_col }},
                      {{ eprocedures_03_col }}
     )) |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
     dplyr::mutate(patient_age_in_years = as.numeric(difftime(
       time1 = {{ incident_date_col }},
       time2 = {{ patient_DOB_col }},
@@ -660,12 +660,12 @@ respiratory_02_population <- function(df = NULL,
     )),
 
     # system age checks
-    system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor = system_age_minor1 | system_age_minor2,
-    system_age_minor_exclusion1 = {{ epatient_15_col }} < 24 & grepl(pattern = hour_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor_exclusion2 = {{ epatient_15_col }} < 120 & grepl(pattern = minute_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_minor_exclusion1 = {{ epatient_15_col }} < 24 & grepl(pattern = hour_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor_exclusion2 = {{ epatient_15_col }} < 120 & grepl(pattern = minute_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor_exclusion = system_age_minor_exclusion1 | system_age_minor_exclusion2,
 
     # calculated age checks
@@ -688,16 +688,16 @@ respiratory_02_population <- function(df = NULL,
                      {{ emedications_03_col }},
                      {{ eprocedures_03_col }}
     )) |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
     dplyr::mutate(
 
     # system age checks
-    system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_adult = {{ epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor1 = {{ epatient_15_col }} < 18 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor2 = {{ epatient_15_col }} <= 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor = system_age_minor1 | system_age_minor2,
-    system_age_minor_exclusion1 = {{ epatient_15_col }} < 24 & grepl(pattern = hour_values, x = {{ epatient_16_col }}, ignore.case = T),
-    system_age_minor_exclusion2 = {{ epatient_15_col }} < 120 & grepl(pattern = minute_values, x = {{ epatient_16_col }}, ignore.case = T),
+    system_age_minor_exclusion1 = {{ epatient_15_col }} < 24 & grepl(pattern = hour_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
+    system_age_minor_exclusion2 = {{ epatient_15_col }} < 120 & grepl(pattern = minute_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
     system_age_minor_exclusion = system_age_minor_exclusion1 | system_age_minor_exclusion2
 
     )
@@ -713,7 +713,7 @@ respiratory_02_population <- function(df = NULL,
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
 
-  cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
 
   # pulse oximetry
   pulse_oximetry_data <- df |>
@@ -727,7 +727,7 @@ respiratory_02_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
 
   # oxygen med used
   oxygen_med_data <- df |>
@@ -735,14 +735,14 @@ respiratory_02_population <- function(df = NULL,
     dplyr::distinct() |>
     dplyr::filter(
 
-      grepl(pattern = oxygen_values, x = {{ emedications_03_col }}) &
-        !grepl(pattern = not_med, x = {{ emedications_03_col }}, ignore.case = T)
+      grepl(pattern = oxygen_values, x = {{ emedications_03_col }}, ignore.case = TRUE) &
+        !grepl(pattern = not_med, x = {{ emedications_03_col }}, ignore.case = TRUE)
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 4, id = progress_bar_population, force = TRUE)
 
   # oxygen procedure used
   oxygen_proc_data <- df |>
@@ -750,24 +750,24 @@ respiratory_02_population <- function(df = NULL,
     dplyr::distinct() |>
     dplyr::filter(
 
-      grepl(pattern = oxygen_therapy_values, x = {{ eprocedures_03_col }}, ignore.case = T) &
-        !grepl(pattern = not_proc, x = {{ eprocedures_03_col }}, ignore.case = T)
+      grepl(pattern = oxygen_therapy_values, x = {{ eprocedures_03_col }}, ignore.case = TRUE) &
+        !grepl(pattern = not_proc, x = {{ eprocedures_03_col }}, ignore.case = TRUE)
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
 
   # 911 calls
   call_911_data <- df |>
     dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
     dplyr::distinct() |>
-    dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)) |>
+    dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = TRUE)) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
 
   # assign variables to final data
   computing_population <- final_data |>
@@ -778,7 +778,7 @@ respiratory_02_population <- function(df = NULL,
                   CALL_911 = {{ erecord_01_col }} %in% call_911_data
     )
 
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
 
   # get the initial population
   initial_population <- computing_population |>
@@ -792,7 +792,7 @@ respiratory_02_population <- function(df = NULL,
 
   # Adult and Pediatric Populations
 
-  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
   if(
 
@@ -812,7 +812,7 @@ respiratory_02_population <- function(df = NULL,
 
     )
 
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
 
   # get population 2 for respiratory-02, adults
   adult_pop <- initial_population |>
@@ -837,7 +837,7 @@ respiratory_02_population <- function(df = NULL,
 
       )
 
-    cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
 
     # get population 2 for respiratory-02, adults
     adult_pop <- initial_population |>
@@ -848,7 +848,7 @@ respiratory_02_population <- function(df = NULL,
   # summarize
 
   # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
 
   # summarize counts for populations filtered
   filter_counts <- tibble::tibble(
@@ -862,10 +862,10 @@ respiratory_02_population <- function(df = NULL,
                "Total dataset"
     ),
     count = c(
-      sum(computing_population$OXYGEN1, na.rm = T),
-      sum(computing_population$OXYGEN2, na.rm = T),
-      sum(computing_population$PULSE_OXIMETRY, na.rm = T),
-      sum(computing_population$CALL_911, na.rm = T),
+      sum(computing_population$OXYGEN1, na.rm = TRUE),
+      sum(computing_population$OXYGEN2, na.rm = TRUE),
+      sum(computing_population$PULSE_OXIMETRY, na.rm = TRUE),
+      sum(computing_population$CALL_911, na.rm = TRUE),
       nrow(adult_pop),
       nrow(peds_pop),
       nrow(initial_population),
@@ -873,7 +873,7 @@ respiratory_02_population <- function(df = NULL,
     )
   )
 
-  cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 11, id = progress_bar_population, force = TRUE)
 
   # get the population of interest
   respiratory.02.population <- list(

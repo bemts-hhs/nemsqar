@@ -51,40 +51,65 @@
 #'
 #' @examples
 #'
-#' \dontrun{
-#'
 #' # If you are sourcing your data from a SQL database connection
 #' # or if you have your data in several different tables,
 #' # you can pass table inputs versus a single data.frame or tibble
 #'
-#' # Get the applicable tables from `nemsqar`
-#' data("nemsqar_medications_table")
-#' data("nemsqar_patient_scene_table")
-#' data("nemsqar_response_table")
-#' data("nemsqar_situation_table")
+#' # create tables to test correct functioning
 #'
-#' asthma_01_population(
+#' # patient table
+#' patient_table <- tibble::tibble(
 #'
-#' patient_scene_table = nemsqar_patient_scene_table,
-#' response_table = nemsqar_response_table,
-#' situation_table = nemsqar_situation_table,
-#' medications_table = nemsqar_medications_table,
-#' erecord_01_col = `Incident Patient Care Report Number - PCR`,
-#' incident_date_col = `Incident Date`,
-#' patient_DOB_col = `Patient Date Of Birth`,
-#' epatient_15_col = `Patient Age`,
-#' epatient_16_col = `Patient Age Units`,
-#' eresponse_05_col = `Response Type Of Service Requested With Code`,
-#' esituation_11_col =
-#' `Situation Provider Primary Impression Code And Description`,
-#' esituation_12_col =
-#' `Situation Provider Secondary Impression Description And Code`,
-#' emedications_03_col =
-#' `Medication Given or Administered Description And RXCUI Code`
+#'   erecord_01 = 1:3,
+#'   incident_date = as.Date(c("2025-01-01", "2025-01-05", "2025-02-01")),
+#'   patient_dob = as.Date(c("2000-01-01", "2020-01-01", "2023-01-01")),
+#'   epatient_15 = c(25, 5, 2),
+#'   epatient_16 = c("years", "years", "months")
 #'
 #' )
 #'
-#' }
+#' # response table
+#' response_table <- tibble::tibble(
+#'
+#'   erecord_01 = 1:3,
+#'   eresponse_05 = c("2205001", "2205009", "2205003")
+#'
+#' )
+#'
+#' # situation table
+#' situation_table <- tibble::tibble(
+#'
+#'   erecord_01 = 1:3,
+#'   esituation_11 = c("weakness", "asthma", "bronchospasm"),
+#'   esituation_12 = c("asthma", "weakness", "weakness")
+#' )
+#'
+#' # medications table
+#' medications_table <- tibble::tibble(
+#'
+#'   erecord_01 = 1:3,
+#'   emedications_03 = c("albuterol", "levalbuterol", "metaproterenol")
+#'
+#' )
+#'
+#' # test the success of the function
+#' result <- asthma_01_population(patient_scene_table = patient_table,
+#'                                response_table = response_table,
+#'                                situation_table = situation_table,
+#'                                medications_table = medications_table,
+#'                                erecord_01_col = erecord_01,
+#'                                incident_date_col = incident_date,
+#'                                patient_DOB_col = patient_dob,
+#'                                epatient_15_col = epatient_15,
+#'                                epatient_16_col = epatient_16,
+#'                                eresponse_05_col = eresponse_05,
+#'                                esituation_11_col = esituation_11,
+#'                                esituation_12_col = esituation_12,
+#'                                emedications_03_col = emedications_03
+#'                                )
+#'
+#' # show the results of filtering at each step
+#' result$filter_process
 #'
 #' @author Nicolas Foss, Ed.D., MS
 #'
@@ -175,7 +200,7 @@ asthma_01_population <- function(df = NULL,
   beta_agonist <- "435|7688|214199|237159|487066|1154062|1163444|1649559|1165719|2108209|2108252|albuterol|ipratropium|levalbuterol|metaproterenol"
 
   # codes for asthma or acute bronchospasm
-  asthma_codes <- "(?:J45|J98.01)|^asthma.*|acute bronchospasm"
+  asthma_codes <- "(?:J45|J98.01)|asthma|acute bronchospasm"
 
   year_values <- "2516009|years"
 
@@ -259,7 +284,7 @@ asthma_01_population <- function(df = NULL,
     progress_bar_population
 
     # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
 
     ###_____________________________________________________________________________
     # fact table
@@ -286,9 +311,9 @@ asthma_01_population <- function(df = NULL,
       )) / 365,
 
       # system age check
-      system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T),
-      system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T),
-      system_age_minor2 = {{ epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col}}, ignore.case = T),
+      system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = TRUE),
+      system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = TRUE),
+      system_age_minor2 = {{ epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col}}, ignore.case = TRUE),
       system_age_minor = system_age_minor1 | system_age_minor2,
 
       # calculated age check
@@ -296,7 +321,7 @@ asthma_01_population <- function(df = NULL,
       calc_age_minor = patient_age_in_years_col < 18
 
       ) |>
-      dplyr::distinct({{ erecord_01_col }}, .keep_all = T)
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
     } else if(
 
@@ -312,14 +337,14 @@ asthma_01_population <- function(df = NULL,
         dplyr::mutate(
 
         # system age check
-        system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T),
-        system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T),
-        system_age_minor2 = {{ epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col}}, ignore.case = T),
+        system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = TRUE),
+        system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = TRUE),
+        system_age_minor2 = {{ epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col}}, ignore.case = TRUE),
         system_age_minor = system_age_minor1 | system_age_minor2
 
 
         ) |>
-        dplyr::distinct({{ erecord_01_col }}, .keep_all = T)
+        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
 
     }
@@ -332,7 +357,7 @@ asthma_01_population <- function(df = NULL,
     ### calculations of the numerator and filtering
     ###_____________________________________________________________________________
 
-    cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
 
     # 911 calls
     call_911_data <- response_table |>
@@ -340,13 +365,13 @@ asthma_01_population <- function(df = NULL,
       dplyr::distinct() |>
       dplyr::filter(
 
-        grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)
+        grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = TRUE)
 
       ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
-    cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
 
     # Identify Records that have specified asthma
     asthma_data <- situation_table |>
@@ -354,15 +379,15 @@ asthma_01_population <- function(df = NULL,
       dplyr::distinct() |>
       dplyr::filter(
 
-        if_any(
+        dplyr::if_any(
 
-          c({{ esituation_11_col}}, {{esituation_12_col }}), ~ grepl(pattern = asthma_codes, x = ., ignore.case = T)
+          c({{ esituation_11_col}}, {{esituation_12_col }}), ~ grepl(pattern = asthma_codes, x = ., ignore.case = TRUE)
 
         )) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
-    cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 4, id = progress_bar_population, force = TRUE)
 
     # check to ensure beta agonist was used
     beta_agonist_data <- medications_table |>
@@ -376,7 +401,7 @@ asthma_01_population <- function(df = NULL,
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
-    cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
 
     # get the computing population that is the full dataset with identified categories
     computing_population <- final_data |>
@@ -385,7 +410,7 @@ asthma_01_population <- function(df = NULL,
                     beta_agonist_check = {{ erecord_01_col }} %in% beta_agonist_data
       )
 
-    cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
 
     # get the initial population
     initial_population <- computing_population |>
@@ -402,7 +427,7 @@ asthma_01_population <- function(df = NULL,
 
     # Adult and Pediatric Populations
 
-    cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
 
     if(
 
@@ -419,7 +444,7 @@ asthma_01_population <- function(df = NULL,
     adult_pop <- initial_population |>
       dplyr::filter(calc_age_adult | system_age_adult)
 
-    cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
     # filter peds
     peds_pop <- initial_population |>
@@ -438,7 +463,7 @@ asthma_01_population <- function(df = NULL,
       adult_pop <- initial_population |>
         dplyr::filter(system_age_adult)
 
-      cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+      cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
       # filter peds
       peds_pop <- initial_population |>
@@ -447,7 +472,7 @@ asthma_01_population <- function(df = NULL,
 
     }
 
-    cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
 
     # summarize counts for populations filtered
     filter_counts <- tibble::tibble(
@@ -460,9 +485,9 @@ asthma_01_population <- function(df = NULL,
                  "Total dataset"
       ),
       count = c(
-        sum(computing_population$call_911, na.rm = T),
-        sum(computing_population$asthma, na.rm = T),
-        sum(computing_population$beta_agonist_check, na.rm = T),
+        sum(computing_population$call_911, na.rm = TRUE),
+        sum(computing_population$asthma, na.rm = TRUE),
+        sum(computing_population$beta_agonist_check, na.rm = TRUE),
         nrow(adult_pop),
         nrow(peds_pop),
         nrow(initial_population),
@@ -472,7 +497,7 @@ asthma_01_population <- function(df = NULL,
 
     # get the populations of interest
 
-    cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
 
     # gather data into a list for multi-use output
     asthma.01.population <- list(
@@ -537,7 +562,7 @@ asthma_01_population <- function(df = NULL,
     progress_bar_population
 
     # progress update, these will be repeated throughout the script
-    cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
 
     ###_____________________________________________________________________________
     # from the full dataframe with all variables
@@ -569,7 +594,7 @@ asthma_01_population <- function(df = NULL,
                        {{  emedications_03_col  }}
 
       )) |>
-      dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
       # create the age in years variable
 
       dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
@@ -579,9 +604,9 @@ asthma_01_population <- function(df = NULL,
       )) / 365,
 
       # system age check
-      system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T),
-      system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T),
-      system_age_minor2 = {{ epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col}}, ignore.case = T),
+      system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = TRUE),
+      system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = TRUE),
+      system_age_minor2 = {{ epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col}}, ignore.case = TRUE),
       system_age_minor = system_age_minor1 | system_age_minor2,
 
       # calculated age check
@@ -607,15 +632,15 @@ asthma_01_population <- function(df = NULL,
                        {{  emedications_03_col  }}
 
       )) |>
-      dplyr::distinct({{ erecord_01_col }}, .keep_all = T) |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
       # create the age in years variable
 
       dplyr::mutate(
 
       # system age check
-      system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T),
-      system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = T),
-      system_age_minor2 = {{ epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col}}, ignore.case = T),
+      system_age_adult = {{  epatient_15_col }} >= 18 & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = TRUE),
+      system_age_minor1 = ({{  epatient_15_col }} < 18 & {{  epatient_15_col }} >= 2) & grepl(pattern = year_values, x = {{ epatient_16_col}}, ignore.case = TRUE),
+      system_age_minor2 = {{ epatient_15_col}} >= 24 & grepl(pattern = month_values, x = {{ epatient_16_col}}, ignore.case = TRUE),
       system_age_minor = system_age_minor1 | system_age_minor2
 
       )
@@ -630,17 +655,17 @@ asthma_01_population <- function(df = NULL,
     ### calculations of the numerator and filtering
     ###_____________________________________________________________________________
 
-    cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
 
     # 911 calls
     call_911_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{  eresponse_05_col  }}) |>
       dplyr::distinct() |>
-      dplyr::filter(grepl(pattern = codes_911, x = {{  eresponse_05_col  }}, ignore.case = T)) |>
+      dplyr::filter(grepl(pattern = codes_911, x = {{  eresponse_05_col  }}, ignore.case = TRUE)) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
-    cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
 
     # asthma population
     asthma_data <- df |>
@@ -649,13 +674,13 @@ asthma_01_population <- function(df = NULL,
       dplyr::filter(
 
         # Identify Records that have specified asthma
-        dplyr::if_any(c({{ esituation_11_col}}, {{esituation_12_col }}), ~ grepl(pattern = asthma_codes, x = .))
+        dplyr::if_any(c({{ esituation_11_col}}, {{esituation_12_col }}), ~ grepl(pattern = asthma_codes, x = ., ignore.case = TRUE))
 
         ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
-    cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 4, id = progress_bar_population, force = TRUE)
 
     # beta agonist use
     beta_agonist_data <- df |>
@@ -670,7 +695,7 @@ asthma_01_population <- function(df = NULL,
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
 
-    cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
 
     # get the computing population that is the full dataset with identified categories
     computing_population <- final_data |>
@@ -679,7 +704,7 @@ asthma_01_population <- function(df = NULL,
                     beta_agonist_check = {{ erecord_01_col }} %in% beta_agonist_data
       )
 
-    cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
 
     # get the initial population
     initial_population <- computing_population |>
@@ -696,7 +721,7 @@ asthma_01_population <- function(df = NULL,
 
     # Adult and Pediatric Populations
 
-    cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
 
     if(
 
@@ -713,7 +738,7 @@ asthma_01_population <- function(df = NULL,
     adult_pop <- initial_population |>
       dplyr::filter(calc_age_adult | system_age_adult)
 
-    cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
     # filter peds
     peds_pop <- initial_population |>
@@ -732,7 +757,7 @@ asthma_01_population <- function(df = NULL,
       adult_pop <- initial_population |>
         dplyr::filter(system_age_adult)
 
-      cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+      cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
       # filter peds
       peds_pop <- initial_population |>
@@ -740,7 +765,7 @@ asthma_01_population <- function(df = NULL,
 
     }
 
-    cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
 
     # summarize counts for populations filtered
     filter_counts <- tibble::tibble(
@@ -765,7 +790,7 @@ asthma_01_population <- function(df = NULL,
 
     # get the populations of interest
 
-    cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
 
     # gather data into a list for multi-use output
     asthma.01.population <- list(

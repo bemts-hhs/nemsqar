@@ -571,9 +571,9 @@ airway_18_population <- function(df = NULL,
           dplyr::filter(!is.na({{ eprocedures_03_col }})) |>
           dplyr::mutate(
             non_missing_procedure_time = !is.na({{ eprocedures_01_col }}), # Procedure date/time not null
-            not_performed_prior = !grepl(pattern = yes_code, x = {{ eprocedures_02_col }}) | is.na({{ eprocedures_02_col }}), # Procedure PTA is not Yes
-            target_procedures = grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}), # Procedure name/code in list
-            successful_procedure = grepl(pattern = yes_code, x = {{ eprocedures_06_col }})
+            not_performed_prior = !grepl(pattern = yes_code, x = {{ eprocedures_02_col }}, ignore.case = TRUE) | is.na({{ eprocedures_02_col }}), # Procedure PTA is not Yes
+            target_procedures = grepl(pattern = endotracheal_intubation, x = {{ eprocedures_03_col }}, ignore.case = TRUE), # Procedure name/code in list
+            successful_procedure = grepl(pattern = yes_code, x = {{ eprocedures_06_col }}, ignore.case = TRUE)
           ) -> procedures_ordered
 
       cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
@@ -584,7 +584,7 @@ airway_18_population <- function(df = NULL,
         dplyr::distinct() |>
         dplyr::filter(
 
-          grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = T)
+          grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = TRUE)
 
         ) |>
         dplyr::distinct({{ erecord_01_col }}) |>
@@ -923,17 +923,17 @@ airway_18_population <- function(df = NULL,
                      "Total procedures in dataset"
           ),
           count = c(
-            sum(procedures_ordered$target_procedures, na.rm = T),
-            sum(procedures_ordered$target_procedures & procedures_ordered$successful_procedure, na.rm = T),
+            sum(procedures_ordered$target_procedures, na.rm = TRUE),
+            sum(procedures_ordered$target_procedures & procedures_ordered$successful_procedure, na.rm = TRUE),
             length(call_911_data),
             sum(procedures_ordered$target_procedures &
                   procedures_ordered$successful_procedure &
-                  procedures_ordered$not_performed_prior, na.rm = T),
+                  procedures_ordered$not_performed_prior, na.rm = TRUE),
             airway_etc02_confirmations,
-            sum(computing_population_dev$airway_after_procedure_waveform, na.rm = T),
-            sum(computing_population_dev$vitals_after_procedure_waveform, na.rm = T),
+            sum(computing_population_dev$airway_after_procedure_waveform, na.rm = TRUE),
+            sum(computing_population_dev$vitals_after_procedure_waveform, na.rm = TRUE),
             waveform_etc02,
-            sum(initial_population$NUMERATOR, na.rm = T),
+            sum(initial_population$NUMERATOR, na.rm = TRUE),
             nrow(adult_pop),
             nrow(peds_pop),
             n_procedures
@@ -964,15 +964,15 @@ airway_18_population <- function(df = NULL,
                      "Total procedures in dataset"
           ),
           count = c(
-            sum(procedures_ordered$target_procedures, na.rm = T),
-            sum(procedures_ordered$target_procedures & procedures_ordered$successful_procedure, na.rm = T),
+            sum(procedures_ordered$target_procedures, na.rm = TRUE),
+            sum(procedures_ordered$target_procedures & procedures_ordered$successful_procedure, na.rm = TRUE),
             length(call_911_data),
             sum(procedures_ordered$target_procedures &
                   procedures_ordered$successful_procedure &
-                  procedures_ordered$not_performed_prior, na.rm = T),
-            sum(computing_population_dev$vitals_after_procedure_waveform, na.rm = T),
+                  procedures_ordered$not_performed_prior, na.rm = TRUE),
+            sum(computing_population_dev$vitals_after_procedure_waveform, na.rm = TRUE),
             waveform_etc02,
-            sum(initial_population$NUMERATOR, na.rm = T),
+            sum(initial_population$NUMERATOR, na.rm = TRUE),
             nrow(adult_pop),
             nrow(peds_pop),
             n_procedures

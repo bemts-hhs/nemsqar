@@ -32,8 +32,8 @@ testthat::test_that("syncope_01 produces expected results", {
   testthat::expect_true(all(c("measure", "pop", "numerator", "denominator", "prop", "prop_label") %in% names(result)))
 
   # Check calculations
-  testthat::expect_equal(sum(result$numerator), 4)
-  testthat::expect_equal(sum(result$denominator), 4)
+  testthat::expect_equal(sum(result$numerator), 5)
+  testthat::expect_equal(sum(result$denominator), 5)
   testthat::expect_equal(result$prop[result$pop == "Adults"], 1)
   testthat::expect_equal(nrow(result), 2)
 

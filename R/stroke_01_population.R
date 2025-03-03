@@ -249,10 +249,10 @@ stroke_01_population <- function(df = NULL,
   ###_____________________________________________________________________________
 
   # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
 
   final_data <- patient_scene_table |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = T)
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
   ###_____________________________________________________________________________
   ### dimension tables
@@ -262,7 +262,7 @@ stroke_01_population <- function(df = NULL,
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
 
-  cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
 
   # stroke 1
   stroke_data1 <- situation_table |>
@@ -272,14 +272,14 @@ stroke_01_population <- function(df = NULL,
       grepl(
         pattern = stroke_pattern,
         x = {{ esituation_11_col }},
-        ignore.case = T
+        ignore.case = TRUE
       )
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
 
   # stroke 2
   stroke_data2 <- situation_table |>
@@ -289,14 +289,14 @@ stroke_01_population <- function(df = NULL,
       grepl(
         pattern = stroke_pattern,
         x = {{ esituation_12_col }},
-        ignore.case = T
+        ignore.case = TRUE
       )
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 4, id = progress_bar_population, force = TRUE)
 
   # 911 calls
   call_911_data <- response_table |>
@@ -306,14 +306,14 @@ stroke_01_population <- function(df = NULL,
       grepl(
         pattern = codes_911,
         x = {{ eresponse_05_col }},
-        ignore.case = T
+        ignore.case = TRUE
       )
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
 
   # GCS
   GCS_data <- vitals_table |>
@@ -326,46 +326,46 @@ stroke_01_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
 
   # AVPU
   AVPU_data <- vitals_table |>
     dplyr::select({{ erecord_01_col }}, {{  evitals_26_col  }}) |>
     dplyr::filter(
 
-      grepl(pattern = avpu_pattern, x = {{ evitals_26_col }}, ignore.case = T)
+      grepl(pattern = avpu_pattern, x = {{ evitals_26_col }}, ignore.case = TRUE)
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
 
   # stroke scale 1
   stroke_scale_data1 <- vitals_table |>
     dplyr::select({{ erecord_01_col }}, {{  evitals_29_col  }}) |>
     dplyr::filter(
 
-      !is.na({{evitals_29_col}}) & grepl(pattern = stroke_values, x = {{evitals_29_col}}, ignore.case = T)
+      !is.na({{evitals_29_col}}) & grepl(pattern = stroke_values, x = {{evitals_29_col}}, ignore.case = TRUE)
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
   # stroke scale 2
   stroke_scale_data2 <- vitals_table |>
     dplyr::select({{ erecord_01_col }}, {{  evitals_30_col  }}) |>
     dplyr::filter(
 
-      !is.na({{evitals_30_col}}) & grepl(pattern = scale_values, x = {{evitals_30_col}}, ignore.case = T)
+      !is.na({{evitals_30_col}}) & grepl(pattern = scale_values, x = {{evitals_30_col}}, ignore.case = TRUE)
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
 
   # assign variables to final data
   computing_population <- final_data |>
@@ -398,7 +398,7 @@ stroke_01_population <- function(df = NULL,
 
   # Initial population only
 
-  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
 
   # get the summary of results
   filter_counts <- tibble::tibble(
@@ -411,11 +411,11 @@ stroke_01_population <- function(df = NULL,
                "Total dataset"
     ),
     count = c(
-      sum(computing_population$CALL_911, na.rm = T),
-      sum(computing_population$STROKE, na.rm = T),
-      sum(computing_population$GCS, na.rm = T),
-      sum(computing_population$AVPU, na.rm = T),
-      sum(computing_population$STROKE_SCALE, na.rm = T),
+      sum(computing_population$CALL_911, na.rm = TRUE),
+      sum(computing_population$STROKE, na.rm = TRUE),
+      sum(computing_population$GCS, na.rm = TRUE),
+      sum(computing_population$AVPU, na.rm = TRUE),
+      sum(computing_population$STROKE_SCALE, na.rm = TRUE),
       nrow(initial_population),
       nrow(computing_population)
     )
@@ -423,7 +423,7 @@ stroke_01_population <- function(df = NULL,
 
   # get the populations of interest
 
-  cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 11, id = progress_bar_population, force = TRUE)
 
   # gather data into a list for multi-use output
   stroke.01.population <- list(
@@ -468,7 +468,7 @@ stroke_01_population <- function(df = NULL,
   ###_____________________________________________________________________________
 
   # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
 
   final_data <- df |>
     dplyr::select(-c({{  eresponse_05_col  }},
@@ -479,7 +479,7 @@ stroke_01_population <- function(df = NULL,
                      {{ evitals_29_col }},
                      {{ evitals_30_col }}
     )) |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = T)
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
   ###_____________________________________________________________________________
   ### dimension tables
@@ -489,7 +489,7 @@ stroke_01_population <- function(df = NULL,
   ### calculations of the numerator and filtering
   ###_____________________________________________________________________________
 
-  cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
 
   # stroke 1
   stroke_data1 <- df |>
@@ -499,14 +499,14 @@ stroke_01_population <- function(df = NULL,
       grepl(
         pattern = stroke_pattern,
         x = {{ esituation_11_col }},
-        ignore.case = T
+        ignore.case = TRUE
       )
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
 
   # stroke 2
   stroke_data2 <- df |>
@@ -516,14 +516,14 @@ stroke_01_population <- function(df = NULL,
       grepl(
         pattern = stroke_pattern,
         x = {{ esituation_12_col }},
-        ignore.case = T
+        ignore.case = TRUE
       )
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 4, id = progress_bar_population, force = TRUE)
 
   # 911 calls
   call_911_data <- df |>
@@ -533,14 +533,14 @@ stroke_01_population <- function(df = NULL,
       grepl(
         pattern = codes_911,
         x = {{ eresponse_05_col }},
-        ignore.case = T
+        ignore.case = TRUE
       )
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
 
   # GCS
   GCS_data <- df |>
@@ -553,46 +553,46 @@ stroke_01_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
 
   # AVPU
   AVPU_data <- df |>
     dplyr::select({{ erecord_01_col }}, {{  evitals_26_col  }}) |>
     dplyr::filter(
 
-      grepl(pattern = avpu_pattern, x = {{ evitals_26_col }}, ignore.case = T)
+      grepl(pattern = avpu_pattern, x = {{ evitals_26_col }}, ignore.case = TRUE)
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
 
   # stroke scale 1
   stroke_scale_data1 <- df |>
     dplyr::select({{ erecord_01_col }}, {{  evitals_29_col  }}) |>
     dplyr::filter(
 
-      !is.na({{evitals_29_col}}) & grepl(pattern = stroke_values, x = {{evitals_29_col}}, ignore.case = T)
+      !is.na({{evitals_29_col}}) & grepl(pattern = stroke_values, x = {{evitals_29_col}}, ignore.case = TRUE)
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
   # stroke scale 2
   stroke_scale_data2 <- df |>
     dplyr::select({{ erecord_01_col }}, {{  evitals_30_col  }}) |>
     dplyr::filter(
 
-      !is.na({{evitals_30_col}}) & grepl(pattern = scale_values, x = {{evitals_30_col}}, ignore.case = T)
+      !is.na({{evitals_30_col}}) & grepl(pattern = scale_values, x = {{evitals_30_col}}, ignore.case = TRUE)
 
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
 
   # assign variables to final data
   computing_population <- final_data |>
@@ -624,7 +624,7 @@ stroke_01_population <- function(df = NULL,
     )
 
   # Initial population only
-  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
 
   # get the summary of results
   filter_counts <- tibble::tibble(
@@ -637,11 +637,11 @@ stroke_01_population <- function(df = NULL,
                "Total dataset"
     ),
     count = c(
-      sum(computing_population$CALL_911, na.rm = T),
-      sum(computing_population$STROKE, na.rm = T),
-      sum(computing_population$GCS, na.rm = T),
-      sum(computing_population$AVPU, na.rm = T),
-      sum(computing_population$STROKE_SCALE, na.rm = T),
+      sum(computing_population$CALL_911, na.rm = TRUE),
+      sum(computing_population$STROKE, na.rm = TRUE),
+      sum(computing_population$GCS, na.rm = TRUE),
+      sum(computing_population$AVPU, na.rm = TRUE),
+      sum(computing_population$STROKE_SCALE, na.rm = TRUE),
       nrow(initial_population),
       nrow(computing_population)
     )
@@ -649,7 +649,7 @@ stroke_01_population <- function(df = NULL,
 
   # get the populations of interest
 
-  cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 11, id = progress_bar_population, force = TRUE)
 
   # gather data into a list for multi-use output
   stroke.01.population <- list(

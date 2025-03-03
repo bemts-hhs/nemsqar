@@ -298,7 +298,7 @@ airway_01_population <- function(df = NULL,
   progress_bar_population
 
   # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 1, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
 
   ####### CREATE SEPARATE TABLES FROM DF IF TABLES ARE MISSING #######
 
@@ -535,7 +535,7 @@ airway_01_population <- function(df = NULL,
 
   }
 
-  cli::cli_progress_update(set = 2, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
 
   # Get first intubation procedure & time intervals for vitals
   suppressWarnings( # needed due to ranking procedure and missing procedure times)
@@ -544,22 +544,22 @@ airway_01_population <- function(df = NULL,
     dplyr::filter(!is.na({{ eprocedures_03_col }})) |>
     dplyr::mutate(
       non_missing_procedure_time = !is.na({{ eprocedures_01_col }}), # Procedure date/time not null
-      not_performed_prior = !grepl(pattern = "9923003|Yes", x = {{ eprocedures_02_col }}) | is.na({{ eprocedures_02_col }}), # Procedure PTA is not Yes
-      target_procedures = grepl(pattern = procedures_code, x = {{ eprocedures_03_col }}) # Procedure name/code in list
+      not_performed_prior = !grepl(pattern = "9923003|Yes", x = {{ eprocedures_02_col }}, ignore.case = TRUE) | is.na({{ eprocedures_02_col }}), # Procedure PTA is not Yes
+      target_procedures = grepl(pattern = procedures_code, x = {{ eprocedures_03_col }}, ignore.case = TRUE) # Procedure name/code in list
     ) |>
     dplyr::mutate(
       vitals_range_start = {{ eprocedures_01_col }} - lubridate::dminutes(3),
       vitals_range_end = {{ eprocedures_01_col }} + lubridate::dminutes(5),
       range_bounds_before = lubridate::interval(vitals_range_start, {{ eprocedures_01_col }}),
       range_bounds_after = lubridate::interval({{ eprocedures_01_col }}, vitals_range_end),
-      successful_procedure = grepl(pattern = "9923003|Yes", x = {{ eprocedures_06_col }}),
+      successful_procedure = grepl(pattern = "9923003|Yes", x = {{ eprocedures_06_col }}, ignore.case = TRUE),
       {{ eprocedures_05_col }} := dplyr::if_else(is.na({{ eprocedures_05_col }}), 1, {{ eprocedures_05_col }}),
       first_attempt = {{ eprocedures_05_col }} == 1,
       first_successful_attempt = first_attempt & successful_procedure
 
                   )) -> procedures_ordered
 
-  cli::cli_progress_update(set = 3, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
 
   # conditionally perform age in years calculations
   if (
@@ -569,7 +569,7 @@ airway_01_population <- function(df = NULL,
     )
   ) {
 
-    cli::cli_progress_update(set = 4, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 4, id = progress_bar_population, force = TRUE)
 
   # Add calculated age in years
   patient_data <- patient_scene_table |>
@@ -652,7 +652,7 @@ airway_01_population <- function(df = NULL,
 
   }
 
-  cli::cli_progress_update(set = 5, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
 
   # Get 911 responses
   response_table |>
@@ -662,7 +662,7 @@ airway_01_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }}) -> call_911_data
 
-  cli::cli_progress_update(set = 6, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
 
   # get arrest table with needed exclusion classifications
   arrest_table_filter <- arrest_table |>
@@ -672,7 +672,7 @@ airway_01_population <- function(df = NULL,
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
 
   # Initial manipulations of patient data for filters
   patient_data |>
@@ -696,7 +696,7 @@ airway_01_population <- function(df = NULL,
                                                  )
                   )) -> patient_data
 
-  cli::cli_progress_update(set = 8, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
   # Numerator
@@ -743,7 +743,7 @@ airway_01_population <- function(df = NULL,
   # break calculations up into different tables and then join
   ###_____________________________________________________________________________
 
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
   # numerator part 1 for all patients
@@ -763,7 +763,7 @@ airway_01_population <- function(df = NULL,
       )) -> computing_population_dev1
   ###_____________________________________________________________________________
 
-  cli::cli_progress_update(set = 10, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
   # numerator 1 part 2 for age specific SBP
@@ -781,7 +781,7 @@ airway_01_population <- function(df = NULL,
   )) -> computing_population_dev2
   ###_____________________________________________________________________________
 
-  cli::cli_progress_update(set = 11, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 11, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
   # numerator 2, SBP check for all ages
@@ -799,7 +799,7 @@ airway_01_population <- function(df = NULL,
       )) -> computing_population_dev3
   ###_____________________________________________________________________________
 
-  cli::cli_progress_update(set = 12, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 12, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
   # join the computations to finalize calculations
@@ -815,7 +815,7 @@ airway_01_population <- function(df = NULL,
                      ) -> computing_population_dev
   ###_____________________________________________________________________________
 
-  cli::cli_progress_update(set = 13, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 13, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
   # finalize numerator calculations
@@ -842,7 +842,7 @@ airway_01_population <- function(df = NULL,
                     ) -> computing_population_dev
   ###_____________________________________________________________________________
 
-    cli::cli_progress_update(set = 14, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 14, id = progress_bar_population, force = TRUE)
 
     ###_____________________________________________________________________________
     # final join for the computing population
@@ -863,7 +863,7 @@ airway_01_population <- function(df = NULL,
 
     ###_____________________________________________________________________________
 
-    cli::cli_progress_update(set = 15, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 15, id = progress_bar_population, force = TRUE)
 
     # get the initial population
     initial_population <- computing_population |>
@@ -875,7 +875,7 @@ airway_01_population <- function(df = NULL,
 
       )
 
-    cli::cli_progress_update(set = 16, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 16, id = progress_bar_population, force = TRUE)
 
     # get the adult population
     adult_pop <- initial_population |>
@@ -897,7 +897,7 @@ airway_01_population <- function(df = NULL,
       # down to the erecord.01 level
       dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
-    cli::cli_progress_update(set = 17, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 17, id = progress_bar_population, force = TRUE)
 
     # get the peds population
     peds_pop <- initial_population |>
@@ -920,7 +920,7 @@ airway_01_population <- function(df = NULL,
       # down to the erecord.01 level
       dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
-    cli::cli_progress_update(set = 18, id = progress_bar_population, force = T)
+    cli::cli_progress_update(set = 18, id = progress_bar_population, force = TRUE)
 
     # get total number of procedures examined
     n_procedures <- procedures_ordered |>
@@ -951,21 +951,21 @@ airway_01_population <- function(df = NULL,
                  "Total procedures in dataset"
       ),
       count = c(
-        sum(procedures_ordered$target_procedures, na.rm = T),
-        sum(procedures_ordered$target_procedures & procedures_ordered$successful_procedure, na.rm = T),
-        sum(procedures_ordered$first_successful_attempt & procedures_ordered$target_procedures, na.rm = T),
+        sum(procedures_ordered$target_procedures, na.rm = TRUE),
+        sum(procedures_ordered$target_procedures & procedures_ordered$successful_procedure, na.rm = TRUE),
+        sum(procedures_ordered$first_successful_attempt & procedures_ordered$target_procedures, na.rm = TRUE),
         length(call_911_data),
-        sum(patient_data$exclude_pta_ca == FALSE, na.rm = T),
-        sum(patient_data$exclude_newborns == FALSE, na.rm = T),
-        sum(initial_population$numerator_all_spo2, na.rm = T),
-        sum(initial_population$numerator_all_sbp, na.rm = T),
-        sum(initial_population$numerator_1 & initial_population$patient_age_in_years_10_plus, na.rm = T),
-        sum(initial_population$numerator_1 & initial_population$patient_age_in_years_1_9, na.rm = T),
-        sum(initial_population$numerator_1 & initial_population$patient_age_28_days_1_year, na.rm = T),
-        sum(initial_population$numerator_1 & initial_population$patient_age_days_28, na.rm = T),
-        sum(initial_population$numerator_1, na.rm = T),
-        sum(adult_pop$numerator_1, na.rm = T),
-        sum(peds_pop$numerator_1, na.rm = T),
+        sum(patient_data$exclude_pta_ca == FALSE, na.rm = TRUE),
+        sum(patient_data$exclude_newborns == FALSE, na.rm = TRUE),
+        sum(initial_population$numerator_all_spo2, na.rm = TRUE),
+        sum(initial_population$numerator_all_sbp, na.rm = TRUE),
+        sum(initial_population$numerator_1 & initial_population$patient_age_in_years_10_plus, na.rm = TRUE),
+        sum(initial_population$numerator_1 & initial_population$patient_age_in_years_1_9, na.rm = TRUE),
+        sum(initial_population$numerator_1 & initial_population$patient_age_28_days_1_year, na.rm = TRUE),
+        sum(initial_population$numerator_1 & initial_population$patient_age_days_28, na.rm = TRUE),
+        sum(initial_population$numerator_1, na.rm = TRUE),
+        sum(adult_pop$numerator_1, na.rm = TRUE),
+        sum(peds_pop$numerator_1, na.rm = TRUE),
         nrow(adult_pop),
         nrow(peds_pop),
         nrow(initial_population),
@@ -973,7 +973,7 @@ airway_01_population <- function(df = NULL,
       )
     )
 
-  cli::cli_progress_update(set = 19, id = progress_bar_population, force = T)
+  cli::cli_progress_update(set = 19, id = progress_bar_population, force = TRUE)
 
   # Get populations
   airway.01.population <- list(
