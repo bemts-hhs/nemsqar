@@ -1,31 +1,68 @@
-#' @title Wilson and Clopper-Pearson Confidence Intervals for Binomial Proportions
+#' @title Wilson and Clopper-Pearson Confidence Intervals for Binomial
+#'   Proportions
 #'
 #' @description
-#' Computes confidence intervals for binomial proportions using either the Wilson or Clopper-Pearson method.
-#' This function supports vectorized operations and allows optional correction for continuity.
+#' Computes confidence intervals for binomial proportions using either the
+#' Wilson or Clopper-Pearson method. This function supports vectorized
+#' operations and allows optional correction for continuity. The Wilson interval
+#' is computed using `stats::prop.test()`, while the Clopper-Pearson interval is
+#' computed using `stats::binom.test()`.
 #'
-#' @param data An optional `tibble` or `data.frame` containing the variables `x` and `n`. If provided, `x` and `n` should be column names.
-#' @param x Numeric vector or column name (if `data` is provided) representing the number of successes.
-#' @param n Numeric vector or column name (if `data` is provided) representing the total number of trials.
-#' @param method Character string specifying the confidence interval method. Must be either "wilson" (default) or "clopper-pearson".
-#' @param conf.level Numeric value between 0 and 1 indicating the confidence level. Defaults to 0.95 (95% confidence interval).
-#' @param correct Logical, indicating whether to apply continuity correction for Wilson intervals. Defaults to `TRUE`.
+#' @param data An optional `tibble` or `data.frame` containing the variables `x`
+#'   and `n`. If provided, `x` and `n` should be column names.
+#' @param x Numeric vector or column name (if `data` is provided) representing
+#'   the number of successes.
+#' @param n Numeric vector or column name (if `data` is provided) representing
+#'   the total number of trials.
+#' @param method Character string specifying the confidence interval method.
+#'   Must be either "wilson" (default) or "clopper-pearson".
+#' @param conf.level Numeric value between 0 and 1 indicating the confidence
+#'   level. Defaults to 0.95 (95% confidence interval).
+#' @param correct Logical, indicating whether to apply continuity correction for
+#'   Wilson intervals. Defaults to `TRUE`.
+#'
+#' @details
+#' The Wilson confidence interval is calculated using `stats::prop.test()`,
+#' which provides an improved approximation to the binomial proportion
+#' confidence interval by avoiding the instability of the Wald interval (Wilson,
+#' 1927). The Clopper-Pearson interval, computed using `stats::binom.test()`, is
+#' an exact method based on the cumulative probabilities of the binomial
+#' distribution (Clopper & Pearson, 1934).
+#'
+#' The use of `match.arg()` within `nemsqar::nemsqa_binomial_confint()` allows
+#' users to specify the method using partial matching, meaning they can enter
+#' just "w" instead of "wilson" or "c" instead of "clopper-pearson".
 #'
 #' @returns
-#' A `tibble` containing the estimated proportion (`prop`), lower confidence interval (`lower_ci`),
-#' upper confidence interval (`upper_ci`), and a formatted proportion label (`prop_label`). If `data` is provided,
-#' these columns are appended to `data` via `dplyr::bind_cols()`.
+#' A `tibble` containing the estimated proportion (`prop`), lower confidence
+#' interval (`lower_ci`), upper confidence interval (`upper_ci`), and a
+#' formatted proportion label (`prop_label`). If `data` is provided, these
+#' columns are appended to `data` via `dplyr::bind_cols()`.
 #'
 #' @examples
 #' # Example without a data frame
-#' nemsqa_binomial_confint(x = c(5, 10, 20), n = c(50, 100, 200), method = "wilson")
+#' nemsqa_binomial_confint(data = NULL,
+#'                         x = c(5, 10, 20),
+#'                         n = c(50, 100, 200),
+#'                         method = "wilson"
+#'                         )
 #'
-#' # Example with a tibble
-#' library(tibble)
-#' data <- tibble(successes = c(5, 10, 20), trials = c(50, 100, 200))
-#' nemsqa_binomial_confint(data, x = successes, n = trials, method = "clopper-pearson")
+#' # Example with a data.frame
+#' data <- data.frame(successes = c(5, 10, 20), trials = c(50, 100, 200))
+#' nemsqa_binomial_confint(data,
+#'                         x = successes,
+#'                         n = trials,
+#'                         method = "clopper-pearson"
+#'                         )
 #'
-#' @author Nicolas Foss, Ed.D., MS
+#' @references
+#' Clopper, C. J. & Pearson, E. S. (1934). The use of confidence or fiducial
+#' limits illustrated in the case of the binomial. Biometrika, 26, 404–413.
+#' <doi:10.2307/2331986>.
+#'
+#' Wilson, E.B. (1927). Probable inference, the law of succession, and
+#' statistical inference. Journal of the American Statistical Association, 22,
+#' 209–212. <doi:10.2307/2276774>.
 #'
 #' @export
 #'

@@ -44,22 +44,31 @@
 #' @param evitals_26_col Column for AVPU alertness levels.
 #' @param emedications_03_col Column for administered medications.
 #' @param eprocedures_03_col Column for procedures performed.
-#' @param ... Additional arguments for summarization, passed to the summarize
-#'   function.
+#' @param confidence_interval Logical. If `TRUE`, the function calculates a
+#'   confidence interval for the proportion estimate.
+#' @param method Character. Specifies the method used to calculate confidence
+#'   intervals. Options are `"wilson"` (Wilson score interval) and
+#'   `"clopper-pearson"` (exact binomial interval). Partial matching is
+#'   supported, so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level Numeric. The confidence level for the interval, expressed
+#'   as a proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+#'   0.95.
+#' @param correct Logical. If `TRUE`, applies a continuity correction to the
+#'   Wilson score interval when `method = "wilson"`. Defaults to `TRUE`.
+#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
-#' @return A tibble summarizing results for three population groups (All,
-#'   Adults, and Peds) with the following columns:
-#'
-#'   `measure`: The name of the measure being calculated.
-#'   `pop`: Population type (All, Adults, Peds).
-#'   `numerator`: Count of incidents
-#'   where specific hypoglycemia best practices were administered.
-#'   `denominator`: Total count of incidents.
-#'   `prop`: Proportion of incidents
-#'   where specific hypoglycemia best practices were administered.
-#'   `prop_label`:
-#'   Proportion formatted as a percentage with a specified number of decimal
-#'   places.
+#' @return A data.frame summarizing results for two population groups (All,
+#'   Adults and Peds) with the following columns:
+#' - `pop`: Population type (All, Adults, and Peds).
+#' - `numerator`: Count of incidents meeting the measure.
+#' - `denominator`: Total count of included incidents.
+#' - `prop`: Proportion of incidents meeting the measure.
+#' - `prop_label`: Proportion formatted as a percentage with a specified number
+#'    of decimal places.
+#' - `lower_ci`: Lower bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
+#' - `upper_ci`: Upper bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
 #'
 #' @examples
 #'
@@ -81,6 +90,7 @@
 #' )
 #'
 #' # Run the function
+#' # Return 95% confidence intervals using the Wilson method
 #' hypoglycemia_01(
 #'   df = test_data,
 #'   erecord_01_col = erecord_01,
@@ -93,7 +103,8 @@
 #'   evitals_18_col = evitals_18,
 #'   evitals_23_col = evitals_23,
 #'   evitals_26_col = evitals_26,
-#'   eprocedures_03_col = eprocedures_03
+#'   eprocedures_03_col = eprocedures_03,
+#'   confidence_interval = TRUE
 #' )
 #'
 #' @author Nicolas Foss, Ed.D., MS
@@ -120,6 +131,10 @@ hypoglycemia_01 <- function(df = NULL,
                             evitals_26_col,
                             emedications_03_col,
                             eprocedures_03_col,
+                            confidence_interval = FALSE,
+                            method = c("wilson", "clopper-pearson"),
+                            conf.level = 0.95,
+                            correct = TRUE,
                             ...) {
 
   # utilize applicable tables to analyze the data for the measure
@@ -180,7 +195,12 @@ hypoglycemia_01 <- function(df = NULL,
                                          adult_population = hypoglycemia_01_populations$adults,
                                          peds_population = hypoglycemia_01_populations$peds,
                                          measure_name = "Hypoglycemia-01",
+                                         population_names = c("all", "adults", "peds"),
                                          numerator_col = TREATMENT,
+                                         confidence_interval,
+                                         method = method,
+                                         conf.level = conf.level,
+                                         correct = correct,
                                          ...)
 
     # create a separator
@@ -260,7 +280,12 @@ hypoglycemia_01 <- function(df = NULL,
                                          adult_population = hypoglycemia_01_populations$adults,
                                          peds_population = hypoglycemia_01_populations$peds,
                                          measure_name = "Hypoglycemia-01",
+                                         population_names = c("all", "adults", "peds"),
                                          numerator_col = TREATMENT,
+                                         confidence_interval,
+                                         method = method,
+                                         conf.level = conf.level,
+                                         correct = correct,
                                          ...)
 
     # create a separator

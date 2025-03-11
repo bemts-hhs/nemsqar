@@ -4,28 +4,63 @@
 \alias{summarize_measure}
 \title{Summarize Measure}
 \usage{
-summarize_measure(data, measure_name, population_name, numerator_col, ...)
+summarize_measure(
+  data,
+  measure_name,
+  population_name,
+  numerator_col,
+  confidence_interval = FALSE,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE,
+  ...
+)
 }
 \arguments{
-\item{data}{a dataframe or tibble containing the filtered and calculated fields.}
+\item{data}{A dataframe or tibble containing the filtered and calculated
+fields for the population of interest.}
 
-\item{measure_name}{A string containing the measure description.}
+\item{measure_name}{A string containing the description of the measure being
+calculated (e.g., "Airway-01").}
 
-\item{population_name}{A string containing the population description.}
+\item{population_name}{A string containing the description of the population
+for which the measure is being calculated (e.g., "Adults", "Peds", or
+"All").}
 
-\item{numerator_col}{The tidyselect column containing the numerator.}
+\item{numerator_col}{The tidyselect column containing the numerator data for
+the measure (e.g., the number of cases).}
 
-\item{...}{(optional) additional arguments}
+\item{confidence_interval}{A logical value indicating whether to calculate a
+confidence interval for the proportion estimate. Defaults to \code{FALSE}.}
+
+\item{method}{A string specifying the method to calculate the confidence
+intervals. Options are \code{"wilson"} (Wilson score interval) or
+\code{"clopper-pearson"} (exact binomial interval). Partial matching is allowed
+(e.g., \code{"w"} or \code{"c"}). Default is \code{"wilson"}.}
+
+\item{conf.level}{A numeric value indicating the confidence level for the
+interval, expressed as a proportion (e.g., 0.95 for a 95\% confidence
+interval). Defaults to 0.95.}
+
+\item{correct}{A logical value specifying whether to apply continuity
+correction to the Wilson score interval when \code{method = "wilson"}. Default
+is \code{TRUE}.}
+
+\item{...}{(optional) Additional arguments passed to
+\code{nemsqa_binomial_confint} when calculating confidence intervals.}
 }
 \value{
-Summarized information
+A tibble containing the summarized measure results for the
+population. The returned tibble includes the numerator, denominator,
+proportion, and, if requested, confidence intervals for the proportion.
 }
 \description{
-Calculates measure numerator, denominator, and proportions
-for a NEMSQA measure.
-}
-\details{
-Used throughout this package to calculate measure summaries.
+Calculates measure numerator, denominator, proportions, and optional
+confidence intervals for a NEMSQA measure. This function summarizes the
+information for a specified population and measure, returning a tibble with
+the calculated values. If requested, the function can also calculate
+confidence intervals for the proportions using either the Wilson score
+interval or the Clopper-Pearson exact binomial interval.
 }
 \author{
 Samuel Kordik, BBA, BS

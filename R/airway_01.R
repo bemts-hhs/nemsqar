@@ -46,17 +46,31 @@
 #'   procedure was attempted.
 #' @param eprocedures_06_col  Column indicating whether or not procedure was
 #'   successful.
+#' @param confidence_interval Logical. If `TRUE`, the function calculates a
+#'   confidence interval for the proportion estimate.
+#' @param method Character. Specifies the method used to calculate confidence
+#'   intervals. Options are `"wilson"` (Wilson score interval) and
+#'   `"clopper-pearson"` (exact binomial interval). Partial matching is
+#'   supported, so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level Numeric. The confidence level for the interval, expressed
+#'   as a proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+#'   0.95.
+#' @param correct Logical. If `TRUE`, applies a continuity correction to the
+#'   Wilson score interval when `method = "wilson"`. Defaults to `TRUE`.
 #' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
-#' @return A data.frame summarizing results for three population groups (All,
-#' Adults, and Peds) with the following columns:
-#' `pop`: Population type (All, Adults, or Peds).
-#' `numerator`: Count of incidents where beta-agonist medications were
-#' administered.
-#' `denominator`: Total count of incidents.
-#' `prop`: Proportion of incidents involving beta-agonist medications.
-#' `prop_label`: Proportion formatted as a percentage with a specified number of
-#' decimal places.
+#' @return A data.frame summarizing results for two population groups (Adults
+#'   and Peds) with the following columns:
+#' - `pop`: Population type (Adults and Peds).
+#' - `numerator`: Count of incidents meeting the measure.
+#' - `denominator`: Total count of included incidents.
+#' - `prop`: Proportion of incidents meeting the measure.
+#' - `prop_label`: Proportion formatted as a percentage with a specified number
+#'    of decimal places.
+#' - `lower_ci`: Lower bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
+#' - `upper_ci`: Upper bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
 #'
 #' @examples
 #'
@@ -123,6 +137,7 @@
 #'   )
 #'
 #' # Run the function
+#' # Return 95% confidence intervals using the Wilson method
 #' airway_01(df = NULL,
 #'          patient_scene_table = patient_table,
 #'          procedures_table = procedures_table,
@@ -143,7 +158,8 @@
 #'          earrest_01_col = earrest_01,
 #'          evitals_01_col = evitals_01,
 #'          evitals_06_col = evitals_06,
-#'          evitals_12_col = evitals_12
+#'          evitals_12_col = evitals_12,
+#'          confidence_interval = TRUE
 #'          )
 #'
 #' @author Samuel Kordik, BBA, BS, Nicolas Foss Ed.D., MS
@@ -171,6 +187,10 @@ airway_01 <- function(df = NULL,
                       eprocedures_03_col,
                       eprocedures_05_col,
                       eprocedures_06_col,
+                      confidence_interval = FALSE,
+                      method = c("wilson", "clopper-pearson"),
+                      conf.level = 0.95,
+                      correct = TRUE,
                       ...) {
 
   # utilize applicable tables to analyze the data for the measure
@@ -228,22 +248,19 @@ airway_01 <- function(df = NULL,
     cli::cli_h2("Calculating Airway-01")
 
     # summary
-    # adults
-    adult_population <- airway_01_population$adults |>
-      summarize_measure(measure_name = "Airway-01",
-                        population_name = "Adults",
-                        numerator_1,
-                        ...)
-
-    # peds
-    peds_population <- airway_01_population$peds |>
-      summarize_measure(measure_name = "Airway-01",
-                        population_name = "Peds",
-                        numerator_1,
-                        ...)
-
-    # union
-    airway.01 <- dplyr::bind_rows(adult_population, peds_population)
+    airway.01 <- results_summarize(
+      total_population = NULL,
+      adult_population = airway_01_population$adults,
+      peds_population = airway_01_population$peds,
+      measure_name = "Airway-01",
+      population_names = c("adults", "peds"),
+      numerator_col = numerator_1,
+      confidence_interval = confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
+      ...
+    )
 
     # create a separator
     cli::cli_text("\n")
@@ -320,22 +337,18 @@ airway_01 <- function(df = NULL,
       cli::cli_h2("Calculating Airway-01")
 
       # summary
-      # adults
-      adult_population <- airway_01_population$adults |>
-        summarize_measure(measure_name = "Airway-01",
-                          population_name = "Adults",
-                          numerator_1,
-                          ...)
-
-      # peds
-      peds_population <- airway_01_population$peds |>
-        summarize_measure(measure_name = "Airway-01",
-                          population_name = "Peds",
-                          numerator_1,
-                          ...)
-
-      # union
-      airway.01 <- dplyr::bind_rows(adult_population, peds_population)
+      airway.01 <- results_summarize(
+        adult_population = airway_01_population$adults,
+        peds_population = airway_01_population$peds,
+        measure_name = "Airway-01",
+        population_names = c("adults", "peds"),
+        numerator_col = numerator_1,
+        confidence_interval = confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
+        ...
+      )
 
       # create a separator
       cli::cli_text("\n")
