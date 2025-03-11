@@ -42,21 +42,31 @@
 #' @param evitals_27_col The column for the full set of pain scale scores.
 #' @param evitals_27_initial_col The column for the initial pain scale score.
 #' @param evitals_27_last_col The column for the last pain scale score.
-#' @param ... Additional arguments passed to helper functions for further
-#'   customization.
+#' @param confidence_interval Logical. If `TRUE`, the function calculates a
+#'   confidence interval for the proportion estimate.
+#' @param method Character. Specifies the method used to calculate confidence
+#'   intervals. Options are `"wilson"` (Wilson score interval) and
+#'   `"clopper-pearson"` (exact binomial interval). Partial matching is
+#'   supported, so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level Numeric. The confidence level for the interval, expressed
+#'   as a proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+#'   0.95.
+#' @param correct Logical. If `TRUE`, applies a continuity correction to the
+#'   Wilson score interval when `method = "wilson"`. Defaults to `TRUE`.
+#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
-#' @return A tibble summarizing results for three population groups (All,
-#'   Adults, and Peds) with the following columns:
-#'
-#'   `measure`: The name of the measure being calculated.
-#'   `pop`: Population type (All, Adults, Peds).
-#'   `numerator`: Count of incidents where there was a reduction in patient
-#'   pain.
-#'   `denominator`: Total count of incidents.
-#'   `prop`: Proportion of incidents where there was a reduction in patient
-#'   pain.
-#'   `prop_label`: Proportion formatted as a percentage with a specified number
-#'   of decimal places.
+#' @return A data.frame summarizing results for two population groups (All,
+#'   Adults and Peds) with the following columns:
+#' - `pop`: Population type (All, Adults, and Peds).
+#' - `numerator`: Count of incidents meeting the measure.
+#' - `denominator`: Total count of included incidents.
+#' - `prop`: Proportion of incidents meeting the measure.
+#' - `prop_label`: Proportion formatted as a percentage with a specified number
+#'    of decimal places.
+#' - `lower_ci`: Lower bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
+#' - `upper_ci`: Upper bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
 #'
 #' @examples
 #' # Synthetic test data
@@ -89,6 +99,7 @@
 #'     dplyr::select(-time_offset)  # Remove temporary column
 #'
 #' # Run function with the single pain score column
+#' # Return 95% confidence intervals using the Wilson method
 #'   trauma_03(
 #'     df = test_data_expanded2,
 #'     erecord_01_col = erecord_01,
@@ -101,7 +112,8 @@
 #'     evitals_27_last_col = NULL,
 #'     evitals_27_col = evitals_27,
 #'     edisposition_28_col = edisposition_28,
-#'     transport_disposition_col = edisposition_30
+#'     transport_disposition_col = edisposition_30,
+#'     confidence_interval = TRUE
 #'   )
 #'
 #' @author Nicolas Foss, Ed.D., MS
@@ -127,6 +139,10 @@ trauma_03 <- function(df = NULL,
                       evitals_27_col = NULL,
                       evitals_27_initial_col = NULL,
                       evitals_27_last_col = NULL,
+                      confidence_interval = FALSE,
+                      method = c("wilson", "clopper-pearson"),
+                      conf.level = 0.95,
+                      correct = TRUE,
                       ...) {
 
   # utilize applicable tables to analyze the data for the measure
@@ -184,8 +200,13 @@ trauma_03 <- function(df = NULL,
   trauma.03 <- results_summarize(total_population = trauma_03_populations$initial_population,
                                  adult_population = trauma_03_populations$adults,
                                  peds_population = trauma_03_populations$peds,
+                                 population_names = c("all", "adults", "peds"),
                                  measure_name = "Trauma-03",
                                  numerator_col = PAIN_SCALE,
+                                 confidence_interval = confidence_interval,
+                                 method = method,
+                                 conf.level = conf.level,
+                                 correct = correct,
                                  ...
                                  )
 
@@ -257,14 +278,18 @@ trauma_03 <- function(df = NULL,
     cli::cli_h2("Calculating Trauma-03")
 
     # summarize
-    trauma.03 <- results_summarize(
-      total_population = trauma_03_populations$initial_population,
-      adult_population = trauma_03_populations$adults,
-      peds_population = trauma_03_populations$peds,
-      measure_name = "Trauma-03",
-      numerator_col = PAIN_SCALE,
-      ...
-    )
+    trauma.03 <- results_summarize(total_population = trauma_03_populations$initial_population,
+                                 adult_population = trauma_03_populations$adults,
+                                 peds_population = trauma_03_populations$peds,
+                                 population_names = c("all", "adults", "peds"),
+                                 measure_name = "Trauma-03",
+                                 numerator_col = PAIN_SCALE,
+                                 confidence_interval = confidence_interval,
+                                 method = method,
+                                 conf.level = conf.level,
+                                 correct = correct,
+                                 ...
+                                 )
 
     # create a separator
     cli::cli_text("\n")

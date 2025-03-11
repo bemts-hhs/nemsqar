@@ -43,21 +43,31 @@
 #' @param evitals_23_col Column name in df with Glasgow Coma Scale (GCS) scores.
 #' @param evitals_26_col Column name in df with AVPU (alert, verbal, painful,
 #'   unresponsive) values.
-#' @param ... Additional parameters passed to `dplyr::summarize` or other dplyr
-#'   functions.
+#' @param confidence_interval Logical. If `TRUE`, the function calculates a
+#'   confidence interval for the proportion estimate.
+#' @param method Character. Specifies the method used to calculate confidence
+#'   intervals. Options are `"wilson"` (Wilson score interval) and
+#'   `"clopper-pearson"` (exact binomial interval). Partial matching is
+#'   supported, so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level Numeric. The confidence level for the interval, expressed
+#'   as a proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+#'   0.95.
+#' @param correct Logical. If `TRUE`, applies a continuity correction to the
+#'   Wilson score interval when `method = "wilson"`. Defaults to `TRUE`.
+#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
-#' @return A tibble summarizing results for three population groups (Adults, and
-#'   Peds) with the following columns:
-#'
-#'   `measure`: The name of the measure being calculated.
-#'   `pop`: Population type (Adults, Peds).
-#'   `numerator`: Count of incidents where SP02, ETCO2, and SBP were all
-#'   measured.
-#'   `denominator`: Total count of incidents.
-#'   `prop`: Proportion of incidents where SP02, ETCO2, and SBP were all
-#'   measured.
-#'   `prop_label`: Proportion formatted as a percentage with a specified number
-#'   of decimal places.
+#' @return A data.frame summarizing results for two population groups (All,
+#'   Adults and Peds) with the following columns:
+#' - `pop`: Population type (All, Adults, and Peds).
+#' - `numerator`: Count of incidents meeting the measure.
+#' - `denominator`: Total count of included incidents.
+#' - `prop`: Proportion of incidents meeting the measure.
+#' - `prop_label`: Proportion formatted as a percentage with a specified number
+#'    of decimal places.
+#' - `lower_ci`: Lower bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
+#' - `upper_ci`: Upper bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
 #'
 #' @examples
 #'
@@ -77,7 +87,8 @@
 #'     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
 #'   )
 #'
-#'   # Run function
+#' # Run the function
+#' # Return 95% confidence intervals using the Wilson method
 #'   tbi_01(
 #'     df = test_data,
 #'     erecord_01_col = erecord_01,
@@ -91,7 +102,8 @@
 #'     evitals_16_col = evitals_16,
 #'     evitals_23_col = evitals_23,
 #'     evitals_26_col = evitals_26,
-#'     transport_disposition_col = edisposition_30
+#'     transport_disposition_col = edisposition_30,
+#'     confidence_interval = TRUE
 #'   )
 #'
 #' @author Nicolas Foss, Ed.D., MS
@@ -118,6 +130,10 @@ tbi_01 <- function(df = NULL,
                    evitals_16_col,
                    evitals_23_col,
                    evitals_26_col,
+                   confidence_interval = FALSE,
+                   method = c("wilson", "clopper-pearson"),
+                   conf.level = 0.95,
+                   correct = TRUE,
                    ...
                    ) {
 
@@ -170,23 +186,19 @@ tbi_01 <- function(df = NULL,
     cli::cli_h2("Calculating TBI-01")
 
     # summarize
-
-    # adults
-    adult_population <- tbi_01_populations$adults |>
-      summarize_measure(measure_name = "TBI-01",
-                        population_name = "Adults",
-                        VITALS_CHECK,
-                        ...)
-
-    # peds
-    peds_population <- tbi_01_populations$peds |>
-      summarize_measure(measure_name = "TBI-01",
-                        population_name = "Peds",
-                        VITALS_CHECK,
-                        ...)
-
-    # summary
-    tbi.01 <- dplyr::bind_rows(adult_population, peds_population)
+    tbi.01 <- results_summarize(
+      total_population = NULL,
+      adult_population = tbi_01_populations$adults,
+      peds_population = tbi_01_populations$peds,
+      population_names = c("adults", "peds"),
+      measure_name = "TBI-01",
+      numerator_col = VITALS_CHECK,
+      confidence_interval = confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
+      ...
+    )
 
     # create a separator
     cli::cli_text("\n")
@@ -258,23 +270,19 @@ tbi_01 <- function(df = NULL,
     cli::cli_h2("Calculating TBI-01")
 
     # summarize
-
-    # adults
-    adult_population <- tbi_01_populations$adults |>
-      summarize_measure(measure_name = "TBI-01",
-                        population_name = "Adults",
-                        VITALS_CHECK,
-                        ...)
-
-    # peds
-    peds_population <- tbi_01_populations$peds |>
-      summarize_measure(measure_name = "TBI-01",
-                        population_name = "Peds",
-                        VITALS_CHECK,
-                        ...)
-
-    # summary
-    tbi.01 <- dplyr::bind_rows(adult_population, peds_population)
+    tbi.01 <- results_summarize(
+      total_population = NULL,
+      adult_population = tbi_01_populations$adults,
+      peds_population = tbi_01_populations$peds,
+      population_names = c("adults", "peds"),
+      measure_name = "TBI-01",
+      numerator_col = VITALS_CHECK,
+      confidence_interval = confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
+      ...
+    )
 
     # create a separator
     cli::cli_text("\n")

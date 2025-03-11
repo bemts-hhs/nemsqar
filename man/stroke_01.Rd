@@ -18,6 +18,10 @@ stroke_01(
   evitals_26_col,
   evitals_29_col,
   evitals_30_col,
+  confidence_interval = FALSE,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE,
   ...
 )
 }
@@ -61,22 +65,38 @@ during assessment.}
 \item{evitals_30_col}{The column containing stroke scale type descriptors
 (e.g., FAST, NIH, etc.).}
 
-\item{...}{Additional arguments passed to \code{dplyr::summarize()} function for
-further customization of results.}
+\item{confidence_interval}{Logical. If \code{TRUE}, the function calculates a
+confidence interval for the proportion estimate.}
+
+\item{method}{Character. Specifies the method used to calculate confidence
+intervals. Options are \code{"wilson"} (Wilson score interval) and
+\code{"clopper-pearson"} (exact binomial interval). Partial matching is
+supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
+
+\item{conf.level}{Numeric. The confidence level for the interval, expressed
+as a proportion (e.g., 0.95 for a 95\% confidence interval). Defaults to
+0.95.}
+
+\item{correct}{Logical. If \code{TRUE}, applies a continuity correction to the
+Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+
+\item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }
 \value{
-A tibble summarizing results for the total population with the
-following columns:
-
-\code{measure}: The name of the measure being calculated.
-\code{pop}: Population type (All).
-\code{numerator}: Count of incidents where beta-agonist medications were
-administered.
-\code{denominator}:
-Total count of incidents.
-\code{prop}: Proportion of incidents involving beta-agonist medications.
-\code{prop_label}: Proportion formatted as a percentage with a specified number
+A data.frame summarizing results for two population groups (All,
+Adults and Peds) with the following columns:
+\itemize{
+\item \code{pop}: Population type (All, Adults, and Peds).
+\item \code{numerator}: Count of incidents meeting the measure.
+\item \code{denominator}: Total count of included incidents.
+\item \code{prop}: Proportion of incidents meeting the measure.
+\item \code{prop_label}: Proportion formatted as a percentage with a specified number
 of decimal places.
+\item \code{lower_ci}: Lower bound of the confidence interval for \code{prop}
+(if \code{confidence_interval = TRUE}).
+\item \code{upper_ci}: Upper bound of the confidence interval for \code{prop}
+(if \code{confidence_interval = TRUE}).
+}
 }
 \description{
 The \code{stroke_01} function processes EMS dataset to identify potential stroke
@@ -100,7 +120,8 @@ impressions and scales, and aggregates results by unique patient encounters.
     evitals_30 = rep("a pain scale", 5)
   )
 
-  # Run the function
+# Run the function
+# Return 95\% confidence intervals using the Wilson method
   stroke_01(
     df = test_data,
     erecord_01_col = erecord_01,
@@ -110,7 +131,8 @@ impressions and scales, and aggregates results by unique patient encounters.
     evitals_23_col = evitals_23,
     evitals_26_col = evitals_26,
     evitals_29_col = evitals_29,
-    evitals_30_col = evitals_30
+    evitals_30_col = evitals_30,
+    confidence_interval = TRUE
   )
 
 }

@@ -50,18 +50,31 @@
 #'   scores from initial vital signs.
 #' @param evitals_26_col A column containing alert, verbal, painful,
 #'   unresponsive (AVPU) vital signs.
-#' @param ... Additional arguments passed to the `summarize_measure` function.
+#' @param confidence_interval Logical. If `TRUE`, the function calculates a
+#'   confidence interval for the proportion estimate.
+#' @param method Character. Specifies the method used to calculate confidence
+#'   intervals. Options are `"wilson"` (Wilson score interval) and
+#'   `"clopper-pearson"` (exact binomial interval). Partial matching is
+#'   supported, so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level Numeric. The confidence level for the interval, expressed
+#'   as a proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+#'   0.95.
+#' @param correct Logical. If `TRUE`, applies a continuity correction to the
+#'   Wilson score interval when `method = "wilson"`. Defaults to `TRUE`.
+#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
-#' @return A tibble summarizing results for three population groups (Adults, and
-#'   Peds) with the following columns:
-#'
-#'   `measure`: The name of the measure being calculated.
-#'   `pop`: Population type (Adults, Peds).
-#'   `numerator`: Count of incidents where all applicable vital signs are taken.
-#'   `denominator`: Total count of incidents.
-#'   `prop`: Proportion of incidents where all applicable vital signs are taken.
-#'   `prop_label`: Proportion formatted as a percentage with a specified number
-#'   of decimal places.
+#' @return A data.frame summarizing results for two population groups (All,
+#'   Adults and Peds) with the following columns:
+#' - `pop`: Population type (All, Adults, and Peds).
+#' - `numerator`: Count of incidents meeting the measure.
+#' - `denominator`: Total count of included incidents.
+#' - `prop`: Proportion of incidents meeting the measure.
+#' - `prop_label`: Proportion formatted as a percentage with a specified number
+#'    of decimal places.
+#' - `lower_ci`: Lower bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
+#' - `upper_ci`: Upper bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
 #'
 #' @examples
 #'
@@ -87,6 +100,7 @@
 #'   )
 #'
 #'   # Run function with the first and last pain score columns
+#'   # Return 95% confidence intervals using the Wilson method
 #'   ttr_01(
 #'     df = test_data,
 #'     erecord_01_col = erecord_01,
@@ -131,6 +145,10 @@ ttr_01 <- function(df = NULL,
                    evitals_14_col,
                    evitals_23_col,
                    evitals_26_col,
+                   confidence_interval = FALSE,
+                   method = c("wilson", "clopper-pearson"),
+                   conf.level = 0.95,
+                   correct = TRUE,
                    ...
                    ) {
 
@@ -187,23 +205,19 @@ ttr_01 <- function(df = NULL,
     cli::cli_h2("Calculating TTR-01")
 
     # summarize
-
-    # adults
-    adult_population <- ttr_01_populations$adults |>
-      summarize_measure(measure_name = "TTR-01",
-                        population_name = "Adults",
-                        VITALS,
-                        ...)
-
-    # peds
-    peds_population <- ttr_01_populations$peds |>
-      summarize_measure(measure_name = "TTR-01",
-                        population_name = "Peds",
-                        VITALS,
-                        ...)
-
-    # summary
-    ttr.01 <- dplyr::bind_rows(adult_population, peds_population)
+    ttr.01 <- results_summarize(
+      total_population = NULL,
+      adult_population = ttr_01_populations$adults,
+      peds_population = ttr_01_populations$peds,
+      population_names = c("adults", "peds"),
+      measure_name = "TTR-01",
+      numerator_col = VITALS,
+      confidence_interval = confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
+      ...
+    )
 
     # create a separator
     cli::cli_text("\n")
@@ -277,23 +291,19 @@ ttr_01 <- function(df = NULL,
     cli::cli_h2("Calculating TTR-01")
 
     # summarize
-
-    # adults
-    adult_population <- ttr_01_populations$adults |>
-      summarize_measure(measure_name = "TTR-01",
-                        population_name = "Adults",
-                        VITALS,
-                        ...)
-
-    # peds
-    peds_population <- ttr_01_populations$peds |>
-      summarize_measure(measure_name = "TTR-01",
-                        population_name = "Peds",
-                        VITALS,
-                        ...)
-
-    # summary
-    ttr.01 <- dplyr::bind_rows(adult_population, peds_population)
+    ttr.01 <- results_summarize(
+      total_population = NULL,
+      adult_population = ttr_01_populations$adults,
+      peds_population = ttr_01_populations$peds,
+      population_names = c("adults", "peds"),
+      measure_name = "TTR-01",
+      numerator_col = VITALS,
+      confidence_interval = confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
+      ...
+    )
 
     # create a separator
     cli::cli_text("\n")

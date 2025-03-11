@@ -25,6 +25,10 @@ tbi_01(
   evitals_16_col,
   evitals_23_col,
   evitals_26_col,
+  confidence_interval = FALSE,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE,
   ...
 )
 }
@@ -86,22 +90,38 @@ values.}
 \item{evitals_26_col}{Column name in df with AVPU (alert, verbal, painful,
 unresponsive) values.}
 
-\item{...}{Additional parameters passed to \code{dplyr::summarize} or other dplyr
-functions.}
+\item{confidence_interval}{Logical. If \code{TRUE}, the function calculates a
+confidence interval for the proportion estimate.}
+
+\item{method}{Character. Specifies the method used to calculate confidence
+intervals. Options are \code{"wilson"} (Wilson score interval) and
+\code{"clopper-pearson"} (exact binomial interval). Partial matching is
+supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
+
+\item{conf.level}{Numeric. The confidence level for the interval, expressed
+as a proportion (e.g., 0.95 for a 95\% confidence interval). Defaults to
+0.95.}
+
+\item{correct}{Logical. If \code{TRUE}, applies a continuity correction to the
+Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+
+\item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }
 \value{
-A tibble summarizing results for three population groups (Adults, and
-Peds) with the following columns:
-
-\code{measure}: The name of the measure being calculated.
-\code{pop}: Population type (Adults, Peds).
-\code{numerator}: Count of incidents where SP02, ETCO2, and SBP were all
-measured.
-\code{denominator}: Total count of incidents.
-\code{prop}: Proportion of incidents where SP02, ETCO2, and SBP were all
-measured.
-\code{prop_label}: Proportion formatted as a percentage with a specified number
+A data.frame summarizing results for two population groups (All,
+Adults and Peds) with the following columns:
+\itemize{
+\item \code{pop}: Population type (All, Adults, and Peds).
+\item \code{numerator}: Count of incidents meeting the measure.
+\item \code{denominator}: Total count of included incidents.
+\item \code{prop}: Proportion of incidents meeting the measure.
+\item \code{prop_label}: Proportion formatted as a percentage with a specified number
 of decimal places.
+\item \code{lower_ci}: Lower bound of the confidence interval for \code{prop}
+(if \code{confidence_interval = TRUE}).
+\item \code{upper_ci}: Upper bound of the confidence interval for \code{prop}
+(if \code{confidence_interval = TRUE}).
+}
 }
 \description{
 This function screens for potential traumatic brain injury (TBI) cases based
@@ -126,7 +146,8 @@ with calculated variables for TBI identification.
     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
   )
 
-  # Run function
+# Run the function
+# Return 95\% confidence intervals using the Wilson method
   tbi_01(
     df = test_data,
     erecord_01_col = erecord_01,
@@ -140,7 +161,8 @@ with calculated variables for TBI identification.
     evitals_16_col = evitals_16,
     evitals_23_col = evitals_23,
     evitals_26_col = evitals_26,
-    transport_disposition_col = edisposition_30
+    transport_disposition_col = edisposition_30,
+    confidence_interval = TRUE
   )
 
 }

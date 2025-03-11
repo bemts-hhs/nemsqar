@@ -164,7 +164,7 @@ nemsqa_binomial_confint <- function(data = NULL, x, n,
 
   # Return as a dataframe/tibble-compatible structure
   lower_upper <- tibble::tibble(prop = estimate, lower_ci = lower, upper_ci = upper) |>
-    dplyr::mutate(prop_label = pretty_percent(prop),
+    dplyr::mutate(prop_label = pretty_percent(prop, n_decimal = 2),
                   .after = prop
     )
 
