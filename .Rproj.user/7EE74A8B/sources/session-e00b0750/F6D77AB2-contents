@@ -1,0 +1,72 @@
+###_____________________________________________________________________________
+### Safety-01 test using the new table functions
+###_____________________________________________________________________________
+
+# data import
+
+# patient table
+safety_01_patient_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_patient_scene_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(dplyr::across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~  lubridate::mdy(stringr::str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  )))
+
+# response table
+safety_01_response_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_response_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# run the population function
+safety_population_01_table <- safety_01_population(
+
+  patient_scene_table = safety_01_patient_table,
+  response_table = safety_01_response_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = INCIDENT_DATE,
+  patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  eresponse_24_col = RESPONSE_ADDITIONAL_RESPONSE_MODE_DESCRIPTORS_LIST_E_RESPONSE_24
+  )
+
+# run the population function with no incident date or patient DOB
+safety_population_01_table_null <- safety_01_population(
+
+  patient_scene_table = safety_01_patient_table,
+  response_table = safety_01_response_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  eresponse_24_col = RESPONSE_ADDITIONAL_RESPONSE_MODE_DESCRIPTORS_LIST_E_RESPONSE_24
+  )
+
+# run the wrapper function with all arguments
+
+safety_01(patient_scene_table = safety_01_patient_table,
+          response_table = safety_01_response_table,
+          erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+          incident_date_col = INCIDENT_DATE,
+          patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+          epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+          epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+          eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+          eresponse_24_col = RESPONSE_ADDITIONAL_RESPONSE_MODE_DESCRIPTORS_LIST_E_RESPONSE_24,
+          confidence_interval = TRUE
+          )
+
+# run the wrapper function with NULL date arguments
+
+safety_01(patient_scene_table = safety_01_patient_table,
+          response_table = safety_01_response_table,
+          erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+          incident_date_col = NULL,
+          patient_DOB_col = NULL,
+          epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+          epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+          eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+          eresponse_24_col = RESPONSE_ADDITIONAL_RESPONSE_MODE_DESCRIPTORS_LIST_E_RESPONSE_24
+          )

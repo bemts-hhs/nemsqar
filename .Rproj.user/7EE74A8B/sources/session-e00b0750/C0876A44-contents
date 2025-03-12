@@ -1,0 +1,89 @@
+###_____________________________________________________________________________
+### Safety-02 test using the new table functions
+###_____________________________________________________________________________
+
+# data import
+
+# patient table
+safety_02_patient_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_patient_scene_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(dplyr::across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~  lubridate::mdy(stringr::str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  )))
+
+# response table
+safety_02_response_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_response_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# disposition table
+
+safety_02_disposition_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_disposition_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# run the population function
+safety_population_02_table <- safety_02_population(
+
+  patient_scene_table = safety_02_patient_table,
+  response_table = safety_02_response_table,
+  disposition_table = safety_02_disposition_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = INCIDENT_DATE,
+  patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  edisposition_18_col = DISPOSITION_ADDITIONAL_TRANSPORT_MODE_DESCRIPTOR_LIST_E_DISPOSITION_18,
+  edisposition_28_col = PATIENT_EVALUATION_CARE_3_4_IT_DISPOSITION_100_3_5_E_DISPOSITION_28,
+  transport_disposition_cols = c(DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112, TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30)
+  )
+
+# run the population function with no incident date or patient DOB
+safety_population_02_table_null <- safety_02_population(
+
+  patient_scene_table = safety_02_patient_table,
+  response_table = safety_02_response_table,
+  disposition_table = safety_02_disposition_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  edisposition_18_col = DISPOSITION_ADDITIONAL_TRANSPORT_MODE_DESCRIPTOR_LIST_E_DISPOSITION_18,
+  edisposition_28_col = PATIENT_EVALUATION_CARE_3_4_IT_DISPOSITION_100_3_5_E_DISPOSITION_28,
+  transport_disposition_cols = c(DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112, TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30)
+  )
+
+# run the wrapper function with all arguments
+safety_02(patient_scene_table = safety_02_patient_table,
+          response_table = safety_02_response_table,
+          disposition_table = safety_02_disposition_table,
+          erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+          incident_date_col = INCIDENT_DATE,
+          patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+          epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+          epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+          eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+          edisposition_18_col = DISPOSITION_ADDITIONAL_TRANSPORT_MODE_DESCRIPTOR_LIST_E_DISPOSITION_18,
+          edisposition_28_col = PATIENT_EVALUATION_CARE_3_4_IT_DISPOSITION_100_3_5_E_DISPOSITION_28,
+          transport_disposition_cols = c(DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112, TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30),
+          confidence_interval = TRUE,
+          method = "w"
+          )
+
+# run the wrapper function with NULL date arguments
+safety_02(patient_scene_table = safety_02_patient_table,
+          response_table = safety_02_response_table,
+          erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+          incident_date_col = NULL,
+          patient_DOB_col = NULL,
+          epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+          epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+          eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+          edisposition_18_col = DISPOSITION_ADDITIONAL_TRANSPORT_MODE_DESCRIPTOR_LIST_E_DISPOSITION_18,
+          edisposition_28_col = PATIENT_EVALUATION_CARE_3_4_IT_DISPOSITION_100_3_5_E_DISPOSITION_28,
+          transport_disposition_cols = c(DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112, TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30)
+          )

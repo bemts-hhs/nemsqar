@@ -1,0 +1,145 @@
+###_____________________________________________________________________________
+### Airway-01 test using the new table functions
+###_____________________________________________________________________________
+
+# data import
+
+# patient table
+airway_01_patient_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_patient_scene_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(dplyr::across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~  lubridate::mdy(stringr::str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  )))
+
+# response table
+airway_01_response_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_response_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# arrest table
+airway_01_arrest_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_arrest_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# vitals table
+airway_01_vitals_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_vitals_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ),
+  VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01 = lubridate::mdy_hms(stringr::str_remove_all(VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01, pattern = "\\s(?:AM|PM)$"))
+  )
+
+# procedures table
+airway_01_procedures_table <- readr::read_csv(
+  "C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_procedures_data_Export_2023.csv"
+) |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(
+    INCIDENT_DATE = lubridate::mdy(
+      stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+    ),
+    PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01 = lubridate::mdy_hms(
+      stringr::str_remove_all(PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01, pattern = "\\s(?:AM|PM)$")
+    )
+  )
+
+# run the population function
+airway_population_01_table <- airway_01_population(
+  patient_scene_table = airway_01_patient_table,
+  response_table = airway_01_response_table,
+  vitals_table = airway_01_vitals_table,
+  arrest_table = airway_01_arrest_table,
+  procedures_table = airway_01_procedures_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = INCIDENT_DATE,
+  patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eprocedures_03_col = PROCEDURE_PERFORMED_DESCRIPTION_AND_CODE_E_PROCEDURES_03,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  earrest_01_col = CARDIAC_ARREST_DURING_EMS_EVENT_WITH_CODE_E_ARREST_01,
+  eprocedures_06_col = PROCEDURE_SUCCESSFUL_E_PROCEDURES_06,
+  eprocedures_05_col = PROCEDURE_NUMBER_OF_ATTEMPTS_E_PROCEDURES_05,
+  eprocedures_01_col = PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01,
+  eprocedures_02_col = PROCEDURE_PERFORMED_PRIOR_TO_EMS_CARE_E_PROCEDURES_02,
+  evitals_12_col = VITALS_PULSE_OXIMETRY_E_VITALS_12,
+  evitals_01_col = VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01,
+  evitals_06_col = VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06
+)
+
+# run the population function with no incident date or patient DOB
+airway_population_01_table_null <- airway_01_population(
+
+  patient_scene_table = airway_01_patient_table,
+  response_table = airway_01_response_table,
+  vitals_table = airway_01_vitals_table,
+  arrest_table = airway_01_arrest_table,
+  procedures_table = airway_01_procedures_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eprocedures_03_col = PROCEDURE_PERFORMED_DESCRIPTION_AND_CODE_E_PROCEDURES_03,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  earrest_01_col = CARDIAC_ARREST_DURING_EMS_EVENT_WITH_CODE_E_ARREST_01,
+  eprocedures_06_col = PROCEDURE_SUCCESSFUL_E_PROCEDURES_06,
+  eprocedures_05_col = PROCEDURE_NUMBER_OF_ATTEMPTS_E_PROCEDURES_05,
+  eprocedures_01_col = PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01,
+  eprocedures_02_col = PROCEDURE_PERFORMED_PRIOR_TO_EMS_CARE_E_PROCEDURES_02,
+  evitals_12_col = VITALS_PULSE_OXIMETRY_E_VITALS_12,
+  evitals_01_col = VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01,
+  evitals_06_col = VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06
+  )
+
+# run the wrapper function with all arguments
+
+airway_01(patient_scene_table = airway_01_patient_table,
+          response_table = airway_01_response_table,
+          vitals_table = airway_01_vitals_table,
+          arrest_table = airway_01_arrest_table,
+          procedures_table = airway_01_procedures_table,
+          erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+          incident_date_col = INCIDENT_DATE,
+          patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+          epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+          epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+          eprocedures_03_col = PROCEDURE_PERFORMED_DESCRIPTION_AND_CODE_E_PROCEDURES_03,
+          eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+          earrest_01_col = CARDIAC_ARREST_DURING_EMS_EVENT_WITH_CODE_E_ARREST_01,
+          eprocedures_06_col = PROCEDURE_SUCCESSFUL_E_PROCEDURES_06,
+          eprocedures_05_col = PROCEDURE_NUMBER_OF_ATTEMPTS_E_PROCEDURES_05,
+          eprocedures_01_col = PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01,
+          eprocedures_02_col = PROCEDURE_PERFORMED_PRIOR_TO_EMS_CARE_E_PROCEDURES_02,
+          evitals_12_col = VITALS_PULSE_OXIMETRY_E_VITALS_12,
+          evitals_01_col = VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01,
+          evitals_06_col = VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06,
+          confidence_interval = TRUE,
+          method = "w",
+          correct = TRUE
+          )
+
+# run the wrapper function with NULL date arguments
+
+airway_01(patient_scene_table = airway_01_patient_table,
+          response_table = airway_01_response_table,
+          vitals_table = airway_01_vitals_table,
+          arrest_table = airway_01_arrest_table,
+          procedures_table = airway_01_procedures_table,
+          erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+          incident_date_col = NULL,
+          patient_DOB_col = NULL,
+          epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+          epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+          eprocedures_03_col = PROCEDURE_PERFORMED_DESCRIPTION_AND_CODE_E_PROCEDURES_03,
+          eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+          earrest_01_col = CARDIAC_ARREST_DURING_EMS_EVENT_WITH_CODE_E_ARREST_01,
+          eprocedures_06_col = PROCEDURE_SUCCESSFUL_E_PROCEDURES_06,
+          eprocedures_05_col = PROCEDURE_NUMBER_OF_ATTEMPTS_E_PROCEDURES_05,
+          eprocedures_01_col = PROCEDURE_PERFORMED_DATE_TIME_E_PROCEDURES_01,
+          eprocedures_02_col = PROCEDURE_PERFORMED_PRIOR_TO_EMS_CARE_E_PROCEDURES_02,
+          evitals_12_col = VITALS_PULSE_OXIMETRY_E_VITALS_12,
+          evitals_01_col = VITALS_SIGNS_TAKEN_DATE_TIME_E_VITALS_01,
+          evitals_06_col = VITALS_SYSTOLIC_BLOOD_PRESSURE_SBP_E_VITALS_06
+          )

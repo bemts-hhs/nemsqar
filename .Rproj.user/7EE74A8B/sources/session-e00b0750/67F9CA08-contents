@@ -1,0 +1,111 @@
+################################################################################
+### Test for Syncope-01 ########################################################
+################################################################################
+
+# load data
+syncope_01_data <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/syncope01_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_")
+
+# clean
+syncope_01_clean <- syncope_01_data |>
+  dplyr::mutate(dplyr::across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~ lubridate::mdy(
+    stringr::str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+)?(\\s(AM|PM))?")
+  )))
+
+# run function using the data.frame
+syncope_01_clean |>
+  syncope_01(erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+            incident_date_col = INCIDENT_DATE,
+            patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+            epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+            epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+            eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+            esituation_09_col = SITUATION_PRIMARY_SYMPTOM_E_SITUATION_09,
+            esituation_10_col = SITUATION_OTHER_ASSOCIATED_SYMPTOMS_LIST_E_SITUATION_10,
+            esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
+            esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
+            evitals_04_col = PATIENT_ECG_TYPE_LIST_E_VITALS_04
+            )
+
+# run the population function with the data.frame
+syncope_population_df <- syncope_01_clean |>
+  syncope_01_population(erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+                        incident_date_col = INCIDENT_DATE,
+                        patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+                        epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+                        epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+                        eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+                        esituation_09_col = SITUATION_PRIMARY_SYMPTOM_E_SITUATION_09,
+                        esituation_10_col = SITUATION_OTHER_ASSOCIATED_SYMPTOMS_LIST_E_SITUATION_10,
+                        esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
+                        esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
+                        evitals_04_col = PATIENT_ECG_TYPE_LIST_E_VITALS_04
+                        )
+
+###_____________________________________________________________________________
+### Syncope-01 Test using the new table functions
+###_____________________________________________________________________________
+
+# data import
+
+# patient table
+syncope_01_patient_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_patient_scene_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(dplyr::across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~  lubridate::mdy(stringr::str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  )))
+
+# response table
+syncope_01_response_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_response_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# situation table
+syncope_01_situation_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_situation_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# medications table
+syncope_01_vitals_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_vitals_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# run the function
+syncope_01(patient_scene_table = syncope_01_patient_table,
+          response_table = syncope_01_response_table,
+          situation_table = syncope_01_situation_table,
+          vitals_table = syncope_01_vitals_table,
+          erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+          incident_date_col = INCIDENT_DATE,
+          patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+          epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+          epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+          eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+          esituation_09_col = SITUATION_PRIMARY_SYMPTOM_E_SITUATION_09,
+          esituation_10_col = SITUATION_OTHER_ASSOCIATED_SYMPTOMS_LIST_E_SITUATION_10,
+          esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
+          esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
+          evitals_04_col = VITALS_ECG_TYPE_E_VITALS_04,
+          confidence_interval = TRUE
+          )
+
+# run the population function
+syncope_population <- syncope_01_population(
+  patient_scene_table = syncope_01_patient_table,
+  response_table = syncope_01_response_table,
+  situation_table = syncope_01_situation_table,
+  vitals_table = syncope_01_vitals_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = INCIDENT_DATE,
+  patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  esituation_09_col = SITUATION_PRIMARY_SYMPTOM_E_SITUATION_09,
+  esituation_10_col = SITUATION_OTHER_ASSOCIATED_SYMPTOMS_LIST_E_SITUATION_10,
+  esituation_11_col = SITUATION_PROVIDER_PRIMARY_IMPRESSION_CODE_AND_DESCRIPTION_E_SITUATION_11,
+  esituation_12_col = SITUATION_PROVIDER_SECONDARY_IMPRESSION_DESCRIPTION_AND_CODE_LIST_E_SITUATION_12,
+  evitals_04_col = VITALS_ECG_TYPE_E_VITALS_04
+  )

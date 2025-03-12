@@ -1,0 +1,136 @@
+###_____________________________________________________________________________
+### Safety-04 test using the new table functions
+###_____________________________________________________________________________
+
+# data import
+
+# patient table
+safety_04_patient_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_patient_scene_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(dplyr::across(c(INCIDENT_DATE, PATIENT_DATE_OF_BIRTH_E_PATIENT_17), ~  lubridate::mdy(stringr::str_remove_all(., pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  )))
+
+# response table
+safety_04_response_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_response_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# arrest table
+safety_04_arrest_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_arrest_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# injury table
+safety_04_injury_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_injury_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# procedures table
+safety_04_procedures_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_procedures_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  ))
+
+# disposition table
+safety_04_disposition_table <- readr::read_csv("C:/Users/nfoss0/OneDrive - State of Iowa HHS/Analytics/BEMTS/EMS DATA FOR ALL SCRIPTS/NEMSQA/tables/nemsqa_disposition_data_Export_2023.csv") |>
+  janitor::clean_names(case = "screaming_snake", sep_out = "_") |>
+  dplyr::mutate(INCIDENT_DATE = lubridate::mdy(stringr::str_remove_all(INCIDENT_DATE, pattern = "\\s\\d+:\\d+(:\\d+\\s(AM|PM))?")
+  )) |>
+  dplyr::mutate(dplyr::across(where(is.character), ~ stringr::str_remove_all(., pattern = '"'))) |>
+  dplyr::mutate(dplyr::across(where(is.character), ~ tidyr::replace_na(., "missing")),
+         TRANSPORTS_CONCATENATE = stringr::str_c(TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30,
+                                        ", ",
+                                        DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112
+         ))
+
+# run the population function
+safety_population_04_table <- safety_04_population(
+
+  patient_scene_table = safety_04_patient_table,
+  response_table = safety_04_response_table,
+  arrest_table = safety_04_arrest_table,
+  injury_table = safety_04_injury_table,
+  procedures_table = safety_04_procedures_table,
+  disposition_table = safety_04_disposition_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = INCIDENT_DATE,
+  patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  earrest_01_col = CARDIAC_ARREST_DURING_EMS_EVENT_WITH_CODE_E_ARREST_01,
+  einjury_03_col = INJURY_TRAUMA_CENTER_TRIAGE_CRITERIA_STEPS_1_AND_2_LIST_E_INJURY_03,
+  eprocedures_03_col = PATIENT_ATTEMPTED_PROCEDURE_DESCRIPTIONS_AND_CODES_LIST_E_PROCEDURES_03,
+  edisposition_14_col = DISPOSITION_POSITION_OF_PATIENT_DURING_TRANSPORT_LIST_E_DISPOSITION_14,
+  transport_disposition_col = c(DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112,
+                                TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30)
+  )
+
+# run the population function with no incident date or patient DOB
+safety_population_04_table_null <- safety_04_population(
+
+  patient_scene_table = safety_04_patient_table,
+  response_table = safety_04_response_table,
+  arrest_table = safety_04_arrest_table,
+  injury_table = safety_04_injury_table,
+  procedures_table = safety_04_procedures_table,
+  disposition_table = safety_04_disposition_table,
+  erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+  epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+  eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+  earrest_01_col = CARDIAC_ARREST_DURING_EMS_EVENT_WITH_CODE_E_ARREST_01,
+  einjury_03_col = INJURY_TRAUMA_CENTER_TRIAGE_CRITERIA_STEPS_1_AND_2_LIST_E_INJURY_03,
+  eprocedures_03_col = PATIENT_ATTEMPTED_PROCEDURE_DESCRIPTIONS_AND_CODES_LIST_E_PROCEDURES_03,
+  edisposition_14_col = DISPOSITION_POSITION_OF_PATIENT_DURING_TRANSPORT_LIST_E_DISPOSITION_14,
+  transport_disposition_col = c(DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112,
+                                TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30)
+  )
+
+# run the wrapper function with all arguments
+safety_04(patient_scene_table = safety_04_patient_table,
+          response_table = safety_04_response_table,
+          arrest_table = safety_04_arrest_table,
+          injury_table = safety_04_injury_table,
+          procedures_table = safety_04_procedures_table,
+          disposition_table = safety_04_disposition_table,
+          erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+          incident_date_col = INCIDENT_DATE,
+          patient_DOB_col = PATIENT_DATE_OF_BIRTH_E_PATIENT_17,
+          epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+          epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+          eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+          earrest_01_col = CARDIAC_ARREST_DURING_EMS_EVENT_WITH_CODE_E_ARREST_01,
+          einjury_03_col = INJURY_TRAUMA_CENTER_TRIAGE_CRITERIA_STEPS_1_AND_2_LIST_E_INJURY_03,
+          eprocedures_03_col = PATIENT_ATTEMPTED_PROCEDURE_DESCRIPTIONS_AND_CODES_LIST_E_PROCEDURES_03,
+          edisposition_14_col = DISPOSITION_POSITION_OF_PATIENT_DURING_TRANSPORT_LIST_E_DISPOSITION_14,
+          transport_disposition_col = c(DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112,
+                                        TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30),
+          confidence_interval = TRUE
+          )
+
+# run the wrapper function with NULL date arguments
+safety_04(patient_scene_table = safety_04_patient_table,
+          response_table = safety_04_response_table,
+          arrest_table = safety_04_arrest_table,
+          injury_table = safety_04_injury_table,
+          procedures_table = safety_04_procedures_table,
+          disposition_table = safety_04_disposition_table,
+          erecord_01_col = INCIDENT_PATIENT_CARE_REPORT_NUMBER_PCR_E_RECORD_01,
+          incident_date_col = NULL,
+          patient_DOB_col = NULL,
+          epatient_15_col = PATIENT_AGE_E_PATIENT_15,
+          epatient_16_col = PATIENT_AGE_UNITS_E_PATIENT_16,
+          eresponse_05_col = RESPONSE_TYPE_OF_SERVICE_REQUESTED_WITH_CODE_E_RESPONSE_05,
+          earrest_01_col = CARDIAC_ARREST_DURING_EMS_EVENT_WITH_CODE_E_ARREST_01,
+          einjury_03_col = INJURY_TRAUMA_CENTER_TRIAGE_CRITERIA_STEPS_1_AND_2_LIST_E_INJURY_03,
+          eprocedures_03_col = PATIENT_ATTEMPTED_PROCEDURE_DESCRIPTIONS_AND_CODES_LIST_E_PROCEDURES_03,
+          edisposition_14_col = DISPOSITION_POSITION_OF_PATIENT_DURING_TRANSPORT_LIST_E_DISPOSITION_14,
+          transport_disposition_col = c(DISPOSITION_INCIDENT_PATIENT_DISPOSITION_WITH_CODE_3_4_E_DISPOSITION_12_3_5_IT_DISPOSITION_112,
+                                        TRANSPORT_DISPOSITION_3_4_IT_DISPOSITION_102_3_5_E_DISPOSITION_30)
+          )
