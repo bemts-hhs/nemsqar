@@ -15,6 +15,38 @@ testthat::test_that("stroke_01 produces expected results", {
   )
 
   # Run function
+  result <- suppressWarnings(stroke_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    eresponse_05_col = eresponse_05,
+    esituation_11_col = esituation_11,
+    esituation_12_col = esituation_12,
+    evitals_23_col = evitals_23,
+    evitals_26_col = evitals_26,
+    evitals_29_col = evitals_29,
+    evitals_30_col = evitals_30,
+    confidence_interval = TRUE
+  ))
+
+  # Check structure
+  testthat::expect_s3_class(result, "data.frame")
+  testthat::expect_true(all(c("measure", "pop", "numerator", "denominator", "prop", "prop_label", "lower_ci", "upper_ci") %in% names(result)))
+
+  # should throw a warning due to small counts
+  testthat::expect_warning(stroke_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    eresponse_05_col = eresponse_05,
+    esituation_11_col = esituation_11,
+    esituation_12_col = esituation_12,
+    evitals_23_col = evitals_23,
+    evitals_26_col = evitals_26,
+    evitals_29_col = evitals_29,
+    evitals_30_col = evitals_30,
+    confidence_interval = TRUE
+  ))
+
+  # Run function
   result <- stroke_01(
     df = test_data,
     erecord_01_col = erecord_01,

@@ -50,9 +50,18 @@ is \code{TRUE}.}
 \code{nemsqa_binomial_confint} when calculating confidence intervals.}
 }
 \value{
-A tibble containing the summarized measure results for the
-population. The returned tibble includes the numerator, denominator,
-proportion, and, if requested, confidence intervals for the proportion.
+A summarized data frame containing:
+\itemize{
+\item \code{measure}: The measure name.
+\item \code{pop}: The population group.
+\item \code{numerator}: The count of qualifying events.
+\item \code{denominator}: The total count of records.
+\item \code{prop}: The proportion of qualifying events.
+\item \code{prop_label}: A formatted percentage representation of \code{prop}
+(when \code{confidence_interval = FALSE}).
+\item \code{lower_ci}, \code{upper_ci}: The lower and upper confidence interval bounds
+(when \code{confidence_interval = TRUE}).
+}
 }
 \description{
 Calculates measure numerator, denominator, proportions, and optional

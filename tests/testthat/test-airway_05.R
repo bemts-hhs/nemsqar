@@ -143,4 +143,42 @@ testthat::test_that("airway_05 handles a dataframe input", {
   expect_s3_class(result, "data.frame")
   expect_true(all(c("pop", "numerator", "denominator", "prop", "prop_label") %in% names(result)))
 
+  # Run the function
+  result <- suppressWarnings(airway_05(df = data,
+           erecord_01_col = erecord_01,
+           incident_date_col = incident_date,
+           patient_DOB_col = patient_dob,
+           epatient_15_col = epatient_15,
+           epatient_16_col = epatient_16,
+           eresponse_05_col = eresponse_05,
+           eprocedures_01_col = eprocedures_01,
+           eprocedures_02_col = eprocedures_02,
+           eprocedures_03_col = eprocedures_03,
+           earrest_01_col = earrest_01,
+           evitals_01_col = evitals_01,
+           evitals_12_col = evitals_12,
+           confidence_interval = TRUE
+           ))
+
+
+  expect_s3_class(result, "data.frame")
+  expect_true(all(c("pop", "numerator", "denominator", "prop", "prop_label", "lower_ci", "upper_ci") %in% names(result)))
+
+  # should throw an error due to small counts
+  testthat::expect_warning(airway_05(df = data,
+           erecord_01_col = erecord_01,
+           incident_date_col = incident_date,
+           patient_DOB_col = patient_dob,
+           epatient_15_col = epatient_15,
+           epatient_16_col = epatient_16,
+           eresponse_05_col = eresponse_05,
+           eprocedures_01_col = eprocedures_01,
+           eprocedures_02_col = eprocedures_02,
+           eprocedures_03_col = eprocedures_03,
+           earrest_01_col = earrest_01,
+           evitals_01_col = evitals_01,
+           evitals_12_col = evitals_12,
+           confidence_interval = TRUE
+           ))
+
 })

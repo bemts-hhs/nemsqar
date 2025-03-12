@@ -55,6 +55,44 @@ testthat::test_that("trauma_03 produces expected results", {
     dplyr::ungroup() |>
     dplyr::select(-time_offset)  # Remove temporary column
 
+  # Run function
+  result <- suppressWarnings(trauma_03(
+    df = test_data_expanded1,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    esituation_02_col = esituation_02,
+    evitals_01_col = evitals_01,
+    evitals_27_initial_col = evitals_27_1,
+    evitals_27_last_col = evitals_27_2,
+    evitals_27_col = NULL,
+    edisposition_28_col = edisposition_28,
+    transport_disposition_col = edisposition_30,
+    confidence_interval = TRUE
+  ))
+
+  # Check structure
+  testthat::expect_s3_class(result, "data.frame")
+  testthat::expect_true(all(c("measure", "pop", "numerator", "denominator", "prop", "prop_label", "lower_ci", "upper_ci") %in% names(result)))
+
+  # should throw a warning due to small counts
+  testthat::expect_warning(trauma_03(
+    df = test_data_expanded1,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    esituation_02_col = esituation_02,
+    evitals_01_col = evitals_01,
+    evitals_27_initial_col = evitals_27_1,
+    evitals_27_last_col = evitals_27_2,
+    evitals_27_col = NULL,
+    edisposition_28_col = edisposition_28,
+    transport_disposition_col = edisposition_30,
+    confidence_interval = TRUE
+  ))
+
   # Run function with the first and last pain score columns
   result_1 <- trauma_03(
     df = test_data_expanded1,

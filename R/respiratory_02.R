@@ -113,6 +113,9 @@ respiratory_02 <- function(df = NULL,
                            correct = TRUE,
                            ...) {
 
+  # Set default method and adjustment method
+  method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
+
   # utilize applicable tables to analyze the data for the measure
   if(
     all(
@@ -193,6 +196,14 @@ respiratory_02 <- function(df = NULL,
 
   # create a separator
   cli::cli_text("\n")
+
+  # when confidence interval is "wilson", check for n < 10
+  # to warn about incorrect Chi-squared approximation
+  if (any(respiratory.02$denominator < 10) && method == "wilson" && confidence_interval) {
+
+    cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+  }
 
   return(respiratory.02)
 
@@ -275,6 +286,14 @@ respiratory_02 <- function(df = NULL,
 
     # create a separator
     cli::cli_text("\n")
+
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(respiratory.02$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
 
     return(respiratory.02)
 

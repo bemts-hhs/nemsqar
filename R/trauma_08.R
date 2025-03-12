@@ -128,6 +128,9 @@ trauma_08 <- function(df = NULL,
                       correct = TRUE,
                       ...) {
 
+  # Set default method and adjustment method
+  method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
+
   if (
     any(
       !is.null(patient_scene_table),
@@ -210,6 +213,14 @@ trauma_08 <- function(df = NULL,
     # create a separator
     cli::cli_text("\n")
 
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(trauma.08$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
+
     return(trauma.08)
 
   } else if (
@@ -291,6 +302,14 @@ trauma_08 <- function(df = NULL,
 
     # create a separator
     cli::cli_text("\n")
+
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(trauma.08$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
 
     return(trauma.08)
 

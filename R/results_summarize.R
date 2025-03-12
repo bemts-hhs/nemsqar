@@ -38,8 +38,18 @@
 #'   function used for calculating measure results.
 #'
 #' @return A tibble containing the summarized measure results for the selected
-#'   populations, including the numerator, denominator, proportions, and
-#'   optional confidence intervals.
+#' populations. The output includes:
+#'   - `measure`: The measure name.
+#'   - `pop`: The population group (e.g., "All", "Adults", "Peds").
+#'   - `numerator`: The count of qualifying events.
+#'   - `denominator`: The total number of records in the population.
+#'   - `prop`: The proportion of qualifying events.
+#'   - `prop_label`: A formatted percentage representation of `prop`.
+#'   - `lower_ci`, `upper_ci`: The lower and upper confidence interval bounds
+#'     (if `confidence_interval = TRUE`).
+#'
+#' If multiple populations are specified, their results are combined into a
+#' single tibble using `dplyr::bind_rows()`.
 #'
 #' @author Samuel Kordik, BBA, BS
 #'

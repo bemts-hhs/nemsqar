@@ -10,6 +10,31 @@ testthat::test_that("safety_01 produces expected results", {
   )
 
   # Run function
+  result <- suppressWarnings(safety_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    eresponse_24_col = eresponse_24,
+    confidence_interval = TRUE
+  ))
+
+  expect_s3_class(result, "data.frame")
+  expect_true(all(c("pop", "numerator", "denominator", "prop", "prop_label", "lower_ci", "upper_ci") %in% names(result)))
+
+  # should throw a warning due to small counts
+  testthat::expect_warning(safety_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    eresponse_24_col = eresponse_24,
+    confidence_interval = TRUE
+  ))
+
+  # Run function
   result <- safety_01(
     df = test_data,
     erecord_01_col = erecord_01,

@@ -33,9 +33,16 @@
 #' @param ... (optional) Additional arguments passed to
 #'   `nemsqa_binomial_confint` when calculating confidence intervals.
 #'
-#' @return A tibble containing the summarized measure results for the
-#'   population. The returned tibble includes the numerator, denominator,
-#'   proportion, and, if requested, confidence intervals for the proportion.
+#' @return A summarized data frame containing:
+#'   - `measure`: The measure name.
+#'   - `pop`: The population group.
+#'   - `numerator`: The count of qualifying events.
+#'   - `denominator`: The total count of records.
+#'   - `prop`: The proportion of qualifying events.
+#'   - `prop_label`: A formatted percentage representation of `prop`
+#'      (when `confidence_interval = FALSE`).
+#'   - `lower_ci`, `upper_ci`: The lower and upper confidence interval bounds
+#'      (when `confidence_interval = TRUE`).
 #'
 #' @author Samuel Kordik, BBA, BS
 #'
@@ -49,38 +56,38 @@ summarize_measure <- function(data,
                               correct = TRUE,
                               ...) {
 
+  # Ensure the confidence interval method is valid
   method <- match.arg(method)
 
-  if(!confidence_interval) {
-  data |>
-    dplyr::summarize(
-      measure = measure_name,
-      pop = population_name,
-      numerator = sum({{numerator_col}}, na.rm = T),
-      denominator = dplyr::n(),
-      prop = sum(numerator / denominator, na.rm = T),
-      prop_label = pretty_percent(prop,
-                                  n_decimal = 2),
-      ...
-    )
-
-  } else if(confidence_interval) {
-
+  # If confidence intervals are NOT requested, compute basic summary statistics
+  if (!confidence_interval) {
     data |>
       dplyr::summarize(
-      measure = measure_name,
-      pop = population_name,
-      numerator = sum({{numerator_col}}, na.rm = T),
-      denominator = dplyr::n(),
-      ...
-    ) |>
-      nemsqa_binomial_confint(x = numerator,
-                              n = denominator,
-                              method = method,
-                              conf.level = conf.level,
-                              correct = correct
-                              )
+        measure = measure_name,  # Measure name
+        pop = population_name,  # Population category
+        numerator = sum({{ numerator_col }}, na.rm = TRUE),  # Count of qualifying events
+        denominator = dplyr::n(),  # Total count of records
+        prop = sum(numerator / denominator, na.rm = TRUE),  # Proportion of qualifying events
+        prop_label = pretty_percent(prop, n_decimal = 2),  # Formatted percentage
+        ...
+      )
 
+    # If confidence intervals ARE requested, compute summary statistics and CI
+  } else {
+    data |>
+      dplyr::summarize(
+        measure = measure_name,
+        pop = population_name,
+        numerator = sum({{ numerator_col }}, na.rm = TRUE),
+        denominator = dplyr::n(),
+        ...
+      ) |>
+      nemsqa_binomial_confint(
+        x = numerator,  # Number of qualifying events
+        n = denominator,  # Total number of events
+        method = method,  # Chosen confidence interval method
+        conf.level = conf.level,  # Confidence level (e.g., 0.95 for 95% CI)
+        correct = correct  # Apply continuity correction if applicable
+      )
   }
-
 }

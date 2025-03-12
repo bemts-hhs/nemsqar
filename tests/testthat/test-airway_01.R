@@ -280,4 +280,63 @@ testthat::test_that("airway_01 correctly processes a dataframe", {
   # Ensure denominator is non-zero (indicating valid patient inclusion)
   testthat::expect_true(all(result$denominator > 0, na.rm = TRUE))
 
+  # Run the function
+  result <- suppressWarnings(airway_01(df = data,
+           erecord_01_col = erecord_01,
+           incident_date_col = incident_date,
+           patient_DOB_col = patient_dob,
+           epatient_15_col = epatient_15,
+           epatient_16_col = epatient_16,
+           eresponse_05_col = eresponse_05,
+           eprocedures_01_col = eprocedures_01,
+           eprocedures_02_col = eprocedures_02,
+           eprocedures_03_col = eprocedures_03,
+           eprocedures_05_col = eprocedures_05,
+           eprocedures_06_col = eprocedures_06,
+           earrest_01_col = earrest_01,
+           evitals_01_col = evitals_01,
+           evitals_06_col = evitals_06,
+           evitals_12_col = evitals_12,
+           confidence_interval = TRUE
+           ))
+
+  # Check that a data frame is returned
+  testthat::expect_s3_class(result, "data.frame")
+
+  # Check that the output contains expected columns
+  expected_cols <- c("pop", "numerator", "denominator", "prop", "prop_label", "lower_ci", "upper_ci")
+  testthat::expect_true(all(expected_cols %in% colnames(result)))
+
+  # Ensure at least some rows exist
+  testthat::expect_gt(nrow(result), 0)
+
+  # Validate that prop is between 0 and 1
+  testthat::expect_true(all(result$prop >= 0 & result$prop <= 1, na.rm = TRUE))
+
+  # Check that results exist for Adults and Peds populations
+  testthat::expect_true(all(c("Adults", "Peds") %in% result$pop))
+
+  # Ensure denominator is non-zero (indicating valid patient inclusion)
+  testthat::expect_true(all(result$denominator > 0, na.rm = TRUE))
+
+  # expect a warning due to small counts
+  testthat::expect_warning(airway_01(df = data,
+           erecord_01_col = erecord_01,
+           incident_date_col = incident_date,
+           patient_DOB_col = patient_dob,
+           epatient_15_col = epatient_15,
+           epatient_16_col = epatient_16,
+           eresponse_05_col = eresponse_05,
+           eprocedures_01_col = eprocedures_01,
+           eprocedures_02_col = eprocedures_02,
+           eprocedures_03_col = eprocedures_03,
+           eprocedures_05_col = eprocedures_05,
+           eprocedures_06_col = eprocedures_06,
+           earrest_01_col = earrest_01,
+           evitals_01_col = evitals_01,
+           evitals_06_col = evitals_06,
+           evitals_12_col = evitals_12,
+           confidence_interval = TRUE
+           ))
+
 })

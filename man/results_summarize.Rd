@@ -55,8 +55,20 @@ function used for calculating measure results.}
 }
 \value{
 A tibble containing the summarized measure results for the selected
-populations, including the numerator, denominator, proportions, and
-optional confidence intervals.
+populations. The output includes:
+\itemize{
+\item \code{measure}: The measure name.
+\item \code{pop}: The population group (e.g., "All", "Adults", "Peds").
+\item \code{numerator}: The count of qualifying events.
+\item \code{denominator}: The total number of records in the population.
+\item \code{prop}: The proportion of qualifying events.
+\item \code{prop_label}: A formatted percentage representation of \code{prop}.
+\item \code{lower_ci}, \code{upper_ci}: The lower and upper confidence interval bounds
+(if \code{confidence_interval = TRUE}).
+}
+
+If multiple populations are specified, their results are combined into a
+single tibble using \code{dplyr::bind_rows()}.
 }
 \description{
 Calculates measure numerator, denominator, and proportions for a NEMSQA

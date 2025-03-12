@@ -28,6 +28,97 @@ testthat::test_that("trauma_04 produces expected results", {
   )
 
   # Run function with the first and last pain score columns
+  result <- suppressWarnings(trauma_04(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    eresponse_10_col = eresponse_10,
+    esituation_02_col = esituation_02,
+    evitals_06_col = evitals_06,
+    evitals_10_col = evitals_10,
+    evitals_12_col = evitals_12,
+    evitals_14_col = evitals_14,
+    evitals_15_col = evitals_15,
+    evitals_21_col = evitals_21,
+    eexam_16_col = eexam_16,
+    eexam_20_col = eexam_20,
+    eexam_23_col = eexam_23,
+    eexam_25_col = eexam_25,
+    edisposition_23_col = edisposition_23,
+    transport_disposition_col = edisposition_30,
+    eprocedures_03_col = eprocedures_03,
+    einjury_01_col = einjury_01,
+    einjury_03_col = einjury_03,
+    einjury_04_col = einjury_04,
+    einjury_09_col = einjury_09,
+    confidence_interval = TRUE
+  ))
+
+  # Check structure
+  testthat::expect_s3_class(result, "data.frame")
+  testthat::expect_true(all(c("measure", "pop", "numerator", "denominator", "prop", "prop_label", "lower_ci", "upper_ci") %in% names(result)))
+
+  # should throw a warning due to small counts
+  testthat::expect_warning(trauma_04(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    eresponse_10_col = eresponse_10,
+    esituation_02_col = esituation_02,
+    evitals_06_col = evitals_06,
+    evitals_10_col = evitals_10,
+    evitals_12_col = evitals_12,
+    evitals_14_col = evitals_14,
+    evitals_15_col = evitals_15,
+    evitals_21_col = evitals_21,
+    eexam_16_col = eexam_16,
+    eexam_20_col = eexam_20,
+    eexam_23_col = eexam_23,
+    eexam_25_col = eexam_25,
+    edisposition_23_col = edisposition_23,
+    transport_disposition_col = edisposition_30,
+    eprocedures_03_col = eprocedures_03,
+    einjury_01_col = einjury_01,
+    einjury_03_col = einjury_03,
+    einjury_04_col = einjury_04,
+    einjury_09_col = einjury_09,
+    confidence_interval = TRUE
+  ))
+
+  # should throw a warning due to small counts
+  testthat::expect_warning(trauma_04(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    eresponse_10_col = eresponse_10,
+    esituation_02_col = esituation_02,
+    evitals_06_col = evitals_06,
+    evitals_10_col = evitals_10,
+    evitals_12_col = evitals_12,
+    evitals_14_col = evitals_14,
+    evitals_15_col = evitals_15,
+    evitals_21_col = evitals_21,
+    eexam_16_col = eexam_16,
+    eexam_20_col = eexam_20,
+    eexam_23_col = eexam_23,
+    eexam_25_col = eexam_25,
+    edisposition_23_col = edisposition_23,
+    transport_disposition_col = edisposition_30,
+    eprocedures_03_col = eprocedures_03,
+    einjury_01_col = einjury_01,
+    einjury_03_col = einjury_03,
+    einjury_04_col = einjury_04,
+    einjury_09_col = einjury_09,
+    confidence_interval = TRUE
+  ))
+
+  # Run function with the first and last pain score columns
   result <- trauma_04(
     df = test_data,
     erecord_01_col = erecord_01,

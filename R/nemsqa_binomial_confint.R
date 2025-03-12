@@ -73,7 +73,7 @@ nemsqa_binomial_confint <- function(data = NULL, x, n,
 
   # confidence interval function for the nemsqar package
   # Set default method and adjustment method
-  method <- match.arg(method)
+  method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # If the user passes a tibble or data.frame
   if (!is.null(data)) {
@@ -98,13 +98,13 @@ nemsqa_binomial_confint <- function(data = NULL, x, n,
     # Define an anonymous function here
     ci <- Vectorize(function(x, n) {
 
+      # Return NaN if n == 0 for lower and upper CIs and the estimate
       if (n == 0) {
-        return(c(NaN, NaN))  # Return NaN if n == 0
+        return(c(NaN, NaN, NaN))
       }
 
-      # Calculate the confidence interval for the proportion using the Wilson method
-      # calculate the estimate (proportion) as well
-      result <- prop.test(x, n, correct = correct, conf.level = conf.level)
+      # Suppress warnings when calling prop.test
+      result <- suppressWarnings(prop.test(x, n, correct = correct, conf.level = conf.level))
 
       # Return CI bounds and the estimate
       c(result$conf.int, result$estimate)
@@ -121,9 +121,10 @@ nemsqa_binomial_confint <- function(data = NULL, x, n,
     upper <- ci_result[2,]  # Second row contains upper CIs
 
     # Extract the estimate from the result matrix
-    estimate <- ci_result[3,] # Third row contains the estimates
+    estimate <- ci_result[3,]  # Third row contains the estimates
 
   }
+
 
   # Vectorized Clopper-Pearson Interval
   # Based on Clopper, C. & Pearson, E. S. (1934)
@@ -136,7 +137,7 @@ nemsqa_binomial_confint <- function(data = NULL, x, n,
     ci <- Vectorize(function(x, n) {
 
       if (n == 0) {
-        return(c(NaN, NaN))  # Return NaN if n == 0
+        return(c(NaN, NaN, NaN))  # Return NaN if n == 0 for lower and upper CIs and the estimate
       }
 
       # Calculate the confidence interval for the proportion using the Clopper-Pearson method
@@ -164,10 +165,12 @@ nemsqa_binomial_confint <- function(data = NULL, x, n,
 
   # Return as a dataframe/tibble-compatible structure
   lower_upper <- tibble::tibble(prop = estimate, lower_ci = lower, upper_ci = upper) |>
-    dplyr::mutate(prop_label = pretty_percent(prop, n_decimal = 2),
+    dplyr::mutate(prop_label = dplyr::if_else(is.nan(prop) | is.na(prop), NA_character_, pretty_percent(prop, n_decimal = 2)),
                   .after = prop
     )
 
+  # Elegant output with data.frame input or
+  # in another workflow like dplyr::mutate()
   if (!is.null(data)) {
 
     return(dplyr::bind_cols(data, lower_upper))

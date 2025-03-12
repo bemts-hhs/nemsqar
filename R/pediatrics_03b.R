@@ -121,6 +121,9 @@ pediatrics_03b <- function(df = NULL,
                            correct = TRUE,
                            ...) {
 
+  # Set default method and adjustment method
+  method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
+
   if(all(
     !is.null(patient_scene_table),
     !is.null(response_table),
@@ -199,6 +202,14 @@ pediatrics_03b <- function(df = NULL,
 
   # create a separator
   cli::cli_text("\n")
+
+  # when confidence interval is "wilson", check for n < 10
+  # to warn about incorrect Chi-squared approximation
+  if (any(pediatrics.03b$denominator < 10) && method == "wilson" && confidence_interval) {
+
+    cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+  }
 
   return(pediatrics.03b)
 
@@ -282,6 +293,14 @@ pediatrics_03b <- function(df = NULL,
 
   # create a separator
   cli::cli_text("\n")
+
+  # when confidence interval is "wilson", check for n < 10
+  # to warn about incorrect Chi-squared approximation
+  if (any(pediatrics.03b$denominator < 10) && method == "wilson" && confidence_interval) {
+
+    cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+  }
 
   return(pediatrics.03b)
 
