@@ -70,20 +70,21 @@ single comma-separated list.}
 \item{emedications_03_col}{Column that contains all eMedications.03 values as
 a single comma-separated list.}
 
-\item{confidence_interval}{Logical. If \code{TRUE}, the function calculates a
-confidence interval for the proportion estimate.}
+\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
+\code{TRUE}, the function calculates a confidence interval for the proportion
+estimate.}
 
-\item{method}{Character. Specifies the method used to calculate confidence
-intervals. Options are \code{"wilson"} (Wilson score interval) and
-\code{"clopper-pearson"} (exact binomial interval). Partial matching is
-supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
+\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Character. Specifies the
+method used to calculate confidence intervals. Options are \code{"wilson"}
+(Wilson score interval) and \code{"clopper-pearson"} (exact binomial interval).
+Partial matching is supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
 
-\item{conf.level}{Numeric. The confidence level for the interval, expressed
-as a proportion (e.g., 0.95 for a 95\% confidence interval). Defaults to
-0.95.}
+\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Numeric. The confidence
+level for the interval, expressed as a proportion (e.g., 0.95 for a 95\%
+confidence interval). Defaults to 0.95.}
 
-\item{correct}{Logical. If \code{TRUE}, applies a continuity correction to the
-Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Logical. If \code{TRUE},
+applies a continuity correction to the Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
 
 \item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }

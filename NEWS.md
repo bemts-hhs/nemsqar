@@ -4,8 +4,8 @@
 
 - **Optional Confidence Intervals**: Added the ability to compute confidence intervals using the Wilson or Clopper-Pearson (exact) method. This feature is optional and can be enabled when working with sample data.
   - Introduced `nemsqa_binomial_confint()`, a lightweight wrapper around `prop.test()` and `binom.test()` for calculating Wilson and exact confidence intervals. This function eliminates the need for an additional package dependency.
-    * Ensure warning messages where any `denominator` < 10 are more elegant, and `nemsqa_binomial_confit()` handles division by zero cases as well.
-  - Updated all wrapper functions (e.g., `airway_01()`) to support confidence interval calculation when applicable.
+    * Ensure warning messages where any `denominator` < 10 are elegant and helpful, and `nemsqa_binomial_confit()` handles division by zero cases well.
+  - Updated all wrapper functions (e.g., `airway_01()`) to support optional confidence interval calculation.
   - Maintained full backward compatibility with **nemsqar 1.0.0** by setting `confidence_interval = FALSE` as the default behavior.
 - **Dynamic `results_summarize()`**: Enhanced `results_summarize()` to dynamically calculate only the specified groups, utilizing the previously unused `population_labels` object. This reduces unnecessary calculations and streamlines function performance.  
 - **Improved Documentation**: 
@@ -51,4 +51,4 @@
 - `trauma_08_population()`, `trauma_14_population()`, `ttr_01_population()`  
 
 #### Utility Functions  
-- `results_summarize()`, `summarize_measure()`  
+- `results_summarize()`, `summarize_measure()`

@@ -39,17 +39,19 @@
 #'   single comma-separated list.
 #' @param emedications_03_col Column that contains all eMedications.03 values as
 #'   a single comma-separated list.
-#' @param confidence_interval Logical. If `TRUE`, the function calculates a
-#'   confidence interval for the proportion estimate.
-#' @param method Character. Specifies the method used to calculate confidence
-#'   intervals. Options are `"wilson"` (Wilson score interval) and
-#'   `"clopper-pearson"` (exact binomial interval). Partial matching is
-#'   supported, so `"w"` and `"c"` can be used as shorthand.
-#' @param conf.level Numeric. The confidence level for the interval, expressed
-#'   as a proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
-#'   0.95.
-#' @param correct Logical. If `TRUE`, applies a continuity correction to the
-#'   Wilson score interval when `method = "wilson"`. Defaults to `TRUE`.
+#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
+#'   `TRUE`, the function calculates a confidence interval for the proportion
+#'   estimate.
+#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
+#'   method used to calculate confidence intervals. Options are `"wilson"`
+#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
+#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
+#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
+#'   confidence interval). Defaults to 0.95.
+#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
+#'   applies a continuity correction to the Wilson score interval when `method =
+#'   "wilson"`. Defaults to `TRUE`.
 #' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
 #' @return A data.frame summarizing results for two population groups (All,

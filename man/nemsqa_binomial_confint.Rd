@@ -40,6 +40,8 @@ formatted proportion label (\code{prop_label}). If \code{data} is provided, thes
 columns are appended to \code{data} via \code{dplyr::bind_cols()}.
 }
 \description{
+\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}
+
 Computes confidence intervals for binomial proportions using either the
 Wilson or Clopper-Pearson method. This function supports vectorized
 operations and allows optional correction for continuity. The Wilson interval

@@ -31,6 +31,7 @@ Depends:
 Imports: 
     cli (>= 3.6.4),
     dplyr (>= 1.1.4),
+    lifecycle (>= 1.0.4),
     lubridate (>= 1.9.4),
     rlang (>= 1.1.5),
     stats,

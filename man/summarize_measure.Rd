@@ -30,21 +30,22 @@ for which the measure is being calculated (e.g., "Adults", "Peds", or
 \item{numerator_col}{The tidyselect column containing the numerator data for
 the measure (e.g., the number of cases).}
 
-\item{confidence_interval}{A logical value indicating whether to calculate a
-confidence interval for the proportion estimate. Defaults to \code{FALSE}.}
+\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} A logical
+value indicating whether to calculate a confidence interval for the
+proportion estimate. Defaults to \code{FALSE}.}
 
-\item{method}{A string specifying the method to calculate the confidence
-intervals. Options are \code{"wilson"} (Wilson score interval) or
-\code{"clopper-pearson"} (exact binomial interval). Partial matching is allowed
-(e.g., \code{"w"} or \code{"c"}). Default is \code{"wilson"}.}
+\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} A string specifying the
+method to calculate the confidence intervals. Options are \code{"wilson"}
+(Wilson score interval) or \code{"clopper-pearson"} (exact binomial interval).
+Partial matching is allowed (e.g., \code{"w"} or \code{"c"}). Default is \code{"wilson"}.}
 
-\item{conf.level}{A numeric value indicating the confidence level for the
-interval, expressed as a proportion (e.g., 0.95 for a 95\% confidence
-interval). Defaults to 0.95.}
+\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} A numeric value
+indicating the confidence level for the interval, expressed as a proportion
+(e.g., 0.95 for a 95\% confidence interval). Defaults to 0.95.}
 
-\item{correct}{A logical value specifying whether to apply continuity
-correction to the Wilson score interval when \code{method = "wilson"}. Default
-is \code{TRUE}.}
+\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} A logical value
+specifying whether to apply continuity correction to the Wilson score
+interval when \code{method = "wilson"}. Default is \code{TRUE}.}
 
 \item{...}{(optional) Additional arguments passed to
 \code{nemsqa_binomial_confint} when calculating confidence intervals.}

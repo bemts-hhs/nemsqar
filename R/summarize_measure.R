@@ -18,18 +18,19 @@
 #'   "All").
 #' @param numerator_col The tidyselect column containing the numerator data for
 #'   the measure (e.g., the number of cases).
-#' @param confidence_interval A logical value indicating whether to calculate a
-#'   confidence interval for the proportion estimate. Defaults to `FALSE`.
-#' @param method A string specifying the method to calculate the confidence
-#'   intervals. Options are `"wilson"` (Wilson score interval) or
-#'   `"clopper-pearson"` (exact binomial interval). Partial matching is allowed
-#'   (e.g., `"w"` or `"c"`). Default is `"wilson"`.
-#' @param conf.level A numeric value indicating the confidence level for the
-#'   interval, expressed as a proportion (e.g., 0.95 for a 95% confidence
-#'   interval). Defaults to 0.95.
-#' @param correct A logical value specifying whether to apply continuity
-#'   correction to the Wilson score interval when `method = "wilson"`. Default
-#'   is `TRUE`.
+#' @param confidence_interval `r lifecycle::badge("experimental")` A logical
+#'   value indicating whether to calculate a confidence interval for the
+#'   proportion estimate. Defaults to `FALSE`.
+#' @param method `r lifecycle::badge("experimental")` A string specifying the
+#'   method to calculate the confidence intervals. Options are `"wilson"`
+#'   (Wilson score interval) or `"clopper-pearson"` (exact binomial interval).
+#'   Partial matching is allowed (e.g., `"w"` or `"c"`). Default is `"wilson"`.
+#' @param conf.level `r lifecycle::badge("experimental")` A numeric value
+#'   indicating the confidence level for the interval, expressed as a proportion
+#'   (e.g., 0.95 for a 95% confidence interval). Defaults to 0.95.
+#' @param correct `r lifecycle::badge("experimental")` A logical value
+#'   specifying whether to apply continuity correction to the Wilson score
+#'   interval when `method = "wilson"`. Default is `TRUE`.
 #' @param ... (optional) Additional arguments passed to
 #'   `nemsqa_binomial_confint` when calculating confidence intervals.
 #'

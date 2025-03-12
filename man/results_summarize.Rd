@@ -38,17 +38,21 @@ populations.}
 \item{numerator_col}{The tidyselect column containing the numerator data for
 the measure (e.g., the number of cases).}
 
-\item{confidence_interval}{A logical value indicating whether to include
-confidence intervals in the result. Defaults to FALSE.}
+\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} A logical
+value indicating whether to include confidence intervals in the result.
+Defaults to FALSE.}
 
-\item{method}{A string specifying the method to calculate confidence
-intervals. Options are "wilson" or "clopper-pearson". Default is "wilson".}
+\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} A string specifying the
+method to calculate confidence intervals. Options are "wilson" or
+"clopper-pearson". Default is "wilson".}
 
-\item{conf.level}{A numeric value indicating the confidence level for the
-confidence intervals. Default is 0.95 (95\% confidence).}
+\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} A numeric value
+indicating the confidence level for the confidence intervals. Default is
+0.95 (95\% confidence).}
 
-\item{correct}{A logical value specifying whether to apply continuity
-correction when calculating confidence intervals. Default is TRUE.}
+\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} A logical value
+specifying whether to apply continuity correction when calculating
+confidence intervals. Default is TRUE.}
 
 \item{...}{(optional) Additional arguments passed to the \code{summarize_measure}
 function used for calculating measure results.}
