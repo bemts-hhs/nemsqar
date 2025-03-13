@@ -19,7 +19,7 @@ is used for tube placement confirmation.'></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">nemsqar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -78,6 +78,10 @@ is used for tube placement confirmation.</p>
 <span>  eairway_04_col <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">evitals_01_col</span>,</span>
 <span>  <span class="va">evitals_16_col</span>,</span>
+<span>  confidence_interval <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"wilson"</span>, <span class="st">"clopper-pearson"</span><span class="op">)</span>,</span>
+<span>  conf.level <span class="op">=</span> <span class="fl">0.95</span>,</span>
+<span>  correct <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -182,26 +186,48 @@ Default is <code>NULL</code>.</p></dd>
 <dd><p>Column name for additional vital signs data.</p></dd>
 
 
+<dt id="arg-confidence-interval">confidence_interval<a class="anchor" aria-label="anchor" href="#arg-confidence-interval"></a></dt>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a> Logical. If
+<code>TRUE</code>, the function calculates a confidence interval for the proportion
+estimate.</p></dd>
+
+
+<dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>Character. Specifies the
+method used to calculate confidence intervals. Options are <code>"wilson"</code>
+(Wilson score interval) and <code>"clopper-pearson"</code> (exact binomial interval).
+Partial matching is supported, so <code>"w"</code> and <code>"c"</code> can be used as shorthand.</p></dd>
+
+
+<dt id="arg-conf-level">conf.level<a class="anchor" aria-label="anchor" href="#arg-conf-level"></a></dt>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>Numeric. The confidence
+level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
+confidence interval). Defaults to 0.95.</p></dd>
+
+
+<dt id="arg-correct">correct<a class="anchor" aria-label="anchor" href="#arg-correct"></a></dt>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>Logical. If <code>TRUE</code>,
+applies a continuity correction to the Wilson score interval when <code>method = "wilson"</code>. Defaults to <code>TRUE</code>.</p></dd>
+
+
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>Additional arguments passed to other functions if needed.</p></dd>
+<dd><p>optional additional arguments to pass onto <code><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">dplyr::summarize</a></code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>A tibble summarizing results for Adults and Peds with the following
-columns:</p>
-<p><code>measure</code>: The name of the measure being calculated.
-<code>pop</code>: Population type (Adults, Peds).
-<code>numerator</code>: Count of incidents where waveform capnography is used for
-tube placement confirmation on the last successful invasive airway
-procedure.
-<code>denominator</code>: Total count of incidents.
-<code>prop</code>: Proportion of incidents where waveform capnography is used for
-tube placement confirmation on the last successful invasive airway
-procedure.
-<code>prop_label</code>: Proportion formatted as a percentage with a specified number
-of decimal places.</p>
-    </div>
+    <p>A data.frame summarizing results for two population groups (Adults
+and Peds) with the following columns:</p><ul><li><p><code>pop</code>: Population type (Adults and Peds).</p></li>
+<li><p><code>numerator</code>: Count of incidents meeting the measure.</p></li>
+<li><p><code>denominator</code>: Total count of included incidents.</p></li>
+<li><p><code>prop</code>: Proportion of incidents meeting the measure.</p></li>
+<li><p><code>prop_label</code>: Proportion formatted as a percentage with a specified number
+of decimal places.</p></li>
+<li><p><code>lower_ci</code>: Lower bound of the confidence interval for <code>prop</code>
+(if <code>confidence_interval = TRUE</code>).</p></li>
+<li><p><code>upper_ci</code>: Upper bound of the confidence interval for <code>prop</code>
+(if <code>confidence_interval = TRUE</code>).</p></li>
+</ul></div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
     <p>Nicolas Foss, Ed.D., MS, Samuel Kordik, BBA, BS</p>
@@ -274,6 +300,7 @@ of decimal places.</p>
 <span class="r-in"><span>  <span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Run the function</span></span></span>
+<span class="r-in"><span><span class="co"># Return 95% confidence intervals using the Wilson method</span></span></span>
 <span class="r-in"><span><span class="fu">airway_18</span><span class="op">(</span>df <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>         patient_scene_table <span class="op">=</span> <span class="va">patient_table</span>,</span></span>
 <span class="r-in"><span>         procedures_table <span class="op">=</span> <span class="va">procedures_table</span>,</span></span>
@@ -293,7 +320,8 @@ of decimal places.</p>
 <span class="r-in"><span>         evitals_01_col <span class="op">=</span> <span class="va">evitals_01</span>,</span></span>
 <span class="r-in"><span>         evitals_16_col <span class="op">=</span> <span class="va">evitals_16</span>,</span></span>
 <span class="r-in"><span>         eairway_02_col <span class="op">=</span> <span class="va">eairway_02</span>,</span></span>
-<span class="r-in"><span>         eairway_04_col <span class="op">=</span> <span class="va">eairway_04</span></span></span>
+<span class="r-in"><span>         eairway_04_col <span class="op">=</span> <span class="va">eairway_04</span>,</span></span>
+<span class="r-in"><span>         confidence_interval <span class="op">=</span> <span class="cn">TRUE</span></span></span>
 <span class="r-in"><span>         <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">──</span> <span style="font-weight: bold;">Airway-18</span> <span style="color: #00BBBB;">───────────────────────────────────────────────────────────────────</span></span>
@@ -319,13 +347,14 @@ of decimal places.</p>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Calculating Airway-18</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Function completed in <span style="color: #00BB00;">0.21s</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Function completed in <span style="color: #00BB00;">0.2s</span>.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 6</span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   measure   pop    numerator denominator  prop prop_label</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Airway-18 Adults         2           2     1 100%      </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Airway-18 Peds           3           3     1 100%      </span>
+<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In `prop.test()`: Chi-squared approximation may be incorrect for any n &lt; 10.</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 2 × 8</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   measure   pop    numerator denominator  prop prop_label lower_ci upper_ci</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>      <span style="color: #949494; font-style: italic;">&lt;int&gt;</span>       <span style="color: #949494; font-style: italic;">&lt;int&gt;</span> <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">1</span> Airway-18 Adults         2           2     1 100%          0.198        1</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">2</span> Airway-18 Peds           3           3     1 100%          0.310        1</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>
     </div>

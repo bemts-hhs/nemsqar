@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">nemsqar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,62 +33,92 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.0.0" id="nemsqar-100">nemsqar 1.0.0<a class="anchor" aria-label="anchor" href="#nemsqar-100"></a></h2>
-<ul><li>Initial CRAN submission.</li>
-</ul></div>
-    <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.0" id="nemsqar-010">nemsqar 0.1.0<a class="anchor" aria-label="anchor" href="#nemsqar-010"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.1.0" id="nemsqar-110">nemsqar 1.1.0<a class="anchor" aria-label="anchor" href="#nemsqar-110"></a></h2>
+<div class="section level3">
+<h3 id="enhancements-1-1-0">Enhancements<a class="anchor" aria-label="anchor" href="#enhancements-1-1-0"></a></h3>
 <ul><li>
-<p><code>nemsqar</code> is born!</p>
-<ul><li><p>Developed the functions first as including the whole process of getting the target population and calculating performance.</p></li>
-<li><p>Adjusted the calculation of measure performance to be modular, with the addition of the *_population workhorse functions that do the heavy lifting of gathering the records from the data provided to the function needed to then calculate the measures.</p></li>
-<li><p>Created the measure_## functions as wrappers to run the *_population functions and take those data to then calculate measure performance based on the National EMS Quality Alliance (NEMSQA) measure technical documents.</p></li>
-<li><p>created <code><a href="../reference/airway_01.html">airway_01()</a></code></p></li>
-<li><p>created <code><a href="../reference/airway_01_population.html">airway_01_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/airway_05.html">airway_05()</a></code></p></li>
-<li><p>created <code><a href="../reference/airway_05_population.html">airway_05_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/airway_18.html">airway_18()</a></code></p></li>
-<li><p>created <code><a href="../reference/airway_18_population.html">airway_18_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/asthma_01.html">asthma_01()</a></code></p></li>
-<li><p>created <code><a href="../reference/asthma_01_population.html">asthma_01_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/hypoglycemia_01.html">hypoglycemia_01()</a></code></p></li>
-<li><p>created <code><a href="../reference/hypoglycemia_01_population.html">hypoglycemia_01_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/pediatrics_03b.html">pediatrics_03b()</a></code></p></li>
-<li><p>created <code><a href="../reference/pediatrics_03b_population.html">pediatrics_03b_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/respiratory_01.html">respiratory_01()</a></code></p></li>
-<li><p>created <code><a href="../reference/respiratory_01_population.html">respiratory_01_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/respiratory_02.html">respiratory_02()</a></code></p></li>
-<li><p>created <code><a href="../reference/respiratory_02_population.html">respiratory_02_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/results_summarize.html">results_summarize()</a></code></p></li>
-<li><p>created <code><a href="../reference/safety_01.html">safety_01()</a></code></p></li>
-<li><p>created <code><a href="../reference/safety_01_population.html">safety_01_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/safety_02.html">safety_02()</a></code></p></li>
-<li><p>created <code><a href="../reference/safety_02_population.html">safety_02_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/safety_04.html">safety_04()</a></code></p></li>
-<li><p>created <code><a href="../reference/safety_04_population.html">safety_04_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/seizure_02.html">seizure_02()</a></code></p></li>
-<li><p>created <code><a href="../reference/seizure_02_population.html">seizure_02_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/stroke_01.html">stroke_01()</a></code></p></li>
-<li><p>created <code><a href="../reference/stroke_01_population.html">stroke_01_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/summarize_measure.html">summarize_measure()</a></code></p></li>
-<li><p>created <code><a href="../reference/syncope_01.html">syncope_01()</a></code></p></li>
-<li><p>created <code><a href="../reference/syncope_01_population.html">syncope_01_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/tbi_01.html">tbi_01()</a></code></p></li>
-<li><p>created <code><a href="../reference/tbi_01_population.html">tbi_01_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/trauma_01.html">trauma_01()</a></code></p></li>
-<li><p>created <code><a href="../reference/trauma_01_population.html">trauma_01_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/trauma_03.html">trauma_03()</a></code></p></li>
-<li><p>created <code><a href="../reference/trauma_03_population.html">trauma_03_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/trauma_04.html">trauma_04()</a></code></p></li>
-<li><p>created <code><a href="../reference/trauma_04_population.html">trauma_04_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/trauma_08.html">trauma_08()</a></code></p></li>
-<li><p>created <code><a href="../reference/trauma_08_population.html">trauma_08_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/trauma_14.html">trauma_14()</a></code></p></li>
-<li><p>created <code><a href="../reference/trauma_14_population.html">trauma_14_population()</a></code></p></li>
-<li><p>created <code><a href="../reference/ttr_01.html">ttr_01()</a></code></p></li>
-<li><p>created <code><a href="../reference/ttr_01_population.html">ttr_01_population()</a></code></p></li>
+<strong>Optional Confidence Intervals</strong>: Added the ability to compute confidence intervals using the Wilson or Clopper-Pearson (exact) method. This feature is optional and can be enabled when working with sample data.
+<ul><li>Introduced <code><a href="../reference/nemsqa_binomial_confint.html">nemsqa_binomial_confint()</a></code>, a lightweight wrapper around <code><a href="https://rdrr.io/r/stats/prop.test.html" class="external-link">prop.test()</a></code> and <code><a href="https://rdrr.io/r/stats/binom.test.html" class="external-link">binom.test()</a></code> for calculating Wilson and exact confidence intervals. This function eliminates the need for an additional package dependency.
+<ul><li>Ensure warning messages where any <code>denominator</code> &lt; 10 are elegant and helpful, and <code>nemsqa_binomial_confit()</code> handles division by zero cases well.</li>
+</ul></li>
+<li>Updated all wrapper functions (e.g., <code><a href="../reference/airway_01.html">airway_01()</a></code>) to support optional confidence interval calculation.</li>
+<li>Maintained full backward compatibility with <strong>nemsqar 1.0.0</strong> by setting <code>confidence_interval = FALSE</code> as the default behavior.</li>
+</ul></li>
+<li>
+<strong>Dynamic <code><a href="../reference/results_summarize.html">results_summarize()</a></code></strong>: Enhanced <code><a href="../reference/results_summarize.html">results_summarize()</a></code> to dynamically calculate only the specified groups, utilizing the previously unused <code>population_labels</code> object. This reduces unnecessary calculations and streamlines function performance.<br></li>
+<li>
+<strong>Improved Documentation</strong>:
+<ul><li>Updated and expanded the documentation for <code><a href="../reference/results_summarize.html">results_summarize()</a></code> and <code><a href="../reference/summarize_measure.html">summarize_measure()</a></code>, offering clearer usage instructions and examples to enhance the user experience.</li>
+<li>Refined the documentation for multiple other functions, improving clarity and usability.</li>
 </ul></li>
 </ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.0" id="nemsqar-100">nemsqar 1.0.0<a class="anchor" aria-label="anchor" href="#nemsqar-100"></a></h2><p class="text-muted">CRAN release: 2025-03-05</p>
+<div class="section level3">
+<h3 id="initial-cran-release-1-0-0">Initial CRAN Release<a class="anchor" aria-label="anchor" href="#initial-cran-release-1-0-0"></a></h3>
+<ul><li>First official submission of <strong>nemsqar</strong> to CRAN.</li>
+</ul></div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.0" id="nemsqar-010">nemsqar 0.1.0<a class="anchor" aria-label="anchor" href="#nemsqar-010"></a></h2>
+<div class="section level3">
+<h3 id="package-inception-0-1-0">Package Inception<a class="anchor" aria-label="anchor" href="#package-inception-0-1-0"></a></h3>
+<ul><li>
+<strong>nemsqar is born!</strong> This initial version laid the foundation for calculating National EMS Quality Alliance (NEMSQA) performance measures in a structured and modular way.</li>
+</ul><div class="section level4">
+<h4 id="key-features-0-1-0">Key Features<a class="anchor" aria-label="anchor" href="#key-features-0-1-0"></a></h4>
+<ul><li>Designed core functions to <strong>identify target populations</strong> and <strong>compute performance measures</strong> for EMS quality metrics.<br></li>
+<li>Implemented a modular structure for measure calculations, with <code>_population</code> workhorse functions handling data extraction and <code>measure_##</code> wrapper functions streamlining performance calculations.<br></li>
+<li>Developed functions to align with <strong>NEMSQA measure technical documents</strong>.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="implemented-functions-0-1-0">Implemented Functions<a class="anchor" aria-label="anchor" href="#implemented-functions-0-1-0"></a></h4>
+<div class="section level5">
+<h5 id="measure-functions-0-1-0">Measure Functions<a class="anchor" aria-label="anchor" href="#measure-functions-0-1-0"></a></h5>
+<ul><li>
+<code><a href="../reference/airway_01.html">airway_01()</a></code>, <code><a href="../reference/airway_05.html">airway_05()</a></code>, <code><a href="../reference/airway_18.html">airway_18()</a></code><br></li>
+<li>
+<code><a href="../reference/asthma_01.html">asthma_01()</a></code>, <code><a href="../reference/hypoglycemia_01.html">hypoglycemia_01()</a></code>, <code><a href="../reference/pediatrics_03b.html">pediatrics_03b()</a></code><br></li>
+<li>
+<code><a href="../reference/respiratory_01.html">respiratory_01()</a></code>, <code><a href="../reference/respiratory_02.html">respiratory_02()</a></code>, <code><a href="../reference/safety_01.html">safety_01()</a></code><br></li>
+<li>
+<code><a href="../reference/safety_02.html">safety_02()</a></code>, <code><a href="../reference/safety_04.html">safety_04()</a></code>, <code><a href="../reference/seizure_02.html">seizure_02()</a></code><br></li>
+<li>
+<code><a href="../reference/stroke_01.html">stroke_01()</a></code>, <code><a href="../reference/syncope_01.html">syncope_01()</a></code>, <code><a href="../reference/tbi_01.html">tbi_01()</a></code><br></li>
+<li>
+<code><a href="../reference/trauma_01.html">trauma_01()</a></code>, <code><a href="../reference/trauma_03.html">trauma_03()</a></code>, <code><a href="../reference/trauma_04.html">trauma_04()</a></code><br></li>
+<li>
+<code><a href="../reference/trauma_08.html">trauma_08()</a></code>, <code><a href="../reference/trauma_14.html">trauma_14()</a></code>, <code><a href="../reference/ttr_01.html">ttr_01()</a></code>
+</li>
+</ul></div>
+<div class="section level5">
+<h5 id="population-functions-0-1-0">Population Functions<a class="anchor" aria-label="anchor" href="#population-functions-0-1-0"></a></h5>
+<ul><li>
+<code><a href="../reference/airway_01_population.html">airway_01_population()</a></code>, <code><a href="../reference/airway_05_population.html">airway_05_population()</a></code>, <code><a href="../reference/airway_18_population.html">airway_18_population()</a></code><br></li>
+<li>
+<code><a href="../reference/asthma_01_population.html">asthma_01_population()</a></code>, <code><a href="../reference/hypoglycemia_01_population.html">hypoglycemia_01_population()</a></code>, <code><a href="../reference/pediatrics_03b_population.html">pediatrics_03b_population()</a></code><br></li>
+<li>
+<code><a href="../reference/respiratory_01_population.html">respiratory_01_population()</a></code>, <code><a href="../reference/respiratory_02_population.html">respiratory_02_population()</a></code>, <code><a href="../reference/safety_01_population.html">safety_01_population()</a></code><br></li>
+<li>
+<code><a href="../reference/safety_02_population.html">safety_02_population()</a></code>, <code><a href="../reference/safety_04_population.html">safety_04_population()</a></code>, <code><a href="../reference/seizure_02_population.html">seizure_02_population()</a></code><br></li>
+<li>
+<code><a href="../reference/stroke_01_population.html">stroke_01_population()</a></code>, <code><a href="../reference/syncope_01_population.html">syncope_01_population()</a></code>, <code><a href="../reference/tbi_01_population.html">tbi_01_population()</a></code><br></li>
+<li>
+<code><a href="../reference/trauma_01_population.html">trauma_01_population()</a></code>, <code><a href="../reference/trauma_03_population.html">trauma_03_population()</a></code>, <code><a href="../reference/trauma_04_population.html">trauma_04_population()</a></code><br></li>
+<li>
+<code><a href="../reference/trauma_08_population.html">trauma_08_population()</a></code>, <code><a href="../reference/trauma_14_population.html">trauma_14_population()</a></code>, <code><a href="../reference/ttr_01_population.html">ttr_01_population()</a></code>
+</li>
+</ul></div>
+<div class="section level5">
+<h5 id="utility-functions-0-1-0">Utility Functions<a class="anchor" aria-label="anchor" href="#utility-functions-0-1-0"></a></h5>
+<ul><li>
+<code><a href="../reference/results_summarize.html">results_summarize()</a></code>, <code><a href="../reference/summarize_measure.html">summarize_measure()</a></code>
+</li>
+</ul></div>
+</div>
+</div>
+</div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 
