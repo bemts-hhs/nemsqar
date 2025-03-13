@@ -41,19 +41,33 @@
 #' @param edisposition_28_col Column name for patient care disposition details.
 #' @param transport_disposition_col Column name for transport disposition
 #'   details.
-#' @param ... Additional arguments passed to the `dplyr::summarize` function for
-#'   custom summarization.
+#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
+#'   `TRUE`, the function calculates a confidence interval for the proportion
+#'   estimate.
+#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
+#'   method used to calculate confidence intervals. Options are `"wilson"`
+#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
+#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
+#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
+#'   confidence interval). Defaults to 0.95.
+#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
+#'   applies a continuity correction to the Wilson score interval when `method =
+#'   "wilson"`. Defaults to `TRUE`.
+#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
-#' @return A tibble summarizing results for three population groups (All,
-#'   Adults, and Peds) with the following columns:
-#'
-#'   `measure`: The name of the measure being calculated.
-#'   `pop`: Population type (All, Adults, Peds).
-#'   `numerator`: Count of incidents where a pain scale was administered.
-#'   `denominator`: Total count of incidents.
-#'   `prop`: Proportion of incidents where a pain scale was administered.
-#'   `prop_label`: Proportion formatted as a percentage with a specified number
-#'   of decimal places.
+#' @return A data.frame summarizing results for two population groups (All,
+#'   Adults and Peds) with the following columns:
+#' - `pop`: Population type (All, Adults, and Peds).
+#' - `numerator`: Count of incidents meeting the measure.
+#' - `denominator`: Total count of included incidents.
+#' - `prop`: Proportion of incidents meeting the measure.
+#' - `prop_label`: Proportion formatted as a percentage with a specified number
+#'    of decimal places.
+#' - `lower_ci`: Lower bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
+#' - `upper_ci`: Upper bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
 #'
 #' @examples
 #'
@@ -71,7 +85,8 @@
 #'     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
 #'   )
 #'
-#'   # Run function
+#' # Run the function
+#' # Return 95% confidence intervals using the Wilson method
 #'   trauma_01(
 #'     df = test_data,
 #'     erecord_01_col = erecord_01,
@@ -83,7 +98,8 @@
 #'     evitals_26_col = evitals_26,
 #'     evitals_27_col = evitals_27,
 #'     edisposition_28_col = edisposition_28,
-#'     transport_disposition_col = edisposition_30
+#'     transport_disposition_col = edisposition_30,
+#'     confidence_interval = TRUE
 #'   )
 #'
 #' @author Nicolas Foss, Ed.D., MS
@@ -108,7 +124,14 @@ trauma_01 <- function(df = NULL,
                       evitals_27_col,
                       edisposition_28_col,
                       transport_disposition_col,
+                      confidence_interval = FALSE,
+                      method = c("wilson", "clopper-pearson"),
+                      conf.level = 0.95,
+                      correct = TRUE,
                       ...) {
+
+  # Set default method and adjustment method
+  method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # utilize applicable tables to analyze the data for the measure
   if (
@@ -165,8 +188,13 @@ trauma_01 <- function(df = NULL,
       total_population = trauma_01_populations$initial_population,
       adult_population = trauma_01_populations$adults,
       peds_population = trauma_01_populations$peds,
+      population_names = c("all", "adults", "peds"),
       measure_name = "Trauma-01",
       numerator_col = PAIN_SCALE,
+      confidence_interval = confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
       ...
     )
 
@@ -190,6 +218,14 @@ trauma_01 <- function(df = NULL,
 
     # create a separator
     cli::cli_text("\n")
+
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(trauma.01$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
 
     return(trauma.01)
 
@@ -241,8 +277,13 @@ trauma_01 <- function(df = NULL,
       total_population = trauma_01_populations$initial_population,
       adult_population = trauma_01_populations$adults,
       peds_population = trauma_01_populations$peds,
+      population_names = c("all", "adults", "peds"),
       measure_name = "Trauma-01",
       numerator_col = PAIN_SCALE,
+      confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
       ...
     )
 
@@ -266,6 +307,14 @@ trauma_01 <- function(df = NULL,
 
     # create a separator
     cli::cli_text("\n")
+
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(trauma.01$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
 
     return(trauma.01)
 

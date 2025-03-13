@@ -15,6 +15,10 @@ safety_01(
   epatient_16_col,
   eresponse_05_col,
   eresponse_24_col,
+  confidence_interval = FALSE,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE,
   ...
 )
 }
@@ -48,21 +52,39 @@ response codes).}
 \item{eresponse_24_col}{Column detailing additional response descriptors as
 text.}
 
-\item{...}{arguments passed on to summarize.}
+\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
+\code{TRUE}, the function calculates a confidence interval for the proportion
+estimate.}
+
+\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Character. Specifies the
+method used to calculate confidence intervals. Options are \code{"wilson"}
+(Wilson score interval) and \code{"clopper-pearson"} (exact binomial interval).
+Partial matching is supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
+
+\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Numeric. The confidence
+level for the interval, expressed as a proportion (e.g., 0.95 for a 95\%
+confidence interval). Defaults to 0.95.}
+
+\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Logical. If \code{TRUE},
+applies a continuity correction to the Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+
+\item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }
 \value{
-A tibble summarizing results for the Adults, Peds, and all records
-with the following columns:
-
-\code{measure}: The name of the measure being calculated.
-\code{pop}: Population type (Adults, Peds, All).
-\code{numerator}: Count of 911 responses where "lights and sirens" were not used
-in an EMS dataset.
-\code{denominator}: Total count of incidents.
-\code{prop}: Proportion of 911 responses where "lights and sirens" were not used
-in an EMS dataset.
-\code{prop_label}: Proportion formatted as a percentage with a
-specified number of decimal places.
+A data.frame summarizing results for two population groups (All,
+Adults and Peds) with the following columns:
+\itemize{
+\item \code{pop}: Population type (All, Adults, and Peds).
+\item \code{numerator}: Count of incidents meeting the measure.
+\item \code{denominator}: Total count of included incidents.
+\item \code{prop}: Proportion of incidents meeting the measure.
+\item \code{prop_label}: Proportion formatted as a percentage with a specified number
+of decimal places.
+\item \code{lower_ci}: Lower bound of the confidence interval for \code{prop}
+(if \code{confidence_interval = TRUE}).
+\item \code{upper_ci}: Upper bound of the confidence interval for \code{prop}
+(if \code{confidence_interval = TRUE}).
+}
 }
 \description{
 The \code{safety_01} function calculates the proportion of 911 responses where
@@ -81,14 +103,16 @@ sirens" responses among all incidents, and within adult and pediatric groups.
     eresponse_24 = rep("No Lights or Sirens", 5)
   )
 
-  # Run the function
+# Run the function
+# Return 95\% confidence intervals using the Wilson method
   safety_01(
     df = test_data,
     erecord_01_col = erecord_01,
     epatient_15_col = epatient_15,
     epatient_16_col = epatient_16,
     eresponse_05_col = eresponse_05,
-    eresponse_24_col = eresponse_24
+    eresponse_24_col = eresponse_24,
+    confidence_interval = TRUE
   )
 
 }

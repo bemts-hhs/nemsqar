@@ -35,21 +35,33 @@
 #' @param eexam_02_col Another column for weight documentation, if applicable.
 #' @param emedications_03_col Column indicating medication administration.
 #' @param emedications_04_col Column listing medications administered.
-#' @param ... Additional parameters for the `dplyr::summarize` output.
+#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
+#'   `TRUE`, the function calculates a confidence interval for the proportion
+#'   estimate.
+#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
+#'   method used to calculate confidence intervals. Options are `"wilson"`
+#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
+#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
+#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
+#'   confidence interval). Defaults to 0.95.
+#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
+#'   applies a continuity correction to the Wilson score interval when `method =
+#'   "wilson"`. Defaults to `TRUE`.
+#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
-#' @return A tibble summarizing results for three population groups (All,
-#'   Adults, and Peds) with the following columns:
-#'
-#'   `measure`: The name of the measure being calculated.
-#'   `pop`: Population type (All, Adults, Peds).
-#'   `numerator`: Count of incidents
-#'   where patient weight was documented.
-#'   `denominator`: Total count of
-#'   incidents.
-#'   `prop`: Proportion of incidents where patient weight was
-#'   documented.
-#'   `prop_label`: Proportion formatted as a percentage with a
-#'   specified number of decimal places.
+#' @return A data.frame summarizing results for two population groups (Peds)
+#'   with the following columns:
+#' - `pop`: Population type (Peds).
+#' - `numerator`: Count of incidents meeting the measure.
+#' - `denominator`: Total count of included incidents.
+#' - `prop`: Proportion of incidents meeting the measure.
+#' - `prop_label`: Proportion formatted as a percentage with a specified number
+#'    of decimal places.
+#' - `lower_ci`: Lower bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
+#' - `upper_ci`: Upper bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
 #'
 #' @examples
 #'
@@ -69,7 +81,8 @@
 #'   eexam_02 = c("Red", "Purple", "Grey", "Yellow", "Orange")
 #' )
 #'
-#' # Run function
+#' # Run the function
+#' # Return 95% confidence intervals using the Wilson method
 #' pediatrics_03b(
 #'   df = test_data,
 #'   erecord_01_col = erecord_01,
@@ -81,9 +94,9 @@
 #'   emedications_03_col = emedications_03,
 #'   emedications_04_col = emedications_04,
 #'   eexam_01_col = eexam_01,
-#'   eexam_02_col = eexam_02
+#'   eexam_02_col = eexam_02,
+#'   confidence_interval = TRUE
 #' )
-#'
 #'
 #' @author Nicolas Foss, Ed.D., MS
 #'
@@ -104,7 +117,14 @@ pediatrics_03b <- function(df = NULL,
                            eexam_02_col,
                            emedications_03_col,
                            emedications_04_col,
+                           confidence_interval = FALSE,
+                           method = c("wilson", "clopper-pearson"),
+                           conf.level = 0.95,
+                           correct = TRUE,
                            ...) {
+
+  # Set default method and adjustment method
+  method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   if(all(
     !is.null(patient_scene_table),
@@ -150,10 +170,16 @@ pediatrics_03b <- function(df = NULL,
   cli::cli_h2("Calculating Pediatrics-03b")
 
   # summary
-  pediatrics.03b <- summarize_measure(data = pediatrics03b_populations$initial_population,
+  pediatrics.03b <- results_summarize(total_population = NULL,
+                                      adult_population = NULL,
+                                      peds_population = pediatrics03b_populations$initial_population,
                                       measure_name = "Pediatrics-03b",
-                                      population_name = "Peds",
+                                      population_names = "peds",
                                       numerator_col = DOCUMENTED_WEIGHT,
+                                      confidence_interval = confidence_interval,
+                                      method = method,
+                                      conf.level = conf.level,
+                                      correct = correct,
                                       ...)
 
   # create a separator
@@ -178,6 +204,14 @@ pediatrics_03b <- function(df = NULL,
 
   # create a separator
   cli::cli_text("\n")
+
+  # when confidence interval is "wilson", check for n < 10
+  # to warn about incorrect Chi-squared approximation
+  if (any(pediatrics.03b$denominator < 10) && method == "wilson" && confidence_interval) {
+
+    cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+  }
 
   return(pediatrics.03b)
 
@@ -227,10 +261,16 @@ pediatrics_03b <- function(df = NULL,
   cli::cli_h2("Calculating Pediatrics-03b")
 
   # summary
-  pediatrics.03b <- summarize_measure(data = pediatrics03b_populations$initial_population,
+  pediatrics.03b <- results_summarize(total_population = NULL,
+                                      adult_population = NULL,
+                                      peds_population = pediatrics03b_populations$initial_population,
                                       measure_name = "Pediatrics-03b",
-                                      population_name = "Peds",
+                                      population_names = "peds",
                                       numerator_col = DOCUMENTED_WEIGHT,
+                                      confidence_interval = confidence_interval,
+                                      method = method,
+                                      conf.level = conf.level,
+                                      correct = correct,
                                       ...)
 
   # create a separator
@@ -255,6 +295,14 @@ pediatrics_03b <- function(df = NULL,
 
   # create a separator
   cli::cli_text("\n")
+
+  # when confidence interval is "wilson", check for n < 10
+  # to warn about incorrect Chi-squared approximation
+  if (any(pediatrics.03b$denominator < 10) && method == "wilson" && confidence_interval) {
+
+    cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+  }
 
   return(pediatrics.03b)
 

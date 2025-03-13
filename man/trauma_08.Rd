@@ -22,6 +22,10 @@ trauma_08(
   evitals_06_col,
   evitals_14_col,
   evitals_23_col,
+  confidence_interval = FALSE,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE,
   ...
 )
 }
@@ -78,21 +82,39 @@ vital signs.}
 \item{evitals_23_col}{A column containing total Glasgow Coma Scale (GCS)
 scores from initial vital signs.}
 
-\item{...}{Additional arguments passed to the \code{summarize_measure} function.}
+\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
+\code{TRUE}, the function calculates a confidence interval for the proportion
+estimate.}
+
+\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Character. Specifies the
+method used to calculate confidence intervals. Options are \code{"wilson"}
+(Wilson score interval) and \code{"clopper-pearson"} (exact binomial interval).
+Partial matching is supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
+
+\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Numeric. The confidence
+level for the interval, expressed as a proportion (e.g., 0.95 for a 95\%
+confidence interval). Defaults to 0.95.}
+
+\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Logical. If \code{TRUE},
+applies a continuity correction to the Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+
+\item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }
 \value{
-A tibble summarizing results for three population groups (All,
-Adults, and Peds) with the following columns:
-
-\code{measure}: The name of the measure being calculated.
-\code{pop}: Population type (All, Adults, Peds).
-\code{numerator}: Count of incidents where the respiratory rate, SBP, and GCS
-vitals were taken.
-\code{denominator}: Total count of incidents.
-\code{prop}: Proportion of incidents where the respiratory rate, SBP, and GCS
-vitals were taken.
-\code{prop_label}: Proportion formatted as a percentage with a specified number
+A data.frame summarizing results for two population groups (All,
+Adults and Peds) with the following columns:
+\itemize{
+\item \code{pop}: Population type (All, Adults, and Peds).
+\item \code{numerator}: Count of incidents meeting the measure.
+\item \code{denominator}: Total count of included incidents.
+\item \code{prop}: Proportion of incidents meeting the measure.
+\item \code{prop_label}: Proportion formatted as a percentage with a specified number
 of decimal places.
+\item \code{lower_ci}: Lower bound of the confidence interval for \code{prop}
+(if \code{confidence_interval = TRUE}).
+\item \code{upper_ci}: Upper bound of the confidence interval for \code{prop}
+(if \code{confidence_interval = TRUE}).
+}
 }
 \description{
 This function calculates the Trauma-08 measure, which evaluates the
@@ -113,6 +135,7 @@ This function calculates the Trauma-08 measure, which evaluates the
   )
 
   # Run function with the first and last pain score columns
+  # Return 95\% confidence intervals using the Wilson method
   trauma_08(
     df = test_data,
     erecord_01_col = erecord_01,
@@ -125,7 +148,8 @@ This function calculates the Trauma-08 measure, which evaluates the
     evitals_06_col = evitals_06,
     evitals_14_col = evitals_14,
     evitals_23_col = evitals_23,
-    transport_disposition_col = edisposition_30
+    transport_disposition_col = edisposition_30,
+    confidence_interval = TRUE
   )
 
 }

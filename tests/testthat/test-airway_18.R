@@ -69,6 +69,47 @@ testthat::test_that("airway_18 returns expected structure with df argument", {
   testthat::expect_equal(nrow(result), 2)
   testthat::expect_true("Airway-18" %in% result$measure)
 
+  result <- suppressWarnings(airway_18(df = big_df,
+                      erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+                      incident_date_col = `Incident Date`,
+                      patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
+                      epatient_15_col = `Patient Age (ePatient.15)`,
+                      epatient_16_col = `Patient Age Units (ePatient.16)`,
+                      eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+                      evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+                      evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`,
+                      eairway_02_col = `Airway Device Placement Confirmation Date Time (eAirway.02)`,
+                      eairway_04_col = `Airway Device Placement Confirmed Method List (eAirway.04)`,
+                      eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+                      eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+                      eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+                      eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
+                      confidence_interval = TRUE
+                      ))
+
+  expect_s3_class(result, "data.frame")
+  expect_true(all(c("pop", "numerator", "denominator", "prop", "prop_label", "lower_ci", "upper_ci") %in% names(result)))
+
+  # should throw a warning due to small counts
+  testthat::expect_warning(airway_18(df = big_df,
+                      erecord_01_col = `Incident Patient Care Report Number - PCR (eRecord.01)`,
+                      incident_date_col = `Incident Date`,
+                      patient_DOB_col = `Patient Date Of Birth (ePatient.17)`,
+                      epatient_15_col = `Patient Age (ePatient.15)`,
+                      epatient_16_col = `Patient Age Units (ePatient.16)`,
+                      eresponse_05_col = `Response Type Of Service Requested With Code (eResponse.05)`,
+                      evitals_01_col = `Vitals Signs Taken Date Time (eVitals.01)`,
+                      evitals_16_col = `Vitals Carbon Dioxide CO2 (eVitals.16)`,
+                      eairway_02_col = `Airway Device Placement Confirmation Date Time (eAirway.02)`,
+                      eairway_04_col = `Airway Device Placement Confirmed Method List (eAirway.04)`,
+                      eprocedures_01_col = `Procedure Performed Date Time (eProcedures.01)`,
+                      eprocedures_02_col = `Procedure Performed Prior To EMS Care (eProcedures.02)`,
+                      eprocedures_03_col = `Procedure Performed Description And Code (eProcedures.03)`,
+                      eprocedures_06_col = `Procedure Successful (eProcedures.06)`,
+                      confidence_interval = TRUE
+                      ))
+
+
 })
 
 testthat::test_that("airway_18 returns expected structure with table args", {

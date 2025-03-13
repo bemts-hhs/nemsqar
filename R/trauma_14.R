@@ -65,21 +65,33 @@
 #' @param einjury_04_col Column name containing trauma triage steps 3 and 4
 #'   information.
 #' @param einjury_09_col Column name containing fall height information.
-#' @param ... Additional arguments passed to helper functions for further
-#'   customization.
+#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
+#'   `TRUE`, the function calculates a confidence interval for the proportion
+#'   estimate.
+#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
+#'   method used to calculate confidence intervals. Options are `"wilson"`
+#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
+#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
+#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
+#'   confidence interval). Defaults to 0.95.
+#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
+#'   applies a continuity correction to the Wilson score interval when `method =
+#'   "wilson"`. Defaults to `TRUE`.
+#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
-#' @return A tibble summarizing results for three age groups (< 10 yrs, 10–65
-#'   yrs, and >= 65 yrs) with the following columns:
-#'
-#'   `measure`: The name of the measure being calculated.
-#'   `pop`: Population type (< 10 yrs, 10–65 yrs, >= 65 yrs).
-#'   `numerator`: Count of incidents where a pre-hospital trauma alert was
-#'   called.
-#'   `denominator`: Total count of incidents.
-#'   `prop`: Proportion of incidents where a pre-hospital trauma alert was
-#'   called.
-#'   `prop_label`: Proportion formatted as a percentage with a specified number
-#'   of decimal places.
+#' @return A data.frame summarizing results for two population groups (All,
+#'   Adults and Peds) with the following columns:
+#' - `pop`: Population type (All, Adults, and Peds).
+#' - `numerator`: Count of incidents meeting the measure.
+#' - `denominator`: Total count of included incidents.
+#' - `prop`: Proportion of incidents meeting the measure.
+#' - `prop_label`: Proportion formatted as a percentage with a specified number
+#'    of decimal places.
+#' - `lower_ci`: Lower bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
+#' - `upper_ci`: Upper bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
 #'
 #' @examples
 #'
@@ -111,6 +123,7 @@
 #'   )
 #'
 #'   # Run function with the first and last pain score columns
+#'   # Return 95% confidence intervals using the Wilson method
 #'   trauma_14(
 #'     df = test_data,
 #'     erecord_01_col = erecord_01,
@@ -135,7 +148,8 @@
 #'     einjury_01_col = einjury_01,
 #'     einjury_03_col = einjury_03,
 #'     einjury_04_col = einjury_04,
-#'     einjury_09_col = einjury_09
+#'     einjury_09_col = einjury_09,
+#'     confidence_interval = TRUE
 #'   )
 #'
 #' @author Nicolas Foss, Ed.D., MS
@@ -176,7 +190,14 @@ trauma_14 <- function(df = NULL,
                       einjury_03_col,
                       einjury_04_col,
                       einjury_09_col,
+                      confidence_interval = FALSE,
+                      method = c("wilson", "clopper-pearson"),
+                      conf.level = 0.95,
+                      correct = TRUE,
                       ...) {
+
+  # Set default method and adjustment method
+  method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # utilize applicable tables to analyze the data for the measure
   if(
@@ -246,11 +267,16 @@ trauma_14 <- function(df = NULL,
     # header for calculations
     cli::cli_h2("Calculating Trauma-14")
 
+    # 65+ population
     population_65 <- trauma_14_populations$population_65 |>
       summarize_measure(
         measure_name = "Trauma-14",
         population_name = ">= 65 yrs",
         numerator_col = TRAUMA_ALERT_65,
+        confidence_interval = confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
         ...
       )
 
@@ -260,6 +286,10 @@ trauma_14 <- function(df = NULL,
         measure_name = "Trauma-14",
         population_name = "10-64 yrs",
         numerator_col = TRAUMA_ALERT_10_64,
+        confidence_interval = confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
         ...
       )
 
@@ -269,11 +299,15 @@ trauma_14 <- function(df = NULL,
         measure_name = "Trauma-14",
         population_name = "< 10 yrs",
         numerator_col = TRAUMA_ALERT_10_64,
+        confidence_interval = confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
         ...
       )
 
     # summary
-    trauma.04 <- dplyr::bind_rows(population_65, population_10_64, population_10)
+    trauma.14 <- dplyr::bind_rows(population_65, population_10_64, population_10)
 
     # create a separator
     cli::cli_text("\n")
@@ -298,7 +332,15 @@ trauma_14 <- function(df = NULL,
     # create a separator
     cli::cli_text("\n")
 
-    return(trauma.04)
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(trauma.14$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
+
+    return(trauma.14)
 
   } else if(
 
@@ -360,11 +402,16 @@ trauma_14 <- function(df = NULL,
     # header for calculations
     cli::cli_h2("Calculating Trauma-14")
 
+    # 65+ population
     population_65 <- trauma_14_populations$population_65 |>
       summarize_measure(
         measure_name = "Trauma-14",
         population_name = ">= 65 yrs",
         numerator_col = TRAUMA_ALERT_65,
+        confidence_interval = confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
         ...
       )
 
@@ -374,6 +421,10 @@ trauma_14 <- function(df = NULL,
         measure_name = "Trauma-14",
         population_name = "10-64 yrs",
         numerator_col = TRAUMA_ALERT_10_64,
+        confidence_interval = confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
         ...
       )
 
@@ -383,11 +434,15 @@ trauma_14 <- function(df = NULL,
         measure_name = "Trauma-14",
         population_name = "< 10 yrs",
         numerator_col = TRAUMA_ALERT_10_64,
+        confidence_interval = confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
         ...
       )
 
     # summary
-    trauma.04 <- dplyr::bind_rows(population_65, population_10_64, population_10)
+    trauma.14 <- dplyr::bind_rows(population_65, population_10_64, population_10)
 
     # create a separator
     cli::cli_text("\n")
@@ -412,7 +467,15 @@ trauma_14 <- function(df = NULL,
     # create a separator
     cli::cli_text("\n")
 
-    return(trauma.04)
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(trauma.14$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
+
+    return(trauma.14)
 
   }
 

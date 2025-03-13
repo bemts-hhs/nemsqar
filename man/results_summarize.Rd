@@ -5,41 +5,86 @@
 \title{Tabulate Measure Results}
 \usage{
 results_summarize(
-  total_population,
-  adult_population,
-  peds_population,
+  total_population = NULL,
+  adult_population = NULL,
+  peds_population = NULL,
   measure_name,
-  population_names = c(total = "All", adult = "Adults", peds = "Peds"),
+  population_names = c("all", "adults", "peds"),
   numerator_col,
+  confidence_interval = FALSE,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE,
   ...
 )
 }
 \arguments{
-\item{total_population}{a dataframe or tibble containing the filtered and
-calculated fields.}
+\item{total_population}{A dataframe or tibble containing the filtered and
+calculated fields for the total population. Defaults to \code{NULL}.}
 
-\item{adult_population}{a dataframe or tibble containing the filtered and
-calculated fields.}
+\item{adult_population}{A dataframe or tibble containing the filtered and
+calculated fields for the adult population. Defaults to \code{NULL}.}
 
-\item{peds_population}{a dataframe or tibble containing the filtered and
-calculated fields.}
+\item{peds_population}{A dataframe or tibble containing the filtered and
+calculated fields for the pediatric population. Defaults to \code{NULL}.}
 
-\item{measure_name}{A string containing the measure description.}
+\item{measure_name}{A string containing the description of the measure being
+calculated.}
 
-\item{population_names}{A list containing the population descriptions.}
+\item{population_names}{A vector of strings specifying which populations
+(total, adult, peds) to include in the result. Default includes all
+populations.}
 
-\item{numerator_col}{The tidyselect column containing the numerator.}
+\item{numerator_col}{The tidyselect column containing the numerator data for
+the measure (e.g., the number of cases).}
 
-\item{...}{(optional) additional arguments}
+\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} A logical
+value indicating whether to include confidence intervals in the result.
+Defaults to FALSE.}
+
+\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} A string specifying the
+method to calculate confidence intervals. Options are "wilson" or
+"clopper-pearson". Default is "wilson".}
+
+\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} A numeric value
+indicating the confidence level for the confidence intervals. Default is
+0.95 (95\% confidence).}
+
+\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} A logical value
+specifying whether to apply continuity correction when calculating
+confidence intervals. Default is TRUE.}
+
+\item{...}{(optional) Additional arguments passed to the \code{summarize_measure}
+function used for calculating measure results.}
 }
 \value{
-Results tibble
+A tibble containing the summarized measure results for the selected
+populations. The output includes:
+\itemize{
+\item \code{measure}: The measure name.
+\item \code{pop}: The population group (e.g., "All", "Adults", "Peds").
+\item \code{numerator}: The count of qualifying events.
+\item \code{denominator}: The total number of records in the population.
+\item \code{prop}: The proportion of qualifying events.
+\item \code{prop_label}: A formatted percentage representation of \code{prop}.
+\item \code{lower_ci}, \code{upper_ci}: The lower and upper confidence interval bounds
+(if \code{confidence_interval = TRUE}).
+}
+
+If multiple populations are specified, their results are combined into a
+single tibble using \code{dplyr::bind_rows()}.
 }
 \description{
 Calculates measure numerator, denominator, and proportions for a NEMSQA
-measure and each population.
+measure and each population (total, adult, and pediatric). The function
+returns a summarized result table for the selected populations, with optional
+confidence intervals for the proportions.
 
-Used throughout this package to calculate measure results.
+This function is used throughout the package to calculate measure results
+for different populations (e.g., total population, adults, and pediatric
+groups) based on the given input data. Each of the population arguments
+(\code{total_population}, \code{adult_population}, \code{peds_population}) defaults to \code{NULL}.
+If a population argument is \code{NULL}, it will be excluded from the results.
 }
 \author{
 Samuel Kordik, BBA, BS

@@ -34,20 +34,33 @@
 #'   categories for the EMS response.
 #' @param transport_disposition_cols One or more unquoted column names (such as
 #'   edisposition.12, edisposition.30) containing transport disposition details.
-#' @param ... Additional arguments for summary calculation, if needed.
+#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
+#'   `TRUE`, the function calculates a confidence interval for the proportion
+#'   estimate.
+#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
+#'   method used to calculate confidence intervals. Options are `"wilson"`
+#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
+#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
+#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
+#'   confidence interval). Defaults to 0.95.
+#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
+#'   applies a continuity correction to the Wilson score interval when `method =
+#'   "wilson"`. Defaults to `TRUE`.
+#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
-#' @return A tibble summarizing results for three age groups (< 10 yrs, 10–65
-#'   yrs, and >= 65 yrs) with the following columns:
-#'
-#'   `measure`: The name of the measure being calculated.
-#'   `pop`: Population type (< 18 yrs, >= 18 yrs, all).
-#'   `numerator`: Count of incidents from a 911 request during which lights and
-#'   sirens were not used during patient transport.
-#'   `denominator`: Total count of incidents.
-#'   `prop`:Proportion of incidents from a 911 request during which lights and
-#'   sirens were not used during patient transport.
-#'   `prop_label`: Proportion formatted
-#'   as a percentage with a specified number of decimal places.
+#' @return A data.frame summarizing results for two population groups (All,
+#'   Adults and Peds) with the following columns:
+#' - `pop`: Population type (All, Adults, and Peds).
+#' - `numerator`: Count of incidents meeting the measure.
+#' - `denominator`: Total count of included incidents.
+#' - `prop`: Proportion of incidents meeting the measure.
+#' - `prop_label`: Proportion formatted as a percentage with a specified number
+#'    of decimal places.
+#' - `lower_ci`: Lower bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
+#' - `upper_ci`: Upper bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
 #'
 #' @examples
 #'
@@ -62,7 +75,8 @@
 #'     edisposition_30 = rep(4230001, 5)
 #'   )
 #'
-#'   # Run function
+#' # Run the function
+#' # Return 95% confidence intervals using the Wilson method
 #'   safety_02(
 #'     df = test_data,
 #'     erecord_01_col = erecord_01,
@@ -71,7 +85,8 @@
 #'     eresponse_05_col = eresponse_05,
 #'     edisposition_18_col = edisposition_18,
 #'     edisposition_28_col = edisposition_28,
-#'     transport_disposition_cols = edisposition_30
+#'     transport_disposition_cols = edisposition_30,
+#'     confidence_interval = TRUE
 #'   )
 #'
 #' @author Nicolas Foss, Ed.D., MS
@@ -91,8 +106,14 @@ safety_02 <- function(df = NULL,
                       edisposition_18_col,
                       edisposition_28_col,
                       transport_disposition_cols,
+                      confidence_interval = FALSE,
+                      method = c("wilson", "clopper-pearson"),
+                      conf.level = 0.95,
+                      correct = TRUE,
                       ...) {
 
+  # Set default method and adjustment method
+  method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # utilize applicable tables to analyze the data for the measure
   if (
@@ -138,8 +159,13 @@ safety_02 <- function(df = NULL,
     safety.02 <- results_summarize(total_population = safety_02_populations$initial_population,
                                    adult_population = safety_02_populations$adults,
                                    peds_population = safety_02_populations$peds,
+                                   population_names = c("all", "adults", "peds"),
                                    measure_name = "Safety-02",
                                    numerator_col = NO_LS_CHECK,
+                                   confidence_interval = confidence_interval,
+                                   method = method,
+                                   conf.level = conf.level,
+                                   correct = correct,
                                    ...)
 
     # create a separator
@@ -164,6 +190,14 @@ safety_02 <- function(df = NULL,
 
     # create a separator
     cli::cli_text("\n")
+
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(safety.02$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
 
     return(safety.02)
 
@@ -211,8 +245,13 @@ safety_02 <- function(df = NULL,
     safety.02 <- results_summarize(total_population = safety_02_populations$initial_population,
                                    adult_population = safety_02_populations$adults,
                                    peds_population = safety_02_populations$peds,
+                                   population_names = c("all", "adults", "peds"),
                                    measure_name = "Safety-02",
                                    numerator_col = NO_LS_CHECK,
+                                   confidence_interval = confidence_interval,
+                                   method = method,
+                                   conf.level = conf.level,
+                                   correct = correct,
                                    ...)
 
     # create a separator
@@ -237,6 +276,14 @@ safety_02 <- function(df = NULL,
 
     # create a separator
     cli::cli_text("\n")
+
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(safety.02$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
 
     return(safety.02)
 

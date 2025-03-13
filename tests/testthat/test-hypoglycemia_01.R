@@ -16,6 +16,26 @@ testthat::test_that("hypoglycemia_01 produces expected results", {
   )
 
   # Run function
+  result <- suppressWarnings(hypoglycemia_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    esituation_11_col = esituation_11,
+    esituation_12_col = esituation_12,
+    emedications_03_col = emedications_03,
+    evitals_18_col = evitals_18,
+    evitals_23_col = evitals_23,
+    evitals_26_col = evitals_26,
+    eprocedures_03_col = eprocedures_03,
+    confidence_interval = TRUE
+  ))
+
+  expect_s3_class(result, "data.frame")
+  expect_true(all(c("pop", "numerator", "denominator", "prop", "prop_label", "lower_ci", "upper_ci") %in% names(result)))
+
+  # Run function
   result <- hypoglycemia_01(
     df = test_data,
     erecord_01_col = erecord_01,
@@ -34,6 +54,23 @@ testthat::test_that("hypoglycemia_01 produces expected results", {
   # Check structure
   testthat::expect_s3_class(result, "data.frame")
   testthat::expect_true(all(c("measure", "pop", "numerator", "denominator", "prop", "prop_label") %in% names(result)))
+
+  # expect a warning due to small counts
+  testthat::expect_warning(hypoglycemia_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    esituation_11_col = esituation_11,
+    esituation_12_col = esituation_12,
+    emedications_03_col = emedications_03,
+    evitals_18_col = evitals_18,
+    evitals_23_col = evitals_23,
+    evitals_26_col = evitals_26,
+    eprocedures_03_col = eprocedures_03,
+    confidence_interval = TRUE
+  ))
 
   # Check calculations
   testthat::expect_equal(sum(result$numerator), 8)
@@ -192,4 +229,3 @@ testthat::test_that("hypoglycemia_01 returns empty result for non-matching crite
 
   testthat::expect_equal(sum(result$denominator), 0)
 })
-

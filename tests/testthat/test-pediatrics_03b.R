@@ -15,6 +15,41 @@ testthat::test_that("pediatrics_03b produces expected results", {
   )
 
   # Run function
+  result <- suppressWarnings(pediatrics_03b(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    incident_date_col = incident_date,
+    patient_DOB_col = patient_dob,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    emedications_03_col = emedications_03,
+    emedications_04_col = emedications_04,
+    eexam_01_col = eexam_01,
+    eexam_02_col = eexam_02,
+    confidence_interval = TRUE
+  ))
+
+  expect_s3_class(result, "data.frame")
+  expect_true(all(c("pop", "numerator", "denominator", "prop", "prop_label", "lower_ci", "upper_ci") %in% names(result)))
+
+  # expect a warning due to small counts
+  testthat::expect_warning(pediatrics_03b(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    incident_date_col = incident_date,
+    patient_DOB_col = patient_dob,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    emedications_03_col = emedications_03,
+    emedications_04_col = emedications_04,
+    eexam_01_col = eexam_01,
+    eexam_02_col = eexam_02,
+    confidence_interval = TRUE
+  ))
+
+  # Run function
   result <- pediatrics_03b(
     df = test_data,
     erecord_01_col = erecord_01,

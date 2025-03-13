@@ -20,6 +20,10 @@ respiratory_02(
   evitals_12_col,
   emedications_03_col,
   eprocedures_03_col,
+  confidence_interval = FALSE,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE,
   ...
 )
 }
@@ -65,21 +69,39 @@ restrictions.}
 
 \item{eprocedures_03_col}{Column name for procedure codes.}
 
-\item{...}{arguments passed to \code{dplyr::summarize()}.}
+\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
+\code{TRUE}, the function calculates a confidence interval for the proportion
+estimate.}
+
+\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Character. Specifies the
+method used to calculate confidence intervals. Options are \code{"wilson"}
+(Wilson score interval) and \code{"clopper-pearson"} (exact binomial interval).
+Partial matching is supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
+
+\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Numeric. The confidence
+level for the interval, expressed as a proportion (e.g., 0.95 for a 95\%
+confidence interval). Defaults to 0.95.}
+
+\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Logical. If \code{TRUE},
+applies a continuity correction to the Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+
+\item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }
 \value{
-A tibble summarizing results for the Adults, Peds, and all records
-with the following columns:
-
-\code{measure}: The name of the measure being calculated.
-\code{pop}: Population type (Adults, Peds, All).
-\code{numerator}: Count of EMS responses originating from a 911 request for
-patients with hypoxia during which oxygen is administered.
-\code{denominator}: Total count of incidents.
-\code{prop}: Proportion of EMS responses originating from a 911 request for
-patients with hypoxia during which oxygen is administered.
-\code{prop_label}: Proportion formatted as a percentage with a
-specified number of decimal places.
+A data.frame summarizing results for two population groups (All,
+Adults and Peds) with the following columns:
+\itemize{
+\item \code{pop}: Population type (All, Adults, and Peds).
+\item \code{numerator}: Count of incidents meeting the measure.
+\item \code{denominator}: Total count of included incidents.
+\item \code{prop}: Proportion of incidents meeting the measure.
+\item \code{prop_label}: Proportion formatted as a percentage with a specified number
+of decimal places.
+\item \code{lower_ci}: Lower bound of the confidence interval for \code{prop}
+(if \code{confidence_interval = TRUE}).
+\item \code{upper_ci}: Upper bound of the confidence interval for \code{prop}
+(if \code{confidence_interval = TRUE}).
+}
 }
 \description{
 The \code{respiratory_02} function calculates metrics for pediatric and adult
@@ -101,7 +123,8 @@ proportions.
     eprocedures_03 = rep("applicable thing", 5)
   )
 
-  # Run the function
+# Run the function
+# Return 95\% confidence intervals using the Wilson method
   respiratory_02(
     df = test_data,
     erecord_01_col = erecord_01,
@@ -110,7 +133,8 @@ proportions.
     eresponse_05_col = eresponse_05,
     emedications_03_col = emedications_03,
     evitals_12_col = evitals_12,
-    eprocedures_03_col = eprocedures_03
+    eprocedures_03_col = eprocedures_03,
+    confidence_interval = TRUE
   )
 
 

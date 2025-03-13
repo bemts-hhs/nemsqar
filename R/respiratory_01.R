@@ -36,22 +36,33 @@
 #'   to respiratory distress.
 #' @param evitals_12_col Column name for the first vital sign measurement.
 #' @param evitals_14_col Column name for the second vital sign measurement.
-#' @param ... arguments passed to `dplyr::summarize()`.
+#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
+#'   `TRUE`, the function calculates a confidence interval for the proportion
+#'   estimate.
+#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
+#'   method used to calculate confidence intervals. Options are `"wilson"`
+#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
+#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
+#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
+#'   confidence interval). Defaults to 0.95.
+#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
+#'   applies a continuity correction to the Wilson score interval when `method =
+#'   "wilson"`. Defaults to `TRUE`.
+#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
-#' @return A tibble summarizing results for the Adults, Peds, and all records
-#'   with the following columns:
-#'
-#'   `measure`: The name of the measure being calculated.
-#'   `pop`: Population type (Adults, Peds, All).
-#'   `numerator`: Count of EMS responses originating from a 911 request for
-#'   patients with primary or secondary impression of respiratory distress who
-#'   had a respiratory assessment.
-#'   `denominator`: Total count of incidents.
-#'   `prop`: Proportion of EMS responses originating from a 911 request for
-#'   patients with primary or secondary impression of respiratory distress who
-#'   had a respiratory assessment.
-#'   `prop_label`: Proportion formatted as a percentage with a specified number
-#'   of decimal places.
+#' @return A data.frame summarizing results for two population groups (All,
+#'   Adults and Peds) with the following columns:
+#' - `pop`: Population type (All, Adults, and Peds).
+#' - `numerator`: Count of incidents meeting the measure.
+#' - `denominator`: Total count of included incidents.
+#' - `prop`: Proportion of incidents meeting the measure.
+#' - `prop_label`: Proportion formatted as a percentage with a specified number
+#'    of decimal places.
+#' - `lower_ci`: Lower bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
+#' - `upper_ci`: Upper bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
 #'
 #' @examples
 #' # Synthetic test data
@@ -67,6 +78,7 @@
 #' )
 #'
 #' # Run the function
+#' # Return 95% confidence intervals using the Wilson method
 #' respiratory_01(
 #'   df = test_data,
 #'   erecord_01_col = erecord_01,
@@ -76,7 +88,8 @@
 #'   esituation_11_col = esituation_11,
 #'   esituation_12_col = esituation_12,
 #'   evitals_12_col = evitals_12,
-#'   evitals_14_col = evitals_14
+#'   evitals_14_col = evitals_14,
+#'   confidence_interval = TRUE
 #' )
 #'
 #' @author Nicolas Foss, Ed.D., MS
@@ -98,7 +111,14 @@ respiratory_01 <- function(df = NULL,
                            esituation_12_col,
                            evitals_12_col,
                            evitals_14_col,
+                           confidence_interval = FALSE,
+                           method = c("wilson", "clopper-pearson"),
+                           conf.level = 0.95,
+                           correct = TRUE,
                            ...) {
+
+  # Set default method and adjustment method
+  method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # utilize applicable tables to analyze the data for the measure
   if(
@@ -150,8 +170,13 @@ respiratory_01 <- function(df = NULL,
     respiratory.01 <- results_summarize(total_population = respiratory_01_populations$initial_population,
                                    adult_population = respiratory_01_populations$adults,
                                    peds_population = respiratory_01_populations$peds,
+                                   population_names = c("all", "adults", "peds"),
                                    measure_name = "Respiratory-01",
                                    numerator_col = VITALS_CHECK,
+                                   confidence_interval = confidence_interval,
+                                   method = method,
+                                   conf.level = conf.level,
+                                   correct = correct,
                                    ...)
 
     # create a separator
@@ -176,6 +201,14 @@ respiratory_01 <- function(df = NULL,
 
     # create a separator
     cli::cli_text("\n")
+
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(respiratory.01$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
 
     return(respiratory.01)
 
@@ -230,8 +263,13 @@ respiratory_01 <- function(df = NULL,
     respiratory.01 <- results_summarize(total_population = respiratory_01_populations$initial_population,
                                         adult_population = respiratory_01_populations$adults,
                                         peds_population = respiratory_01_populations$peds,
+                                        population_names = c("all", "adults", "peds"),
                                         measure_name = "Respiratory-01",
                                         numerator_col = VITALS_CHECK,
+                                        confidence_interval = confidence_interval,
+                                        method = method,
+                                        conf.level = conf.level,
+                                        correct = correct,
                                         ...)
 
     # create a separator
@@ -256,6 +294,14 @@ respiratory_01 <- function(df = NULL,
 
     # create a separator
     cli::cli_text("\n")
+
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(respiratory.01$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
 
     return(respiratory.01)
 

@@ -13,6 +13,37 @@ testthat::test_that("respiratory_01 produces expected results", {
   )
 
   # Run function
+  result <- suppressWarnings(respiratory_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    esituation_11_col = esituation_11,
+    esituation_12_col = esituation_12,
+    evitals_12_col = evitals_12,
+    evitals_14_col = evitals_14,
+    confidence_interval = TRUE
+  ))
+
+  expect_s3_class(result, "data.frame")
+  expect_true(all(c("pop", "numerator", "denominator", "prop", "prop_label", "lower_ci", "upper_ci") %in% names(result)))
+
+  # expect a warning due to low counts
+  testthat::expect_warning(respiratory_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    esituation_11_col = esituation_11,
+    esituation_12_col = esituation_12,
+    evitals_12_col = evitals_12,
+    evitals_14_col = evitals_14,
+    confidence_interval = TRUE
+  ))
+
+  # Run function
   result <- respiratory_01(
     df = test_data,
     erecord_01_col = erecord_01,

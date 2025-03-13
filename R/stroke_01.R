@@ -33,21 +33,33 @@
 #'   during assessment.
 #' @param evitals_30_col The column containing stroke scale type descriptors
 #'   (e.g., FAST, NIH, etc.).
-#' @param ... Additional arguments passed to `dplyr::summarize()` function for
-#'   further customization of results.
+#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
+#'   `TRUE`, the function calculates a confidence interval for the proportion
+#'   estimate.
+#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
+#'   method used to calculate confidence intervals. Options are `"wilson"`
+#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
+#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
+#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
+#'   confidence interval). Defaults to 0.95.
+#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
+#'   applies a continuity correction to the Wilson score interval when `method =
+#'   "wilson"`. Defaults to `TRUE`.
+#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
-#' @return A tibble summarizing results for the total population with the
-#'   following columns:
-#'
-#'   `measure`: The name of the measure being calculated.
-#'   `pop`: Population type (All).
-#'   `numerator`: Count of incidents where beta-agonist medications were
-#'   administered.
-#'   `denominator`:
-#'   Total count of incidents.
-#'   `prop`: Proportion of incidents involving beta-agonist medications.
-#'   `prop_label`: Proportion formatted as a percentage with a specified number
-#'   of decimal places.
+#' @return A data.frame summarizing results for two population groups (All,
+#'   Adults and Peds) with the following columns:
+#' - `pop`: Population type (All, Adults, and Peds).
+#' - `numerator`: Count of incidents meeting the measure.
+#' - `denominator`: Total count of included incidents.
+#' - `prop`: Proportion of incidents meeting the measure.
+#' - `prop_label`: Proportion formatted as a percentage with a specified number
+#'    of decimal places.
+#' - `lower_ci`: Lower bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
+#' - `upper_ci`: Upper bound of the confidence interval for `prop`
+#'    (if `confidence_interval = TRUE`).
 #'
 #' @examples
 #'
@@ -65,7 +77,8 @@
 #'     evitals_30 = rep("a pain scale", 5)
 #'   )
 #'
-#'   # Run the function
+#' # Run the function
+#' # Return 95% confidence intervals using the Wilson method
 #'   stroke_01(
 #'     df = test_data,
 #'     erecord_01_col = erecord_01,
@@ -75,7 +88,8 @@
 #'     evitals_23_col = evitals_23,
 #'     evitals_26_col = evitals_26,
 #'     evitals_29_col = evitals_29,
-#'     evitals_30_col = evitals_30
+#'     evitals_30_col = evitals_30,
+#'     confidence_interval = TRUE
 #'   )
 #'
 #' @author Nicolas Foss, Ed.D., MS
@@ -95,7 +109,14 @@ stroke_01 <- function(df = NULL,
                       evitals_26_col,
                       evitals_29_col,
                       evitals_30_col,
+                      confidence_interval = FALSE,
+                      method = c("wilson", "clopper-pearson"),
+                      conf.level = 0.95,
+                      correct = TRUE,
                       ...) {
+
+  # Set default method and adjustment method
+  method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   if (
     any(
@@ -138,12 +159,19 @@ stroke_01 <- function(df = NULL,
     cli::cli_h2("Calculating Stroke-01")
 
     # summarize
-    stroke.01 <- stroke_01_populations$initial_population |>
-      summarize_measure(measure_name = "Stroke-01",
-                        population_name = "All",
-                        numerator_col = STROKE_SCALE,
-                        ...
-                        )
+    stroke.01 <- results_summarize(
+      total_population = stroke_01_populations$initial_population,
+      adult_population = NULL,
+      peds_population = NULL,
+      measure_name = "Stroke-01",
+      population_names = "all",
+      numerator_col = STROKE_SCALE,
+      confidence_interval = confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
+      ...
+      )
 
     # create a separator
     cli::cli_text("\n")
@@ -167,6 +195,14 @@ stroke_01 <- function(df = NULL,
 
     # create a separator
     cli::cli_text("\n")
+
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(stroke.01$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
 
     return(stroke.01)
 
@@ -211,12 +247,19 @@ stroke_01 <- function(df = NULL,
     cli::cli_h2("Calculating Stroke-01")
 
     # summarize
-    stroke.01 <- stroke_01_populations$initial_population |>
-      summarize_measure(measure_name = "Stroke-01",
-                        population_name = "All",
-                        numerator_col = STROKE_SCALE,
-                        ...
-                        )
+    stroke.01 <- results_summarize(
+      total_population = stroke_01_populations$initial_population,
+      adult_population = NULL,
+      peds_population = NULL,
+      measure_name = "Stroke-01",
+      population_names = "all",
+      numerator_col = STROKE_SCALE,
+      confidence_interval = confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
+      ...
+    )
 
     # create a separator
     cli::cli_text("\n")
@@ -240,6 +283,14 @@ stroke_01 <- function(df = NULL,
 
     # create a separator
     cli::cli_text("\n")
+
+    # when confidence interval is "wilson", check for n < 10
+    # to warn about incorrect Chi-squared approximation
+    if (any(stroke.01$denominator < 10) && method == "wilson" && confidence_interval) {
+
+      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
+
+    }
 
     return(stroke.01)
 

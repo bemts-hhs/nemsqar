@@ -43,6 +43,46 @@ testthat::test_that("tbi_01 produces expected results", {
   testthat::expect_equal(result$prop[result$pop == "Adults"], 1)
   testthat::expect_equal(nrow(result), 2)
 
+  # Run function
+  result <- suppressWarnings(tbi_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    esituation_11_col = esituation_11,
+    esituation_12_col = esituation_12,
+    evitals_06_col = evitals_06,
+    evitals_12_col = evitals_12,
+    evitals_16_col = evitals_16,
+    evitals_23_col = evitals_23,
+    evitals_26_col = evitals_26,
+    transport_disposition_col = edisposition_30,
+    confidence_interval = TRUE
+  ))
+
+  # Check structure
+  testthat::expect_s3_class(result, "data.frame")
+  testthat::expect_true(all(c("measure", "pop", "numerator", "denominator", "prop", "prop_label", "lower_ci", "upper_ci") %in% names(result)))
+
+  # should throw a warning due to small counts
+  testthat::expect_warning(tbi_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    esituation_11_col = esituation_11,
+    esituation_12_col = esituation_12,
+    evitals_06_col = evitals_06,
+    evitals_12_col = evitals_12,
+    evitals_16_col = evitals_16,
+    evitals_23_col = evitals_23,
+    evitals_26_col = evitals_26,
+    transport_disposition_col = edisposition_30,
+    confidence_interval = TRUE
+  ))
+
   # create tables to test correct functioning
   patient_table <- tibble::tibble(
 

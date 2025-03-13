@@ -15,6 +15,42 @@ testthat::test_that("trauma_01 produces expected results", {
   )
 
   # Run function
+  result <- suppressWarnings(trauma_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    esituation_02_col = esituation_02,
+    evitals_23_col = evitals_23,
+    evitals_26_col = evitals_26,
+    evitals_27_col = evitals_27,
+    edisposition_28_col = edisposition_28,
+    transport_disposition_col = edisposition_30,
+    confidence_interval = TRUE
+  ))
+
+  # Check structure
+  testthat::expect_s3_class(result, "data.frame")
+  testthat::expect_true(all(c("measure", "pop", "numerator", "denominator", "prop", "prop_label", "lower_ci", "upper_ci") %in% names(result)))
+
+  # should throw a warning due to small counts
+  testthat::expect_warning(trauma_01(
+    df = test_data,
+    erecord_01_col = erecord_01,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    eresponse_05_col = eresponse_05,
+    esituation_02_col = esituation_02,
+    evitals_23_col = evitals_23,
+    evitals_26_col = evitals_26,
+    evitals_27_col = evitals_27,
+    edisposition_28_col = edisposition_28,
+    transport_disposition_col = edisposition_30,
+    confidence_interval = TRUE
+  ))
+
+  # Run function
   result <- trauma_01(
     df = test_data,
     erecord_01_col = erecord_01,
