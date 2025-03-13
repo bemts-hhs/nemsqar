@@ -46,8 +46,243 @@
   </div>
 </nav><div class="container template-home">
 <div class="row">
-  <main id="main" class="col-md-9">
-Designed to automate the calculation of Emergency Medical Service (EMS) quality metrics, 'nemsqar' implements measures defined by the National EMS Quality Alliance (NEMSQA). By providing reliable, evidence-based quality assessments, the package supports EMS agencies, healthcare providers, and researchers in evaluating and improving patient outcomes. Users can find details on all approved NEMSQA measures at &lt;<a href="https://www.nemsqa.org/measures" class="external-link">https://www.nemsqa.org/measures</a>&gt;. Full technical specifications, including documentation and pseudocode used to develop 'nemsqar', are available on the NEMSQA website after creating a user profile at &lt;<a href="https://www.nemsqa.org" class="external-link">https://www.nemsqa.org</a>&gt;.
+  <main id="main" class="col-md-9"><div class="section level1">
+<div class="page-header"><h1 id="nemsqar-">nemsqar <img src="reference/figures/nemsqar_final.png" align="right" width="250" alt=""><a class="anchor" aria-label="anchor" href="#nemsqar-"></a>
+</h1></div>
+<!-- badges: start -->
+
+<p><code>nemsqar</code> is an R package designed to automate the calculation of EMS quality metrics as defined by the National EMS Quality Alliance (NEMSQA). With a focus on enhancing EMS service performance through reliable, evidence-based quality measures, <code>nemsqar</code> aims to streamline metric calculation for healthcare providers, EMS agencies, and researchers dedicated to improving patient outcomes.</p>
+<div class="section level2">
+<h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
+</h2>
+<p>You can install the development version of <code>nemsqar</code> with:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"bemts-hhs/nemsqar"</span><span class="op">)</span></span></code></pre></div>
+<p>Additionally, you may install the current version of <code>nemsqar</code> on CRAN via:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"nemsqar"</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="functionality">Functionality<a class="anchor" aria-label="anchor" href="#functionality"></a>
+</h2>
+<p><code>nemsqar</code> has functions that will always automate the calculation of a service’s performance (or even a system’s) against the currently approved list of NEMSQA Measures (see below). Given the large number of these functions, please check the full package documentation resource <a href="https://bemts-hhs.github.io/nemsqar/">here</a>.</p>
+</div>
+<div class="section level2">
+<h2 id="about-nemsqa">About NEMSQA<a class="anchor" aria-label="anchor" href="#about-nemsqa"></a>
+</h2>
+<p>The National EMS Quality Alliance (NEMSQA) is committed to developing and endorsing quality measures that improve patient and provider experiences within EMS and healthcare systems. Originating from the EMS Compass Project (2014), NEMSQA has evolved as an independent organization, tasked with completing and sustaining the development of impactful, evidence-based EMS quality measures.</p>
+<div class="section level3">
+<h3 id="history-of-ems-quality-measure-development">History of EMS Quality Measure Development<a class="anchor" aria-label="anchor" href="#history-of-ems-quality-measure-development"></a>
+</h3>
+<p>The structured development of EMS quality measures began with the EMS Compass Project, an initiative funded by the National Highway Traffic Safety Administration (NHTSA) and led by the National Association of State EMS Officials (NASEMSO) to establish relevant performance measures for EMS agencies. Since then, the field has advanced under the guidance of NEMSQA, which works to create sustainable, practical, and high-impact EMS quality measures through a collaborative, scientifically driven process.</p>
+<p>For more about NEMSQA, please visit their official website: <a href="https://www.nemsqa.org/" class="external-link">nemsqa.org</a>.</p>
+<hr>
+</div>
+</div>
+<div class="section level2">
+<h2 id="nemsqa-measure-set">NEMSQA Measure Set<a class="anchor" aria-label="anchor" href="#nemsqa-measure-set"></a>
+</h2>
+<p>The National EMS Quality Alliance (NEMSQA) Measure Set includes a comprehensive list of EMS quality measures that have been developed and approved for national use. These measures are intended to guide EMS agencies in collecting data to assess and improve patient care. Below are the measures approved by the NEMSQA Measure Development Committee and Board of Trustees as of August 2019. Access to the full technical specifications for these measures is available on the NEMSQA website after creating a user profile.</p>
+<div class="section level3">
+<h3 id="key-for-developed-in-package-column">Key for <strong><code>Developed in Package?</code></strong> Column<a class="anchor" aria-label="anchor" href="#key-for-developed-in-package-column"></a>
+</h3>
+<ul>
+<li>Developed and in package: ✔️</li>
+<li>Slated for future development: 🔧</li>
+</ul>
+<table class="table">
+<colgroup>
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+<col width="20%">
+</colgroup>
+<thead><tr class="header">
+<th><strong>Measure ID</strong></th>
+<th><strong>Description</strong></th>
+<th><strong>Type</strong></th>
+<th><strong>National Quality Strategy Domain</strong></th>
+<th><strong>Developed in Package?</strong></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Airway-01</td>
+<td>Percentage of EMS responses from a 911 request with successful advanced airway placement on first attempt without hypotension or hypoxia in peri-intubation period.</td>
+<td>Outcome</td>
+<td>Clinical Process – Effectiveness</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="even">
+<td>Airway-05</td>
+<td>Percentage of intubation procedures from a 911 request in which adequate patient oxygen levels were achieved prior to intubation.</td>
+<td>Process</td>
+<td>Patient Safety</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="odd">
+<td>Airway-18</td>
+<td>Percentage of successful advanced airway procedures from a 911 request in which waveform capnography is used for confirmation and monitoring.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td>✔️</td>
+</tr>
+<tr class="even">
+<td>Asthma-01</td>
+<td>Percentage of EMS responses from a 911 request for asthma patients receiving an aerosolized beta agonist.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td>✔️</td>
+</tr>
+<tr class="odd">
+<td>Hypoglycemia-01</td>
+<td>Percentage of EMS responses from a 911 request for symptomatic hypoglycemia patients who receive treatment to correct hypoglycemia.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td>✔️</td>
+</tr>
+<tr class="even">
+<td>Respiratory-01</td>
+<td>Percentage of EMS responses from a 911 request for respiratory distress patients with a respiratory assessment.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td>✔️</td>
+</tr>
+<tr class="odd">
+<td>Respiratory-02</td>
+<td>Percentage of EMS responses from a 911 request for patients with hypoxia receiving oxygen.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td>✔️</td>
+</tr>
+<tr class="even">
+<td>Pediatrics-03b</td>
+<td>Percentage of EMS responses from a 911 request for patients &lt;18 years receiving a weight-based medication with documented weight in kg or length-based estimate.</td>
+<td>Process</td>
+<td>Patient Safety</td>
+<td>✔️</td>
+</tr>
+<tr class="odd">
+<td>Safety-01</td>
+<td>Percentage of EMS responses from a 911 request without lights and sirens.</td>
+<td>Process</td>
+<td>Patient Safety</td>
+<td>✔️</td>
+</tr>
+<tr class="even">
+<td>Safety-02</td>
+<td>Percentage of EMS transports from a 911 request without lights and sirens during patient transport.</td>
+<td>Process</td>
+<td>Patient Safety</td>
+<td>✔️</td>
+</tr>
+<tr class="odd">
+<td>Safety-04</td>
+<td>Percentage of EMS transports from a 911 or interfacility request for patients &lt;8 years transported with a pediatric restraint device.</td>
+<td>Process</td>
+<td>Patient Safety</td>
+<td>✔️</td>
+</tr>
+<tr class="even">
+<td>Seizure-02</td>
+<td>Percentage of EMS responses from a 911 request for patients with status epilepticus who received benzodiazepine.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td>✔️</td>
+</tr>
+<tr class="odd">
+<td>Stroke-01</td>
+<td>Percentage of EMS responses from a 911 request for suspected stroke patients who had a stroke assessment.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="even">
+<td>Syncope-01</td>
+<td>Percentage of EMS responses from a 911 request for syncope patients with a 12-lead (or greater) ECG performed.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td>✔️</td>
+</tr>
+<tr class="odd">
+<td>TBI-01</td>
+<td>Percentage of EMS transports from a 911 request for suspected TBI patients with documented oxygen level, ETCO2, and systolic BP.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td>✔️</td>
+</tr>
+<tr class="even">
+<td>Trauma-01</td>
+<td>Percentage of EMS responses from a 911 request for injury patients assessed for pain.</td>
+<td>Process</td>
+<td>Patient Experience</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="odd">
+<td>Trauma-03</td>
+<td>Percentage of EMS transports from a 911 request for patients whose pain score decreased during EMS encounter.</td>
+<td>Outcome</td>
+<td>Patient Experience</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="even">
+<td>Trauma-04</td>
+<td>Percentage of EMS responses from a 911 request for patients meeting CDC trauma criteria transported to a trauma center.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td>✔️</td>
+</tr>
+<tr class="odd">
+<td>Trauma-08</td>
+<td>Percentage of EMS transports from a 911 request for trauma patients with documented GCS, systolic BP, and respiratory rate.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td>✔️</td>
+</tr>
+<tr class="even">
+<td>Trauma-14</td>
+<td>Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+</tr>
+<tr class="odd">
+<td>TTR-01</td>
+<td>Percentage of EMS responses from a 911 request for non-transported patients with documented vital signs.</td>
+<td>Process</td>
+<td>Clinical Process – Effectiveness</td>
+<td>✔️</td>
+</tr>
+</tbody>
+</table>
+<hr>
+</div>
+</div>
+</div>
+<div class="section level1">
+<h1 id="resources">Resources<a class="anchor" aria-label="anchor" href="#resources"></a>
+</h1>
+<p>Interested persons may reference the following links and resources via NEMSQA’s website. Note - some materials may require a free membership to access.</p>
+<ul>
+<li>
+<a href="https://www.nemsqa.org/assets/docs/Measure-Specification-Table-NEMSQA_2021.pdf" class="external-link">Measure Specification Table (NEMSQA)_2021</a>: A quick-reference table that includes broad-view measure specifications (i.e., numerator and denominator criteria) for each measure.</li>
+<li>
+<a href="https://www.nemsqa.org/assets/docs/Project-Summary-with-Measure-Narrative-NEMSQA.pdf" class="external-link">Project Summary with Measure Narratives</a>: An overview of the EMS Compass 2.0 project and narratives for each measure, which include systems implications.</li>
+<li>
+<a href="https://www.nemsqa.org/nemsqa-measure-faq" class="external-link">Frequently Asked Questions</a>: Answers to commonly asked questions.</li>
+<li>
+<a href="https://www.nemsqa.org/assets/docs/NEMSQA-Measure-Technical-Release-Notes_2021.pdf" class="external-link">NEMSQA Measure Technical Release Notes_2021</a>: A reference table that documents changes made to the NEMSQA measures during the 2021 annual review.</li>
+<li>
+<a href="https://www.nemsqa.org/assets/docs/Fact-Sheet-NEMSQA.pdf" class="external-link">Fact Sheet</a>: An info page explaining why agencies and systems should migrate from EMS Compass legacy/candidate measures to the National EMS Quality Alliance Measure Set.</li>
+</ul>
+</div>
+<div class="section level1">
+<h1 id="thanks">Thanks!<a class="anchor" aria-label="anchor" href="#thanks"></a>
+</h1>
+<p>A big loud thanks to Sheree Murphy from NEMSQA, Peter Geissert from Oregon EMS &amp; Trauma Systems, Jeffrey Jarvis medical director for the Metropolitan Area EMS Authority (Fort Worth, Texas), and Marshall Washick (Washington D.C. Fire) for all their input and consultation!</p>
+</div>
+
   </main><aside class="col-md-3"><div class="links">
 <h2 data-toc-skip>Links</h2>
 <ul class="list-unstyled">
@@ -82,7 +317,15 @@ Designed to automate the calculation of Emergency Medical Service (EMS) quality 
 </ul>
 </div>
 
-
+<div class="dev-status">
+<h2 data-toc-skip>Dev status</h2>
+<ul class="list-unstyled">
+<li><a href="https://lifecycle.r-lib.org/articles/stages.html#stable" class="external-link"><img src="https://img.shields.io/badge/lifecycle-stable-brightgreen.svg" alt="Lifecycle: stable"></a></li>
+<li><a href="https://github.com/bemts-hhs/nemsqar/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/bemts-hhs/nemsqar/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://CRAN.R-project.org/package=nemsqar" class="external-link"><img src="https://www.r-pkg.org/badges/version/nemsqar" alt="CRAN status"></a></li>
+<li><a href="https://app.codecov.io/gh/bemts-hhs/nemsqar?branch=main" class="external-link"><img src="https://codecov.io/gh/bemts-hhs/nemsqar/graph/badge.svg" alt="Codecov test coverage"></a></li>
+</ul>
+</div>
 
   </aside>
 </div>
