@@ -32,7 +32,7 @@
 #'   specifying whether to apply continuity correction to the Wilson score
 #'   interval when `method = "wilson"`. Default is `TRUE`.
 #' @param ... (optional) Additional arguments passed to
-#'   `nemsqa_binomial_confint` when calculating confidence intervals.
+#'   `dplyr::summarize()` when calculating estimates for groups via `.by`.
 #'
 #' @return A summarized data frame containing:
 #'   - `measure`: The measure name.
@@ -47,16 +47,17 @@
 #'
 #' @author Samuel Kordik, BBA, BS
 #'
-summarize_measure <- function(data,
-                              measure_name,
-                              population_name,
-                              numerator_col,
-                              confidence_interval = FALSE,
-                              method = c("wilson", "clopper-pearson"),
-                              conf.level = 0.95,
-                              correct = TRUE,
-                              ...) {
-
+summarize_measure <- function(
+  data,
+  measure_name,
+  population_name,
+  numerator_col,
+  confidence_interval = FALSE,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE,
+  ...
+) {
   # Ensure the confidence interval method is valid
   method <- match.arg(method)
 
@@ -64,12 +65,12 @@ summarize_measure <- function(data,
   if (!confidence_interval) {
     data |>
       dplyr::summarize(
-        measure = measure_name,  # Measure name
-        pop = population_name,  # Population category
-        numerator = sum({{ numerator_col }}, na.rm = TRUE),  # Count of qualifying events
-        denominator = dplyr::n(),  # Total count of records
-        prop = sum(numerator / denominator, na.rm = TRUE),  # Proportion of qualifying events
-        prop_label = pretty_percent(prop, n_decimal = 2),  # Formatted percentage
+        measure = measure_name, # Measure name
+        pop = population_name, # Population category
+        numerator = sum({{ numerator_col }}, na.rm = TRUE), # Count of qualifying events
+        denominator = dplyr::n(), # Total count of records
+        prop = sum(numerator / denominator, na.rm = TRUE), # Proportion of qualifying events
+        prop_label = pretty_percent(prop, n_decimal = 2), # Formatted percentage
         ...
       )
 
@@ -84,11 +85,11 @@ summarize_measure <- function(data,
         ...
       ) |>
       nemsqa_binomial_confint(
-        x = numerator,  # Number of qualifying events
-        n = denominator,  # Total number of events
-        method = method,  # Chosen confidence interval method
-        conf.level = conf.level,  # Confidence level (e.g., 0.95 for 95% CI)
-        correct = correct  # Apply continuity correction if applicable
+        x = numerator, # Number of qualifying events
+        n = denominator, # Total number of events
+        method = method, # Chosen confidence interval method
+        conf.level = conf.level, # Confidence level (e.g., 0.95 for 95% CI)
+        correct = correct # Apply continuity correction if applicable
       )
   }
 }

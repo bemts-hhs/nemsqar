@@ -48,7 +48,7 @@ specifying whether to apply continuity correction to the Wilson score
 interval when \code{method = "wilson"}. Default is \code{TRUE}.}
 
 \item{...}{(optional) Additional arguments passed to
-\code{nemsqa_binomial_confint} when calculating confidence intervals.}
+\code{dplyr::summarize()} when calculating estimates for groups via \code{.by}.}
 }
 \value{
 A summarized data frame containing:
