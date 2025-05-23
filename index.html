@@ -13,6 +13,7 @@
 <script src="deps/headroom-0.11.0/headroom.min.js"></script><script src="deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="deps/search-1.0.0/fuse.min.js"></script><script src="deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="pkgdown.js"></script><meta property="og:title" content="National Emergency Medical Service Quality Alliance Measure Calculations">
 <meta name="description" content="Designed to automate the calculation of Emergency Medical Service (EMS) quality metrics, nemsqar implements measures defined by the National EMS Quality Alliance (NEMSQA). By providing reliable, evidence-based quality assessments, the package supports EMS agencies, healthcare providers, and researchers in evaluating and improving patient outcomes. Users can find details on all approved NEMSQA measures at &lt;https://www.nemsqa.org/measures&gt;. Full technical specifications, including documentation and pseudocode used to develop nemsqar, are available on the NEMSQA website after creating a user profile at &lt;https://www.nemsqa.org&gt;.">
 <meta property="og:description" content="Designed to automate the calculation of Emergency Medical Service (EMS) quality metrics, nemsqar implements measures defined by the National EMS Quality Alliance (NEMSQA). By providing reliable, evidence-based quality assessments, the package supports EMS agencies, healthcare providers, and researchers in evaluating and improving patient outcomes. Users can find details on all approved NEMSQA measures at &lt;https://www.nemsqa.org/measures&gt;. Full technical specifications, including documentation and pseudocode used to develop nemsqar, are available on the NEMSQA website after creating a user profile at &lt;https://www.nemsqa.org&gt;.">
+<meta property="og:image" content="https://bemts-hhs.github.io/nemsqar/logo.png">
 </head>
 <body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -47,8 +48,11 @@
 </nav><div class="container template-home">
 <div class="row">
   <main id="main" class="col-md-9"><div class="section level1">
-<div class="page-header"><h1 id="nemsqar-">nemsqar <img src="reference/figures/nemsqar_final.png" align="right" width="250" alt=""><a class="anchor" aria-label="anchor" href="#nemsqar-"></a>
-</h1></div>
+<div class="page-header">
+<img src="logo.png" class="logo" alt=""><h1 id="nemsqar-">nemsqar 
+<a class="anchor" aria-label="anchor" href="#nemsqar-"></a>
+</h1>
+</div>
 <!-- badges: start -->
 
 <p><code>nemsqar</code> is an R package designed to automate the calculation of EMS quality metrics as defined by the National EMS Quality Alliance (NEMSQA). With a focus on enhancing EMS service performance through reliable, evidence-based quality measures, <code>nemsqar</code> aims to streamline metric calculation for healthcare providers, EMS agencies, and researchers dedicated to improving patient outcomes.</p>
@@ -100,163 +104,162 @@
 <col width="20%">
 </colgroup>
 <thead><tr class="header">
-<th><strong>Measure ID</strong></th>
-<th><strong>Description</strong></th>
-<th><strong>Type</strong></th>
-<th><strong>National Quality Strategy Domain</strong></th>
-<th><strong>Developed in Package?</strong></th>
+<th align="left">Measure ID</th>
+<th align="left">Description</th>
+<th align="left">Type</th>
+<th align="left">National Quality Strategy Domain</th>
+<th align="left">Developed in Package?</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td>Airway-01</td>
-<td>Percentage of EMS responses from a 911 request with successful advanced airway placement on first attempt without hypotension or hypoxia in peri-intubation period.</td>
-<td>Outcome</td>
-<td>Clinical Process – Effectiveness</td>
-<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td align="left">Airway-01</td>
+<td align="left">Percentage of EMS responses from a 911 request with successful advanced airway placement on first attempt without hypotension or hypoxia in peri-intubation period.</td>
+<td align="left">Outcome</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="even">
-<td>Airway-05</td>
-<td>Percentage of intubation procedures from a 911 request in which adequate patient oxygen levels were achieved prior to intubation.</td>
-<td>Process</td>
-<td>Patient Safety</td>
-<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td align="left">Airway-05</td>
+<td align="left">Percentage of intubation procedures from a 911 request in which adequate patient oxygen levels were achieved prior to intubation.</td>
+<td align="left">Process</td>
+<td align="left">Patient Safety</td>
+<td align="left">✔</td>
 </tr>
 <tr class="odd">
-<td>Airway-18</td>
-<td>Percentage of successful advanced airway procedures from a 911 request in which waveform capnography is used for confirmation and monitoring.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td>✔️</td>
+<td align="left">Airway-18</td>
+<td align="left">Percentage of successful advanced airway procedures from a 911 request in which waveform capnography is used for confirmation and monitoring.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="even">
-<td>Asthma-01</td>
-<td>Percentage of EMS responses from a 911 request for asthma patients receiving an aerosolized beta agonist.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td>✔️</td>
+<td align="left">Asthma-01</td>
+<td align="left">Percentage of EMS responses from a 911 request for asthma patients receiving an aerosolized beta agonist.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="odd">
-<td>Hypoglycemia-01</td>
-<td>Percentage of EMS responses from a 911 request for symptomatic hypoglycemia patients who receive treatment to correct hypoglycemia.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td>✔️</td>
+<td align="left">Hypoglycemia-01</td>
+<td align="left">Percentage of EMS responses from a 911 request for symptomatic hypoglycemia patients who receive treatment to correct hypoglycemia.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="even">
-<td>Respiratory-01</td>
-<td>Percentage of EMS responses from a 911 request for respiratory distress patients with a respiratory assessment.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td>✔️</td>
+<td align="left">Respiratory-01</td>
+<td align="left">Percentage of EMS responses from a 911 request for respiratory distress patients with a respiratory assessment.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="odd">
-<td>Respiratory-02</td>
-<td>Percentage of EMS responses from a 911 request for patients with hypoxia receiving oxygen.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td>✔️</td>
+<td align="left">Respiratory-02</td>
+<td align="left">Percentage of EMS responses from a 911 request for patients with hypoxia receiving oxygen.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="even">
-<td>Pediatrics-03b</td>
-<td>Percentage of EMS responses from a 911 request for patients &lt;18 years receiving a weight-based medication with documented weight in kg or length-based estimate.</td>
-<td>Process</td>
-<td>Patient Safety</td>
-<td>✔️</td>
+<td align="left">Pediatrics-03b</td>
+<td align="left">Percentage of EMS responses from a 911 request for patients &lt;18 years receiving a weight-based medication with documented weight in kg or length-based estimate.</td>
+<td align="left">Process</td>
+<td align="left">Patient Safety</td>
+<td align="left">✔</td>
 </tr>
 <tr class="odd">
-<td>Safety-01</td>
-<td>Percentage of EMS responses from a 911 request without lights and sirens.</td>
-<td>Process</td>
-<td>Patient Safety</td>
-<td>✔️</td>
+<td align="left">Safety-01</td>
+<td align="left">Percentage of EMS responses from a 911 request without lights and sirens.</td>
+<td align="left">Process</td>
+<td align="left">Patient Safety</td>
+<td align="left">✔</td>
 </tr>
 <tr class="even">
-<td>Safety-02</td>
-<td>Percentage of EMS transports from a 911 request without lights and sirens during patient transport.</td>
-<td>Process</td>
-<td>Patient Safety</td>
-<td>✔️</td>
+<td align="left">Safety-02</td>
+<td align="left">Percentage of EMS transports from a 911 request without lights and sirens during patient transport.</td>
+<td align="left">Process</td>
+<td align="left">Patient Safety</td>
+<td align="left">✔</td>
 </tr>
 <tr class="odd">
-<td>Safety-04</td>
-<td>Percentage of EMS transports from a 911 or interfacility request for patients &lt;8 years transported with a pediatric restraint device.</td>
-<td>Process</td>
-<td>Patient Safety</td>
-<td>✔️</td>
+<td align="left">Safety-04</td>
+<td align="left">Percentage of EMS transports from a 911 or interfacility request for patients &lt;8 years transported with a pediatric restraint device.</td>
+<td align="left">Process</td>
+<td align="left">Patient Safety</td>
+<td align="left">✔</td>
 </tr>
 <tr class="even">
-<td>Seizure-02</td>
-<td>Percentage of EMS responses from a 911 request for patients with status epilepticus who received benzodiazepine.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td>✔️</td>
+<td align="left">Seizure-02</td>
+<td align="left">Percentage of EMS responses from a 911 request for patients with status epilepticus who received benzodiazepine.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="odd">
-<td>Stroke-01</td>
-<td>Percentage of EMS responses from a 911 request for suspected stroke patients who had a stroke assessment.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td align="left">Stroke-01</td>
+<td align="left">Percentage of EMS responses from a 911 request for suspected stroke patients who had a stroke assessment.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="even">
-<td>Syncope-01</td>
-<td>Percentage of EMS responses from a 911 request for syncope patients with a 12-lead (or greater) ECG performed.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td>✔️</td>
+<td align="left">Syncope-01</td>
+<td align="left">Percentage of EMS responses from a 911 request for syncope patients with a 12-lead (or greater) ECG performed.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="odd">
-<td>TBI-01</td>
-<td>Percentage of EMS transports from a 911 request for suspected TBI patients with documented oxygen level, ETCO2, and systolic BP.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td>✔️</td>
+<td align="left">TBI-01</td>
+<td align="left">Percentage of EMS transports from a 911 request for suspected TBI patients with documented oxygen level, ETCO2, and systolic BP.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="even">
-<td>Trauma-01</td>
-<td>Percentage of EMS responses from a 911 request for injury patients assessed for pain.</td>
-<td>Process</td>
-<td>Patient Experience</td>
-<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td align="left">Trauma-01</td>
+<td align="left">Percentage of EMS responses from a 911 request for injury patients assessed for pain.</td>
+<td align="left">Process</td>
+<td align="left">Patient Experience</td>
+<td align="left">✔</td>
 </tr>
 <tr class="odd">
-<td>Trauma-03</td>
-<td>Percentage of EMS transports from a 911 request for patients whose pain score decreased during EMS encounter.</td>
-<td>Outcome</td>
-<td>Patient Experience</td>
-<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td align="left">Trauma-03</td>
+<td align="left">Percentage of EMS transports from a 911 request for patients whose pain score decreased during EMS encounter.</td>
+<td align="left">Outcome</td>
+<td align="left">Patient Experience</td>
+<td align="left">✔</td>
 </tr>
 <tr class="even">
-<td>Trauma-04</td>
-<td>Percentage of EMS responses from a 911 request for patients meeting CDC trauma criteria transported to a trauma center.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td>✔️</td>
+<td align="left">Trauma-04</td>
+<td align="left">Percentage of EMS responses from a 911 request for patients meeting CDC trauma criteria transported to a trauma center.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="odd">
-<td>Trauma-08</td>
-<td>Percentage of EMS transports from a 911 request for trauma patients with documented GCS, systolic BP, and respiratory rate.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td>✔️</td>
+<td align="left">Trauma-08</td>
+<td align="left">Percentage of EMS transports from a 911 request for trauma patients with documented GCS, systolic BP, and respiratory rate.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="even">
-<td>Trauma-14</td>
-<td>Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td><span class="emoji" data-emoji="heavy_check_mark">✔️</span></td>
+<td align="left">Trauma-14</td>
+<td align="left">Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 <tr class="odd">
-<td>TTR-01</td>
-<td>Percentage of EMS responses from a 911 request for non-transported patients with documented vital signs.</td>
-<td>Process</td>
-<td>Clinical Process – Effectiveness</td>
-<td>✔️</td>
+<td align="left">TTR-01</td>
+<td align="left">Percentage of EMS responses from a 911 request for non-transported patients with documented vital signs.</td>
+<td align="left">Process</td>
+<td align="left">Clinical Process – Effectiveness</td>
+<td align="left">✔</td>
 </tr>
 </tbody>
 </table>
-<hr>
 </div>
 </div>
 </div>
@@ -300,6 +303,14 @@
 </ul>
 </div>
 
+<div class="community">
+<h2 data-toc-skip>Community</h2>
+<ul class="list-unstyled">
+<li><a href="CONTRIBUTING.html">Contributing guide</a></li>
+<li><a href="CODE_OF_CONDUCT.html">Code of conduct</a></li>
+<li><a href="SUPPORT.html">Getting help</a></li>
+</ul>
+</div>
 
 <div class="citation">
 <h2 data-toc-skip>Citation</h2>
@@ -311,8 +322,8 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Nicolas Foss <br><small class="roles"> Author, maintainer </small>  </li>
-<li>Samuel Kordik <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-4230-1154" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>Nicolas Foss <br><small class="roles"> Author, maintainer </small>   </li>
+<li>Samuel Kordik <br><small class="roles"> Author </small> <a href="https://orcid.org/0000-0003-4230-1154" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 <li><a href="authors.html">More about authors...</a></li>
 </ul>
 </div>
@@ -336,7 +347,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.2.</p>
 </div>
 
     </footer>
