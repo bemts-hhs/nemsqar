@@ -6,6 +6,8 @@
 \alias{nemsqar-package}
 \title{nemsqar: National Emergency Medical Service Quality Alliance Measure Calculations}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Designed to automate the calculation of Emergency Medical Service (EMS) quality metrics, 'nemsqar' implements measures defined by the National EMS Quality Alliance (NEMSQA). By providing reliable, evidence-based quality assessments, the package supports EMS agencies, healthcare providers, and researchers in evaluating and improving patient outcomes. Users can find details on all approved NEMSQA measures at \url{https://www.nemsqa.org/measures}. Full technical specifications, including documentation and pseudocode used to develop 'nemsqar', are available on the NEMSQA website after creating a user profile at \url{https://www.nemsqa.org}.
 }
 \seealso{
