@@ -605,10 +605,10 @@ trauma_14_population <- function(
       dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
       dplyr::distinct() |>
       dplyr::filter(
-        grepl(
-          pattern = transport_responses,
-          x = {{ transport_disposition_col }},
-          ignore.case = TRUE
+        dplyr::if_any(
+          {{ transport_disposition_col }},
+
+          ~ grepl(pattern = transport_responses, x = ., ignore.case = TRUE)
         )
       ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
@@ -1674,10 +1674,10 @@ trauma_14_population <- function(
       dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
       dplyr::distinct() |>
       dplyr::filter(
-        grepl(
-          pattern = transport_responses,
-          x = {{ transport_disposition_col }},
-          ignore.case = TRUE
+        dplyr::if_any(
+          {{ transport_disposition_col }},
+
+          ~ grepl(pattern = transport_responses, x = ., ignore.case = TRUE)
         )
       ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
