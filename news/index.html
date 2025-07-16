@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">nemsqar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -31,6 +31,12 @@
       <small>Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.1.1" id="nemsqar-111">nemsqar 1.1.1<a class="anchor" aria-label="anchor" href="#nemsqar-111"></a></h2>
+<ul><li><p>In <code><a href="../reference/airway_01_population.html">airway_01_population()</a></code>, the filter_process object had one text descriptor <code>"All initial population successful intubation with no hypoxia or hypoxia/hypotension"</code> which was corrected to be <code>"All initial population successful intubation with no hypoxia/hypotension"</code>.</p></li>
+<li><p>Also, in <code><a href="../reference/trauma_14_population.html">trauma_14_population()</a></code>, the <code>filter_process</code> object has one text descriptor <code>"Tournique procedure"</code> which was corrected to be <code>"Tourniquet procedure"</code>.</p></li>
+<li><p>Additionally, trauma_14_population() should <em>just work</em> after passing an arbitrary number of (applicable) columns to the transport_disposition argument. In {nemsqar} 1.1.0, only one column will work as the <code><a href="https://rdrr.io/r/base/grep.html" class="external-link">grepl()</a></code> call is not wrapped in <code>dpyr::if_any()</code>. This was fixed so that users can reference other columns that contain transport disposition data, such as eDisposition.12 from NEMSIS 3.4 (or earlier versions as applicable). This helps with back compatibility when using this measure to earlier versions of NEMSIS, or later versions.</p></li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.1.0" id="nemsqar-110">nemsqar 1.1.0<a class="anchor" aria-label="anchor" href="#nemsqar-110"></a></h2><p class="text-muted">CRAN release: 2025-03-13</p>
 <div class="section level3">
