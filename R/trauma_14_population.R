@@ -187,46 +187,45 @@
 #'
 #' @export
 #'
-trauma_14_population <- function(df = NULL,
-                      patient_scene_table = NULL,
-                      situation_table = NULL,
-                      response_table = NULL,
-                      disposition_table = NULL,
-                      vitals_table = NULL,
-                      exam_table = NULL,
-                      procedures_table = NULL,
-                      injury_table = NULL,
-                      erecord_01_col,
-                      incident_date_col = NULL,
-                      patient_DOB_col = NULL,
-                      epatient_15_col,
-                      epatient_16_col,
-                      esituation_02_col,
-                      eresponse_05_col,
-                      eresponse_10_col,
-                      transport_disposition_col,
-                      edisposition_24_col,
-                      evitals_06_col,
-                      evitals_10_col,
-                      evitals_12_col,
-                      evitals_14_col,
-                      evitals_15_col,
-                      evitals_21_col,
-                      eexam_16_col,
-                      eexam_20_col,
-                      eexam_23_col,
-                      eexam_25_col,
-                      eprocedures_03_col,
-                      einjury_01_col,
-                      einjury_03_col,
-                      einjury_04_col,
-                      einjury_09_col
-                      ) {
-
+trauma_14_population <- function(
+  df = NULL,
+  patient_scene_table = NULL,
+  situation_table = NULL,
+  response_table = NULL,
+  disposition_table = NULL,
+  vitals_table = NULL,
+  exam_table = NULL,
+  procedures_table = NULL,
+  injury_table = NULL,
+  erecord_01_col,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col,
+  epatient_16_col,
+  esituation_02_col,
+  eresponse_05_col,
+  eresponse_10_col,
+  transport_disposition_col,
+  edisposition_24_col,
+  evitals_06_col,
+  evitals_10_col,
+  evitals_12_col,
+  evitals_14_col,
+  evitals_15_col,
+  evitals_21_col,
+  eexam_16_col,
+  eexam_20_col,
+  eexam_23_col,
+  eexam_25_col,
+  eprocedures_03_col,
+  einjury_01_col,
+  einjury_03_col,
+  einjury_04_col,
+  einjury_09_col
+) {
   # ensure that not all table arguments AND the df argument are fulfilled
   # user only passes df or all table arguments
-  if(
-
+  if (
     all(
       !is.null(patient_scene_table),
       !is.null(response_table),
@@ -236,17 +235,16 @@ trauma_14_population <- function(df = NULL,
       !is.null(exam_table),
       !is.null(injury_table),
       !is.null(disposition_table)
-    ) && !is.null(df)
-
+    ) &&
+      !is.null(df)
   ) {
-
-    cli::cli_abort("{.fn trauma_14_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments.")
-
+    cli::cli_abort(
+      "{.fn trauma_14_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
+    )
   }
 
   # ensure that df or all table arguments are fulfilled
-  if(
-
+  if (
     all(
       is.null(patient_scene_table),
       is.null(response_table),
@@ -256,19 +254,17 @@ trauma_14_population <- function(df = NULL,
       is.null(exam_table),
       is.null(injury_table),
       is.null(disposition_table)
-    ) && is.null(df)
-
+    ) &&
+      is.null(df)
   ) {
-
-    cli::cli_abort("{.fn trauma_14_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments.")
-
+    cli::cli_abort(
+      "{.fn trauma_14_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
+    )
   }
 
   # ensure all *_col arguments are fulfilled
-  if(
-
+  if (
     any(
-
       missing(erecord_01_col),
       missing(incident_date_col),
       missing(patient_DOB_col),
@@ -294,25 +290,24 @@ trauma_14_population <- function(df = NULL,
       missing(einjury_03_col),
       missing(einjury_04_col),
       missing(einjury_09_col)
-
     )
-
   ) {
-
-    cli::cli_abort("One or more of the *_col arguments is missing. Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn trauma_14_population}.")
-
+    cli::cli_abort(
+      "One or more of the *_col arguments is missing. Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn trauma_14_population}."
+    )
   }
-
 
   # options for the progress bar
   # a green dot for progress
   # a white line for note done yet
   options(cli.progress_bar_style = "dot")
 
-  options(cli.progress_bar_style = list(
-    complete = cli::col_green("\u25CF"),  # Black Circle
-    incomplete = cli::col_br_white("\u2500")  # Light Horizontal Line
-  ))
+  options(
+    cli.progress_bar_style = list(
+      complete = cli::col_green("\u25CF"), # Black Circle
+      incomplete = cli::col_br_white("\u2500") # Light Horizontal Line
+    )
+  )
 
   # initiate the progress bar process
   progress_bar_population <- cli::cli_progress_bar(
@@ -322,7 +317,6 @@ trauma_14_population <- function(df = NULL,
     clear = F,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
-
 
   # Create objects that are filter helpers throughout the function
 
@@ -349,7 +343,6 @@ trauma_14_population <- function(df = NULL,
 
   # airway management values
   airway_management_values <- "243142003|Dual pressure spontaneous ventilation support \\(regime/therapy\\)|47545007|Continuous positive airway pressure ventilation treatment \\(regime/therapy\\)|429705000|Insertion of esophageal tracheal combitube \\(procedure\\)|427753009|Insertion of esophageal tracheal double lumen supraglottic airway \\(procedure\\)|424979004|Laryngeal mask airway insertion \\(procedure\\)|23674004|Orotracheal intubation \\(procedure\\)|450601000124103|Orotracheal intubation using bougie device \\(procedure\\)|241689008|Rapid sequence induction \\(procedure\\)|450611000124100|Insertion of single lumen supraglottic airway device \\(procedure\\)"
-
 
   # trauma triage criteria values for 65+ age group
   trauma_triage_1_2_values_65 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity \\(e.g., flail chest\\)|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|2903017|Respiratory Rate <10 or >29 breaths per minute \\(<20 in infants aged <1\\) or need for ventilatory support|3903021|Two or more proximal long-bone fractures"
@@ -398,7 +391,7 @@ trauma_14_population <- function(df = NULL,
   month_values <- "months|2516007"
 
   # utilize applicable tables to analyze the data for the measure
-  if(
+  if (
     all(
       !is.null(patient_scene_table),
       !is.null(response_table),
@@ -408,34 +401,34 @@ trauma_14_population <- function(df = NULL,
       !is.null(exam_table),
       !is.null(injury_table),
       !is.null(disposition_table)
-    ) && is.null(df)
-
+    ) &&
+      is.null(df)
   ) {
-
     # Ensure df is a data frame or tibble
     if (
-
       any(
-        !(is.data.frame(patient_scene_table) && tibble::is_tibble(patient_scene_table)) ||
+        !(is.data.frame(patient_scene_table) &&
+          tibble::is_tibble(patient_scene_table)) ||
 
-        !(is.data.frame(response_table) && tibble::is_tibble(response_table)) ||
+          !(is.data.frame(response_table) &&
+            tibble::is_tibble(response_table)) ||
 
-        !(is.data.frame(situation_table) && tibble::is_tibble(situation_table)) ||
+          !(is.data.frame(situation_table) &&
+            tibble::is_tibble(situation_table)) ||
 
-        !(is.data.frame(vitals_table) && tibble::is_tibble(vitals_table)) ||
+          !(is.data.frame(vitals_table) && tibble::is_tibble(vitals_table)) ||
 
-        !(is.data.frame(procedures_table) && tibble::is_tibble(procedures_table)) ||
+          !(is.data.frame(procedures_table) &&
+            tibble::is_tibble(procedures_table)) ||
 
-        !(is.data.frame(exam_table) && tibble::is_tibble(exam_table)) ||
+          !(is.data.frame(exam_table) && tibble::is_tibble(exam_table)) ||
 
-        !(is.data.frame(injury_table) && tibble::is_tibble(injury_table)) ||
+          !(is.data.frame(injury_table) && tibble::is_tibble(injury_table)) ||
 
-        !(is.data.frame(disposition_table) && tibble::is_tibble(disposition_table))
-
+          !(is.data.frame(disposition_table) &&
+            tibble::is_tibble(disposition_table))
       )
-
     ) {
-
       cli::cli_abort(
         c(
           "An object of class {.cls data.frame} or {.cls tibble} is required for each of the *_table arguments."
@@ -458,11 +451,12 @@ trauma_14_population <- function(df = NULL,
       incident_date_name <- rlang::as_name(incident_date)
       patient_dob_name <- rlang::as_name(patient_dob)
 
-      if ((!lubridate::is.Date(patient_scene_table[[incident_date_name]]) &
-           !lubridate::is.POSIXct(patient_scene_table[[incident_date_name]])) ||
+      if (
+        (!lubridate::is.Date(patient_scene_table[[incident_date_name]]) &
+          !lubridate::is.POSIXct(patient_scene_table[[incident_date_name]])) ||
           (!lubridate::is.Date(patient_scene_table[[patient_dob_name]]) &
-           !lubridate::is.POSIXct(patient_scene_table[[patient_dob_name]]))) {
-
+            !lubridate::is.POSIXct(patient_scene_table[[patient_dob_name]]))
+      ) {
         cli::cli_abort(
           "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class. Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or a similar class."
         )
@@ -471,781 +465,973 @@ trauma_14_population <- function(df = NULL,
 
     progress_bar_population
 
-  ###_____________________________________________________________________________
-  # fact table
-  # the user should ensure that variables beyond those supplied for calculations
-  # are distinct (i.e. one value or cell per patient)
-  ###_____________________________________________________________________________
+    ###_____________________________________________________________________________
+    # fact table
+    # the user should ensure that variables beyond those supplied for calculations
+    # are distinct (i.e. one value or cell per patient)
+    ###_____________________________________________________________________________
 
-  cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
-
-  if (
-    all(
-      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-    )
-  ) {
-
-  final_data <- patient_scene_table |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
-    dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
-      time1 = {{ incident_date_col }},
-      time2 = {{ patient_DOB_col }},
-      units = "days"
-    )) / 365,
-
-    # system age check
-    system_age_65 = {{ epatient_15_col }} >= 65 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-    system_age_10_64 = ({{ epatient_15_col }} < 65 & {{ epatient_15_col }} >= 10) & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-    system_age_10_1 = {{ epatient_15_col }} < 10 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-    system_age_10_2 = {{ epatient_15_col }} < 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-    system_age_10 = system_age_10_1 | system_age_10_2,
-
-    # calculated age check
-    calc_age_65 = patient_age_in_years_col >= 65,
-    calc_age_10_64 = patient_age_in_years_col < 65 & patient_age_in_years_col >= 10,
-    calc_age_10 = patient_age_in_years_col < 10
-
+    cli::cli_progress_update(
+      set = 1,
+      id = progress_bar_population,
+      force = TRUE
     )
 
-  } else if(
-
-    all(
-      is.null(incident_date_col),
-      is.null(patient_DOB_col)
-    ))
-
-  {
-
-    final_data <- patient_scene_table |>
-      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
-      dplyr::mutate(
-
-      # system age check
-      system_age_65 = {{ epatient_15_col }} >= 65 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-      system_age_10_64 = ({{ epatient_15_col }} < 65 & {{ epatient_15_col }} >= 10) & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-      system_age_10_1 = {{ epatient_15_col }} < 10 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-      system_age_10_2 = {{ epatient_15_col }} < 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-      system_age_10 = system_age_10_1 | system_age_10_2
-
+    if (
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
-
-  }
-
-  ###_____________________________________________________________________________
-  ### dimension tables
-  ### each dimension table is turned into a vector of unique IDs
-  ### that are then utilized on the fact table to create distinct variables
-  ### that tell if the patient had the characteristic or not for final
-  ### calculations of the numerator and filtering
-  ###_____________________________________________________________________________
-
-  cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
-
-  # possible injury
-  possible_injury_data <- situation_table |>
-    dplyr::select({{ erecord_01_col }}, {{ esituation_02_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = possible_injury, x = {{ esituation_02_col }}, ignore.case = TRUE)
-
-      ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
-
-  # transports
-  transport_data <- disposition_table |>
-    dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = transport_responses, x = {{ transport_disposition_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 4, id = progress_bar_population, force = TRUE)
-
-  # 911 calls
-  call_911_data <- response_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = TRUE)) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
-
-  # GCS
-  GCS_data <- vitals_table |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_21_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(grepl(pattern = GCS_motor_values, x = {{ evitals_21_col }}, ignore.case = TRUE)) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
-
-  # lung assessment
-  lung_assessment_data <- exam_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eexam_23_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = lung_assessment_values, x = {{ eexam_23_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
-
-  # chest assessment
-  chest_data <- exam_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eexam_25_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = chest_assessment_values, x = {{ eexam_25_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
-
-  # respiratory effort
-  respiratory_effort_data <- vitals_table |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_15_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = respiratory_effort_values, x = {{ evitals_15_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
-
-  # airway management
-  airway_management_data <- procedures_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = airway_management_values, x = {{ eprocedures_03_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
-
-  # pulse oximetry
-  pulse_oximetry_data <- vitals_table |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      {{ evitals_12_col }} < 90
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 11, id = progress_bar_population, force = TRUE)
-
-  # SBP
-  SBP_data <- vitals_table |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      {{ evitals_06_col }} < 110
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 12, id = progress_bar_population, force = TRUE)
-
-  # heart rate and SBP
-  HR_SBP_data_10_65_plus <- vitals_table |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_10_col }}, {{ evitals_06_col}}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      {{ evitals_10_col }} > {{ evitals_06_col}}
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 13, id = progress_bar_population, force = TRUE)
-
-  # trauma triage criteria steps 1 and 2 age 65+
-  trauma_triage_1_2_data_65 <- injury_table |>
-    dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = trauma_triage_1_2_values_65, x = {{ einjury_03_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 14, id = progress_bar_population, force = TRUE)
-
-  # trauma triage criteria steps 1 and 2 age 10 - 65
-  trauma_triage_1_2_data_10_64 <- injury_table |>
-    dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = trauma_triage_1_2_values_10_64, x = {{ einjury_03_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 15, id = progress_bar_population, force = TRUE)
-
-  # trauma triage criteria steps 1 and 2 age < 10
-  trauma_triage_1_2_data_10 <- injury_table |>
-    dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = trauma_triage_1_2_values_10, x = {{ einjury_03_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 16, id = progress_bar_population, force = TRUE)
-
-  # extremities assessment
-  extremities_assessment_data <- exam_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eexam_16_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = extremities_assessment_values, x = {{ eexam_16_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 17, id = progress_bar_population, force = TRUE)
-
-  # neurological assessment
-
-  neurological_assessment_data <- exam_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eexam_20_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = neurological_assessment_values, x = {{ eexam_20_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 18, id = progress_bar_population, force = TRUE)
-
-  # tourniquet
-
-  tourniquet_data <- procedures_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = tourniquet_values, x = {{ eprocedures_03_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 19, id = progress_bar_population, force = TRUE)
-
-  # trauma triage criteria steps 3 and 4
-
-  trauma_triage_3_4_data <- injury_table |>
-    dplyr::select({{ erecord_01_col }}, {{ einjury_04_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = trauma_triage_3_4_values, x = {{ einjury_04_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 20, id = progress_bar_population, force = TRUE)
-
-  # fall height
-
-  fall_height_data <- injury_table |>
-    dplyr::select({{ erecord_01_col }}, {{ einjury_09_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      {{ einjury_09_col }} > 10
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 21, id = progress_bar_population, force = TRUE)
-
-  # scene delay
-
-  scene_delay_data <- response_table |>
-    dplyr::select({{ erecord_01_col }}, {{ eresponse_10_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = scene_delay_values, x = {{ eresponse_10_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 22, id = progress_bar_population, force = TRUE)
-
-  # cause of injury
-
-  cause_of_injury_data <- injury_table |>
-    dplyr::select({{ erecord_01_col }}, {{ einjury_01_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = cause_of_injury_values, x = {{ einjury_01_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 23, id = progress_bar_population, force = TRUE)
-
-  # respiratory rate for < 10 yrs population
-
-  respiratory_rate_data <- vitals_table |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_14_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      {{ evitals_14_col }} < 10 | {{ evitals_14_col }} > 29
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 24, id = progress_bar_population, force = TRUE)
-
-  # SBP check variable for ages < 10 years
-  # if using calculated and system ages
-  if (
-    all(
-      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    ) {
+      final_data <- patient_scene_table |>
+        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
+        dplyr::mutate(
+          patient_age_in_years_col = as.numeric(difftime(
+            time1 = {{ incident_date_col }},
+            time2 = {{ patient_DOB_col }},
+            units = "days"
+          )) /
+            365,
+
+          # system age check
+          system_age_65 = {{ epatient_15_col }} >= 65 &
+            grepl(
+              pattern = year_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10_64 = ({{ epatient_15_col }} < 65 &
+            {{ epatient_15_col }} >= 10) &
+            grepl(
+              pattern = year_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10_1 = {{ epatient_15_col }} < 10 &
+            grepl(
+              pattern = year_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10_2 = {{ epatient_15_col }} < 120 &
+            grepl(
+              pattern = minor_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10 = system_age_10_1 | system_age_10_2,
+
+          # calculated age check
+          calc_age_65 = patient_age_in_years_col >= 65,
+          calc_age_10_64 = patient_age_in_years_col < 65 &
+            patient_age_in_years_col >= 10,
+          calc_age_10 = patient_age_in_years_col < 10
+        )
+    } else if (
+      all(
+        is.null(incident_date_col),
+        is.null(patient_DOB_col)
+      )
+    ) {
+      final_data <- patient_scene_table |>
+        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
+        dplyr::mutate(
+          # system age check
+          system_age_65 = {{ epatient_15_col }} >= 65 &
+            grepl(
+              pattern = year_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10_64 = ({{ epatient_15_col }} < 65 &
+            {{ epatient_15_col }} >= 10) &
+            grepl(
+              pattern = year_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10_1 = {{ epatient_15_col }} < 10 &
+            grepl(
+              pattern = year_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10_2 = {{ epatient_15_col }} < 120 &
+            grepl(
+              pattern = minor_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10 = system_age_10_1 | system_age_10_2
+        )
+    }
+
+    ###_____________________________________________________________________________
+    ### dimension tables
+    ### each dimension table is turned into a vector of unique IDs
+    ### that are then utilized on the fact table to create distinct variables
+    ### that tell if the patient had the characteristic or not for final
+    ### calculations of the numerator and filtering
+    ###_____________________________________________________________________________
+
+    cli::cli_progress_update(
+      set = 2,
+      id = progress_bar_population,
+      force = TRUE
     )
-  ) {
 
+    # possible injury
+    possible_injury_data <- situation_table |>
+      dplyr::select({{ erecord_01_col }}, {{ esituation_02_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = possible_injury,
+          x = {{ esituation_02_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
 
-  SBP_age_10_data <- final_data |>
-    dplyr::select({{ erecord_01_col }}, system_age_10, calc_age_10, {{ epatient_15_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(system_age_10 | calc_age_10) |>
-    dplyr::left_join(vitals_table |> dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |> dplyr::distinct(),
+    cli::cli_progress_update(
+      set = 3,
+      id = progress_bar_population,
+      force = TRUE
+    )
 
-                     by = rlang::as_name(rlang::enquo(erecord_01_col))
+    # transports
+    transport_data <- disposition_table |>
+      dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        dplyr::if_any(
+          {{ transport_disposition_col }},
 
-                     ) |>
-    dplyr::mutate(SBP_10 =
+          ~ grepl(pattern = transport_responses, x = ., ignore.case = TRUE)
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
 
-                    ( {{ evitals_06_col }} + ({{ epatient_15_col }} * 2) ) >= 70
+    cli::cli_progress_update(
+      set = 4,
+      id = progress_bar_population,
+      force = TRUE
+    )
 
-                  ) |>
-    dplyr::filter(SBP_10) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
+    # 911 calls
+    call_911_data <- response_table |>
+      dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(grepl(
+        pattern = codes_911,
+        x = {{ eresponse_05_col }},
+        ignore.case = TRUE
+      )) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
 
+    cli::cli_progress_update(
+      set = 5,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # GCS
+    GCS_data <- vitals_table |>
+      dplyr::select({{ erecord_01_col }}, {{ evitals_21_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(grepl(
+        pattern = GCS_motor_values,
+        x = {{ evitals_21_col }},
+        ignore.case = TRUE
+      )) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 6,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # lung assessment
+    lung_assessment_data <- exam_table |>
+      dplyr::select({{ erecord_01_col }}, {{ eexam_23_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = lung_assessment_values,
+          x = {{ eexam_23_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 7,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # chest assessment
+    chest_data <- exam_table |>
+      dplyr::select({{ erecord_01_col }}, {{ eexam_25_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = chest_assessment_values,
+          x = {{ eexam_25_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 8,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # respiratory effort
+    respiratory_effort_data <- vitals_table |>
+      dplyr::select({{ erecord_01_col }}, {{ evitals_15_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = respiratory_effort_values,
+          x = {{ evitals_15_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 9,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # airway management
+    airway_management_data <- procedures_table |>
+      dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = airway_management_values,
+          x = {{ eprocedures_03_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 10,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # pulse oximetry
+    pulse_oximetry_data <- vitals_table |>
+      dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        {{ evitals_12_col }} < 90
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 11,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # SBP
+    SBP_data <- vitals_table |>
+      dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        {{ evitals_06_col }} < 110
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 12,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # heart rate and SBP
+    HR_SBP_data_10_65_plus <- vitals_table |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ evitals_10_col }},
+        {{ evitals_06_col }}
+      ) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        {{ evitals_10_col }} > {{ evitals_06_col }}
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 13,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # trauma triage criteria steps 1 and 2 age 65+
+    trauma_triage_1_2_data_65 <- injury_table |>
+      dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = trauma_triage_1_2_values_65,
+          x = {{ einjury_03_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 14,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # trauma triage criteria steps 1 and 2 age 10 - 65
+    trauma_triage_1_2_data_10_64 <- injury_table |>
+      dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = trauma_triage_1_2_values_10_64,
+          x = {{ einjury_03_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 15,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # trauma triage criteria steps 1 and 2 age < 10
+    trauma_triage_1_2_data_10 <- injury_table |>
+      dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = trauma_triage_1_2_values_10,
+          x = {{ einjury_03_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 16,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # extremities assessment
+    extremities_assessment_data <- exam_table |>
+      dplyr::select({{ erecord_01_col }}, {{ eexam_16_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = extremities_assessment_values,
+          x = {{ eexam_16_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 17,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # neurological assessment
+
+    neurological_assessment_data <- exam_table |>
+      dplyr::select({{ erecord_01_col }}, {{ eexam_20_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = neurological_assessment_values,
+          x = {{ eexam_20_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 18,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # tourniquet
+
+    tourniquet_data <- procedures_table |>
+      dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = tourniquet_values,
+          x = {{ eprocedures_03_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 19,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # trauma triage criteria steps 3 and 4
+
+    trauma_triage_3_4_data <- injury_table |>
+      dplyr::select({{ erecord_01_col }}, {{ einjury_04_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = trauma_triage_3_4_values,
+          x = {{ einjury_04_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 20,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # fall height
+
+    fall_height_data <- injury_table |>
+      dplyr::select({{ erecord_01_col }}, {{ einjury_09_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        {{ einjury_09_col }} > 10
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 21,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # scene delay
+
+    scene_delay_data <- response_table |>
+      dplyr::select({{ erecord_01_col }}, {{ eresponse_10_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = scene_delay_values,
+          x = {{ eresponse_10_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 22,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # cause of injury
+
+    cause_of_injury_data <- injury_table |>
+      dplyr::select({{ erecord_01_col }}, {{ einjury_01_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = cause_of_injury_values,
+          x = {{ einjury_01_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 23,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # respiratory rate for < 10 yrs population
+
+    respiratory_rate_data <- vitals_table |>
+      dplyr::select({{ erecord_01_col }}, {{ evitals_14_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        {{ evitals_14_col }} < 10 | {{ evitals_14_col }} > 29
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 24,
+      id = progress_bar_population,
+      force = TRUE
+    )
 
     # SBP check variable for ages < 10 years
-    # if using system ages only
+    # if using calculated and system ages
+    if (
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) {
+      SBP_age_10_data <- final_data |>
+        dplyr::select(
+          {{ erecord_01_col }},
+          system_age_10,
+          calc_age_10,
+          {{ epatient_15_col }}
+        ) |>
+        dplyr::distinct() |>
+        dplyr::filter(system_age_10 | calc_age_10) |>
+        dplyr::left_join(
+          vitals_table |>
+            dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |>
+            dplyr::distinct(),
 
-  } else if(
+          by = rlang::as_name(rlang::enquo(erecord_01_col))
+        ) |>
+        dplyr::mutate(
+          SBP_10 = ({{ evitals_06_col }} + ({{ epatient_15_col }} * 2)) >= 70
+        ) |>
+        dplyr::filter(SBP_10) |>
+        dplyr::distinct({{ erecord_01_col }}) |>
+        dplyr::pull({{ erecord_01_col }})
 
-    all(
-      is.null(incident_date_col),
-      is.null(patient_DOB_col)
-    ))
+      # SBP check variable for ages < 10 years
+      # if using system ages only
+    } else if (
+      all(
+        is.null(incident_date_col),
+        is.null(patient_DOB_col)
+      )
+    ) {
+      SBP_age_10_data <- final_data |>
+        dplyr::select(
+          {{ erecord_01_col }},
+          system_age_10,
+          {{ epatient_15_col }}
+        ) |>
+        dplyr::distinct() |>
+        dplyr::filter(system_age_10) |>
+        dplyr::left_join(
+          vitals_table |>
+            dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |>
+            dplyr::distinct(),
 
-  {
+          by = rlang::as_name(rlang::enquo(erecord_01_col))
+        ) |>
+        dplyr::mutate(
+          SBP_10 = ({{ evitals_06_col }} + ({{ epatient_15_col }} * 2)) >= 70
+        ) |>
+        dplyr::filter(SBP_10) |>
+        dplyr::distinct({{ erecord_01_col }}) |>
+        dplyr::pull({{ erecord_01_col }})
+    }
 
-    SBP_age_10_data <- final_data |>
-    dplyr::select({{ erecord_01_col }}, system_age_10, {{ epatient_15_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(system_age_10) |>
-    dplyr::left_join(vitals_table |> dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |> dplyr::distinct(),
+    cli::cli_progress_update(
+      set = 25,
+      id = progress_bar_population,
+      force = TRUE
+    )
 
-                     by = rlang::as_name(rlang::enquo(erecord_01_col))
-
-                     ) |>
-    dplyr::mutate(SBP_10 =
-
-                    ( {{ evitals_06_col }} + ({{ epatient_15_col }} * 2) ) >= 70
-
+    # trauma alert >= 65 years
+    trauma_alert_65 <- disposition_table |>
+      dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = trauma_alert_values_65,
+          x = {{ edisposition_24_col }},
+          ignore.case = TRUE
+        )
       ) |>
-    dplyr::filter(SBP_10) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
 
-  }
-
-  cli::cli_progress_update(set = 25, id = progress_bar_population, force = TRUE)
-
-  # trauma alert >= 65 years
-  trauma_alert_65 <- disposition_table |>
-    dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = trauma_alert_values_65, x = {{ edisposition_24_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 26, id = progress_bar_population, force = TRUE)
-
-  # trauma alert > 10 and < 65 years
-  trauma_alert_10_64 <- disposition_table |>
-    dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = trauma_alert_values_10_64, x = {{ edisposition_24_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 27, id = progress_bar_population, force = TRUE)
-
-  # assign variables to final data
-  computing_population <- final_data |>
-    dplyr::mutate(
-      CALL_911 = {{ erecord_01_col }} %in% call_911_data,
-      TRANSPORTS = {{ erecord_01_col }} %in% transport_data,
-      POSSIBLE_INJURY = {{ erecord_01_col }} %in% possible_injury_data,
-      GCS = {{ erecord_01_col }} %in% GCS_data,
-      LUNG = {{ erecord_01_col }} %in% lung_assessment_data,
-      CHEST = {{ erecord_01_col }} %in% chest_data,
-      RESPIRATORY_EFFORT = {{ erecord_01_col }} %in% respiratory_effort_data,
-      AIRWAY_MANAGEMENT = {{ erecord_01_col }} %in% airway_management_data,
-      EXTREMITIES = {{ erecord_01_col }} %in% extremities_assessment_data,
-      NEURO = {{ erecord_01_col }} %in% neurological_assessment_data,
-      TOURNIQUET = {{ erecord_01_col }} %in% tourniquet_data,
-      TRAUMA_TRIAGE_3_4 = {{ erecord_01_col }} %in% trauma_triage_3_4_data,
-      FALL_HEIGHT = {{ erecord_01_col }} %in% fall_height_data,
-      SCENE_DELAY = {{ erecord_01_col }} %in% scene_delay_data,
-      INJURY_CAUSE = {{ erecord_01_col }} %in% cause_of_injury_data,
-      PULSE_OXIMETRY = {{ erecord_01_col }} %in% pulse_oximetry_data,
-      SBP = {{ erecord_01_col }} %in% SBP_data,
-      SBP_10 = {{ erecord_01_col }} %in% SBP_age_10_data,
-      HR_SBP_10_65_PLUS = {{ erecord_01_col }} %in% HR_SBP_data_10_65_plus,
-      TRAUMA_TRIAGE_1_2_65 = {{ erecord_01_col }} %in% trauma_triage_1_2_data_65,
-      TRAUMA_TRIAGE_1_2_10_64 = {{ erecord_01_col }} %in% trauma_triage_1_2_data_10_64,
-      TRAUMA_TRIAGE_1_2_10 = {{ erecord_01_col }} %in% trauma_triage_1_2_data_10,
-      RESPIRATORY_RATE_10 = {{ erecord_01_col }} %in% respiratory_rate_data,
-      TRAUMA_ALERT_65 = {{ erecord_01_col }} %in% trauma_alert_65,
-      TRAUMA_ALERT_10_64 = {{ erecord_01_col }} %in% trauma_alert_10_64
-
+    cli::cli_progress_update(
+      set = 26,
+      id = progress_bar_population,
+      force = TRUE
     )
 
-  cli::cli_progress_update(set = 28, id = progress_bar_population, force = TRUE)
-
-  # get the initial population
-  initial_population <- computing_population |>
-    dplyr::filter(
-
-      POSSIBLE_INJURY,
-      CALL_911,
-      TRANSPORTS
-
-      )
-
-  # Adult and Pediatric Populations
-
-  cli::cli_progress_update(set = 29, id = progress_bar_population, force = TRUE)
-
-  if(
-
-    # use the system generated and calculated ages
-
-    all(
-      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-    )
-  ) {
-
-
-  # filter older adult
-  pop_65 <- initial_population |>
-    dplyr::filter(system_age_65 | calc_age_65) |>
-    dplyr::filter(
-
-                    GCS |
-                    LUNG |
-                    CHEST |
-                    RESPIRATORY_EFFORT |
-                    AIRWAY_MANAGEMENT |
-                    PULSE_OXIMETRY |
-                    HR_SBP_10_65_PLUS |
-                    TRAUMA_TRIAGE_1_2_65 |
-                    EXTREMITIES |
-                    NEURO |
-                    TOURNIQUET |
-                    TRAUMA_TRIAGE_3_4 |
-                    FALL_HEIGHT |
-                    SCENE_DELAY |
-                    INJURY_CAUSE
-
-                  )
-
-  cli::cli_progress_update(set = 30, id = progress_bar_population, force = TRUE)
-
-  # filter ages 10 to 65
-  pop_10_64 <- initial_population |>
-    dplyr::filter(system_age_10_64 | calc_age_10_64) |>
-    dplyr::filter(
-
-                    GCS |
-                    LUNG |
-                    CHEST |
-                    RESPIRATORY_EFFORT |
-                    AIRWAY_MANAGEMENT |
-                    HR_SBP_10_65_PLUS |
-                    TRAUMA_TRIAGE_1_2_10_64 |
-                    EXTREMITIES |
-                    NEURO |
-                    TOURNIQUET |
-                    TRAUMA_TRIAGE_3_4 |
-                    FALL_HEIGHT |
-                    SCENE_DELAY |
-                    INJURY_CAUSE
-
-                  )
-
-  cli::cli_progress_update(set = 31, id = progress_bar_population, force = TRUE)
-
-  # filter ages < 10
-  pop_10 <- initial_population |>
-    dplyr::filter(system_age_10 | calc_age_10) |>
-    dplyr::filter(
-
-                    GCS |
-                    RESPIRATORY_RATE_10 |
-                    LUNG |
-                    CHEST |
-                    RESPIRATORY_EFFORT |
-                    AIRWAY_MANAGEMENT |
-                    PULSE_OXIMETRY |
-                    SBP_10 |
-                    TRAUMA_TRIAGE_1_2_10 |
-                    EXTREMITIES |
-                    NEURO |
-                    TOURNIQUET |
-                    TRAUMA_TRIAGE_3_4 |
-                    FALL_HEIGHT |
-                    SCENE_DELAY |
-                    INJURY_CAUSE
-
-                  )
-
-  } else if(
-
-    # only use the system generated values
-
-    all(
-      is.null(incident_date_col),
-      is.null(patient_DOB_col)
-    )
-
-  ) {
-
-    # filter older adult
-    pop_65 <- initial_population |>
-      dplyr::filter(system_age_65) |>
+    # trauma alert > 10 and < 65 years
+    trauma_alert_10_64 <- disposition_table |>
+      dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |>
+      dplyr::distinct() |>
       dplyr::filter(
+        grepl(
+          pattern = trauma_alert_values_10_64,
+          x = {{ edisposition_24_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
 
-        GCS |
-          LUNG |
-          CHEST |
-          RESPIRATORY_EFFORT |
-          AIRWAY_MANAGEMENT |
-          PULSE_OXIMETRY |
-          HR_SBP_10_65_PLUS |
-          TRAUMA_TRIAGE_1_2_65 |
-          EXTREMITIES |
-          NEURO |
-          TOURNIQUET |
-          TRAUMA_TRIAGE_3_4 |
-          FALL_HEIGHT |
-          SCENE_DELAY |
-          INJURY_CAUSE
-
-      )
-
-    cli::cli_progress_update(set = 30, id = progress_bar_population, force = TRUE)
-
-    # filter ages 10 to 65
-    pop_10_64 <- initial_population |>
-      dplyr::filter(system_age_10_64) |>
-      dplyr::filter(
-
-        GCS |
-          LUNG |
-          CHEST |
-          RESPIRATORY_EFFORT |
-          AIRWAY_MANAGEMENT |
-          HR_SBP_10_65_PLUS |
-          TRAUMA_TRIAGE_1_2_10_64 |
-          EXTREMITIES |
-          NEURO |
-          TOURNIQUET |
-          TRAUMA_TRIAGE_3_4 |
-          FALL_HEIGHT |
-          SCENE_DELAY |
-          INJURY_CAUSE
-
-      )
-
-    cli::cli_progress_update(set = 31, id = progress_bar_population, force = TRUE)
-
-    # filter ages < 10
-    pop_10 <- initial_population |>
-      dplyr::filter(system_age_10) |>
-      dplyr::filter(
-
-        GCS |
-          RESPIRATORY_RATE_10 |
-          LUNG |
-          CHEST |
-          RESPIRATORY_EFFORT |
-          AIRWAY_MANAGEMENT |
-          PULSE_OXIMETRY |
-          SBP_10 |
-          TRAUMA_TRIAGE_1_2_10 |
-          EXTREMITIES |
-          NEURO |
-          TOURNIQUET |
-          TRAUMA_TRIAGE_3_4 |
-          FALL_HEIGHT |
-          SCENE_DELAY |
-          INJURY_CAUSE
-
-      )
-
-  }
-
-  # summarize
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 32, id = progress_bar_population, force = TRUE)
-
-  # summarize counts for populations filtered
-  filter_counts <- tibble::tibble(
-    filter = c("Situation possible injury",
-               "911 calls",
-               "Transports",
-               "GCS Motor 1-5",
-               "Breath sounds absent, decreased, increased respiratory effort",
-               "Flail segment, retraction, accessory muscles used in breathing",
-               "Respiratory effort apneic, labored, mech. assist, rapid, shallow, weak/agonal",
-               "Airway management procedures",
-               "Pulse oximetry < 90",
-               "SBP < 110",
-               "Respiratory rate < 10 or > 29 ages < 10 yrs",
-               "(SBP + (Pt. Age * 2)) >= 70 ages < 10 yrs",
-               "Heart rate greater than SBP ages >= 10 yrs",
-               "Met trauma triage criteria 1-2 ages 65+ yrs",
-               "Met trauma triage criteria 1-2 ages 10-64 yrs",
-               "Met trauma triage criteria 1-2 ages < 10 yrs",
-               "Motor function abnormal/weakness or sensation absent",
-               "Hemiplegia left/right, weakness left/right",
-               "Tourniquet procedure",
-               "Trauma triage criteria 3-4",
-               "Cause of Injury matches V20-V39, V80, V86",
-               "Scene delay = extrication",
-               "Fall > 10 ft.",
-               "Pre-arrival trauma alert ages 65+",
-               "Pre-arrival trauma alert ages < 65",
-               "Patients 65+ yrs denominator",
-               "Patients 10-64 yrs denominator",
-               "Patients < 10 yrs denominator",
-               "Initial population",
-               "Total dataset"
-    ),
-    count = c(
-      sum(computing_population$POSSIBLE_INJURY, na.rm = TRUE),
-      sum(computing_population$CALL_911, na.rm = TRUE),
-      sum(computing_population$TRANSPORTS, na.rm = TRUE),
-      sum(computing_population$GCS, na.rm = TRUE),
-      sum(computing_population$LUNG, na.rm = TRUE),
-      sum(computing_population$CHEST, na.rm = TRUE),
-      sum(computing_population$RESPIRATORY_EFFORT, na.rm = TRUE),
-      sum(computing_population$AIRWAY_MANAGEMENT, na.rm = TRUE),
-      sum(computing_population$PULSE_OXIMETRY, na.rm = TRUE),
-      sum(computing_population$SBP, na.rm = TRUE),
-      sum(computing_population$RESPIRATORY_RATE_10, na.rm = TRUE),
-      sum(computing_population$SBP_10, na.rm = TRUE),
-      sum(computing_population$HR_SBP_10_65_PLUS, na.rm = TRUE),
-      sum(computing_population$TRAUMA_TRIAGE_1_2_65, na.rm = TRUE),
-      sum(computing_population$TRAUMA_TRIAGE_1_2_10_64, na.rm = TRUE),
-      sum(computing_population$TRAUMA_TRIAGE_1_2_10, na.rm = TRUE),
-      sum(computing_population$EXTREMITIES, na.rm = TRUE),
-      sum(computing_population$NEURO, na.rm = TRUE),
-      sum(computing_population$TOURNIQUET, na.rm = TRUE),
-      sum(computing_population$TRAUMA_TRIAGE_3_4, na.rm = TRUE),
-      sum(computing_population$INJURY_CAUSE, na.rm = TRUE),
-      sum(computing_population$SCENE_DELAY, na.rm = TRUE),
-      sum(computing_population$FALL_HEIGHT, na.rm = TRUE),
-      sum(computing_population$TRAUMA_ALERT_65, na.rm = TRUE),
-      sum(computing_population$TRAUMA_ALERT_10_64, na.rm = TRUE),
-      nrow(pop_65),
-      nrow(pop_10_64),
-      nrow(pop_10),
-      nrow(initial_population),
-      nrow(computing_population)
+    cli::cli_progress_update(
+      set = 27,
+      id = progress_bar_population,
+      force = TRUE
     )
-  )
 
-  cli::cli_progress_update(set = 33, id = progress_bar_population, force = TRUE)
+    # assign variables to final data
+    computing_population <- final_data |>
+      dplyr::mutate(
+        CALL_911 = {{ erecord_01_col }} %in% call_911_data,
+        TRANSPORTS = {{ erecord_01_col }} %in% transport_data,
+        POSSIBLE_INJURY = {{ erecord_01_col }} %in% possible_injury_data,
+        GCS = {{ erecord_01_col }} %in% GCS_data,
+        LUNG = {{ erecord_01_col }} %in% lung_assessment_data,
+        CHEST = {{ erecord_01_col }} %in% chest_data,
+        RESPIRATORY_EFFORT = {{ erecord_01_col }} %in% respiratory_effort_data,
+        AIRWAY_MANAGEMENT = {{ erecord_01_col }} %in% airway_management_data,
+        EXTREMITIES = {{ erecord_01_col }} %in% extremities_assessment_data,
+        NEURO = {{ erecord_01_col }} %in% neurological_assessment_data,
+        TOURNIQUET = {{ erecord_01_col }} %in% tourniquet_data,
+        TRAUMA_TRIAGE_3_4 = {{ erecord_01_col }} %in% trauma_triage_3_4_data,
+        FALL_HEIGHT = {{ erecord_01_col }} %in% fall_height_data,
+        SCENE_DELAY = {{ erecord_01_col }} %in% scene_delay_data,
+        INJURY_CAUSE = {{ erecord_01_col }} %in% cause_of_injury_data,
+        PULSE_OXIMETRY = {{ erecord_01_col }} %in% pulse_oximetry_data,
+        SBP = {{ erecord_01_col }} %in% SBP_data,
+        SBP_10 = {{ erecord_01_col }} %in% SBP_age_10_data,
+        HR_SBP_10_65_PLUS = {{ erecord_01_col }} %in% HR_SBP_data_10_65_plus,
+        TRAUMA_TRIAGE_1_2_65 = {{ erecord_01_col }} %in%
+          trauma_triage_1_2_data_65,
+        TRAUMA_TRIAGE_1_2_10_64 = {{ erecord_01_col }} %in%
+          trauma_triage_1_2_data_10_64,
+        TRAUMA_TRIAGE_1_2_10 = {{ erecord_01_col }} %in%
+          trauma_triage_1_2_data_10,
+        RESPIRATORY_RATE_10 = {{ erecord_01_col }} %in% respiratory_rate_data,
+        TRAUMA_ALERT_65 = {{ erecord_01_col }} %in% trauma_alert_65,
+        TRAUMA_ALERT_10_64 = {{ erecord_01_col }} %in% trauma_alert_10_64
+      )
 
-  # get the population of interest
-  trauma.14.population <- list(
-    filter_process = filter_counts,
-    population_65 = pop_65,
-    population_10_64 = pop_10_64,
-    population_10 = pop_10,
-    initial_population = initial_population,
-    computing_population = computing_population
-  )
+    cli::cli_progress_update(
+      set = 28,
+      id = progress_bar_population,
+      force = TRUE
+    )
 
-  cli::cli_progress_done(id = progress_bar_population)
+    # get the initial population
+    initial_population <- computing_population |>
+      dplyr::filter(
+        POSSIBLE_INJURY,
+        CALL_911,
+        TRANSPORTS
+      )
 
-  return(trauma.14.population)
+    # Adult and Pediatric Populations
 
-  } else if(
+    cli::cli_progress_update(
+      set = 29,
+      id = progress_bar_population,
+      force = TRUE
+    )
 
+    if (
+      # use the system generated and calculated ages
+
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) {
+      # filter older adult
+      pop_65 <- initial_population |>
+        dplyr::filter(system_age_65 | calc_age_65) |>
+        dplyr::filter(
+          GCS |
+            LUNG |
+            CHEST |
+            RESPIRATORY_EFFORT |
+            AIRWAY_MANAGEMENT |
+            PULSE_OXIMETRY |
+            HR_SBP_10_65_PLUS |
+            TRAUMA_TRIAGE_1_2_65 |
+            EXTREMITIES |
+            NEURO |
+            TOURNIQUET |
+            TRAUMA_TRIAGE_3_4 |
+            FALL_HEIGHT |
+            SCENE_DELAY |
+            INJURY_CAUSE
+        )
+
+      cli::cli_progress_update(
+        set = 30,
+        id = progress_bar_population,
+        force = TRUE
+      )
+
+      # filter ages 10 to 65
+      pop_10_64 <- initial_population |>
+        dplyr::filter(system_age_10_64 | calc_age_10_64) |>
+        dplyr::filter(
+          GCS |
+            LUNG |
+            CHEST |
+            RESPIRATORY_EFFORT |
+            AIRWAY_MANAGEMENT |
+            HR_SBP_10_65_PLUS |
+            TRAUMA_TRIAGE_1_2_10_64 |
+            EXTREMITIES |
+            NEURO |
+            TOURNIQUET |
+            TRAUMA_TRIAGE_3_4 |
+            FALL_HEIGHT |
+            SCENE_DELAY |
+            INJURY_CAUSE
+        )
+
+      cli::cli_progress_update(
+        set = 31,
+        id = progress_bar_population,
+        force = TRUE
+      )
+
+      # filter ages < 10
+      pop_10 <- initial_population |>
+        dplyr::filter(system_age_10 | calc_age_10) |>
+        dplyr::filter(
+          GCS |
+            RESPIRATORY_RATE_10 |
+            LUNG |
+            CHEST |
+            RESPIRATORY_EFFORT |
+            AIRWAY_MANAGEMENT |
+            PULSE_OXIMETRY |
+            SBP_10 |
+            TRAUMA_TRIAGE_1_2_10 |
+            EXTREMITIES |
+            NEURO |
+            TOURNIQUET |
+            TRAUMA_TRIAGE_3_4 |
+            FALL_HEIGHT |
+            SCENE_DELAY |
+            INJURY_CAUSE
+        )
+    } else if (
+      # only use the system generated values
+
+      all(
+        is.null(incident_date_col),
+        is.null(patient_DOB_col)
+      )
+    ) {
+      # filter older adult
+      pop_65 <- initial_population |>
+        dplyr::filter(system_age_65) |>
+        dplyr::filter(
+          GCS |
+            LUNG |
+            CHEST |
+            RESPIRATORY_EFFORT |
+            AIRWAY_MANAGEMENT |
+            PULSE_OXIMETRY |
+            HR_SBP_10_65_PLUS |
+            TRAUMA_TRIAGE_1_2_65 |
+            EXTREMITIES |
+            NEURO |
+            TOURNIQUET |
+            TRAUMA_TRIAGE_3_4 |
+            FALL_HEIGHT |
+            SCENE_DELAY |
+            INJURY_CAUSE
+        )
+
+      cli::cli_progress_update(
+        set = 30,
+        id = progress_bar_population,
+        force = TRUE
+      )
+
+      # filter ages 10 to 65
+      pop_10_64 <- initial_population |>
+        dplyr::filter(system_age_10_64) |>
+        dplyr::filter(
+          GCS |
+            LUNG |
+            CHEST |
+            RESPIRATORY_EFFORT |
+            AIRWAY_MANAGEMENT |
+            HR_SBP_10_65_PLUS |
+            TRAUMA_TRIAGE_1_2_10_64 |
+            EXTREMITIES |
+            NEURO |
+            TOURNIQUET |
+            TRAUMA_TRIAGE_3_4 |
+            FALL_HEIGHT |
+            SCENE_DELAY |
+            INJURY_CAUSE
+        )
+
+      cli::cli_progress_update(
+        set = 31,
+        id = progress_bar_population,
+        force = TRUE
+      )
+
+      # filter ages < 10
+      pop_10 <- initial_population |>
+        dplyr::filter(system_age_10) |>
+        dplyr::filter(
+          GCS |
+            RESPIRATORY_RATE_10 |
+            LUNG |
+            CHEST |
+            RESPIRATORY_EFFORT |
+            AIRWAY_MANAGEMENT |
+            PULSE_OXIMETRY |
+            SBP_10 |
+            TRAUMA_TRIAGE_1_2_10 |
+            EXTREMITIES |
+            NEURO |
+            TOURNIQUET |
+            TRAUMA_TRIAGE_3_4 |
+            FALL_HEIGHT |
+            SCENE_DELAY |
+            INJURY_CAUSE
+        )
+    }
+
+    # summarize
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(
+      set = 32,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # summarize counts for populations filtered
+    filter_counts <- tibble::tibble(
+      filter = c(
+        "Situation possible injury",
+        "911 calls",
+        "Transports",
+        "GCS Motor 1-5",
+        "Breath sounds absent, decreased, increased respiratory effort",
+        "Flail segment, retraction, accessory muscles used in breathing",
+        "Respiratory effort apneic, labored, mech. assist, rapid, shallow, weak/agonal",
+        "Airway management procedures",
+        "Pulse oximetry < 90",
+        "SBP < 110",
+        "Respiratory rate < 10 or > 29 ages < 10 yrs",
+        "(SBP + (Pt. Age * 2)) >= 70 ages < 10 yrs",
+        "Heart rate greater than SBP ages >= 10 yrs",
+        "Met trauma triage criteria 1-2 ages 65+ yrs",
+        "Met trauma triage criteria 1-2 ages 10-64 yrs",
+        "Met trauma triage criteria 1-2 ages < 10 yrs",
+        "Motor function abnormal/weakness or sensation absent",
+        "Hemiplegia left/right, weakness left/right",
+        "Tourniquet procedure", # fixed in 1.1.1
+        "Trauma triage criteria 3-4",
+        "Cause of Injury matches V20-V39, V80, V86",
+        "Scene delay = extrication",
+        "Fall > 10 ft.",
+        "Pre-arrival trauma alert ages 65+",
+        "Pre-arrival trauma alert ages < 65",
+        "Patients 65+ yrs denominator",
+        "Patients 10-64 yrs denominator",
+        "Patients < 10 yrs denominator",
+        "Initial population",
+        "Total dataset"
+      ),
+      count = c(
+        sum(computing_population$POSSIBLE_INJURY, na.rm = TRUE),
+        sum(computing_population$CALL_911, na.rm = TRUE),
+        sum(computing_population$TRANSPORTS, na.rm = TRUE),
+        sum(computing_population$GCS, na.rm = TRUE),
+        sum(computing_population$LUNG, na.rm = TRUE),
+        sum(computing_population$CHEST, na.rm = TRUE),
+        sum(computing_population$RESPIRATORY_EFFORT, na.rm = TRUE),
+        sum(computing_population$AIRWAY_MANAGEMENT, na.rm = TRUE),
+        sum(computing_population$PULSE_OXIMETRY, na.rm = TRUE),
+        sum(computing_population$SBP, na.rm = TRUE),
+        sum(computing_population$RESPIRATORY_RATE_10, na.rm = TRUE),
+        sum(computing_population$SBP_10, na.rm = TRUE),
+        sum(computing_population$HR_SBP_10_65_PLUS, na.rm = TRUE),
+        sum(computing_population$TRAUMA_TRIAGE_1_2_65, na.rm = TRUE),
+        sum(computing_population$TRAUMA_TRIAGE_1_2_10_64, na.rm = TRUE),
+        sum(computing_population$TRAUMA_TRIAGE_1_2_10, na.rm = TRUE),
+        sum(computing_population$EXTREMITIES, na.rm = TRUE),
+        sum(computing_population$NEURO, na.rm = TRUE),
+        sum(computing_population$TOURNIQUET, na.rm = TRUE),
+        sum(computing_population$TRAUMA_TRIAGE_3_4, na.rm = TRUE),
+        sum(computing_population$INJURY_CAUSE, na.rm = TRUE),
+        sum(computing_population$SCENE_DELAY, na.rm = TRUE),
+        sum(computing_population$FALL_HEIGHT, na.rm = TRUE),
+        sum(computing_population$TRAUMA_ALERT_65, na.rm = TRUE),
+        sum(computing_population$TRAUMA_ALERT_10_64, na.rm = TRUE),
+        nrow(pop_65),
+        nrow(pop_10_64),
+        nrow(pop_10),
+        nrow(initial_population),
+        nrow(computing_population)
+      )
+    )
+
+    cli::cli_progress_update(
+      set = 33,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # get the population of interest
+    trauma.14.population <- list(
+      filter_process = filter_counts,
+      population_65 = pop_65,
+      population_10_64 = pop_10_64,
+      population_10 = pop_10,
+      initial_population = initial_population,
+      computing_population = computing_population
+    )
+
+    cli::cli_progress_done(id = progress_bar_population)
+
+    return(trauma.14.population)
+  } else if (
     all(
       is.null(patient_scene_table),
       is.null(response_table),
@@ -1255,13 +1441,11 @@ trauma_14_population <- function(df = NULL,
       is.null(exam_table),
       is.null(injury_table),
       is.null(disposition_table)
-    ) && !is.null(df)
+    ) &&
+      !is.null(df)
 
     # utilize a dataframe to analyze the data for the measure analytics
-
   ) {
-
-
     # Ensure df is a data frame or tibble
     if (!is.data.frame(df) && !tibble::is_tibble(df)) {
       cli::cli_abort(
@@ -1273,861 +1457,1043 @@ trauma_14_population <- function(df = NULL,
     }
 
     # only check the date columns if they are in fact passed
-    if(
+    if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
-    )
-
-    {
-
+    ) {
       # use quasiquotation on the date variables to check format
       incident_date <- rlang::enquo(incident_date_col)
       patient_dob <- rlang::enquo(patient_DOB_col)
 
-      if ((!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-           !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
+      if (
+        (!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
+          !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
           (!lubridate::is.Date(df[[rlang::as_name(patient_dob)]]) &
-           !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))) {
-
+            !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))
+      ) {
         cli::cli_abort(
           "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
         )
-
       }
     }
 
     progress_bar_population
 
-  ###_____________________________________________________________________________
-  # from the full dataframe with all variables
-  # create one fact table and several dimension tables
-  # to complete calculations and avoid issues due to row
-  # explosion
-  ###_____________________________________________________________________________
+    ###_____________________________________________________________________________
+    # from the full dataframe with all variables
+    # create one fact table and several dimension tables
+    # to complete calculations and avoid issues due to row
+    # explosion
+    ###_____________________________________________________________________________
 
-  # fact table
-  # the user should ensure that variables beyond those supplied for calculations
-  # are distinct (i.e. one value or cell per patient)
+    # fact table
+    # the user should ensure that variables beyond those supplied for calculations
+    # are distinct (i.e. one value or cell per patient)
 
-  cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
-
-  if (
-    all(
-      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-    )
-  ) {
-
-  final_data <- df |>
-    dplyr::select(-c(
-
-      {{ esituation_02_col }},
-      {{ eresponse_05_col }},
-      {{ eresponse_10_col }},
-      {{ transport_disposition_col }},
-      {{ edisposition_24_col }},
-      {{ evitals_06_col }},
-      {{ evitals_10_col }},
-      {{ evitals_12_col }},
-      {{ evitals_14_col }},
-      {{ evitals_15_col }},
-      {{ evitals_21_col }},
-      {{ eexam_16_col }},
-      {{ eexam_20_col }},
-      {{ eexam_23_col }},
-      {{ eexam_25_col }},
-      {{ eprocedures_03_col }},
-      {{ einjury_01_col }},
-      {{ einjury_03_col }},
-      {{ einjury_04_col }},
-      {{ einjury_09_col }}
-
-
-    )) |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
-    dplyr::mutate(patient_age_in_years_col = as.numeric(difftime(
-      time1 = {{ incident_date_col }},
-      time2 = {{ patient_DOB_col }},
-      units = "days"
-    )) / 365,
-
-    # system age check
-    system_age_65 = {{ epatient_15_col }} >= 65 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-    system_age_10_64 = ({{ epatient_15_col }} < 65 & {{ epatient_15_col }} >= 10) & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-    system_age_10_1 = {{ epatient_15_col }} < 10 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-    system_age_10_2 = {{ epatient_15_col }} < 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-    system_age_10 = system_age_10_1 | system_age_10_2,
-
-    # calculated age check
-    calc_age_65 = patient_age_in_years_col >= 65,
-    calc_age_10_64 = patient_age_in_years_col < 65 & patient_age_in_years_col >= 10,
-    calc_age_10 = patient_age_in_years_col < 10
-
+    cli::cli_progress_update(
+      set = 1,
+      id = progress_bar_population,
+      force = TRUE
     )
 
-  } else if(
-
-    all(
-      is.null(incident_date_col),
-      is.null(patient_DOB_col)
-    ))
-
-  {
-
-    final_data <- df |>
-      dplyr::select(-c(
-
-        {{ esituation_02_col }},
-        {{ eresponse_05_col }},
-        {{ eresponse_10_col }},
-        {{ transport_disposition_col }},
-        {{ edisposition_24_col }},
-        {{ evitals_06_col }},
-        {{ evitals_10_col }},
-        {{ evitals_12_col }},
-        {{ evitals_14_col }},
-        {{ evitals_15_col }},
-        {{ evitals_21_col }},
-        {{ eexam_16_col }},
-        {{ eexam_20_col }},
-        {{ eexam_23_col }},
-        {{ eexam_25_col }},
-        {{ eprocedures_03_col }},
-        {{ einjury_01_col }},
-        {{ einjury_03_col }},
-        {{ einjury_04_col }},
-        {{ einjury_09_col }}
-
-
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
-      dplyr::mutate(
-
-      # system age check
-      system_age_65 = {{ epatient_15_col }} >= 65 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-      system_age_10_64 = ({{ epatient_15_col }} < 65 & {{ epatient_15_col }} >= 10) & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-      system_age_10_1 = {{ epatient_15_col }} < 10 & grepl(pattern = year_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-      system_age_10_2 = {{ epatient_15_col }} < 120 & grepl(pattern = minor_values, x = {{ epatient_16_col }}, ignore.case = TRUE),
-      system_age_10 = system_age_10_1 | system_age_10_2
-
+    if (
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
-
-  }
-
-  ###_____________________________________________________________________________
-  ### dimension tables
-  ### each dimension table is turned into a vector of unique IDs
-  ### that are then utilized on the fact table to create distinct variables
-  ### that tell if the patient had the characteristic or not for final
-  ### calculations of the numerator and filtering
-  ###_____________________________________________________________________________
-
-  cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
-
-  # possible injury
-  possible_injury_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ esituation_02_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = possible_injury, x = {{ esituation_02_col }}, ignore.case = TRUE)
-
-      ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
-
-  # transports
-  transport_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = transport_responses, x = {{ transport_disposition_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 4, id = progress_bar_population, force = TRUE)
-
-  # 911 calls
-  call_911_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(grepl(pattern = codes_911, x = {{ eresponse_05_col }}, ignore.case = TRUE)) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
-
-  # GCS
-  GCS_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_21_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(grepl(pattern = GCS_motor_values, x = {{ evitals_21_col }}, ignore.case = TRUE)) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
-
-  # lung assessment
-  lung_assessment_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ eexam_23_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = lung_assessment_values, x = {{ eexam_23_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
-
-  # chest assessment
-  chest_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ eexam_25_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = chest_assessment_values, x = {{ eexam_25_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
-
-  # respiratory effort
-  respiratory_effort_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_15_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = respiratory_effort_values, x = {{ evitals_15_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
-
-  # airway management
-  airway_management_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = airway_management_values, x = {{ eprocedures_03_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
-
-  # pulse oximetry
-  pulse_oximetry_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      {{ evitals_12_col }} < 90
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 11, id = progress_bar_population, force = TRUE)
-
-  # SBP
-  SBP_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      {{ evitals_06_col }} < 110
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 12, id = progress_bar_population, force = TRUE)
-
-  # heart rate and SBP
-  HR_SBP_data_10_65_plus <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_10_col }}, {{ evitals_06_col}}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      {{ evitals_10_col }} > {{ evitals_06_col}}
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 13, id = progress_bar_population, force = TRUE)
-
-  # trauma triage criteria steps 1 and 2 age 65+
-  trauma_triage_1_2_data_65 <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = trauma_triage_1_2_values_65, x = {{ einjury_03_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 14, id = progress_bar_population, force = TRUE)
-
-  # trauma triage criteria steps 1 and 2 age 10 - 65
-  trauma_triage_1_2_data_10_64 <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = trauma_triage_1_2_values_10_64, x = {{ einjury_03_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 15, id = progress_bar_population, force = TRUE)
-
-  # trauma triage criteria steps 1 and 2 age < 10
-  trauma_triage_1_2_data_10 <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = trauma_triage_1_2_values_10, x = {{ einjury_03_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 16, id = progress_bar_population, force = TRUE)
-
-  # extremities assessment
-  extremities_assessment_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ eexam_16_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = extremities_assessment_values, x = {{ eexam_16_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 17, id = progress_bar_population, force = TRUE)
-
-  # neurological assessment
-
-  neurological_assessment_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ eexam_20_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = neurological_assessment_values, x = {{ eexam_20_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 18, id = progress_bar_population, force = TRUE)
-
-  # tourniquet
-
-  tourniquet_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = tourniquet_values, x = {{ eprocedures_03_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 19, id = progress_bar_population, force = TRUE)
-
-  # trauma triage criteria steps 3 and 4
-
-  trauma_triage_3_4_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ einjury_04_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = trauma_triage_3_4_values, x = {{ einjury_04_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 20, id = progress_bar_population, force = TRUE)
-
-  # fall height
-
-  fall_height_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ einjury_09_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      {{ einjury_09_col }} > 10
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 21, id = progress_bar_population, force = TRUE)
-
-  # scene delay
-
-  scene_delay_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ eresponse_10_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = scene_delay_values, x = {{ eresponse_10_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 22, id = progress_bar_population, force = TRUE)
-
-  # cause of injury
-
-  cause_of_injury_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ einjury_01_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      grepl(pattern = cause_of_injury_values, x = {{ einjury_01_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 23, id = progress_bar_population, force = TRUE)
-
-  # respiratory rate for < 10 yrs population
-
-  respiratory_rate_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ evitals_14_col }}) |>
-    dplyr::distinct() |>
-    dplyr::filter(
-
-      {{ evitals_14_col }} < 10 | {{ evitals_14_col }} > 29
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 24, id = progress_bar_population, force = TRUE)
-
-  # SBP check variable for ages < 10 years
-  # if using calculated and system ages
-  if (
-    all(
-      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    ) {
+      final_data <- df |>
+        dplyr::select(
+          -c(
+            {{ esituation_02_col }},
+            {{ eresponse_05_col }},
+            {{ eresponse_10_col }},
+            {{ transport_disposition_col }},
+            {{ edisposition_24_col }},
+            {{ evitals_06_col }},
+            {{ evitals_10_col }},
+            {{ evitals_12_col }},
+            {{ evitals_14_col }},
+            {{ evitals_15_col }},
+            {{ evitals_21_col }},
+            {{ eexam_16_col }},
+            {{ eexam_20_col }},
+            {{ eexam_23_col }},
+            {{ eexam_25_col }},
+            {{ eprocedures_03_col }},
+            {{ einjury_01_col }},
+            {{ einjury_03_col }},
+            {{ einjury_04_col }},
+            {{ einjury_09_col }}
+          )
+        ) |>
+        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
+        dplyr::mutate(
+          patient_age_in_years_col = as.numeric(difftime(
+            time1 = {{ incident_date_col }},
+            time2 = {{ patient_DOB_col }},
+            units = "days"
+          )) /
+            365,
+
+          # system age check
+          system_age_65 = {{ epatient_15_col }} >= 65 &
+            grepl(
+              pattern = year_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10_64 = ({{ epatient_15_col }} < 65 &
+            {{ epatient_15_col }} >= 10) &
+            grepl(
+              pattern = year_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10_1 = {{ epatient_15_col }} < 10 &
+            grepl(
+              pattern = year_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10_2 = {{ epatient_15_col }} < 120 &
+            grepl(
+              pattern = minor_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10 = system_age_10_1 | system_age_10_2,
+
+          # calculated age check
+          calc_age_65 = patient_age_in_years_col >= 65,
+          calc_age_10_64 = patient_age_in_years_col < 65 &
+            patient_age_in_years_col >= 10,
+          calc_age_10 = patient_age_in_years_col < 10
+        )
+    } else if (
+      all(
+        is.null(incident_date_col),
+        is.null(patient_DOB_col)
+      )
+    ) {
+      final_data <- df |>
+        dplyr::select(
+          -c(
+            {{ esituation_02_col }},
+            {{ eresponse_05_col }},
+            {{ eresponse_10_col }},
+            {{ transport_disposition_col }},
+            {{ edisposition_24_col }},
+            {{ evitals_06_col }},
+            {{ evitals_10_col }},
+            {{ evitals_12_col }},
+            {{ evitals_14_col }},
+            {{ evitals_15_col }},
+            {{ evitals_21_col }},
+            {{ eexam_16_col }},
+            {{ eexam_20_col }},
+            {{ eexam_23_col }},
+            {{ eexam_25_col }},
+            {{ eprocedures_03_col }},
+            {{ einjury_01_col }},
+            {{ einjury_03_col }},
+            {{ einjury_04_col }},
+            {{ einjury_09_col }}
+          )
+        ) |>
+        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
+        dplyr::mutate(
+          # system age check
+          system_age_65 = {{ epatient_15_col }} >= 65 &
+            grepl(
+              pattern = year_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10_64 = ({{ epatient_15_col }} < 65 &
+            {{ epatient_15_col }} >= 10) &
+            grepl(
+              pattern = year_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10_1 = {{ epatient_15_col }} < 10 &
+            grepl(
+              pattern = year_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10_2 = {{ epatient_15_col }} < 120 &
+            grepl(
+              pattern = minor_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            ),
+          system_age_10 = system_age_10_1 | system_age_10_2
+        )
+    }
+
+    ###_____________________________________________________________________________
+    ### dimension tables
+    ### each dimension table is turned into a vector of unique IDs
+    ### that are then utilized on the fact table to create distinct variables
+    ### that tell if the patient had the characteristic or not for final
+    ### calculations of the numerator and filtering
+    ###_____________________________________________________________________________
+
+    cli::cli_progress_update(
+      set = 2,
+      id = progress_bar_population,
+      force = TRUE
     )
-  ) {
 
+    # possible injury
+    possible_injury_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ esituation_02_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = possible_injury,
+          x = {{ esituation_02_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
 
-  SBP_age_10_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ epatient_15_col }}, {{ evitals_06_col }}) |>
-    dplyr::distinct() |>
-    dplyr::left_join(final_data |> dplyr::select({{ erecord_01_col }}, system_age_10, calc_age_10) |> dplyr::distinct(),
+    cli::cli_progress_update(
+      set = 3,
+      id = progress_bar_population,
+      force = TRUE
+    )
 
-                    by = rlang::as_name(rlang::enquo(erecord_01_col))
+    # transports
+    transport_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        dplyr::if_any(
+          {{ transport_disposition_col }},
 
-                    ) |>
-    dplyr::filter(system_age_10 | calc_age_10) |>
-    dplyr::mutate(SBP_10 =
+          ~ grepl(pattern = transport_responses, x = ., ignore.case = TRUE)
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
 
-                    ( {{ evitals_06_col }} + ({{ epatient_15_col }} * 2) ) >= 70
+    cli::cli_progress_update(
+      set = 4,
+      id = progress_bar_population,
+      force = TRUE
+    )
 
-                  ) |>
-    dplyr::filter(SBP_10) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
+    # 911 calls
+    call_911_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(grepl(
+        pattern = codes_911,
+        x = {{ eresponse_05_col }},
+        ignore.case = TRUE
+      )) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
 
+    cli::cli_progress_update(
+      set = 5,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # GCS
+    GCS_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ evitals_21_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(grepl(
+        pattern = GCS_motor_values,
+        x = {{ evitals_21_col }},
+        ignore.case = TRUE
+      )) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 6,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # lung assessment
+    lung_assessment_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ eexam_23_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = lung_assessment_values,
+          x = {{ eexam_23_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 7,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # chest assessment
+    chest_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ eexam_25_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = chest_assessment_values,
+          x = {{ eexam_25_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 8,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # respiratory effort
+    respiratory_effort_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ evitals_15_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = respiratory_effort_values,
+          x = {{ evitals_15_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 9,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # airway management
+    airway_management_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = airway_management_values,
+          x = {{ eprocedures_03_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 10,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # pulse oximetry
+    pulse_oximetry_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        {{ evitals_12_col }} < 90
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 11,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # SBP
+    SBP_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        {{ evitals_06_col }} < 110
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 12,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # heart rate and SBP
+    HR_SBP_data_10_65_plus <- df |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ evitals_10_col }},
+        {{ evitals_06_col }}
+      ) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        {{ evitals_10_col }} > {{ evitals_06_col }}
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 13,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # trauma triage criteria steps 1 and 2 age 65+
+    trauma_triage_1_2_data_65 <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = trauma_triage_1_2_values_65,
+          x = {{ einjury_03_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 14,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # trauma triage criteria steps 1 and 2 age 10 - 65
+    trauma_triage_1_2_data_10_64 <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = trauma_triage_1_2_values_10_64,
+          x = {{ einjury_03_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 15,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # trauma triage criteria steps 1 and 2 age < 10
+    trauma_triage_1_2_data_10 <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = trauma_triage_1_2_values_10,
+          x = {{ einjury_03_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 16,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # extremities assessment
+    extremities_assessment_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ eexam_16_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = extremities_assessment_values,
+          x = {{ eexam_16_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 17,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # neurological assessment
+
+    neurological_assessment_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ eexam_20_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = neurological_assessment_values,
+          x = {{ eexam_20_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 18,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # tourniquet
+
+    tourniquet_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = tourniquet_values,
+          x = {{ eprocedures_03_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 19,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # trauma triage criteria steps 3 and 4
+
+    trauma_triage_3_4_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ einjury_04_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = trauma_triage_3_4_values,
+          x = {{ einjury_04_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 20,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # fall height
+
+    fall_height_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ einjury_09_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        {{ einjury_09_col }} > 10
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 21,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # scene delay
+
+    scene_delay_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ eresponse_10_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = scene_delay_values,
+          x = {{ eresponse_10_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 22,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # cause of injury
+
+    cause_of_injury_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ einjury_01_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        grepl(
+          pattern = cause_of_injury_values,
+          x = {{ einjury_01_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 23,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # respiratory rate for < 10 yrs population
+
+    respiratory_rate_data <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ evitals_14_col }}) |>
+      dplyr::distinct() |>
+      dplyr::filter(
+        {{ evitals_14_col }} < 10 | {{ evitals_14_col }} > 29
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
+
+    cli::cli_progress_update(
+      set = 24,
+      id = progress_bar_population,
+      force = TRUE
+    )
 
     # SBP check variable for ages < 10 years
-    # if using system ages only
-
-  } else if(
-
-    all(
-      is.null(incident_date_col),
-      is.null(patient_DOB_col)
-    ))
-
-  {
-
-  SBP_age_10_data <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ epatient_15_col }}, {{ evitals_06_col }}) |>
-    dplyr::distinct() |>
-    dplyr::left_join(final_data |> dplyr::select({{ erecord_01_col }}, system_age_10),
-
-                    by = rlang::as_name(rlang::enquo(erecord_01_col))
-
-                    ) |>
-    dplyr::filter(system_age_10) |>
-    dplyr::mutate(SBP_10 =
-
-                    ( {{ evitals_06_col }} + ({{ epatient_15_col }} * 2) ) >= 70
-
-                  ) |>
-    dplyr::filter(SBP_10) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  }
-
-  cli::cli_progress_update(set = 25, id = progress_bar_population, force = TRUE)
-
-  # trauma alert >= 65 years
-  trauma_alert_65 <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |>
-    dplyr::filter(
-
-      grepl(pattern = trauma_alert_values_65, x = {{ edisposition_24_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 26, id = progress_bar_population, force = TRUE)
-
-  # trauma alert > 10 and < 65 years
-  trauma_alert_10_64 <- df |>
-    dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |>
-    dplyr::filter(
-
-      grepl(pattern = trauma_alert_values_10_64, x = {{ edisposition_24_col }}, ignore.case = TRUE)
-
-    ) |>
-    dplyr::distinct({{ erecord_01_col }}) |>
-    dplyr::pull({{ erecord_01_col }})
-
-  cli::cli_progress_update(set = 27, id = progress_bar_population, force = TRUE)
-
-  # assign variables to final data
-  computing_population <- final_data |>
-    dplyr::mutate(
-      CALL_911 = {{ erecord_01_col }} %in% call_911_data,
-      TRANSPORTS = {{ erecord_01_col }} %in% transport_data,
-      POSSIBLE_INJURY = {{ erecord_01_col }} %in% possible_injury_data,
-      GCS = {{ erecord_01_col }} %in% GCS_data,
-      LUNG = {{ erecord_01_col }} %in% lung_assessment_data,
-      CHEST = {{ erecord_01_col }} %in% chest_data,
-      RESPIRATORY_EFFORT = {{ erecord_01_col }} %in% respiratory_effort_data,
-      AIRWAY_MANAGEMENT = {{ erecord_01_col }} %in% airway_management_data,
-      EXTREMITIES = {{ erecord_01_col }} %in% extremities_assessment_data,
-      NEURO = {{ erecord_01_col }} %in% neurological_assessment_data,
-      TOURNIQUET = {{ erecord_01_col }} %in% tourniquet_data,
-      TRAUMA_TRIAGE_3_4 = {{ erecord_01_col }} %in% trauma_triage_3_4_data,
-      FALL_HEIGHT = {{ erecord_01_col }} %in% fall_height_data,
-      SCENE_DELAY = {{ erecord_01_col }} %in% scene_delay_data,
-      INJURY_CAUSE = {{ erecord_01_col }} %in% cause_of_injury_data,
-      PULSE_OXIMETRY = {{ erecord_01_col }} %in% pulse_oximetry_data,
-      SBP = {{ erecord_01_col }} %in% SBP_data,
-      SBP_10 = {{ erecord_01_col }} %in% SBP_age_10_data,
-      HR_SBP_10_65_PLUS = {{ erecord_01_col }} %in% HR_SBP_data_10_65_plus,
-      TRAUMA_TRIAGE_1_2_65 = {{ erecord_01_col }} %in% trauma_triage_1_2_data_65,
-      TRAUMA_TRIAGE_1_2_10_64 = {{ erecord_01_col }} %in% trauma_triage_1_2_data_10_64,
-      TRAUMA_TRIAGE_1_2_10 = {{ erecord_01_col }} %in% trauma_triage_1_2_data_10,
-      RESPIRATORY_RATE_10 = {{ erecord_01_col }} %in% respiratory_rate_data,
-      TRAUMA_ALERT_65 = {{ erecord_01_col }} %in% trauma_alert_65,
-      TRAUMA_ALERT_10_64 = {{ erecord_01_col }} %in% trauma_alert_10_64
-
-    )
-
-  cli::cli_progress_update(set = 28, id = progress_bar_population, force = TRUE)
-
-  # get the initial population
-  initial_population <- computing_population |>
-    dplyr::filter(
-
-      POSSIBLE_INJURY,
-      CALL_911,
-      TRANSPORTS
-
+    # if using calculated and system ages
+    if (
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
+    ) {
+      SBP_age_10_data <- df |>
+        dplyr::select(
+          {{ erecord_01_col }},
+          {{ epatient_15_col }},
+          {{ evitals_06_col }}
+        ) |>
+        dplyr::distinct() |>
+        dplyr::left_join(
+          final_data |>
+            dplyr::select({{ erecord_01_col }}, system_age_10, calc_age_10) |>
+            dplyr::distinct(),
 
-  # Adult and Pediatric Populations
+          by = rlang::as_name(rlang::enquo(erecord_01_col))
+        ) |>
+        dplyr::filter(system_age_10 | calc_age_10) |>
+        dplyr::mutate(
+          SBP_10 = ({{ evitals_06_col }} + ({{ epatient_15_col }} * 2)) >= 70
+        ) |>
+        dplyr::filter(SBP_10) |>
+        dplyr::distinct({{ erecord_01_col }}) |>
+        dplyr::pull({{ erecord_01_col }})
 
-  cli::cli_progress_update(set = 29, id = progress_bar_population, force = TRUE)
+      # SBP check variable for ages < 10 years
+      # if using system ages only
+    } else if (
+      all(
+        is.null(incident_date_col),
+        is.null(patient_DOB_col)
+      )
+    ) {
+      SBP_age_10_data <- df |>
+        dplyr::select(
+          {{ erecord_01_col }},
+          {{ epatient_15_col }},
+          {{ evitals_06_col }}
+        ) |>
+        dplyr::distinct() |>
+        dplyr::left_join(
+          final_data |> dplyr::select({{ erecord_01_col }}, system_age_10),
 
-  if(
+          by = rlang::as_name(rlang::enquo(erecord_01_col))
+        ) |>
+        dplyr::filter(system_age_10) |>
+        dplyr::mutate(
+          SBP_10 = ({{ evitals_06_col }} + ({{ epatient_15_col }} * 2)) >= 70
+        ) |>
+        dplyr::filter(SBP_10) |>
+        dplyr::distinct({{ erecord_01_col }}) |>
+        dplyr::pull({{ erecord_01_col }})
+    }
 
-    # use the system generated and calculated ages
-
-    all(
-      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-    )
-  ) {
-
-
-  # filter older adult
-  pop_65 <- initial_population |>
-    dplyr::filter(system_age_65 | calc_age_65) |>
-    dplyr::filter(
-
-                    GCS |
-                    LUNG |
-                    CHEST |
-                    RESPIRATORY_EFFORT |
-                    AIRWAY_MANAGEMENT |
-                    PULSE_OXIMETRY |
-                    HR_SBP_10_65_PLUS |
-                    TRAUMA_TRIAGE_1_2_65 |
-                    EXTREMITIES |
-                    NEURO |
-                    TOURNIQUET |
-                    TRAUMA_TRIAGE_3_4 |
-                    FALL_HEIGHT |
-                    SCENE_DELAY |
-                    INJURY_CAUSE
-
-                  )
-
-  cli::cli_progress_update(set = 30, id = progress_bar_population, force = TRUE)
-
-  # filter ages 10 to 65
-  pop_10_64 <- initial_population |>
-    dplyr::filter(system_age_10_64 | calc_age_10_64) |>
-    dplyr::filter(
-
-                    GCS |
-                    LUNG |
-                    CHEST |
-                    RESPIRATORY_EFFORT |
-                    AIRWAY_MANAGEMENT |
-                    HR_SBP_10_65_PLUS |
-                    TRAUMA_TRIAGE_1_2_10_64 |
-                    EXTREMITIES |
-                    NEURO |
-                    TOURNIQUET |
-                    TRAUMA_TRIAGE_3_4 |
-                    FALL_HEIGHT |
-                    SCENE_DELAY |
-                    INJURY_CAUSE
-
-                  )
-
-  cli::cli_progress_update(set = 31, id = progress_bar_population, force = TRUE)
-
-  # filter ages < 10
-  pop_10 <- initial_population |>
-    dplyr::filter(system_age_10 | calc_age_10) |>
-    dplyr::filter(
-
-                    GCS |
-                    RESPIRATORY_RATE_10 |
-                    LUNG |
-                    CHEST |
-                    RESPIRATORY_EFFORT |
-                    AIRWAY_MANAGEMENT |
-                    PULSE_OXIMETRY |
-                    SBP_10 |
-                    TRAUMA_TRIAGE_1_2_10 |
-                    EXTREMITIES |
-                    NEURO |
-                    TOURNIQUET |
-                    TRAUMA_TRIAGE_3_4 |
-                    FALL_HEIGHT |
-                    SCENE_DELAY |
-                    INJURY_CAUSE
-
-                  )
-
-  } else if(
-
-    # only use the system generated values
-
-    all(
-      is.null(incident_date_col),
-      is.null(patient_DOB_col)
+    cli::cli_progress_update(
+      set = 25,
+      id = progress_bar_population,
+      force = TRUE
     )
 
-  ) {
-
-    # filter older adult
-    pop_65 <- initial_population |>
-      dplyr::filter(system_age_65) |>
+    # trauma alert >= 65 years
+    trauma_alert_65 <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |>
       dplyr::filter(
+        grepl(
+          pattern = trauma_alert_values_65,
+          x = {{ edisposition_24_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
 
-        GCS |
-          LUNG |
-          CHEST |
-          RESPIRATORY_EFFORT |
-          AIRWAY_MANAGEMENT |
-          PULSE_OXIMETRY |
-          HR_SBP_10_65_PLUS |
-          TRAUMA_TRIAGE_1_2_65 |
-          EXTREMITIES |
-          NEURO |
-          TOURNIQUET |
-          TRAUMA_TRIAGE_3_4 |
-          FALL_HEIGHT |
-          SCENE_DELAY |
-          INJURY_CAUSE
-
-      )
-
-    cli::cli_progress_update(set = 30, id = progress_bar_population, force = TRUE)
-
-    # filter ages 10 to 65
-    pop_10_64 <- initial_population |>
-      dplyr::filter(system_age_10_64) |>
-      dplyr::filter(
-
-        GCS |
-          LUNG |
-          CHEST |
-          RESPIRATORY_EFFORT |
-          AIRWAY_MANAGEMENT |
-          HR_SBP_10_65_PLUS |
-          TRAUMA_TRIAGE_1_2_10_64 |
-          EXTREMITIES |
-          NEURO |
-          TOURNIQUET |
-          TRAUMA_TRIAGE_3_4 |
-          FALL_HEIGHT |
-          SCENE_DELAY |
-          INJURY_CAUSE
-
-      )
-
-    cli::cli_progress_update(set = 31, id = progress_bar_population, force = TRUE)
-
-    # filter ages < 10
-    pop_10 <- initial_population |>
-      dplyr::filter(system_age_10) |>
-      dplyr::filter(
-
-        GCS |
-          RESPIRATORY_RATE_10 |
-          LUNG |
-          CHEST |
-          RESPIRATORY_EFFORT |
-          AIRWAY_MANAGEMENT |
-          PULSE_OXIMETRY |
-          SBP_10 |
-          TRAUMA_TRIAGE_1_2_10 |
-          EXTREMITIES |
-          NEURO |
-          TOURNIQUET |
-          TRAUMA_TRIAGE_3_4 |
-          FALL_HEIGHT |
-          SCENE_DELAY |
-          INJURY_CAUSE
-
-      )
-
-  }
-
-  # summarize
-  # progress update, these will be repeated throughout the script
-  cli::cli_progress_update(set = 32, id = progress_bar_population, force = TRUE)
-
-  # summarize counts for populations filtered
-  filter_counts <- tibble::tibble(
-    filter = c("Situation possible injury",
-               "911 calls",
-               "Transports",
-               "GCS Motor 1-5",
-               "Breath sounds absent, decreased, increased respiratory effort",
-               "Flail segment, retraction, accessory muscles used in breathing",
-               "Respiratory effort apneic, labored, mech. assist, rapid, shallow, weak/agonal",
-               "Airway management procedures",
-               "Pulse oximetry < 90",
-               "SBP < 110",
-               "Respiratory rate < 10 or > 29 ages < 10 yrs",
-               "(SBP + (Pt. Age * 2)) >= 70 ages < 10 yrs",
-               "Heart rate greater than SBP ages >= 10 yrs",
-               "Met trauma triage criteria 1-2 ages 65+ yrs",
-               "Met trauma triage criteria 1-2 ages 10-64 yrs",
-               "Met trauma triage criteria 1-2 ages < 10 yrs",
-               "Motor function abnormal/weakness or sensation absent",
-               "Hemiplegia left/right, weakness left/right",
-               "Tourniquet procedure",
-               "Trauma triage criteria 3-4",
-               "Cause of Injury matches V20-V39, V80, V86",
-               "Scene delay = extrication",
-               "Fall > 10 ft.",
-               "Pre-arrival trauma alert ages 65+",
-               "Pre-arrival trauma alert ages < 65",
-               "Patients 65+ yrs denominator",
-               "Patients 10-64 yrs denominator",
-               "Patients < 10 yrs denominator",
-               "Initial population",
-               "Total dataset"
-    ),
-    count = c(
-      sum(computing_population$POSSIBLE_INJURY, na.rm = TRUE),
-      sum(computing_population$CALL_911, na.rm = TRUE),
-      sum(computing_population$TRANSPORTS, na.rm = TRUE),
-      sum(computing_population$GCS, na.rm = TRUE),
-      sum(computing_population$LUNG, na.rm = TRUE),
-      sum(computing_population$CHEST, na.rm = TRUE),
-      sum(computing_population$RESPIRATORY_EFFORT, na.rm = TRUE),
-      sum(computing_population$AIRWAY_MANAGEMENT, na.rm = TRUE),
-      sum(computing_population$PULSE_OXIMETRY, na.rm = TRUE),
-      sum(computing_population$SBP, na.rm = TRUE),
-      sum(computing_population$RESPIRATORY_RATE_10, na.rm = TRUE),
-      sum(computing_population$SBP_10, na.rm = TRUE),
-      sum(computing_population$HR_SBP_10_65_PLUS, na.rm = TRUE),
-      sum(computing_population$TRAUMA_TRIAGE_1_2_65, na.rm = TRUE),
-      sum(computing_population$TRAUMA_TRIAGE_1_2_10_64, na.rm = TRUE),
-      sum(computing_population$TRAUMA_TRIAGE_1_2_10, na.rm = TRUE),
-      sum(computing_population$EXTREMITIES, na.rm = TRUE),
-      sum(computing_population$NEURO, na.rm = TRUE),
-      sum(computing_population$TOURNIQUET, na.rm = TRUE),
-      sum(computing_population$TRAUMA_TRIAGE_3_4, na.rm = TRUE),
-      sum(computing_population$INJURY_CAUSE, na.rm = TRUE),
-      sum(computing_population$SCENE_DELAY, na.rm = TRUE),
-      sum(computing_population$FALL_HEIGHT, na.rm = TRUE),
-      sum(computing_population$TRAUMA_ALERT_65, na.rm = TRUE),
-      sum(computing_population$TRAUMA_ALERT_10_64, na.rm = TRUE),
-      nrow(pop_65),
-      nrow(pop_10_64),
-      nrow(pop_10),
-      nrow(initial_population),
-      nrow(computing_population)
+    cli::cli_progress_update(
+      set = 26,
+      id = progress_bar_population,
+      force = TRUE
     )
-  )
 
-  cli::cli_progress_update(set = 33, id = progress_bar_population, force = TRUE)
+    # trauma alert > 10 and < 65 years
+    trauma_alert_10_64 <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |>
+      dplyr::filter(
+        grepl(
+          pattern = trauma_alert_values_10_64,
+          x = {{ edisposition_24_col }},
+          ignore.case = TRUE
+        )
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}) |>
+      dplyr::pull({{ erecord_01_col }})
 
-  # get the population of interest
-  trauma.14.population <- list(
-    filter_process = filter_counts,
-    population_65 = pop_65,
-    population_10_64 = pop_10_64,
-    population_10 = pop_10,
-    initial_population = initial_population,
-    computing_population = computing_population
-  )
+    cli::cli_progress_update(
+      set = 27,
+      id = progress_bar_population,
+      force = TRUE
+    )
 
-  cli::cli_progress_done(id = progress_bar_population)
+    # assign variables to final data
+    computing_population <- final_data |>
+      dplyr::mutate(
+        CALL_911 = {{ erecord_01_col }} %in% call_911_data,
+        TRANSPORTS = {{ erecord_01_col }} %in% transport_data,
+        POSSIBLE_INJURY = {{ erecord_01_col }} %in% possible_injury_data,
+        GCS = {{ erecord_01_col }} %in% GCS_data,
+        LUNG = {{ erecord_01_col }} %in% lung_assessment_data,
+        CHEST = {{ erecord_01_col }} %in% chest_data,
+        RESPIRATORY_EFFORT = {{ erecord_01_col }} %in% respiratory_effort_data,
+        AIRWAY_MANAGEMENT = {{ erecord_01_col }} %in% airway_management_data,
+        EXTREMITIES = {{ erecord_01_col }} %in% extremities_assessment_data,
+        NEURO = {{ erecord_01_col }} %in% neurological_assessment_data,
+        TOURNIQUET = {{ erecord_01_col }} %in% tourniquet_data,
+        TRAUMA_TRIAGE_3_4 = {{ erecord_01_col }} %in% trauma_triage_3_4_data,
+        FALL_HEIGHT = {{ erecord_01_col }} %in% fall_height_data,
+        SCENE_DELAY = {{ erecord_01_col }} %in% scene_delay_data,
+        INJURY_CAUSE = {{ erecord_01_col }} %in% cause_of_injury_data,
+        PULSE_OXIMETRY = {{ erecord_01_col }} %in% pulse_oximetry_data,
+        SBP = {{ erecord_01_col }} %in% SBP_data,
+        SBP_10 = {{ erecord_01_col }} %in% SBP_age_10_data,
+        HR_SBP_10_65_PLUS = {{ erecord_01_col }} %in% HR_SBP_data_10_65_plus,
+        TRAUMA_TRIAGE_1_2_65 = {{ erecord_01_col }} %in%
+          trauma_triage_1_2_data_65,
+        TRAUMA_TRIAGE_1_2_10_64 = {{ erecord_01_col }} %in%
+          trauma_triage_1_2_data_10_64,
+        TRAUMA_TRIAGE_1_2_10 = {{ erecord_01_col }} %in%
+          trauma_triage_1_2_data_10,
+        RESPIRATORY_RATE_10 = {{ erecord_01_col }} %in% respiratory_rate_data,
+        TRAUMA_ALERT_65 = {{ erecord_01_col }} %in% trauma_alert_65,
+        TRAUMA_ALERT_10_64 = {{ erecord_01_col }} %in% trauma_alert_10_64
+      )
 
-  return(trauma.14.population)
+    cli::cli_progress_update(
+      set = 28,
+      id = progress_bar_population,
+      force = TRUE
+    )
 
+    # get the initial population
+    initial_population <- computing_population |>
+      dplyr::filter(
+        POSSIBLE_INJURY,
+        CALL_911,
+        TRANSPORTS
+      )
+
+    # Adult and Pediatric Populations
+
+    cli::cli_progress_update(
+      set = 29,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    if (
+      # use the system generated and calculated ages
+
+      all(
+        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+      )
+    ) {
+      # filter older adult
+      pop_65 <- initial_population |>
+        dplyr::filter(system_age_65 | calc_age_65) |>
+        dplyr::filter(
+          GCS |
+            LUNG |
+            CHEST |
+            RESPIRATORY_EFFORT |
+            AIRWAY_MANAGEMENT |
+            PULSE_OXIMETRY |
+            HR_SBP_10_65_PLUS |
+            TRAUMA_TRIAGE_1_2_65 |
+            EXTREMITIES |
+            NEURO |
+            TOURNIQUET |
+            TRAUMA_TRIAGE_3_4 |
+            FALL_HEIGHT |
+            SCENE_DELAY |
+            INJURY_CAUSE
+        )
+
+      cli::cli_progress_update(
+        set = 30,
+        id = progress_bar_population,
+        force = TRUE
+      )
+
+      # filter ages 10 to 65
+      pop_10_64 <- initial_population |>
+        dplyr::filter(system_age_10_64 | calc_age_10_64) |>
+        dplyr::filter(
+          GCS |
+            LUNG |
+            CHEST |
+            RESPIRATORY_EFFORT |
+            AIRWAY_MANAGEMENT |
+            HR_SBP_10_65_PLUS |
+            TRAUMA_TRIAGE_1_2_10_64 |
+            EXTREMITIES |
+            NEURO |
+            TOURNIQUET |
+            TRAUMA_TRIAGE_3_4 |
+            FALL_HEIGHT |
+            SCENE_DELAY |
+            INJURY_CAUSE
+        )
+
+      cli::cli_progress_update(
+        set = 31,
+        id = progress_bar_population,
+        force = TRUE
+      )
+
+      # filter ages < 10
+      pop_10 <- initial_population |>
+        dplyr::filter(system_age_10 | calc_age_10) |>
+        dplyr::filter(
+          GCS |
+            RESPIRATORY_RATE_10 |
+            LUNG |
+            CHEST |
+            RESPIRATORY_EFFORT |
+            AIRWAY_MANAGEMENT |
+            PULSE_OXIMETRY |
+            SBP_10 |
+            TRAUMA_TRIAGE_1_2_10 |
+            EXTREMITIES |
+            NEURO |
+            TOURNIQUET |
+            TRAUMA_TRIAGE_3_4 |
+            FALL_HEIGHT |
+            SCENE_DELAY |
+            INJURY_CAUSE
+        )
+    } else if (
+      # only use the system generated values
+
+      all(
+        is.null(incident_date_col),
+        is.null(patient_DOB_col)
+      )
+    ) {
+      # filter older adult
+      pop_65 <- initial_population |>
+        dplyr::filter(system_age_65) |>
+        dplyr::filter(
+          GCS |
+            LUNG |
+            CHEST |
+            RESPIRATORY_EFFORT |
+            AIRWAY_MANAGEMENT |
+            PULSE_OXIMETRY |
+            HR_SBP_10_65_PLUS |
+            TRAUMA_TRIAGE_1_2_65 |
+            EXTREMITIES |
+            NEURO |
+            TOURNIQUET |
+            TRAUMA_TRIAGE_3_4 |
+            FALL_HEIGHT |
+            SCENE_DELAY |
+            INJURY_CAUSE
+        )
+
+      cli::cli_progress_update(
+        set = 30,
+        id = progress_bar_population,
+        force = TRUE
+      )
+
+      # filter ages 10 to 65
+      pop_10_64 <- initial_population |>
+        dplyr::filter(system_age_10_64) |>
+        dplyr::filter(
+          GCS |
+            LUNG |
+            CHEST |
+            RESPIRATORY_EFFORT |
+            AIRWAY_MANAGEMENT |
+            HR_SBP_10_65_PLUS |
+            TRAUMA_TRIAGE_1_2_10_64 |
+            EXTREMITIES |
+            NEURO |
+            TOURNIQUET |
+            TRAUMA_TRIAGE_3_4 |
+            FALL_HEIGHT |
+            SCENE_DELAY |
+            INJURY_CAUSE
+        )
+
+      cli::cli_progress_update(
+        set = 31,
+        id = progress_bar_population,
+        force = TRUE
+      )
+
+      # filter ages < 10
+      pop_10 <- initial_population |>
+        dplyr::filter(system_age_10) |>
+        dplyr::filter(
+          GCS |
+            RESPIRATORY_RATE_10 |
+            LUNG |
+            CHEST |
+            RESPIRATORY_EFFORT |
+            AIRWAY_MANAGEMENT |
+            PULSE_OXIMETRY |
+            SBP_10 |
+            TRAUMA_TRIAGE_1_2_10 |
+            EXTREMITIES |
+            NEURO |
+            TOURNIQUET |
+            TRAUMA_TRIAGE_3_4 |
+            FALL_HEIGHT |
+            SCENE_DELAY |
+            INJURY_CAUSE
+        )
+    }
+
+    # summarize
+    # progress update, these will be repeated throughout the script
+    cli::cli_progress_update(
+      set = 32,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # summarize counts for populations filtered
+    filter_counts <- tibble::tibble(
+      filter = c(
+        "Situation possible injury",
+        "911 calls",
+        "Transports",
+        "GCS Motor 1-5",
+        "Breath sounds absent, decreased, increased respiratory effort",
+        "Flail segment, retraction, accessory muscles used in breathing",
+        "Respiratory effort apneic, labored, mech. assist, rapid, shallow, weak/agonal",
+        "Airway management procedures",
+        "Pulse oximetry < 90",
+        "SBP < 110",
+        "Respiratory rate < 10 or > 29 ages < 10 yrs",
+        "(SBP + (Pt. Age * 2)) >= 70 ages < 10 yrs",
+        "Heart rate greater than SBP ages >= 10 yrs",
+        "Met trauma triage criteria 1-2 ages 65+ yrs",
+        "Met trauma triage criteria 1-2 ages 10-64 yrs",
+        "Met trauma triage criteria 1-2 ages < 10 yrs",
+        "Motor function abnormal/weakness or sensation absent",
+        "Hemiplegia left/right, weakness left/right",
+        "Tourniquet procedure", # fixed in 1.1.1
+        "Trauma triage criteria 3-4",
+        "Cause of Injury matches V20-V39, V80, V86",
+        "Scene delay = extrication",
+        "Fall > 10 ft.",
+        "Pre-arrival trauma alert ages 65+",
+        "Pre-arrival trauma alert ages < 65",
+        "Patients 65+ yrs denominator",
+        "Patients 10-64 yrs denominator",
+        "Patients < 10 yrs denominator",
+        "Initial population",
+        "Total dataset"
+      ),
+      count = c(
+        sum(computing_population$POSSIBLE_INJURY, na.rm = TRUE),
+        sum(computing_population$CALL_911, na.rm = TRUE),
+        sum(computing_population$TRANSPORTS, na.rm = TRUE),
+        sum(computing_population$GCS, na.rm = TRUE),
+        sum(computing_population$LUNG, na.rm = TRUE),
+        sum(computing_population$CHEST, na.rm = TRUE),
+        sum(computing_population$RESPIRATORY_EFFORT, na.rm = TRUE),
+        sum(computing_population$AIRWAY_MANAGEMENT, na.rm = TRUE),
+        sum(computing_population$PULSE_OXIMETRY, na.rm = TRUE),
+        sum(computing_population$SBP, na.rm = TRUE),
+        sum(computing_population$RESPIRATORY_RATE_10, na.rm = TRUE),
+        sum(computing_population$SBP_10, na.rm = TRUE),
+        sum(computing_population$HR_SBP_10_65_PLUS, na.rm = TRUE),
+        sum(computing_population$TRAUMA_TRIAGE_1_2_65, na.rm = TRUE),
+        sum(computing_population$TRAUMA_TRIAGE_1_2_10_64, na.rm = TRUE),
+        sum(computing_population$TRAUMA_TRIAGE_1_2_10, na.rm = TRUE),
+        sum(computing_population$EXTREMITIES, na.rm = TRUE),
+        sum(computing_population$NEURO, na.rm = TRUE),
+        sum(computing_population$TOURNIQUET, na.rm = TRUE),
+        sum(computing_population$TRAUMA_TRIAGE_3_4, na.rm = TRUE),
+        sum(computing_population$INJURY_CAUSE, na.rm = TRUE),
+        sum(computing_population$SCENE_DELAY, na.rm = TRUE),
+        sum(computing_population$FALL_HEIGHT, na.rm = TRUE),
+        sum(computing_population$TRAUMA_ALERT_65, na.rm = TRUE),
+        sum(computing_population$TRAUMA_ALERT_10_64, na.rm = TRUE),
+        nrow(pop_65),
+        nrow(pop_10_64),
+        nrow(pop_10),
+        nrow(initial_population),
+        nrow(computing_population)
+      )
+    )
+
+    cli::cli_progress_update(
+      set = 33,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # get the population of interest
+    trauma.14.population <- list(
+      filter_process = filter_counts,
+      population_65 = pop_65,
+      population_10_64 = pop_10_64,
+      population_10 = pop_10,
+      initial_population = initial_population,
+      computing_population = computing_population
+    )
+
+    cli::cli_progress_done(id = progress_bar_population)
+
+    return(trauma.14.population)
   }
-
 }
-
-
