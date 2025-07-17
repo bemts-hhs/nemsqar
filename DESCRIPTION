@@ -1,7 +1,7 @@
 Package: nemsqar
 Title: National Emergency Medical Service Quality Alliance Measure
     Calculations
-Version: 1.1.1
+Version: 1.1.1.9000
 Authors@R: c(
     person("Nicolas", "Foss", , "nicolas.foss@hhs.iowa.gov", role = c("aut", "cre")),
     person("Samuel", "Kordik", , "samuel.kordik@utsouthwestern.edu", role = "aut",
