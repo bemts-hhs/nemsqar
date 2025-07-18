@@ -61,27 +61,30 @@
 #' @references
 #' Clopper, C. J. & Pearson, E. S. (1934). The use of confidence or fiducial
 #' limits illustrated in the case of the binomial. Biometrika, 26, 404–413.
-#' <doi:10.2307/2331986>.
+#' \doi{10.2307/2331986}.
 #'
 #' Wilson, E.B. (1927). Probable inference, the law of succession, and
 #' statistical inference. Journal of the American Statistical Association, 22,
-#' 209–212. <doi:10.2307/2276774>.
+#' 209–212. \doi{10.2307/2276774}.
 #'
 #' @export
 #'
-nemsqa_binomial_confint <- function(data = NULL, x, n,
-                                    method = c("wilson", "clopper-pearson"),
-                                    conf.level = 0.95,
-                                    correct = TRUE) {
-
+nemsqa_binomial_confint <- function(
+  data = NULL,
+  x,
+  n,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE
+) {
   # confidence interval function for the nemsqar package
   # Set default method and adjustment method
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # If the user passes a tibble or data.frame
   if (!is.null(data)) {
-    x <- data |> dplyr::pull({{x}})
-    n <- data |> dplyr::pull({{n}})
+    x <- data |> dplyr::pull({{ x }})
+    n <- data |> dplyr::pull({{ n }})
   }
 
   # Initialize lower and upper CI bounds
@@ -94,94 +97,100 @@ nemsqa_binomial_confint <- function(data = NULL, x, n,
   # Vectorized Wilson Interval
   # Based on Wilson, E. B. (1927)
   if (method == "wilson") {
-
     # Create a vectorized version of the function for computing confidence intervals
     # for each pair of (x, n) values using prop.test().
     # Vectorize() makes the function work element-wise over vectors of x and n
     # Define an anonymous function here
-    ci <- Vectorize(function(x, n) {
+    ci <- Vectorize(
+      function(x, n) {
+        # Return NaN if n == 0 for lower and upper CIs and the estimate
+        if (n == 0) {
+          return(c(NaN, NaN, NaN))
+        }
 
-      # Return NaN if n == 0 for lower and upper CIs and the estimate
-      if (n == 0) {
-        return(c(NaN, NaN, NaN))
-      }
+        # Suppress warnings when calling prop.test
+        result <- suppressWarnings(prop.test(
+          x,
+          n,
+          correct = correct,
+          conf.level = conf.level
+        ))
 
-      # Suppress warnings when calling prop.test
-      result <- suppressWarnings(prop.test(x, n, correct = correct, conf.level = conf.level))
-
-      # Return CI bounds and the estimate
-      c(result$conf.int, result$estimate)
-
-    }, vectorize.args = c("x", "n"))  # Specify the arguments to be vectorized
+        # Return CI bounds and the estimate
+        c(result$conf.int, result$estimate)
+      },
+      vectorize.args = c("x", "n")
+    ) # Specify the arguments to be vectorized
 
     # Call the vectorized function on the x and n values
-    ci_result <- ci(x, n)  # Apply the vectorized function to the vectors of x and n
+    ci_result <- ci(x, n) # Apply the vectorized function to the vectors of x and n
 
     # Extract the lower confidence interval (CI) values from the result matrix
-    lower <- ci_result[1,]  # First row contains lower CIs
+    lower <- ci_result[1, ] # First row contains lower CIs
 
     # Extract the upper confidence interval (CI) values from the result matrix
-    upper <- ci_result[2,]  # Second row contains upper CIs
+    upper <- ci_result[2, ] # Second row contains upper CIs
 
     # Extract the estimate from the result matrix
-    estimate <- ci_result[3,]  # Third row contains the estimates
-
+    estimate <- ci_result[3, ] # Third row contains the estimates
   }
-
 
   # Vectorized Clopper-Pearson Interval
   # Based on Clopper, C. & Pearson, E. S. (1934)
   if (method == "clopper-pearson") {
-
     # Create a vectorized version of the function for computing confidence intervals
     # for each pair of (x, n) values using binom.test().
     # Vectorize() makes the function work element-wise over vectors of x and n
     # Define an anonymous function here
-    ci <- Vectorize(function(x, n) {
+    ci <- Vectorize(
+      function(x, n) {
+        if (n == 0) {
+          return(c(NaN, NaN, NaN)) # Return NaN if n == 0 for lower and upper CIs and the estimate
+        }
 
-      if (n == 0) {
-        return(c(NaN, NaN, NaN))  # Return NaN if n == 0 for lower and upper CIs and the estimate
-      }
+        # Calculate the confidence interval for the proportion using the Clopper-Pearson method
+        # calculate the estimate (proportion) as well
+        result <- binom.test(x, n, conf.level = conf.level)
 
-      # Calculate the confidence interval for the proportion using the Clopper-Pearson method
-      # calculate the estimate (proportion) as well
-      result <- binom.test(x, n, conf.level = conf.level)
-
-      # Return CI bounds and the estimate
-      c(result$conf.int, result$estimate)
-
-    }, vectorize.args = c("x", "n"))  # Specify the arguments to be vectorized
+        # Return CI bounds and the estimate
+        c(result$conf.int, result$estimate)
+      },
+      vectorize.args = c("x", "n")
+    ) # Specify the arguments to be vectorized
 
     # Call the vectorized function on the x and n values
-    ci_result <- ci(x, n)  # Apply the vectorized function to the vectors of x and n
+    ci_result <- ci(x, n) # Apply the vectorized function to the vectors of x and n
 
     # Extract the lower confidence interval (CI) values from the result matrix
-    lower <- ci_result[1,]  # First row contains lower CIs
+    lower <- ci_result[1, ] # First row contains lower CIs
 
     # Extract the upper confidence interval (CI) values from the result matrix
-    upper <- ci_result[2,]  # Second row contains upper CIs
+    upper <- ci_result[2, ] # Second row contains upper CIs
 
     # Extract the estimate from the result matrix
-    estimate <- ci_result[3,] # Third row contains the estimates
-
+    estimate <- ci_result[3, ] # Third row contains the estimates
   }
 
   # Return as a dataframe/tibble-compatible structure
-  lower_upper <- tibble::tibble(prop = estimate, lower_ci = lower, upper_ci = upper) |>
-    dplyr::mutate(prop_label = dplyr::if_else(is.nan(prop) | is.na(prop), NA_character_, pretty_percent(prop, n_decimal = 2)),
-                  .after = prop
+  lower_upper <- tibble::tibble(
+    prop = estimate,
+    lower_ci = lower,
+    upper_ci = upper
+  ) |>
+    dplyr::mutate(
+      prop_label = dplyr::if_else(
+        is.nan(prop) | is.na(prop),
+        NA_character_,
+        pretty_percent(prop, n_decimal = 2)
+      ),
+      .after = prop
     )
 
   # Elegant output with data.frame input or
   # in another workflow like dplyr::mutate()
   if (!is.null(data)) {
-
     return(dplyr::bind_cols(data, lower_upper))
-
   } else {
-
     return(lower_upper)
-
   }
-
 }
