@@ -1,4 +1,6 @@
-# nemsqar (development version)
+# nemsqar 1.1.2
+
+- Fixed broken URLs in the documentation for `nemsqa_binomial_confint()`.
 
 # nemsqar 1.1.1
 
