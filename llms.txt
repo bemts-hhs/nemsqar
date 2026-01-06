@@ -1,0 +1,264 @@
+# nemsqar
+
+`nemsqar` is an R package designed to automate the calculation of EMS
+quality metrics as defined by the National EMS Quality Alliance
+(NEMSQA). With a focus on enhancing EMS service performance through
+reliable, evidence-based quality measures, `nemsqar` aims to streamline
+metric calculation for healthcare providers, EMS agencies, and
+researchers dedicated to improving patient outcomes.
+
+## Installation
+
+You can install the development version of `nemsqar` with:
+
+``` r
+# install.packages("remotes")
+remotes::install_github("bemts-hhs/nemsqar")
+```
+
+Additionally, you may install the current version of `nemsqar` on CRAN
+via:
+
+``` r
+install.packages("nemsqar")
+```
+
+## Functionality
+
+`nemsqar` has functions that will always automate the calculation of a
+service’s performance (or even a system’s) against the currently
+approved list of NEMSQA Measures (see below). Given the large number of
+these functions, please check the full package documentation resource
+[here](https://bemts-hhs.github.io/nemsqar/).
+
+## About NEMSQA
+
+The National EMS Quality Alliance (NEMSQA) is committed to developing
+and endorsing quality measures that improve patient and provider
+experiences within EMS and healthcare systems. Originating from the EMS
+Compass Project (2014), NEMSQA has evolved as an independent
+organization, tasked with completing and sustaining the development of
+impactful, evidence-based EMS quality measures.
+
+### History of EMS Quality Measure Development
+
+The structured development of EMS quality measures began with the EMS
+Compass Project, an initiative funded by the National Highway Traffic
+Safety Administration (NHTSA) and led by the National Association of
+State EMS Officials (NASEMSO) to establish relevant performance measures
+for EMS agencies. Since then, the field has advanced under the guidance
+of NEMSQA, which works to create sustainable, practical, and high-impact
+EMS quality measures through a collaborative, scientifically driven
+process.
+
+For more about NEMSQA, please visit their official website:
+[nemsqa.org](https://www.nemsqa.org/).
+
+------------------------------------------------------------------------
+
+## NEMSQA Measure Set
+
+The National EMS Quality Alliance (NEMSQA) Measure Set includes a
+comprehensive list of EMS quality measures that have been developed and
+approved for national use. These measures are intended to guide EMS
+agencies in collecting data to assess and improve patient care. Below
+are the measures approved by the NEMSQA Measure Development Committee
+and Board of Trustees as of August 2019. Access to the full technical
+specifications for these measures is available on the NEMSQA website
+after creating a user profile.
+
+### Key for **`Developed in Package?`** Column
+
+- Developed and in package: ✔️
+- Slated for future development: 🔧
+
+| Measure ID      | Description                                                                                                                                                         | Type    | National Quality Strategy Domain | Developed in Package? |
+|:----------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------|:---------------------------------|:----------------------|
+| Airway-01       | Percentage of EMS responses from a 911 request with successful advanced airway placement on first attempt without hypotension or hypoxia in peri-intubation period. | Outcome | Clinical Process – Effectiveness | ✔                     |
+| Airway-05       | Percentage of intubation procedures from a 911 request in which adequate patient oxygen levels were achieved prior to intubation.                                   | Process | Patient Safety                   | ✔                     |
+| Airway-18       | Percentage of successful advanced airway procedures from a 911 request in which waveform capnography is used for confirmation and monitoring.                       | Process | Clinical Process – Effectiveness | ✔                     |
+| Asthma-01       | Percentage of EMS responses from a 911 request for asthma patients receiving an aerosolized beta agonist.                                                           | Process | Clinical Process – Effectiveness | ✔                     |
+| Hypoglycemia-01 | Percentage of EMS responses from a 911 request for symptomatic hypoglycemia patients who receive treatment to correct hypoglycemia.                                 | Process | Clinical Process – Effectiveness | ✔                     |
+| Respiratory-01  | Percentage of EMS responses from a 911 request for respiratory distress patients with a respiratory assessment.                                                     | Process | Clinical Process – Effectiveness | ✔                     |
+| Respiratory-02  | Percentage of EMS responses from a 911 request for patients with hypoxia receiving oxygen.                                                                          | Process | Clinical Process – Effectiveness | ✔                     |
+| Pediatrics-03b  | Percentage of EMS responses from a 911 request for patients \<18 years receiving a weight-based medication with documented weight in kg or length-based estimate.   | Process | Patient Safety                   | ✔                     |
+| Safety-01       | Percentage of EMS responses from a 911 request without lights and sirens.                                                                                           | Process | Patient Safety                   | ✔                     |
+| Safety-02       | Percentage of EMS transports from a 911 request without lights and sirens during patient transport.                                                                 | Process | Patient Safety                   | ✔                     |
+| Safety-04       | Percentage of EMS transports from a 911 or interfacility request for patients \<8 years transported with a pediatric restraint device.                              | Process | Patient Safety                   | ✔                     |
+| Seizure-02      | Percentage of EMS responses from a 911 request for patients with status epilepticus who received benzodiazepine.                                                    | Process | Clinical Process – Effectiveness | ✔                     |
+| Stroke-01       | Percentage of EMS responses from a 911 request for suspected stroke patients who had a stroke assessment.                                                           | Process | Clinical Process – Effectiveness | ✔                     |
+| Syncope-01      | Percentage of EMS responses from a 911 request for syncope patients with a 12-lead (or greater) ECG performed.                                                      | Process | Clinical Process – Effectiveness | ✔                     |
+| TBI-01          | Percentage of EMS transports from a 911 request for suspected TBI patients with documented oxygen level, ETCO2, and systolic BP.                                    | Process | Clinical Process – Effectiveness | ✔                     |
+| Trauma-01       | Percentage of EMS responses from a 911 request for injury patients assessed for pain.                                                                               | Process | Patient Experience               | ✔                     |
+| Trauma-03       | Percentage of EMS transports from a 911 request for patients whose pain score decreased during EMS encounter.                                                       | Outcome | Patient Experience               | ✔                     |
+| Trauma-04       | Percentage of EMS responses from a 911 request for patients meeting CDC trauma criteria transported to a trauma center.                                             | Process | Clinical Process – Effectiveness | ✔                     |
+| Trauma-08       | Percentage of EMS transports from a 911 request for trauma patients with documented GCS, systolic BP, and respiratory rate.                                         | Process | Clinical Process – Effectiveness | ✔                     |
+| Trauma-14       | Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert.                        | Process | Clinical Process – Effectiveness | ✔                     |
+| TTR-01          | Percentage of EMS responses from a 911 request for non-transported patients with documented vital signs.                                                            | Process | Clinical Process – Effectiveness | ✔                     |
+
+# Resources
+
+Interested persons may reference the following links and resources via
+NEMSQA’s website. Note - some materials may require a free membership to
+access.
+
+- [Measure Specification Table
+  (NEMSQA)\_2021](https://www.nemsqa.org/assets/docs/Measure-Specification-Table-NEMSQA_2021.pdf):
+  A quick-reference table that includes broad-view measure
+  specifications (i.e., numerator and denominator criteria) for each
+  measure.
+- [Project Summary with Measure
+  Narratives](https://www.nemsqa.org/assets/docs/Project-Summary-with-Measure-Narrative-NEMSQA.pdf):
+  An overview of the EMS Compass 2.0 project and narratives for each
+  measure, which include systems implications.
+- [Frequently Asked
+  Questions](https://www.nemsqa.org/nemsqa-measure-faq): Answers to
+  commonly asked questions.
+- [NEMSQA Measure Technical Release
+  Notes_2021](https://www.nemsqa.org/assets/docs/NEMSQA-Measure-Technical-Release-Notes_2021.pdf):
+  A reference table that documents changes made to the NEMSQA measures
+  during the 2021 annual review.
+- [Fact
+  Sheet](https://www.nemsqa.org/assets/docs/Fact-Sheet-NEMSQA.pdf): An
+  info page explaining why agencies and systems should migrate from EMS
+  Compass legacy/candidate measures to the National EMS Quality Alliance
+  Measure Set.
+
+# Thanks!
+
+A big loud thanks to Sheree Murphy from NEMSQA, Peter Geissert from
+Oregon EMS & Trauma Systems, Jeffrey Jarvis medical director for the
+Metropolitan Area EMS Authority (Fort Worth, Texas), and Marshall
+Washick (Washington D.C. Fire) for all their input and consultation!
+
+# Package index
+
+## All functions
+
+- [`airway_01()`](https://bemts-hhs.github.io/nemsqar/reference/airway_01.md)
+  : Airway-01 Calculation
+- [`airway_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/airway_01_population.md)
+  : Airway-01 Population
+- [`airway_05()`](https://bemts-hhs.github.io/nemsqar/reference/airway_05.md)
+  : Airway-05 Calculation
+- [`airway_05_population()`](https://bemts-hhs.github.io/nemsqar/reference/airway_05_population.md)
+  : Airway-05 Population
+- [`airway_18()`](https://bemts-hhs.github.io/nemsqar/reference/airway_18.md)
+  : Airway-18 Calculation
+- [`airway_18_population()`](https://bemts-hhs.github.io/nemsqar/reference/airway_18_population.md)
+  : Airway-18 Populations
+- [`asthma_01()`](https://bemts-hhs.github.io/nemsqar/reference/asthma_01.md)
+  : Asthma-01 Calculation
+- [`asthma_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/asthma_01_population.md)
+  : Asthma-01 Populations
+- [`hypoglycemia_01()`](https://bemts-hhs.github.io/nemsqar/reference/hypoglycemia_01.md)
+  : Hypoglycemia-01
+- [`hypoglycemia_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/hypoglycemia_01_population.md)
+  : Hypoglycemia-01 Populations
+- [`nemsqa_binomial_confint()`](https://bemts-hhs.github.io/nemsqar/reference/nemsqa_binomial_confint.md)
+  **\[experimental\]** : Wilson and Clopper-Pearson Confidence Intervals
+  for Binomial Proportions
+- [`nemsqar_airway_table`](https://bemts-hhs.github.io/nemsqar/reference/nemsqar_airway_table.md)
+  : Synthetic Test Data for eAirway Fields in National EMS Information
+  System
+- [`nemsqar_arrest_table`](https://bemts-hhs.github.io/nemsqar/reference/nemsqar_arrest_table.md)
+  : Synthetic Test Data for eArrest Fields in National EMS Information
+  System
+- [`nemsqar_disposition_table`](https://bemts-hhs.github.io/nemsqar/reference/nemsqar_disposition_table.md)
+  : Synthetic Test Data for eDisposition Fields in National EMS
+  Information System
+- [`nemsqar_exam_table`](https://bemts-hhs.github.io/nemsqar/reference/nemsqar_exam_table.md)
+  : Synthetic Test Data for eExam Fields in National EMS Information
+  System
+- [`nemsqar_injury_table`](https://bemts-hhs.github.io/nemsqar/reference/nemsqar_injury_table.md)
+  : Synthetic Test Data for eInjury Fields in National EMS Information
+  System
+- [`nemsqar_medications_table`](https://bemts-hhs.github.io/nemsqar/reference/nemsqar_medications_table.md)
+  : Synthetic Test Data for eMedications Fields in National EMS
+  Information System
+- [`nemsqar_patient_scene_table`](https://bemts-hhs.github.io/nemsqar/reference/nemsqar_patient_scene_table.md)
+  : Synthetic ePatient Data from the National Emergency Medical Services
+  Information System (NEMSIS)
+- [`nemsqar_procedures_table`](https://bemts-hhs.github.io/nemsqar/reference/nemsqar_procedures_table.md)
+  : Synthetic eProcedures Data from the National Emergency Medical
+  Services Information System (NEMSIS)
+- [`nemsqar_response_table`](https://bemts-hhs.github.io/nemsqar/reference/nemsqar_response_table.md)
+  : Synthetic eResponse Data from the National Emergency Medical
+  Services Information System (NEMSIS)
+- [`nemsqar_situation_table`](https://bemts-hhs.github.io/nemsqar/reference/nemsqar_situation_table.md)
+  : Synthetic Test Data for eSituation Fields in National EMS
+  Information System
+- [`nemsqar_vitals_table`](https://bemts-hhs.github.io/nemsqar/reference/nemsqar_vitals_table.md)
+  : Synthetic eVitals Data for NEMSIS from the National Emergency
+  Medical Services Information System (NEMSIS)
+- [`pediatrics_03b()`](https://bemts-hhs.github.io/nemsqar/reference/pediatrics_03b.md)
+  : Pediatrics-03B Calculation
+- [`pediatrics_03b_population()`](https://bemts-hhs.github.io/nemsqar/reference/pediatrics_03b_population.md)
+  : Pediatrics-03B Populations
+- [`pretty_percent()`](https://bemts-hhs.github.io/nemsqar/reference/pretty_percent.md)
+  : Format Numeric Variables as Percentages
+- [`respiratory_01()`](https://bemts-hhs.github.io/nemsqar/reference/respiratory_01.md)
+  : Respiratory-01 Calculation
+- [`respiratory_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/respiratory_01_population.md)
+  : Respiratory-01 Populations
+- [`respiratory_02()`](https://bemts-hhs.github.io/nemsqar/reference/respiratory_02.md)
+  : Respiratory-02 Calculation
+- [`respiratory_02_population()`](https://bemts-hhs.github.io/nemsqar/reference/respiratory_02_population.md)
+  : Respiratory-02 Populations
+- [`results_summarize()`](https://bemts-hhs.github.io/nemsqar/reference/results_summarize.md)
+  : Tabulate Measure Results
+- [`safety_01()`](https://bemts-hhs.github.io/nemsqar/reference/safety_01.md)
+  : Safety-01 Calculation
+- [`safety_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/safety_01_population.md)
+  : Safety-01 Populations
+- [`safety_02()`](https://bemts-hhs.github.io/nemsqar/reference/safety_02.md)
+  : Safety-02 Calculation
+- [`safety_02_population()`](https://bemts-hhs.github.io/nemsqar/reference/safety_02_population.md)
+  : Safety-02 Populations
+- [`safety_04()`](https://bemts-hhs.github.io/nemsqar/reference/safety_04.md)
+  : Safety-04 Calculation
+- [`safety_04_population()`](https://bemts-hhs.github.io/nemsqar/reference/safety_04_population.md)
+  : Safety-04 Populations
+- [`seizure_02()`](https://bemts-hhs.github.io/nemsqar/reference/seizure_02.md)
+  : Seizure-02 Calculation
+- [`seizure_02_population()`](https://bemts-hhs.github.io/nemsqar/reference/seizure_02_population.md)
+  : Seizure-02 Populations
+- [`stroke_01()`](https://bemts-hhs.github.io/nemsqar/reference/stroke_01.md)
+  : Stroke-01 Calculation
+- [`stroke_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/stroke_01_population.md)
+  : Stroke-01 Populations
+- [`summarize_measure()`](https://bemts-hhs.github.io/nemsqar/reference/summarize_measure.md)
+  : Summarize Measure
+- [`syncope_01()`](https://bemts-hhs.github.io/nemsqar/reference/syncope_01.md)
+  : Syncope-01 Calculation
+- [`syncope_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/syncope_01_population.md)
+  : Syncope-01 Populations
+- [`tbi_01()`](https://bemts-hhs.github.io/nemsqar/reference/tbi_01.md)
+  : TBI-01 Calculation
+- [`tbi_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/tbi_01_population.md)
+  : TBI-01 Populations
+- [`trauma_01()`](https://bemts-hhs.github.io/nemsqar/reference/trauma_01.md)
+  : Trauma-01 Calculation
+- [`trauma_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/trauma_01_population.md)
+  : Trauma-01 Population
+- [`trauma_03()`](https://bemts-hhs.github.io/nemsqar/reference/trauma_03.md)
+  : Trauma-03 Calculation
+- [`trauma_03_population()`](https://bemts-hhs.github.io/nemsqar/reference/trauma_03_population.md)
+  : Trauma-03 Populations
+- [`trauma_04()`](https://bemts-hhs.github.io/nemsqar/reference/trauma_04.md)
+  : Trauma-04 Calculations
+- [`trauma_04_population()`](https://bemts-hhs.github.io/nemsqar/reference/trauma_04_population.md)
+  : Trauma-04 Populations
+- [`trauma_08()`](https://bemts-hhs.github.io/nemsqar/reference/trauma_08.md)
+  : Trauma-08 Calculation
+- [`trauma_08_population()`](https://bemts-hhs.github.io/nemsqar/reference/trauma_08_population.md)
+  : Trauma-08 Populations
+- [`trauma_14()`](https://bemts-hhs.github.io/nemsqar/reference/trauma_14.md)
+  : Trauma-14 Calculation
+- [`trauma_14_population()`](https://bemts-hhs.github.io/nemsqar/reference/trauma_14_population.md)
+  : Trauma-14 Population
+- [`ttr_01()`](https://bemts-hhs.github.io/nemsqar/reference/ttr_01.md)
+  : TTR-01 Calculation
+- [`ttr_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/ttr_01_population.md)
+  : TTR-01 Populations
+
