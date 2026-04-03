@@ -366,7 +366,7 @@ airway_01_population <- function(
     }
 
     # make tables from df ----
-    # patient
+    # patient ----
     patient_scene_table <- df |>
       dplyr::select(
         -{{ evitals_01_col }},
@@ -505,21 +505,21 @@ airway_01_population <- function(
     }
 
     # get distinct tables when passed to table arguments ----
-    # patient
+    # patient ----
     patient_scene_table <- patient_scene_table |>
       dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
-    # response
+    # response ----
     response_table <- response_table |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct()
 
-    # arrest
+    # arrest ----
     arrest_table <- arrest_table |>
       dplyr::select({{ erecord_01_col }}, {{ earrest_01_col }}) |>
       dplyr::distinct()
 
-    # vitals
+    # vitals ----
     vitals_table <- vitals_table |>
       dplyr::select(
         {{ erecord_01_col }},
@@ -529,7 +529,7 @@ airway_01_population <- function(
       ) |>
       dplyr::distinct()
 
-    # procedures
+    # procedures ----
     procedures_table <- procedures_table |>
       dplyr::select(
         {{ erecord_01_col }},
@@ -713,7 +713,7 @@ airway_01_population <- function(
       rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
-    # Add calculated age in years
+    # Add calculated age in years ----
     patient_data <- patient_scene_table |>
       dplyr::mutate(
         patient_age_in_years = dplyr::case_when(

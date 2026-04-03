@@ -210,13 +210,13 @@ airway_01 <- function(
     ) &&
       is.null(df)
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("Airway-01")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for Airway-01")
 
     #############################################################################
@@ -315,7 +315,7 @@ airway_01 <- function(
     ) &&
       !is.null(df)
   ) {
-    # Start timing the function execution <-
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
     # header ----
@@ -369,7 +369,7 @@ airway_01 <- function(
       ...
     )
 
-    # create a separator <-
+    # create a separator ----
     cli::cli_text("\n")
 
     # Calculate and display the runtime ----
