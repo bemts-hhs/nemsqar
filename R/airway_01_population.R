@@ -171,7 +171,7 @@ airway_01_population <- function(
   eprocedures_05_col,
   eprocedures_06_col
 ) {
-  # Check for tables or DF
+  # Check for tables or DF ----
 
   if (
     any(
@@ -188,7 +188,7 @@ airway_01_population <- function(
     )
   }
 
-  # Ensure that df or all table arguments are fulfilled
+  # Ensure that df or all table arguments are fulfilled ----
 
   if (
     all(
@@ -205,7 +205,7 @@ airway_01_population <- function(
     )
   }
 
-  # ensure all *_col arguments are fulfilled
+  # ensure all *_col arguments are fulfilled ----
   if (
     any(
       missing(erecord_01_col),
@@ -230,7 +230,7 @@ airway_01_population <- function(
     )
   }
 
-  ###### CODES ######
+  ###### CODES ----
 
   procedures_code <- paste(
     "673005|Indirect laryngoscopy",
@@ -264,7 +264,7 @@ airway_01_population <- function(
     sep = "|"
   )
 
-  # 911 codes for eresponse.05
+  # 911 codes for eresponse.05 ----
   codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
 
   year_values <- "2516009|years"
@@ -277,7 +277,7 @@ airway_01_population <- function(
 
   month_values <- "months|2516007"
 
-  # options for the progress bar
+  # options for the progress bar ----
   # a green dot for progress
   # a white line for note done yet
   options(cli.progress_bar_style = "dot")
@@ -289,7 +289,7 @@ airway_01_population <- function(
     )
   )
 
-  # initiate the progress bar process
+  # initiate the progress bar process ----
   progress_bar_population <- cli::cli_progress_bar(
     "Running `airway_01_population()`",
     total = 19,
@@ -300,10 +300,10 @@ airway_01_population <- function(
 
   progress_bar_population
 
-  # progress update, these will be repeated throughout the script
+  # progress update, these will be repeated throughout the script ----
   cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
 
-  ####### CREATE SEPARATE TABLES FROM DF IF TABLES ARE MISSING #######
+  ####### CREATE SEPARATE TABLES FROM DF IF TABLES ARE MISSING ----
 
   if (
     all(
@@ -315,9 +315,9 @@ airway_01_population <- function(
     ) &&
       !is.null(df)
 
-    # utilize a dataframe to analyze the data for the measure analytics
+    # utilize a dataframe to analyze the data for the measure analytics ----
   ) {
-    # Ensure df is a data frame or tibble
+    # Ensure df is a data frame or tibble ----
     if (!is.data.frame(df) && !tibble::is_tibble(df)) {
       cli::cli_abort(
         c(
@@ -327,7 +327,7 @@ airway_01_population <- function(
       )
     }
 
-    # Validate date columns if provided
+    # Validate date columns if provided ----
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
@@ -349,11 +349,11 @@ airway_01_population <- function(
       }
     }
 
-    # Use quasiquotation on the vitals procedures datetime fields
+    # Use quasiquotation on the vitals procedures datetime fields ----
     vitals_datetime <- rlang::enquo(evitals_01_col)
     procedures_datetime <- rlang::enquo(eprocedures_01_col)
 
-    # Validate the datetime fields in the df
+    # Validate the datetime fields in the df ----
     if (
       (!lubridate::is.Date(df[[rlang::as_name(vitals_datetime)]]) &
         !lubridate::is.POSIXct(df[[rlang::as_name(vitals_datetime)]])) ||
@@ -365,7 +365,7 @@ airway_01_population <- function(
       )
     }
 
-    # make tables from df
+    # make tables from df ----
     # patient
     patient_scene_table <- df |>
       dplyr::select(
@@ -382,17 +382,17 @@ airway_01_population <- function(
       ) |>
       dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
-    # response
+    # response ----
     response_table <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct()
 
-    # arrest
+    # arrest ----
     arrest_table <- df |>
       dplyr::select({{ erecord_01_col }}, {{ earrest_01_col }}) |>
       dplyr::distinct()
 
-    # vitals
+    # vitals ----
     vitals_table <- df |>
       dplyr::select(
         {{ erecord_01_col }},
@@ -402,7 +402,7 @@ airway_01_population <- function(
       ) |>
       dplyr::distinct()
 
-    # procedures
+    # procedures ----
     procedures_table <- df |>
       dplyr::select(
         {{ erecord_01_col }},
@@ -425,7 +425,7 @@ airway_01_population <- function(
       return(dplyr::tibble())
     }
   } else if (
-    # else continue with the tables passed to the applicable arguments
+    # else continue with the tables passed to the applicable arguments ----
 
     all(
       !is.null(patient_scene_table),
@@ -436,7 +436,7 @@ airway_01_population <- function(
     ) &&
       is.null(df)
   ) {
-    # Ensure all tables are of class `data.frame` or `tibble`
+    # Ensure all tables are of class `data.frame` or `tibble` ----
     if (
       !all(
         is.data.frame(patient_scene_table) ||
@@ -452,7 +452,7 @@ airway_01_population <- function(
       )
     }
 
-    # Validate date columns if provided
+    # Validate date columns if provided ----
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
@@ -482,11 +482,11 @@ airway_01_population <- function(
       }
     }
 
-    # Use quasiquotation on the vitals, airway, and procedures datetime fields
+    # Use quasiquotation on the vitals, airway, and procedures datetime fields ----
     vitals_datetime <- rlang::enquo(evitals_01_col)
     procedures_datetime <- rlang::enquo(eprocedures_01_col)
 
-    # Validate the datetime fields in the patient_scene_table
+    # Validate the datetime fields in the patient_scene_table ----
     if (
       (!lubridate::is.Date(vitals_table[[rlang::as_name(vitals_datetime)]]) &
         !lubridate::is.POSIXct(vitals_table[[rlang::as_name(
@@ -504,7 +504,7 @@ airway_01_population <- function(
       )
     }
 
-    # get distinct tables when passed to table arguments
+    # get distinct tables when passed to table arguments ----
     # patient
     patient_scene_table <- patient_scene_table |>
       dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
@@ -555,9 +555,9 @@ airway_01_population <- function(
 
   cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
 
-  # Get first intubation procedure & time intervals for vitals
+  # Get first intubation procedure & time intervals for vitals ----
   suppressWarnings(
-    # needed due to ranking procedure and missing procedure times)
+    # needed due to ranking procedure and missing procedure times) ----
 
     procedures_table |>
       dplyr::filter(!is.na({{ eprocedures_03_col }})) |>
@@ -603,7 +603,7 @@ airway_01_population <- function(
 
   cli::cli_progress_update(set = 3, id = progress_bar_population, force = TRUE)
 
-  # conditionally perform age in years calculations
+  # conditionally perform age in years calculations ----
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
@@ -616,7 +616,7 @@ airway_01_population <- function(
       force = TRUE
     )
 
-    # Add calculated age in years
+    # Add calculated age in years ----
     patient_data <- patient_scene_table |>
       dplyr::mutate(
         CLEANED_AGE_UNITS = dplyr::case_when(
@@ -707,7 +707,7 @@ airway_01_population <- function(
         )
       )
   } else if (
-    # condition where the user does not pass the incident date nor the patient DOB
+    # condition where the user does not pass the incident date nor the patient DOB ----
     all(
       rlang::quo_is_null(rlang::enquo(incident_date_col)),
       rlang::quo_is_null(rlang::enquo(patient_DOB_col))
@@ -757,7 +757,7 @@ airway_01_population <- function(
 
   cli::cli_progress_update(set = 5, id = progress_bar_population, force = TRUE)
 
-  # Get 911 responses
+  # Get 911 responses ----
   response_table |>
     dplyr::mutate(
       call_911 = grepl(
@@ -772,7 +772,7 @@ airway_01_population <- function(
 
   cli::cli_progress_update(set = 6, id = progress_bar_population, force = TRUE)
 
-  # get arrest table with needed exclusion classifications
+  # get arrest table with needed exclusion classifications ----
   arrest_table_filter <- arrest_table |>
     dplyr::mutate(
       exclude_pta_ca = !grepl(
@@ -787,7 +787,7 @@ airway_01_population <- function(
 
   cli::cli_progress_update(set = 7, id = progress_bar_population, force = TRUE)
 
-  # Initial manipulations of patient data for filters
+  # Initial manipulations of patient data for filters ----
   patient_data |>
     dplyr::mutate(
       call_911 = {{ erecord_01_col }} %in% call_911_data,
@@ -825,18 +825,18 @@ airway_01_population <- function(
   cli::cli_progress_update(set = 8, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
-  # Numerator
+  # Numerator ----
   # utilized the procedures table with ranked, non-missing eprocedures.03
   # which will return mostly non-missing eprocedures.01
   ###_____________________________________________________________________________
 
-  # get record IDs for the vitals table
+  # get record IDs for the vitals table ----
   procedures_ID <- procedures_ordered |>
     dplyr::filter(target_procedures) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
 
-  # get applicable vitals
+  # get applicable vitals ----
   # only those that match patients in the
   # procedures table with the target procedures
   vitals_table_filter <- vitals_table |>
@@ -847,12 +847,12 @@ airway_01_population <- function(
     )
 
   ###_____________________________________________________________________________
-  # this is the initial table for calculating
+  # this is the initial table for calculating ----
   # setup process
   ###_____________________________________________________________________________
 
   suppressWarnings(
-    # warnings can pop up related to left join relationships
+    # warnings can pop up related to left join relationships ----
 
     procedures_ordered |>
       dplyr::filter(target_procedures) |>
@@ -882,17 +882,17 @@ airway_01_population <- function(
   ) -> calculating_table
 
   ###_____________________________________________________________________________
-  # break calculations up into different tables and then join
+  # break calculations up into different tables and then join ----
   ###_____________________________________________________________________________
 
   cli::cli_progress_update(set = 9, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
-  # numerator part 1 for all patients
+  # numerator part 1 for all patients ----
   ###_____________________________________________________________________________
 
   suppressWarnings(
-    # in case max() does not find non-missing groups
+    # in case max() does not find non-missing groups ----
 
     calculating_table |>
       dplyr::summarize(
@@ -923,11 +923,11 @@ airway_01_population <- function(
   cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
-  # numerator 1 part 2 for age specific SBP
+  # numerator 1 part 2 for age specific SBP ----
   ###_____________________________________________________________________________
 
   suppressWarnings(
-    # in case max() does not find non-missing groups
+    # in case max() does not find non-missing groups ----
 
     calculating_table |>
       dplyr::summarize(
@@ -957,7 +957,7 @@ airway_01_population <- function(
   cli::cli_progress_update(set = 11, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
-  # numerator 2, SBP check for all ages
+  # numerator 2, SBP check for all ages ----
   ###_____________________________________________________________________________
 
   suppressWarnings(
@@ -989,7 +989,7 @@ airway_01_population <- function(
   cli::cli_progress_update(set = 12, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
-  # join the computations to finalize calculations
+  # join the computations to finalize calculations ----
   ###_____________________________________________________________________________
 
   computing_population_dev1 |>
@@ -1016,7 +1016,7 @@ airway_01_population <- function(
   cli::cli_progress_update(set = 13, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
-  # finalize numerator calculations
+  # finalize numerator calculations ----
   ###_____________________________________________________________________________
 
   computing_population_dev |>
@@ -1026,23 +1026,23 @@ airway_01_population <- function(
         ~ dplyr::if_else(is.na(.) | is.infinite(.), 0, .)
       ),
 
-      # final numerator 1 part 1
+      # final numerator 1 part 1 ----
       numerator_all_spo2 = as.integer(
         (numerator1_all_spo2 + numerator2_all_spo2) > 1
       ),
 
-      # final numerator 1 part 2
+      # final numerator 1 part 2 ----
       numerator_sbp_age = as.integer((numerator1_sbp + numerator2_sbp) > 1),
 
-      # final numerator 1
+      # final numerator 1 ----
       numerator_1 = as.integer((numerator_all_spo2 + numerator_sbp_age) > 1),
 
-      # numerator 2 part 2 final
+      # numerator 2 part 2 final ----
       numerator_all_sbp = as.integer(
         (numerator1_all_sbp + numerator2_all_sbp) > 1
       ),
 
-      # numerator 2 final
+      # numerator 2 final ----
       numerator_2 = as.integer((numerator_all_spo2 + numerator_all_sbp) > 1)
     ) -> computing_population_dev
   ###_____________________________________________________________________________
@@ -1050,13 +1050,13 @@ airway_01_population <- function(
   cli::cli_progress_update(set = 14, id = progress_bar_population, force = TRUE)
 
   ###_____________________________________________________________________________
-  # final join for the computing population
+  # final join for the computing population ----
   # will have the same number of rows as the
   # initial procedures table if ran through dplyr::distinct()
   ###_____________________________________________________________________________
 
   computing_population <- suppressWarnings(
-    # warnings can pop up related to left join relationships
+    # warnings can pop up related to left join relationships ----
 
     procedures_ordered |>
       dplyr::left_join(
@@ -1074,7 +1074,7 @@ airway_01_population <- function(
 
   cli::cli_progress_update(set = 15, id = progress_bar_population, force = TRUE)
 
-  # get the initial population
+  # get the initial population ----
   initial_population <- computing_population |>
     dplyr::filter(
       target_procedures,
@@ -1084,7 +1084,7 @@ airway_01_population <- function(
 
   cli::cli_progress_update(set = 16, id = progress_bar_population, force = TRUE)
 
-  # get the adult population
+  # get the adult population ----
   adult_pop <- initial_population |>
     dplyr::filter(
       adult_population,
@@ -1093,14 +1093,14 @@ airway_01_population <- function(
       exclude_pta_ca
     ) |>
 
-    # get the first procedure
+    # get the first procedure ----
     # some patients have the same time on more than one procedure's data
     dplyr::filter(
       {{ eprocedures_01_col }} == min({{ eprocedures_01_col }}, na.rm = TRUE),
       .by = {{ erecord_01_col }}
     ) |>
 
-    # upon investigation, once you get the earliest airway time, the
+    # upon investigation, once you get the earliest airway time, the ----
     # performance on all procedures with that time will be the same
     # so to get the correct count of first airways, we run dplyr::distinct
     # down to the erecord.01 level
@@ -1108,7 +1108,7 @@ airway_01_population <- function(
 
   cli::cli_progress_update(set = 17, id = progress_bar_population, force = TRUE)
 
-  # get the peds population
+  # get the peds population ----
   peds_pop <- initial_population |>
     dplyr::filter(
       pedi_population,
@@ -1118,14 +1118,14 @@ airway_01_population <- function(
       exclude_newborns
     ) |>
 
-    # get the first procedure
+    # get the first procedure ----
     # some patients have the same time on more than one procedure's data
     dplyr::filter(
       {{ eprocedures_01_col }} == min({{ eprocedures_01_col }}, na.rm = TRUE),
       .by = {{ erecord_01_col }}
     ) |>
 
-    # upon investigation, once you get the earliest airway time, the
+    # upon investigation, once you get the earliest airway time, the ----
     # performance on all procedures with that time will be the same
     # so to get the correct count of first airways, we run dplyr::distinct
     # down to the erecord.01 level
@@ -1133,7 +1133,7 @@ airway_01_population <- function(
 
   cli::cli_progress_update(set = 18, id = progress_bar_population, force = TRUE)
 
-  # get total number of procedures examined
+  # get total number of procedures examined ----
   n_procedures <- procedures_ordered |>
     dplyr::filter(!is.na({{ eprocedures_03_col }})) |>
     dplyr::distinct(
@@ -1143,7 +1143,7 @@ airway_01_population <- function(
     ) |>
     nrow()
 
-  # summarize counts for populations filtered
+  # summarize counts for populations filtered ----
   filter_counts <- tibble::tibble(
     filter = c(
       "Invasive airway procedures",
@@ -1214,7 +1214,7 @@ airway_01_population <- function(
 
   cli::cli_progress_update(set = 19, id = progress_bar_population, force = TRUE)
 
-  # Get populations
+  # Get populations ----
   airway.01.population <- list(
     filter_process = filter_counts,
 
