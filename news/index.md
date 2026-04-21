@@ -1,6 +1,15 @@
 # Changelog
 
-## nemsqar (development version)
+## nemsqar 1.1.3
+
+- Added navigation to all major functions in the package. This was done
+  by adding `----` to the end of most comments.
+- Some functions received code formatting due to the addition of the
+  `----` or just by virtue of editing the script, the `Air` package does
+  the formatting via Positron.
+- Improved comments in the code in some functions and removed one code
+  redundancy in a function that performed the exact same check that the
+  `*_table` and `df` arguments were receiving inputs simulataneously.
 
 ## nemsqar 1.1.2
 
