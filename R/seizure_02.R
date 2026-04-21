@@ -116,7 +116,7 @@ seizure_02 <- function(
   correct = TRUE,
   ...
 ) {
-  # Set default method and adjustment method
+  # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # Ensure that not all table arguments AND the df argument are fulfilled ----
@@ -130,16 +130,16 @@ seizure_02 <- function(
     ) &&
       is.null(df)
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("Seizure-02")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for Seizure-02")
 
-    # gather the population of interest
+    # gather the population of interest ----
     seizure_02_populations <- seizure_02_population(
       patient_scene_table = patient_scene_table,
       response_table = response_table,
@@ -156,13 +156,13 @@ seizure_02 <- function(
       emedications_03_col = {{ emedications_03_col }}
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # header for calculations
+    # header for calculations ----
     cli::cli_h2("Calculating Seizure-02")
 
-    # summarize
+    # summarize ----
     seizure.02 <- results_summarize(
       total_population = seizure_02_populations$initial_population,
       adult_population = seizure_02_populations$adults,
@@ -177,10 +177,10 @@ seizure_02 <- function(
       ...
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
@@ -197,10 +197,10 @@ seizure_02 <- function(
       )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
     if (
       any(seizure.02$denominator < 10) &&
@@ -222,16 +222,16 @@ seizure_02 <- function(
     ) &&
       !is.null(df)
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("Seizure-02")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for Seizure-02")
 
-    # gather the population of interest
+    # gather the population of interest ----
     seizure_02_populations <- seizure_02_population(
       df = df,
       erecord_01_col = {{ erecord_01_col }},
@@ -245,10 +245,10 @@ seizure_02 <- function(
       emedications_03_col = {{ emedications_03_col }}
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # header for calculations
+    # header for calculations ----
     cli::cli_h2("Calculating Seizure-02")
 
     # summarize
@@ -266,10 +266,10 @@ seizure_02 <- function(
       ...
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
@@ -286,10 +286,10 @@ seizure_02 <- function(
       )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
     if (
       any(seizure.02$denominator < 10) &&
