@@ -13,16 +13,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/bemts-hhs/nemsqar/blob/v1.1.2.9000/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/bemts-hhs/nemsqar/blob/v1.1.3/DESCRIPTION)
 
 Foss N, Kordik S (2026). *nemsqar: National Emergency Medical Service
-Quality Alliance Measure Calculations*. R package version 1.1.2.9000,
+Quality Alliance Measure Calculations*. R package version 1.1.3,
 <https://github.com/bemts-hhs/nemsqar>.
 
     @Manual{,
       title = {nemsqar: National Emergency Medical Service Quality Alliance Measure Calculations},
       author = {Nicolas Foss and Samuel Kordik},
       year = {2026},
-      note = {R package version 1.1.2.9000},
+      note = {R package version 1.1.3},
       url = {https://github.com/bemts-hhs/nemsqar},
     }

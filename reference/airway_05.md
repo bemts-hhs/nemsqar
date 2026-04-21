@@ -282,7 +282,7 @@ airway_05(df = NULL,
 #> ── Calculating Airway-05 ──
 #> 
 #> 
-#> ✔ Function completed in 0.27s.
+#> ✔ Function completed in 0.25s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 2 × 8
