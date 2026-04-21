@@ -139,7 +139,7 @@ tbi_01 <- function(
   correct = TRUE,
   ...
 ) {
-  # Set default method and adjustment method
+  # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # Ensure that not all table arguments AND the df argument are fulfilled ----
@@ -155,16 +155,16 @@ tbi_01 <- function(
     ) &&
       is.null(df)
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("TBI-01")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for TBI-01")
 
-    # gather the population of interest
+    # gather the population of interest ----
     tbi_01_populations <- tbi_01_population(
       patient_scene_table = patient_scene_table,
       response_table = response_table,
@@ -187,13 +187,13 @@ tbi_01 <- function(
       evitals_26_col = {{ evitals_26_col }}
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # header for calculations
+    # header for calculations ----
     cli::cli_h2("Calculating TBI-01")
 
-    # summarize
+    # summarize ----
     tbi.01 <- results_summarize(
       total_population = NULL,
       adult_population = tbi_01_populations$adults,
@@ -208,10 +208,10 @@ tbi_01 <- function(
       ...
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
@@ -228,10 +228,10 @@ tbi_01 <- function(
       )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
     if (
       any(tbi.01$denominator < 10) && method == "wilson" && confidence_interval
@@ -252,16 +252,16 @@ tbi_01 <- function(
     ) &&
       !is.null(df)
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("TBI-01")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for TBI-01")
 
-    # gather the population of interest
+    # gather the population of interest ----
     tbi_01_populations <- tbi_01_population(
       df = df,
       erecord_01_col = {{ erecord_01_col }},
@@ -280,13 +280,13 @@ tbi_01 <- function(
       evitals_26_col = {{ evitals_26_col }}
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # header for calculations
+    # header for calculations ----
     cli::cli_h2("Calculating TBI-01")
 
-    # summarize
+    # summarize ----
     tbi.01 <- results_summarize(
       total_population = NULL,
       adult_population = tbi_01_populations$adults,
@@ -301,10 +301,10 @@ tbi_01 <- function(
       ...
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
@@ -321,10 +321,10 @@ tbi_01 <- function(
       )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
     if (
       any(tbi.01$denominator < 10) && method == "wilson" && confidence_interval
