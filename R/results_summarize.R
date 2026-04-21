@@ -57,78 +57,84 @@
 #'
 #' @author Samuel Kordik, BBA, BS
 #'
-results_summarize <- function(total_population = NULL,
-                              adult_population = NULL,
-                              peds_population = NULL,
-                              measure_name,
-                              population_names = c("all", "adults", "peds"),
-                              numerator_col,
-                              confidence_interval = FALSE,
-                              method = c("wilson", "clopper-pearson"),
-                              conf.level = 0.95,
-                              correct = TRUE,
-                              ...) {
-
-  # Ensure method argument is valid (either "wilson" or "clopper-pearson")
+results_summarize <- function(
+  total_population = NULL,
+  adult_population = NULL,
+  peds_population = NULL,
+  measure_name,
+  population_names = c("all", "adults", "peds"),
+  numerator_col,
+  confidence_interval = FALSE,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE,
+  ...
+) {
+  # Ensure method argument is valid (either "wilson" or "clopper-pearson") ----
   method <- match.arg(method)
 
-  # Ensure confidence_interval is a logical (TRUE/FALSE)
+  # Ensure confidence_interval is a logical (TRUE/FALSE) ----
   confidence_interval <- as.logical(confidence_interval)
 
-  # Ensure population_names are valid
+  # Ensure population_names are valid ----
   valid_populations <- c("all", "adults", "peds")
-  population_names <- match.arg(population_names, choices = valid_populations, several.ok = TRUE)
+  population_names <- match.arg(
+    population_names,
+    choices = valid_populations,
+    several.ok = TRUE
+  )
 
-  # Dictionary to map population codes to descriptive labels
-  population_labels <- c(all = "All",
-                         adults = "Adults",
-                         peds = "Peds")
+  # Dictionary to map population codes to descriptive labels ----
+  population_labels <- c(all = "All", adults = "Adults", peds = "Peds")
 
-  # Initialize an empty list to store results for each selected population
+  # Initialize an empty list to store results for each selected population ----
   results_list <- list()
 
-  # Check if "adult" is in the input vector and process if present
+  # Check if "adult" is in the input vector and process if present ----
   if ("adults" %in% population_names && !is.null(adult_population)) {
-    results_list$adult <- adult_population |> summarize_measure(
-      measure_name,
-      population_labels[["adults"]],  # Use standardized label
-      {{numerator_col}},
-      confidence_interval,
-      method = method,
-      conf.level = conf.level,
-      correct = correct,
-      ...
-    )
+    results_list$adult <- adult_population |>
+      summarize_measure(
+        measure_name,
+        population_labels[["adults"]], # Use standardized label
+        {{ numerator_col }},
+        confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
+        ...
+      )
   }
 
-  # Check if "peds" is in the input vector and process if present
+  # Check if "peds" is in the input vector and process if present ----
   if ("peds" %in% population_names && !is.null(peds_population)) {
-    results_list$peds <- peds_population |> summarize_measure(
-      measure_name,
-      population_labels[["peds"]],  # Use standardized label
-      {{numerator_col}},
-      confidence_interval,
-      method = method,
-      conf.level = conf.level,
-      correct = correct,
-      ...
-    )
+    results_list$peds <- peds_population |>
+      summarize_measure(
+        measure_name,
+        population_labels[["peds"]], # Use standardized label
+        {{ numerator_col }},
+        confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
+        ...
+      )
   }
 
-  # Check if "total" is in the input vector and process if present
+  # Check if "total" is in the input vector and process if present ----
   if ("all" %in% population_names && !is.null(total_population)) {
-    results_list$total <- total_population |> summarize_measure(
-      measure_name,
-      population_labels[["all"]],  # Use standardized label
-      {{numerator_col}},
-      confidence_interval,
-      method = method,
-      conf.level = conf.level,
-      correct = correct,
-      ...
-    )
+    results_list$total <- total_population |>
+      summarize_measure(
+        measure_name,
+        population_labels[["all"]], # Use standardized label
+        {{ numerator_col }},
+        confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
+        ...
+      )
   }
 
-  # Combine only the selected population results into a single tibble
+  # Combine only the selected population results into a single tibble ----
   dplyr::bind_rows(results_list)
 }

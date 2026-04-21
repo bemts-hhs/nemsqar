@@ -6,7 +6,7 @@ Authors@R: c(
     person("Nicolas", "Foss", , "nicolas.foss@hhs.iowa.gov", role = c("aut", "cre")),
     person("Samuel", "Kordik", , "samuel.kordik@utsouthwestern.edu", role = "aut",
            comment = c(ORCID = "0000-0003-4230-1154")),
-    person("Alyssa", "Green", , "awhim@nemsqa.org", role = "ctb"),
+    person("Alyssa", "Green", , "agreen@nemsqa.org", role = "ctb"),
     person("Iowa Department of Health and Human Services", role = "cph")
   )
 Description: Designed to automate the calculation of Emergency Medical

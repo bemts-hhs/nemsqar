@@ -102,210 +102,217 @@
 #'
 #' @export
 #'
-pediatrics_03b <- function(df = NULL,
-                           patient_scene_table = NULL,
-                           response_table = NULL,
-                           exam_table = NULL,
-                           medications_table = NULL,
-                           erecord_01_col,
-                           incident_date_col = NULL,
-                           patient_DOB_col = NULL,
-                           epatient_15_col,
-                           epatient_16_col,
-                           eresponse_05_col,
-                           eexam_01_col,
-                           eexam_02_col,
-                           emedications_03_col,
-                           emedications_04_col,
-                           confidence_interval = FALSE,
-                           method = c("wilson", "clopper-pearson"),
-                           conf.level = 0.95,
-                           correct = TRUE,
-                           ...) {
-
-  # Set default method and adjustment method
+pediatrics_03b <- function(
+  df = NULL,
+  patient_scene_table = NULL,
+  response_table = NULL,
+  exam_table = NULL,
+  medications_table = NULL,
+  erecord_01_col,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col,
+  epatient_16_col,
+  eresponse_05_col,
+  eexam_01_col,
+  eexam_02_col,
+  emedications_03_col,
+  emedications_04_col,
+  confidence_interval = FALSE,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE,
+  ...
+) {
+  # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
-  if(all(
-    !is.null(patient_scene_table),
-    !is.null(response_table),
-    !is.null(exam_table),
-    !is.null(medications_table)
-  )
+  # Ensure that not all table arguments AND the df argument are fulfilled ----
+  # User must pass either `df` or all table arguments, but not both
 
-  && is.null(df)
-
+  if (
+    all(
+      !is.null(patient_scene_table),
+      !is.null(response_table),
+      !is.null(exam_table),
+      !is.null(medications_table)
+    ) &&
+      is.null(df)
   ) {
+    # Start timing the function execution ----
+    start_time <- Sys.time()
 
-  # Start timing the function execution
-  start_time <- Sys.time()
+    # header ----
+    cli::cli_h1("Pediatrics-03b")
 
-  # header
-  cli::cli_h1("Pediatrics-03b")
+    # header ----
+    cli::cli_h2("Gathering Records for Pediatrics-03b")
 
-  # header
-  cli::cli_h2("Gathering Records for Pediatrics-03b")
+    # gather the population of interest ----
+    pediatrics03b_populations <- pediatrics_03b_population(
+      patient_scene_table = patient_scene_table,
+      response_table = response_table,
+      exam_table = exam_table,
+      medications_table = medications_table,
+      erecord_01_col = {{ erecord_01_col }},
+      incident_date_col = {{ incident_date_col }},
+      patient_DOB_col = {{ patient_DOB_col }},
+      epatient_15_col = {{ epatient_15_col }},
+      epatient_16_col = {{ epatient_16_col }},
+      eresponse_05_col = {{ eresponse_05_col }},
+      eexam_01_col = {{ eexam_01_col }},
+      eexam_02_col = {{ eexam_02_col }},
+      emedications_03_col = {{ emedications_03_col }},
+      emedications_04_col = {{ emedications_04_col }}
+    )
 
-  # gather the population of interest
-  pediatrics03b_populations <- pediatrics_03b_population(patient_scene_table = patient_scene_table,
-                                                         response_table = response_table,
-                                                         exam_table = exam_table,
-                                                         medications_table = medications_table,
-                                                         erecord_01_col = {{ erecord_01_col }},
-                                                         incident_date_col = {{ incident_date_col }},
-                                                         patient_DOB_col = {{ patient_DOB_col }},
-                                                         epatient_15_col = {{ epatient_15_col }},
-                                                         epatient_16_col = {{ epatient_16_col }},
-                                                         eresponse_05_col = {{ eresponse_05_col }},
-                                                         eexam_01_col = {{ eexam_01_col }},
-                                                         eexam_02_col = {{ eexam_02_col }},
-                                                         emedications_03_col = {{ emedications_03_col }},
-                                                         emedications_04_col = {{ emedications_04_col }}
-                                                         )
+    # create a separator ----
+    cli::cli_text("\n")
 
-  # create a separator
-  cli::cli_text("\n")
+    # header for calculations ----
+    cli::cli_h2("Calculating Pediatrics-03b")
 
-  # header for calculations
-  cli::cli_h2("Calculating Pediatrics-03b")
+    # summary ----
+    pediatrics.03b <- results_summarize(
+      total_population = NULL,
+      adult_population = NULL,
+      peds_population = pediatrics03b_populations$initial_population,
+      measure_name = "Pediatrics-03b",
+      population_names = "peds",
+      numerator_col = DOCUMENTED_WEIGHT,
+      confidence_interval = confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
+      ...
+    )
 
-  # summary
-  pediatrics.03b <- results_summarize(total_population = NULL,
-                                      adult_population = NULL,
-                                      peds_population = pediatrics03b_populations$initial_population,
-                                      measure_name = "Pediatrics-03b",
-                                      population_names = "peds",
-                                      numerator_col = DOCUMENTED_WEIGHT,
-                                      confidence_interval = confidence_interval,
-                                      method = method,
-                                      conf.level = conf.level,
-                                      correct = correct,
-                                      ...)
+    # create a separator ----
+    cli::cli_text("\n")
 
-  # create a separator
-  cli::cli_text("\n")
+    # Calculate and display the runtime ----
+    end_time <- Sys.time()
+    run_time_secs <- difftime(end_time, start_time, units = "secs")
+    run_time_secs <- as.numeric(run_time_secs)
 
-  # Calculate and display the runtime
-  end_time <- Sys.time()
-  run_time_secs <- difftime(end_time, start_time, units = "secs")
-  run_time_secs <- as.numeric(run_time_secs)
+    if (run_time_secs >= 60) {
+      run_time <- round(run_time_secs / 60, 2) # Convert to minutes and round
+      cli::cli_alert_success(
+        "Function completed in {cli::col_green(paste0(run_time, 'm'))}."
+      )
+    } else {
+      run_time <- round(run_time_secs, 2) # Keep in seconds and round
+      cli::cli_alert_success(
+        "Function completed in {cli::col_green(paste0(run_time, 's'))}."
+      )
+    }
 
-  if (run_time_secs >= 60) {
+    # create a separator ----
+    cli::cli_text("\n")
 
-    run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-    cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
+    # when confidence interval is "wilson", check for n < 10 ----
+    # to warn about incorrect Chi-squared approximation
+    if (
+      any(pediatrics.03b$denominator < 10) &&
+        method == "wilson" &&
+        confidence_interval
+    ) {
+      cli::cli_warn(
+        "In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10."
+      )
+    }
 
-  } else {
-
-    run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-    cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
-
-  }
-
-  # create a separator
-  cli::cli_text("\n")
-
-  # when confidence interval is "wilson", check for n < 10
-  # to warn about incorrect Chi-squared approximation
-  if (any(pediatrics.03b$denominator < 10) && method == "wilson" && confidence_interval) {
-
-    cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
-
-  }
-
-  return(pediatrics.03b)
-
-  } else if(
-
+    return(pediatrics.03b)
+  } else if (
     all(
       is.null(patient_scene_table),
       is.null(response_table),
       is.null(exam_table),
       is.null(medications_table)
-    )
+    ) &&
+      !is.null(df)
+  ) {
+    # utilize a dataframe to analyze the data for the measure analytics ----
 
-    && !is.null(df)
-
-  )
-
-  # utilize a dataframe to analyze the data for the measure analytics
-
-  {
-
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("Pediatrics-03b")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for Pediatrics-03b")
 
-  pediatrics03b_populations <- pediatrics_03b_population(df = df,
-                                                         erecord_01_col = {{ erecord_01_col }},
-                                                         incident_date_col = {{ incident_date_col }},
-                                                         patient_DOB_col = {{ patient_DOB_col }},
-                                                         epatient_15_col = {{ epatient_15_col }},
-                                                         epatient_16_col = {{ epatient_16_col }},
-                                                         eresponse_05_col = {{ eresponse_05_col }},
-                                                         eexam_01_col = {{ eexam_01_col }},
-                                                         eexam_02_col = {{ eexam_02_col }},
-                                                         emedications_03_col = {{ emedications_03_col }},
-                                                         emedications_04_col = {{ emedications_04_col }}
-                                                         )
+    pediatrics03b_populations <- pediatrics_03b_population(
+      df = df,
+      erecord_01_col = {{ erecord_01_col }},
+      incident_date_col = {{ incident_date_col }},
+      patient_DOB_col = {{ patient_DOB_col }},
+      epatient_15_col = {{ epatient_15_col }},
+      epatient_16_col = {{ epatient_16_col }},
+      eresponse_05_col = {{ eresponse_05_col }},
+      eexam_01_col = {{ eexam_01_col }},
+      eexam_02_col = {{ eexam_02_col }},
+      emedications_03_col = {{ emedications_03_col }},
+      emedications_04_col = {{ emedications_04_col }}
+    )
 
-  # create a separator
-  cli::cli_text("\n")
+    # create a separator ----
+    cli::cli_text("\n")
 
-  # header for calculations
-  cli::cli_h2("Calculating Pediatrics-03b")
+    # header for calculations ----
+    cli::cli_h2("Calculating Pediatrics-03b")
 
-  # summary
-  pediatrics.03b <- results_summarize(total_population = NULL,
-                                      adult_population = NULL,
-                                      peds_population = pediatrics03b_populations$initial_population,
-                                      measure_name = "Pediatrics-03b",
-                                      population_names = "peds",
-                                      numerator_col = DOCUMENTED_WEIGHT,
-                                      confidence_interval = confidence_interval,
-                                      method = method,
-                                      conf.level = conf.level,
-                                      correct = correct,
-                                      ...)
+    # summary ----
+    pediatrics.03b <- results_summarize(
+      total_population = NULL,
+      adult_population = NULL,
+      peds_population = pediatrics03b_populations$initial_population,
+      measure_name = "Pediatrics-03b",
+      population_names = "peds",
+      numerator_col = DOCUMENTED_WEIGHT,
+      confidence_interval = confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
+      ...
+    )
 
-  # create a separator
-  cli::cli_text("\n")
+    # create a separator ----
+    cli::cli_text("\n")
 
-  # Calculate and display the runtime
-  end_time <- Sys.time()
-  run_time_secs <- difftime(end_time, start_time, units = "secs")
-  run_time_secs <- as.numeric(run_time_secs)
+    # Calculate and display the runtime ----
+    end_time <- Sys.time()
+    run_time_secs <- difftime(end_time, start_time, units = "secs")
+    run_time_secs <- as.numeric(run_time_secs)
 
-  if (run_time_secs >= 60) {
+    if (run_time_secs >= 60) {
+      run_time <- round(run_time_secs / 60, 2) # Convert to minutes and round
+      cli::cli_alert_success(
+        "Function completed in {cli::col_green(paste0(run_time, 'm'))}."
+      )
+    } else {
+      run_time <- round(run_time_secs, 2) # Keep in seconds and round
+      cli::cli_alert_success(
+        "Function completed in {cli::col_green(paste0(run_time, 's'))}."
+      )
+    }
 
-    run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-    cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
+    # create a separator ----
+    cli::cli_text("\n")
 
-  } else {
+    # when confidence interval is "wilson", check for n < 10 ----
+    # to warn about incorrect Chi-squared approximation
+    if (
+      any(pediatrics.03b$denominator < 10) &&
+        method == "wilson" &&
+        confidence_interval
+    ) {
+      cli::cli_warn(
+        "In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10."
+      )
+    }
 
-    run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-    cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
-
+    return(pediatrics.03b)
   }
-
-  # create a separator
-  cli::cli_text("\n")
-
-  # when confidence interval is "wilson", check for n < 10
-  # to warn about incorrect Chi-squared approximation
-  if (any(pediatrics.03b$denominator < 10) && method == "wilson" && confidence_interval) {
-
-    cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
-
-  }
-
-  return(pediatrics.03b)
-
-  }
-
 }

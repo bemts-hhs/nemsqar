@@ -96,155 +96,61 @@
 #'
 #' @export
 #'
-respiratory_01 <- function(df = NULL,
-                           patient_scene_table = NULL,
-                           response_table = NULL,
-                           situation_table = NULL,
-                           vitals_table = NULL,
-                           erecord_01_col,
-                           incident_date_col = NULL,
-                           patient_DOB_col = NULL,
-                           epatient_15_col,
-                           epatient_16_col,
-                           eresponse_05_col,
-                           esituation_11_col,
-                           esituation_12_col,
-                           evitals_12_col,
-                           evitals_14_col,
-                           confidence_interval = FALSE,
-                           method = c("wilson", "clopper-pearson"),
-                           conf.level = 0.95,
-                           correct = TRUE,
-                           ...) {
-
-  # Set default method and adjustment method
+respiratory_01 <- function(
+  df = NULL,
+  patient_scene_table = NULL,
+  response_table = NULL,
+  situation_table = NULL,
+  vitals_table = NULL,
+  erecord_01_col,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col,
+  epatient_16_col,
+  eresponse_05_col,
+  esituation_11_col,
+  esituation_12_col,
+  evitals_12_col,
+  evitals_14_col,
+  confidence_interval = FALSE,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE,
+  ...
+) {
+  # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
-  # utilize applicable tables to analyze the data for the measure
-  if(
+  # Ensure that not all table arguments AND the df argument are fulfilled ----
+  # User must pass either `df` or all table arguments, but not both
+  if (
     all(
       !is.null(patient_scene_table),
       !is.null(response_table),
       !is.null(situation_table),
       !is.null(vitals_table)
-    )
-
-    && is.null(df)
-
+    ) &&
+      is.null(df)
   ) {
-
-  # Start timing the function execution
-  start_time <- Sys.time()
-
-  # header
-  cli::cli_h1("Respiratory-01")
-
-  # header
-  cli::cli_h2("Gathering Records for Respiratory-01")
-
-  # gather the population of interest
-  respiratory_01_populations <- respiratory_01_population(
-                           patient_scene_table = patient_scene_table,
-                           response_table = response_table,
-                           situation_table = situation_table,
-                           vitals_table = vitals_table,
-                           erecord_01_col = {{ erecord_01_col }},
-                           incident_date_col = {{ incident_date_col }},
-                           patient_DOB_col = {{ patient_DOB_col}},
-                           epatient_15_col = {{ epatient_15_col}},
-                           epatient_16_col = {{ epatient_16_col }},
-                           eresponse_05_col = {{ eresponse_05_col }},
-                           esituation_11_col = {{ esituation_11_col }},
-                           esituation_12_col = {{ esituation_12_col }},
-                           evitals_12_col = {{ evitals_12_col }},
-                           evitals_14_col = {{ evitals_14_col }}
-                           )
-
-    # create a separator
-    cli::cli_text("\n")
-
-    # header for calculations
-    cli::cli_h2("Calculating Respiratory-01")
-
-    # summary
-    respiratory.01 <- results_summarize(total_population = respiratory_01_populations$initial_population,
-                                   adult_population = respiratory_01_populations$adults,
-                                   peds_population = respiratory_01_populations$peds,
-                                   population_names = c("all", "adults", "peds"),
-                                   measure_name = "Respiratory-01",
-                                   numerator_col = VITALS_CHECK,
-                                   confidence_interval = confidence_interval,
-                                   method = method,
-                                   conf.level = conf.level,
-                                   correct = correct,
-                                   ...)
-
-    # create a separator
-    cli::cli_text("\n")
-
-    # Calculate and display the runtime
-    end_time <- Sys.time()
-    run_time_secs <- difftime(end_time, start_time, units = "secs")
-    run_time_secs <- as.numeric(run_time_secs)
-
-    if (run_time_secs >= 60) {
-
-      run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
-
-    } else {
-
-      run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
-
-    }
-
-    # create a separator
-    cli::cli_text("\n")
-
-    # when confidence interval is "wilson", check for n < 10
-    # to warn about incorrect Chi-squared approximation
-    if (any(respiratory.01$denominator < 10) && method == "wilson" && confidence_interval) {
-
-      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
-
-    }
-
-    return(respiratory.01)
-
-  } else if(
-
-    all(
-      is.null(patient_scene_table),
-      is.null(response_table),
-      is.null(situation_table),
-      is.null(vitals_table)
-    )
-
-    && !is.null(df)
-
-  )
-
-  # utilize a dataframe to analyze the data for the measure analytics
-
-  {
-
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("Respiratory-01")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for Respiratory-01")
 
-    # gather the population of interest
+    # gather the population of interest ----
     respiratory_01_populations <- respiratory_01_population(
-      df = df,
+      patient_scene_table = patient_scene_table,
+      response_table = response_table,
+      situation_table = situation_table,
+      vitals_table = vitals_table,
       erecord_01_col = {{ erecord_01_col }},
       incident_date_col = {{ incident_date_col }},
-      patient_DOB_col = {{ patient_DOB_col}},
-      epatient_15_col = {{ epatient_15_col}},
+      patient_DOB_col = {{ patient_DOB_col }},
+      epatient_15_col = {{ epatient_15_col }},
       epatient_16_col = {{ epatient_16_col }},
       eresponse_05_col = {{ eresponse_05_col }},
       esituation_11_col = {{ esituation_11_col }},
@@ -253,58 +159,154 @@ respiratory_01 <- function(df = NULL,
       evitals_14_col = {{ evitals_14_col }}
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # header for calculations
+    # header for calculations ----
     cli::cli_h2("Calculating Respiratory-01")
 
-    # summary
-    respiratory.01 <- results_summarize(total_population = respiratory_01_populations$initial_population,
-                                        adult_population = respiratory_01_populations$adults,
-                                        peds_population = respiratory_01_populations$peds,
-                                        population_names = c("all", "adults", "peds"),
-                                        measure_name = "Respiratory-01",
-                                        numerator_col = VITALS_CHECK,
-                                        confidence_interval = confidence_interval,
-                                        method = method,
-                                        conf.level = conf.level,
-                                        correct = correct,
-                                        ...)
+    # summary ----
+    respiratory.01 <- results_summarize(
+      total_population = respiratory_01_populations$initial_population,
+      adult_population = respiratory_01_populations$adults,
+      peds_population = respiratory_01_populations$peds,
+      population_names = c("all", "adults", "peds"),
+      measure_name = "Respiratory-01",
+      numerator_col = VITALS_CHECK,
+      confidence_interval = confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
+      ...
+    )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
 
     if (run_time_secs >= 60) {
-
-      run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
-
+      run_time <- round(run_time_secs / 60, 2) # Convert to minutes and round
+      cli::cli_alert_success(
+        "Function completed in {cli::col_green(paste0(run_time, 'm'))}."
+      )
     } else {
-
-      run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
-
+      run_time <- round(run_time_secs, 2) # Keep in seconds and round
+      cli::cli_alert_success(
+        "Function completed in {cli::col_green(paste0(run_time, 's'))}."
+      )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
-    if (any(respiratory.01$denominator < 10) && method == "wilson" && confidence_interval) {
-
-      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
-
+    if (
+      any(respiratory.01$denominator < 10) &&
+        method == "wilson" &&
+        confidence_interval
+    ) {
+      cli::cli_warn(
+        "In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10."
+      )
     }
 
     return(respiratory.01)
+  } else if (
+    all(
+      is.null(patient_scene_table),
+      is.null(response_table),
+      is.null(situation_table),
+      is.null(vitals_table)
+    ) &&
+      !is.null(df)
+  ) {
+    # utilize a dataframe to analyze the data for the measure analytics ----
 
+    # Start timing the function execution ----
+    start_time <- Sys.time()
+
+    # header ----
+    cli::cli_h1("Respiratory-01")
+
+    # header ----
+    cli::cli_h2("Gathering Records for Respiratory-01")
+
+    # gather the population of interest ----
+    respiratory_01_populations <- respiratory_01_population(
+      df = df,
+      erecord_01_col = {{ erecord_01_col }},
+      incident_date_col = {{ incident_date_col }},
+      patient_DOB_col = {{ patient_DOB_col }},
+      epatient_15_col = {{ epatient_15_col }},
+      epatient_16_col = {{ epatient_16_col }},
+      eresponse_05_col = {{ eresponse_05_col }},
+      esituation_11_col = {{ esituation_11_col }},
+      esituation_12_col = {{ esituation_12_col }},
+      evitals_12_col = {{ evitals_12_col }},
+      evitals_14_col = {{ evitals_14_col }}
+    )
+
+    # create a separator ----
+    cli::cli_text("\n")
+
+    # header for calculations ----
+    cli::cli_h2("Calculating Respiratory-01")
+
+    # summary
+    respiratory.01 <- results_summarize(
+      total_population = respiratory_01_populations$initial_population,
+      adult_population = respiratory_01_populations$adults,
+      peds_population = respiratory_01_populations$peds,
+      population_names = c("all", "adults", "peds"),
+      measure_name = "Respiratory-01",
+      numerator_col = VITALS_CHECK,
+      confidence_interval = confidence_interval,
+      method = method,
+      conf.level = conf.level,
+      correct = correct,
+      ...
+    )
+
+    # create a separator ----
+    cli::cli_text("\n")
+
+    # Calculate and display the runtime ----
+    end_time <- Sys.time()
+    run_time_secs <- difftime(end_time, start_time, units = "secs")
+    run_time_secs <- as.numeric(run_time_secs)
+
+    if (run_time_secs >= 60) {
+      run_time <- round(run_time_secs / 60, 2) # Convert to minutes and round
+      cli::cli_alert_success(
+        "Function completed in {cli::col_green(paste0(run_time, 'm'))}."
+      )
+    } else {
+      run_time <- round(run_time_secs, 2) # Keep in seconds and round
+      cli::cli_alert_success(
+        "Function completed in {cli::col_green(paste0(run_time, 's'))}."
+      )
+    }
+
+    # create a separator ----
+    cli::cli_text("\n")
+
+    # when confidence interval is "wilson", check for n < 10 ----
+    # to warn about incorrect Chi-squared approximation
+    if (
+      any(respiratory.01$denominator < 10) &&
+        method == "wilson" &&
+        confidence_interval
+    ) {
+      cli::cli_warn(
+        "In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10."
+      )
+    }
+
+    return(respiratory.01)
   }
-
 }
