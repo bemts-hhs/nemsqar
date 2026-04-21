@@ -157,6 +157,9 @@ ttr_01 <- function(
   # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
+  # Ensure that not all table arguments AND the df argument are fulfilled ----
+  # User must pass either `df` or all table arguments, but not both
+
   if (
     any(
       !is.null(patient_scene_table),

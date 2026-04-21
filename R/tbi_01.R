@@ -112,35 +112,38 @@
 #'
 #' @export
 #'
-tbi_01 <- function(df = NULL,
-                   patient_scene_table = NULL,
-                   response_table = NULL,
-                   situation_table = NULL,
-                   disposition_table = NULL,
-                   vitals_table = NULL,
-                   erecord_01_col,
-                   incident_date_col = NULL,
-                   patient_DOB_col = NULL,
-                   epatient_15_col,
-                   epatient_16_col,
-                   eresponse_05_col,
-                   esituation_11_col,
-                   esituation_12_col,
-                   transport_disposition_col,
-                   evitals_06_col,
-                   evitals_12_col,
-                   evitals_16_col,
-                   evitals_23_col,
-                   evitals_26_col,
-                   confidence_interval = FALSE,
-                   method = c("wilson", "clopper-pearson"),
-                   conf.level = 0.95,
-                   correct = TRUE,
-                   ...
-                   ) {
-
+tbi_01 <- function(
+  df = NULL,
+  patient_scene_table = NULL,
+  response_table = NULL,
+  situation_table = NULL,
+  disposition_table = NULL,
+  vitals_table = NULL,
+  erecord_01_col,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col,
+  epatient_16_col,
+  eresponse_05_col,
+  esituation_11_col,
+  esituation_12_col,
+  transport_disposition_col,
+  evitals_06_col,
+  evitals_12_col,
+  evitals_16_col,
+  evitals_23_col,
+  evitals_26_col,
+  confidence_interval = FALSE,
+  method = c("wilson", "clopper-pearson"),
+  conf.level = 0.95,
+  correct = TRUE,
+  ...
+) {
   # Set default method and adjustment method
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
+
+  # Ensure that not all table arguments AND the df argument are fulfilled ----
+  # User must pass either `df` or all table arguments, but not both
 
   if (
     all(
@@ -150,9 +153,8 @@ tbi_01 <- function(df = NULL,
       !is.null(situation_table),
       !is.null(response_table)
     ) &&
-    is.null(df)
+      is.null(df)
   ) {
-
     # Start timing the function execution
     start_time <- Sys.time()
 
@@ -163,26 +165,27 @@ tbi_01 <- function(df = NULL,
     cli::cli_h2("Gathering Records for TBI-01")
 
     # gather the population of interest
-    tbi_01_populations <- tbi_01_population(patient_scene_table = patient_scene_table,
-                                                    response_table = response_table,
-                                                    situation_table = situation_table,
-                                                    disposition_table = disposition_table,
-                                                    vitals_table = vitals_table,
-                                                    erecord_01_col = {{ erecord_01_col }},
-                                                    incident_date_col = {{ incident_date_col }},
-                                                    patient_DOB_col = {{ patient_DOB_col }},
-                                                    epatient_15_col = {{ epatient_15_col }},
-                                                    epatient_16_col = {{ epatient_16_col }},
-                                                    eresponse_05_col = {{ eresponse_05_col }},
-                                                    esituation_11_col = {{ esituation_11_col }},
-                                                    esituation_12_col = {{ esituation_12_col }},
-                                                    transport_disposition_col = {{ transport_disposition_col }},
-                                                    evitals_06_col = {{ evitals_06_col }},
-                                                    evitals_12_col = {{ evitals_12_col }},
-                                                    evitals_16_col = {{ evitals_16_col }},
-                                                    evitals_23_col = {{ evitals_23_col }},
-                                                    evitals_26_col = {{ evitals_26_col }}
-                                            )
+    tbi_01_populations <- tbi_01_population(
+      patient_scene_table = patient_scene_table,
+      response_table = response_table,
+      situation_table = situation_table,
+      disposition_table = disposition_table,
+      vitals_table = vitals_table,
+      erecord_01_col = {{ erecord_01_col }},
+      incident_date_col = {{ incident_date_col }},
+      patient_DOB_col = {{ patient_DOB_col }},
+      epatient_15_col = {{ epatient_15_col }},
+      epatient_16_col = {{ epatient_16_col }},
+      eresponse_05_col = {{ eresponse_05_col }},
+      esituation_11_col = {{ esituation_11_col }},
+      esituation_12_col = {{ esituation_12_col }},
+      transport_disposition_col = {{ transport_disposition_col }},
+      evitals_06_col = {{ evitals_06_col }},
+      evitals_12_col = {{ evitals_12_col }},
+      evitals_16_col = {{ evitals_16_col }},
+      evitals_23_col = {{ evitals_23_col }},
+      evitals_26_col = {{ evitals_26_col }}
+    )
 
     # create a separator
     cli::cli_text("\n")
@@ -214,15 +217,15 @@ tbi_01 <- function(df = NULL,
     run_time_secs <- as.numeric(run_time_secs)
 
     if (run_time_secs >= 60) {
-
-      run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
-
+      run_time <- round(run_time_secs / 60, 2) # Convert to minutes and round
+      cli::cli_alert_success(
+        "Function completed in {cli::col_green(paste0(run_time, 'm'))}."
+      )
     } else {
-
-      run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
-
+      run_time <- round(run_time_secs, 2) # Keep in seconds and round
+      cli::cli_alert_success(
+        "Function completed in {cli::col_green(paste0(run_time, 's'))}."
+      )
     }
 
     # create a separator
@@ -230,14 +233,15 @@ tbi_01 <- function(df = NULL,
 
     # when confidence interval is "wilson", check for n < 10
     # to warn about incorrect Chi-squared approximation
-    if (any(tbi.01$denominator < 10) && method == "wilson" && confidence_interval) {
-
-      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
-
+    if (
+      any(tbi.01$denominator < 10) && method == "wilson" && confidence_interval
+    ) {
+      cli::cli_warn(
+        "In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10."
+      )
     }
 
     return(tbi.01)
-
   } else if (
     all(
       is.null(patient_scene_table),
@@ -246,9 +250,8 @@ tbi_01 <- function(df = NULL,
       is.null(situation_table),
       is.null(response_table)
     ) &&
-    !is.null(df)
+      !is.null(df)
   ) {
-
     # Start timing the function execution
     start_time <- Sys.time()
 
@@ -259,22 +262,23 @@ tbi_01 <- function(df = NULL,
     cli::cli_h2("Gathering Records for TBI-01")
 
     # gather the population of interest
-    tbi_01_populations <- tbi_01_population(df = df,
-                                            erecord_01_col = {{ erecord_01_col }},
-                                            incident_date_col = {{ incident_date_col }},
-                                            patient_DOB_col = {{ patient_DOB_col }},
-                                            epatient_15_col = {{ epatient_15_col }},
-                                            epatient_16_col = {{ epatient_16_col }},
-                                            eresponse_05_col = {{ eresponse_05_col }},
-                                            esituation_11_col = {{ esituation_11_col }},
-                                            esituation_12_col = {{ esituation_12_col }},
-                                            transport_disposition_col = {{ transport_disposition_col }},
-                                            evitals_06_col = {{ evitals_06_col }},
-                                            evitals_12_col = {{ evitals_12_col }},
-                                            evitals_16_col = {{ evitals_16_col }},
-                                            evitals_23_col = {{ evitals_23_col }},
-                                            evitals_26_col = {{ evitals_26_col }}
-                                            )
+    tbi_01_populations <- tbi_01_population(
+      df = df,
+      erecord_01_col = {{ erecord_01_col }},
+      incident_date_col = {{ incident_date_col }},
+      patient_DOB_col = {{ patient_DOB_col }},
+      epatient_15_col = {{ epatient_15_col }},
+      epatient_16_col = {{ epatient_16_col }},
+      eresponse_05_col = {{ eresponse_05_col }},
+      esituation_11_col = {{ esituation_11_col }},
+      esituation_12_col = {{ esituation_12_col }},
+      transport_disposition_col = {{ transport_disposition_col }},
+      evitals_06_col = {{ evitals_06_col }},
+      evitals_12_col = {{ evitals_12_col }},
+      evitals_16_col = {{ evitals_16_col }},
+      evitals_23_col = {{ evitals_23_col }},
+      evitals_26_col = {{ evitals_26_col }}
+    )
 
     # create a separator
     cli::cli_text("\n")
@@ -306,15 +310,15 @@ tbi_01 <- function(df = NULL,
     run_time_secs <- as.numeric(run_time_secs)
 
     if (run_time_secs >= 60) {
-
-      run_time <- round(run_time_secs / 60, 2)  # Convert to minutes and round
-      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 'm'))}.")
-
+      run_time <- round(run_time_secs / 60, 2) # Convert to minutes and round
+      cli::cli_alert_success(
+        "Function completed in {cli::col_green(paste0(run_time, 'm'))}."
+      )
     } else {
-
-      run_time <- round(run_time_secs, 2)  # Keep in seconds and round
-      cli::cli_alert_success("Function completed in {cli::col_green(paste0(run_time, 's'))}.")
-
+      run_time <- round(run_time_secs, 2) # Keep in seconds and round
+      cli::cli_alert_success(
+        "Function completed in {cli::col_green(paste0(run_time, 's'))}."
+      )
     }
 
     # create a separator
@@ -322,14 +326,14 @@ tbi_01 <- function(df = NULL,
 
     # when confidence interval is "wilson", check for n < 10
     # to warn about incorrect Chi-squared approximation
-    if (any(tbi.01$denominator < 10) && method == "wilson" && confidence_interval) {
-
-      cli::cli_warn("In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10.")
-
+    if (
+      any(tbi.01$denominator < 10) && method == "wilson" && confidence_interval
+    ) {
+      cli::cli_warn(
+        "In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10."
+      )
     }
 
     return(tbi.01)
-
   }
-
 }
