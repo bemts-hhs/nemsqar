@@ -5,43 +5,14 @@
 #' This function processes and analyzes the dataset to generate the populations
 #' of interest needed to perform calculations to obtain performance data.
 #'
-#' @param df A data frame or tibble containing the dataset to be processed.
-#'   Default is `NULL`.
-#' @param patient_scene_table A data frame or tibble containing only ePatient
-#'   and eScene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eResponse
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param procedures_table A data frame or tibble containing only the
-#'   eProcedures fields needed for this measure's calculations. Default is
-#'   `NULL`.
+#' @inheritParams airway_01_population
+#' @inheritParams airway_05_population
 #' @param airway_table A data frame or tibble containing only the eAirway fields
 #'   needed for this measure's calculations. Default is `NULL`.
-#' @param vitals_table A data frame or tibble containing only the eVitals fields
-#'   needed for this measure's calculations. Default is `NULL`.
-#' @param erecord_01_col Column name containing the unique patient record
-#'   identifier.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column name for patient information (exact purpose
-#'   unclear).
-#' @param epatient_16_col Column name for patient information (exact purpose
-#'   unclear).
-#' @param eresponse_05_col Column name for emergency response codes.
-#' @param eprocedures_01_col Column name for procedure times or other related
-#'   data.
-#' @param eprocedures_02_col Column name for whether or not the procedure was
-#'   performed prior to EMS care being provided.
-#' @param eprocedures_03_col Column name for procedure codes.
-#' @param eprocedures_06_col Column name for procedure success codes.
 #' @param eairway_02_col Column name for airway procedure data (datetime).
 #'   Default is `NULL`.
 #' @param eairway_04_col Column name for airway procedure data. Default is
 #'   `NULL`.
-#' @param evitals_01_col Column name for vital signs data (datetime).
 #' @param evitals_16_col Column name for additional vital signs data.
 #'
 #' @return A list that contains the following:

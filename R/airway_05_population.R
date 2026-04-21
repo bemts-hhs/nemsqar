@@ -5,41 +5,7 @@
 #' This function processes and analyzes the dataset to generate the populations
 #' of interest needed to perform calculations to obtain performance data.
 #'
-#' @param df A dataframe or tibble contianing EMS data where each row represents
-#'   an observation and columns represent features. Default is `NULL`.
-#' @param patient_scene_table A data.frame or tibble containing at least
-#'   epatient, escene, and earrest.01 fields as a fact table. Default is `NULL`.
-#' @param response_table A data.frame or tibble containing at least the
-#'   eresponse fields needed for this measure's calculations. Default is `NULL`.
-#' @param arrest_table A data.frame or tibble containing at least the earrest
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param procedures_table A dataframe or tibble containing at least the
-#'   eProcedures fields needed. Default is `NULL`.
-#' @param vitals_table A dataframe or tibble containing at least the eVitals
-#'   fields needed. Default is `NULL`.
-#' @param erecord_01_col The column representing the EMS record unique
-#'   identifier.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column representing the patient's numeric age agnostic
-#'   of unit.
-#' @param epatient_16_col Column representing the patient's age unit ("Years",
-#'   "Months", "Days", "Hours", or "Minutes").
-#' @param eresponse_05_col Column that contains eResponse.05.
-#' @param earrest_01_col Column representing whether or not the patient is in
-#'   arrest.
-#' @param evitals_01_col Date-time or POSIXct column containing vital signs
-#'   date/time
-#' @param evitals_12_col Numeric column containing pulse oximetry values.
-#' @param eprocedures_01_col Date-time or POSIXct column for procedures
-#' @param eprocedures_02_col Column name for whether or not the procedure was
-#'   performed prior to EMS care being provided.
-#' @param eprocedures_03_col Column containing procedure codes with or without
-#'   procedure names.
+#' @inheritParams airway_01_population
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

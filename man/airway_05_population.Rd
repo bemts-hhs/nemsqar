@@ -27,22 +27,22 @@ airway_05_population(
 }
 \arguments{
 \item{df}{A dataframe or tibble contianing EMS data where each row represents
-an observation and columns represent features. Default is \code{NULL}.}
+an observation and columns represent features.}
 
 \item{patient_scene_table}{A data.frame or tibble containing at least
-epatient, escene, and earrest.01 fields as a fact table. Default is \code{NULL}.}
+epatient, escene, and earrest.01 fields as a fact table.}
 
 \item{response_table}{A data.frame or tibble containing at least the
-eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+eresponse fields needed for this measure's calculations.}
 
 \item{arrest_table}{A data.frame or tibble containing at least the earrest
-fields needed for this measure's calculations. Default is \code{NULL}.}
+fields needed for this measure's calculations.}
 
 \item{procedures_table}{A dataframe or tibble containing at least the
-eProcedures fields needed. Default is \code{NULL}.}
+eProcedures fields needed.}
 
 \item{vitals_table}{A dataframe or tibble containing at least the eVitals
-fields needed. Default is \code{NULL}.}
+fields needed.}
 
 \item{erecord_01_col}{The column representing the EMS record unique
 identifier.}

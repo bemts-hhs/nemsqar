@@ -5,47 +5,7 @@
 #' Calculates the proportion of times when the first endotracheal intubation
 #' attempt is successful with no peri-intubation hypoxia or hypotension.
 #'
-#' @param df A dataframe or tibble containing EMS data where each row represents
-#'   an observation and columns represent features.
-#' @param patient_scene_table A data.frame or tibble containing at least
-#'   epatient, escene, and earrest.01 fields as a fact table.
-#' @param response_table A data.frame or tibble containing at least the
-#'   eresponse fields needed for this measure's calculations.
-#' @param arrest_table A data.frame or tibble containing at least the earrest
-#'   fields needed for this measure's calculations.
-#' @param procedures_table A dataframe or tibble containing at least the
-#'   eProcedures fields needed.
-#' @param vitals_table A dataframe or tibble containing at least the eVitals
-#'   fields needed.
-#' @param erecord_01_col The column representing the EMS record unique
-#'   identifier.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column representing the patient's numeric age agnostic
-#'   of unit.
-#' @param epatient_16_col Column representing the patient's age unit ("Years",
-#'   "Months", "Days", "Hours", or "Minutes").
-#' @param eresponse_05_col Column that contains eResponse.05.
-#' @param earrest_01_col  Column representing whether or not the patient is in
-#'   arrest.
-#' @param evitals_01_col  Date-time or POSIXct column containing vital signs
-#'   date/time
-#' @param evitals_06_col  Numeric column containing systolic blood pressure
-#'   values
-#' @param evitals_12_col  Numeric column containing pulse oximetry values.
-#' @param eprocedures_01_col  Date-time or POSIXct column for procedures
-#' @param eprocedures_02_col Column name for whether or not the procedure was
-#'   performed prior to EMS care being provided.
-#' @param eprocedures_03_col  Column containing procedure codes with or without
-#'   procedure names.
-#' @param eprocedures_05_col  Column containing a count for how many times
-#'   procedure was attempted.
-#' @param eprocedures_06_col  Column indicating whether or not procedure was
-#'   successful.
+#' @inheritParams airway_01_population
 #' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
 #'   `TRUE`, the function calculates a confidence interval for the proportion
 #'   estimate.

@@ -34,7 +34,7 @@ airway_01(
 )
 }
 \arguments{
-\item{df}{A dataframe or tibble containing EMS data where each row represents
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
 an observation and columns represent features.}
 
 \item{patient_scene_table}{A data.frame or tibble containing at least

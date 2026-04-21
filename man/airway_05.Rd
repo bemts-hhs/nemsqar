@@ -31,32 +31,34 @@ airway_05(
 )
 }
 \arguments{
-\item{df}{A dataframe or tibble containing EMS data where each row represents
-an observation and columns represent features. Default is \code{NULL}.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
 \item{patient_scene_table}{A data.frame or tibble containing at least
-epatient, escene, and earrest.01 fields as a fact table. Default is \code{NULL}.}
+epatient, escene, and earrest.01 fields as a fact table.}
 
 \item{response_table}{A data.frame or tibble containing at least the
-eresponse fields needed for this measure's calculations. Default is \code{NULL}.}
+eresponse fields needed for this measure's calculations.}
 
 \item{arrest_table}{A data.frame or tibble containing at least the earrest
-fields needed for this measure's calculations. Default is \code{NULL}.}
+fields needed for this measure's calculations.}
 
 \item{procedures_table}{A dataframe or tibble containing at least the
-eProcedures fields needed. Default is \code{NULL}.}
+eProcedures fields needed.}
 
 \item{vitals_table}{A dataframe or tibble containing at least the eVitals
-fields needed. Default is \code{NULL}.}
+fields needed.}
 
 \item{erecord_01_col}{The column representing the EMS record unique
 identifier.}
 
-\item{incident_date_col}{Column that contains the incident date. Default is
-\code{NULL}.}
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
-\item{patient_DOB_col}{Column that contains the patient's date of birth.
-Default is \code{NULL}.}
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
 
 \item{epatient_15_col}{Column representing the patient's numeric age agnostic
 of unit.}
