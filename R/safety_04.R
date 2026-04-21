@@ -130,7 +130,7 @@ safety_04 <- function(
   correct = TRUE,
   ...
 ) {
-  # Set default method and adjustment method
+  # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # Ensure that not all table arguments AND the df argument are fulfilled ----
@@ -146,16 +146,16 @@ safety_04 <- function(
     ) &&
       is.null(df)
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("Safety-04")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for Safety-04")
 
-    # gather the population of interest
+    # gather the population of interest ----
     safety_04_populations <- safety_04_population(
       patient_scene_table = patient_scene_table,
       response_table = response_table,
@@ -176,13 +176,13 @@ safety_04 <- function(
       transport_disposition_col = {{ transport_disposition_col }}
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # header for calculations
+    # header for calculations ----
     cli::cli_h2("Calculating Safety-04")
 
-    # summary
+    # summary ----
     safety.04 <- results_summarize(
       total_population = NULL,
       adult_population = NULL,
@@ -197,10 +197,10 @@ safety_04 <- function(
       ...
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
@@ -217,10 +217,10 @@ safety_04 <- function(
       )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
     if (
       any(safety.04$denominator < 10) &&
@@ -244,18 +244,18 @@ safety_04 <- function(
     ) &&
       !is.null(df)
 
-    # utilize a dataframe to analyze the data for the measure analytics
+    # utilize a dataframe to analyze the data for the measure analytics ----
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("Safety-04")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for Safety-04")
 
-    # gather the population of interest
+    # gather the population of interest ----
     safety_04_populations <- safety_04_population(
       df = df,
       erecord_01_col = {{ erecord_01_col }},
@@ -271,13 +271,13 @@ safety_04 <- function(
       transport_disposition_col = {{ transport_disposition_col }}
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # header for calculations
+    # header for calculations ----
     cli::cli_h2("Calculating Safety-04")
 
-    # summary
+    # summary ----
     safety.04 <- results_summarize(
       total_population = NULL,
       adult_population = NULL,
@@ -292,10 +292,10 @@ safety_04 <- function(
       ...
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
@@ -312,10 +312,10 @@ safety_04 <- function(
       )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
     if (
       any(safety.04$denominator < 10) &&
