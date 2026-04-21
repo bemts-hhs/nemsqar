@@ -150,7 +150,7 @@ respiratory_01_population <- function(
     )
   }
 
-  # ensure all *_col arguments are fulfilled
+  # ensure all *_col arguments are fulfilled ----
   if (
     any(
       missing(erecord_01_col),
@@ -170,21 +170,7 @@ respiratory_01_population <- function(
     )
   }
 
-  if (
-    all(
-      is.null(patient_scene_table),
-      is.null(response_table),
-      is.null(situation_table),
-      is.null(vitals_table)
-    ) &&
-      is.null(df)
-  ) {
-    cli::cli_abort(
-      "{.fn respiratory_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
-    )
-  }
-
-  # options for the progress bar
+  # options for the progress bar ----
   # a green dot for progress
   # a white line for note done yet
   options(cli.progress_bar_style = "dot")
@@ -196,7 +182,7 @@ respiratory_01_population <- function(
     )
   )
 
-  # initiate the progress bar process
+  # initiate the progress bar process ----
   progress_bar_population <- cli::cli_progress_bar(
     "Running `respiratory_01_population()`",
     total = 13,
@@ -205,15 +191,15 @@ respiratory_01_population <- function(
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions
+  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions ----
 
-  # 911 codes for eresponse.05
+  # 911 codes for eresponse.05 ----
   codes_911 <- "2205001|2205003|2205009"
 
-  # get codes as a regex to filter primary impression fields
+  # get codes as a regex to filter primary impression fields ----
   resp_codes <- "(?:I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9)"
 
-  # days, hours, minutes, months
+  # days, hours, minutes, months ----
 
   minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
 
@@ -227,7 +213,7 @@ respiratory_01_population <- function(
 
   month_values <- "months|2516007"
 
-  # utilize applicable tables to analyze the data for the measure
+  # utilize applicable tables to analyze the data for the measure ----
   if (
     all(
       !is.null(patient_scene_table),
@@ -237,7 +223,7 @@ respiratory_01_population <- function(
     ) &&
       is.null(df)
   ) {
-    # Ensure df is a data frame or tibble
+    # Ensure df is a data frame or tibble ----
     if (
       any(
         !(is.data.frame(patient_scene_table) &&
@@ -259,18 +245,18 @@ respiratory_01_population <- function(
       )
     }
 
-    # Only check the date columns if they are in fact passed
+    # Only check the date columns if they are in fact passed ----
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # Use quasiquotation on the date variables to check format
+      # Use quasiquotation on the date variables to check format ----
       incident_date <- rlang::enquo(incident_date_col)
       patient_dob <- rlang::enquo(patient_DOB_col)
 
-      # Convert quosures to names and check the column classes
+      # Convert quosures to names and check the column classes ----
       incident_date_name <- rlang::as_name(incident_date)
       patient_dob_name <- rlang::as_name(patient_dob)
 
@@ -288,7 +274,7 @@ respiratory_01_population <- function(
 
     progress_bar_population
 
-    # progress update, these will be repeated throughout the script
+    # progress update, these will be repeated throughout the script ----
     cli::cli_progress_update(
       set = 1,
       id = progress_bar_population,
@@ -296,7 +282,7 @@ respiratory_01_population <- function(
     )
 
     ###_____________________________________________________________________________
-    # fact table
+    # fact table ----
     # the user should ensure that variables beyond those supplied for calculations
     # are distinct (i.e. one value or cell per patient)
     ###_____________________________________________________________________________
@@ -317,7 +303,7 @@ respiratory_01_population <- function(
           )) /
             365,
 
-          # system age checks
+          # system age checks ----
           system_age_adult = {{ epatient_15_col }} >= 18 &
             grepl(
               pattern = year_values,
@@ -338,7 +324,7 @@ respiratory_01_population <- function(
             ),
           system_age_minor = system_age_minor1 | system_age_minor2,
 
-          # calculated age checks
+          # calculated age checks ----
           calc_age_adult = patient_age_in_years_col >= 18,
           calc_age_minor = patient_age_in_years_col < 18
         )
@@ -351,7 +337,7 @@ respiratory_01_population <- function(
       final_data <- patient_scene_table |>
         dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
         dplyr::mutate(
-          # system age checks
+          # system age checks ----
           system_age_adult = {{ epatient_15_col }} >= 18 &
             grepl(
               pattern = year_values,
@@ -375,7 +361,7 @@ respiratory_01_population <- function(
     }
 
     ###_____________________________________________________________________________
-    ### dimension tables
+    ### dimension tables ----
     ### each dimension table is turned into a vector of unique IDs
     ### that are then utilized on the fact table to create distinct variables
     ### that tell if the patient had the characteristic or not for final
@@ -388,7 +374,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # respiratory distress 1
+    # respiratory distress 1 ----
     respiratory_distress_data1 <- situation_table |>
       dplyr::select({{ erecord_01_col }}, {{ esituation_11_col }}) |>
       dplyr::distinct() |>
@@ -406,7 +392,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # respiratory distress 2
+    # respiratory distress 2 ----
     respiratory_distress_data2 <- situation_table |>
       dplyr::select({{ erecord_01_col }}, {{ esituation_12_col }}) |>
       dplyr::distinct() |>
@@ -424,7 +410,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # vitals check 1
+    # vitals check 1 ----
     vitals_check1 <- vitals_table |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}) |>
       dplyr::distinct() |>
@@ -440,7 +426,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # vitals check 2
+    # vitals check 2 ----
     vitals_check2 <- vitals_table |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_14_col }}) |>
       dplyr::distinct() |>
@@ -456,7 +442,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # 911 calls
+    # 911 calls ----
     call_911_data <- response_table |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct() |>
@@ -474,7 +460,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # assign variables to final data
+    # assign variables to final data ----
     computing_population <- final_data |>
       dplyr::mutate(
         RESPIRATORY_DISTRESS1 = {{ erecord_01_col }} %in%
@@ -494,7 +480,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # get the initial population
+    # get the initial population ----
     initial_population <- computing_population |>
       dplyr::filter(
         RESPIRATORY_DISTRESS,
@@ -508,17 +494,17 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # Adult and Pediatric Populations
+    # Adult and Pediatric Populations ----
 
     if (
-      # use the system generated and calculated ages
+      # use the system generated and calculated ages ----
 
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # filter adult
+      # filter adult ----
       adult_pop <- initial_population |>
         dplyr::filter(system_age_adult | calc_age_adult)
 
@@ -528,7 +514,7 @@ respiratory_01_population <- function(
         force = TRUE
       )
 
-      # filter peds
+      # filter peds ----
       peds_pop <- initial_population |>
         dplyr::filter(system_age_minor | calc_age_minor)
     } else if (
@@ -537,7 +523,7 @@ respiratory_01_population <- function(
         is.null(patient_DOB_col)
       )
     ) {
-      # filter adult
+      # filter adult ----
       adult_pop <- initial_population |>
         dplyr::filter(system_age_adult)
 
@@ -547,21 +533,21 @@ respiratory_01_population <- function(
         force = TRUE
       )
 
-      # filter peds
+      # filter peds ----
       peds_pop <- initial_population |>
         dplyr::filter(system_age_minor)
     }
 
-    # summarize
+    # summarize ----
 
-    # progress update, these will be repeated throughout the script
+    # progress update, these will be repeated throughout the script ----
     cli::cli_progress_update(
       set = 12,
       id = progress_bar_population,
       force = TRUE
     )
 
-    # summarize counts for populations filtered
+    # summarize counts for populations filtered ----
     filter_counts <- tibble::tibble(
       filter = c(
         "Respiratory Distress",
@@ -589,7 +575,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # get the population of interest
+    # get the population of interest ----
     respiratory.01.population <- list(
       filter_process = filter_counts,
       adults = adult_pop,
@@ -610,9 +596,9 @@ respiratory_01_population <- function(
     ) &&
       !is.null(df)
   ) {
-    # utilize a dataframe to analyze the data for the measure analytics
+    # utilize a dataframe to analyze the data for the measure analytics ----
 
-    # Ensure df is a data frame or tibble
+    # Ensure df is a data frame or tibble ----
     if (!is.data.frame(df) && !tibble::is_tibble(df)) {
       cli::cli_abort(
         c(
@@ -622,14 +608,14 @@ respiratory_01_population <- function(
       )
     }
 
-    # only check the date columns if they are in fact passed
+    # only check the date columns if they are in fact passed ----
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # use quasiquotation on the date variables to check format
+      # use quasiquotation on the date variables to check format ----
       incident_date <- rlang::enquo(incident_date_col)
       patient_dob <- rlang::enquo(patient_DOB_col)
 
@@ -647,7 +633,7 @@ respiratory_01_population <- function(
 
     progress_bar_population
 
-    # progress update, these will be repeated throughout the script
+    # progress update, these will be repeated throughout the script ----
     cli::cli_progress_update(
       set = 1,
       id = progress_bar_population,
@@ -655,13 +641,13 @@ respiratory_01_population <- function(
     )
 
     ###_____________________________________________________________________________
-    # from the full dataframe with all variables
+    # from the full dataframe with all variables ----
     # create one fact table and several dimension tables
     # to complete calculations and avoid issues due to row
     # explosion
     ###_____________________________________________________________________________
 
-    # fact table
+    # fact table ----
     # the user should ensure that variables beyond those supplied for calculations
     # are distinct (i.e. one value or cell per patient)
 
@@ -690,7 +676,7 @@ respiratory_01_population <- function(
           )) /
             365,
 
-          # system age checks
+          # system age checks ----
           system_age_adult = {{ epatient_15_col }} >= 18 &
             grepl(
               pattern = year_values,
@@ -711,7 +697,7 @@ respiratory_01_population <- function(
             ),
           system_age_minor = system_age_minor1 | system_age_minor2,
 
-          # calculated age checks
+          # calculated age checks ----
           calc_age_adult = patient_age_in_years_col >= 18,
           calc_age_minor = patient_age_in_years_col < 18
         )
@@ -733,7 +719,7 @@ respiratory_01_population <- function(
         ) |>
         dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
         dplyr::mutate(
-          # system age checks
+          # system age checks ----
           system_age_adult = {{ epatient_15_col }} >= 18 &
             grepl(
               pattern = year_values,
@@ -757,7 +743,7 @@ respiratory_01_population <- function(
     }
 
     ###_____________________________________________________________________________
-    ### dimension tables
+    ### dimension tables ----
     ### each dimension table is turned into a vector of unique IDs
     ### that are then utilized on the fact table to create distinct variables
     ### that tell if the patient had the characteristic or not for final
@@ -770,7 +756,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # respiratory distress 1
+    # respiratory distress 1 ----
     respiratory_distress_data1 <- df |>
       dplyr::select({{ erecord_01_col }}, {{ esituation_11_col }}) |>
       dplyr::distinct() |>
@@ -788,7 +774,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # respiratory distress 2
+    # respiratory distress 2 ----
     respiratory_distress_data2 <- df |>
       dplyr::select({{ erecord_01_col }}, {{ esituation_12_col }}) |>
       dplyr::distinct() |>
@@ -806,7 +792,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # vitals check 1
+    # vitals check 1 ----
     vitals_check1 <- df |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}) |>
       dplyr::distinct() |>
@@ -822,7 +808,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # vitals check 2
+    # vitals check 2 ----
     vitals_check2 <- df |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_14_col }}) |>
       dplyr::distinct() |>
@@ -838,7 +824,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # 911 calls
+    # 911 calls ----
     call_911_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct() |>
@@ -856,7 +842,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # assign variables to final data
+    # assign variables to final data ----
     computing_population <- final_data |>
       dplyr::mutate(
         RESPIRATORY_DISTRESS1 = {{ erecord_01_col }} %in%
@@ -876,7 +862,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # get the initial population
+    # get the initial population ----
     initial_population <- computing_population |>
       dplyr::filter(
         RESPIRATORY_DISTRESS,
@@ -890,17 +876,17 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # Adult and Pediatric Populations
+    # Adult and Pediatric Populations ----
 
     if (
-      # use the system generated and calculated ages
+      # use the system generated and calculated ages ----
 
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # filter adult
+      # filter adult ----
       adult_pop <- initial_population |>
         dplyr::filter(system_age_adult | calc_age_adult)
 
@@ -910,7 +896,7 @@ respiratory_01_population <- function(
         force = TRUE
       )
 
-      # filter peds
+      # filter peds ----
       peds_pop <- initial_population |>
         dplyr::filter(system_age_minor | calc_age_minor)
     } else if (
@@ -919,7 +905,7 @@ respiratory_01_population <- function(
         is.null(patient_DOB_col)
       )
     ) {
-      # filter adult
+      # filter adult ----
       adult_pop <- initial_population |>
         dplyr::filter(system_age_adult)
 
@@ -929,21 +915,21 @@ respiratory_01_population <- function(
         force = TRUE
       )
 
-      # filter peds
+      # filter peds ----
       peds_pop <- initial_population |>
         dplyr::filter(system_age_minor)
     }
 
-    # summarize
+    # summarize ----
 
-    # progress update, these will be repeated throughout the script
+    # progress update, these will be repeated throughout the script ----
     cli::cli_progress_update(
       set = 11,
       id = progress_bar_population,
       force = TRUE
     )
 
-    # summarize counts for populations filtered
+    # summarize counts for populations filtered ----
     filter_counts <- tibble::tibble(
       filter = c(
         "Respiratory Distress",
@@ -971,7 +957,7 @@ respiratory_01_population <- function(
       force = TRUE
     )
 
-    # get the population of interest
+    # get the population of interest ----
     respiratory.01.population <- list(
       filter_process = filter_counts,
       adults = adult_pop,
