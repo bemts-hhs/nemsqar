@@ -116,7 +116,7 @@ respiratory_02 <- function(
   correct = TRUE,
   ...
 ) {
-  # Set default method and adjustment method
+  # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # Ensure that not all table arguments AND the df argument are fulfilled ----
@@ -131,16 +131,16 @@ respiratory_02 <- function(
     ) &&
       is.null(df)
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("Respiratory-02")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for Respiratory-02")
 
-    # gather the population of interest
+    # gather the population of interest ----
     respiratory_02_populations <- respiratory_02_population(
       patient_scene_table = patient_scene_table,
       response_table = response_table,
@@ -158,13 +158,13 @@ respiratory_02 <- function(
       eprocedures_03_col = {{ eprocedures_03_col }}
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # header for calculations
+    # header for calculations ----
     cli::cli_h2("Calculating Respiratory-02")
 
-    # summary
+    # summary ----
     respiratory.02 <- results_summarize(
       total_population = respiratory_02_populations$initial_population,
       adult_population = respiratory_02_populations$adults,
@@ -179,10 +179,10 @@ respiratory_02 <- function(
       ...
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
@@ -199,10 +199,10 @@ respiratory_02 <- function(
       )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
     if (
       any(respiratory.02$denominator < 10) &&
@@ -225,18 +225,18 @@ respiratory_02 <- function(
     ) &&
       !is.null(df)
 
-    # utilize a dataframe to analyze the data for the measure analytics
+    # utilize a dataframe to analyze the data for the measure analytics ----
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("Respiratory-02")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for Respiratory-02")
 
-    # gather the population of interest
+    # gather the population of interest ----
     respiratory_02_populations <- respiratory_02_population(
       df = df,
       erecord_01_col = {{ erecord_01_col }},
@@ -250,13 +250,13 @@ respiratory_02 <- function(
       eprocedures_03_col = {{ eprocedures_03_col }}
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # header for calculations
+    # header for calculations ----
     cli::cli_h2("Calculating Respiratory-02")
 
-    # summary
+    # summary ----
     respiratory.02 <- results_summarize(
       total_population = respiratory_02_populations$initial_population,
       adult_population = respiratory_02_populations$adults,
@@ -271,10 +271,10 @@ respiratory_02 <- function(
       ...
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
@@ -291,10 +291,10 @@ respiratory_02 <- function(
       )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
     if (
       any(respiratory.02$denominator < 10) &&
