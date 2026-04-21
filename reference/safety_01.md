@@ -173,7 +173,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating Safety-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.16s.
+#> ✔ Function completed in 0.17s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 3 × 8

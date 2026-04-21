@@ -13,7 +13,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/bemts-hhs/nemsqar/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/bemts-hhs/nemsqar/blob/v1.1.2.9000/DESCRIPTION)
 
 Foss N, Kordik S (2026). *nemsqar: National Emergency Medical Service
 Quality Alliance Measure Calculations*. R package version 1.1.2.9000,
