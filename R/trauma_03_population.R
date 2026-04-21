@@ -166,7 +166,7 @@ trauma_03_population <- function(
   edisposition_28_col,
   transport_disposition_col
 ) {
-  # Ensure that not all table arguments AND the df argument are fulfilled
+  # Ensure that not all table arguments AND the df argument are fulfilled ----
   # User must pass either `df` or all table arguments, but not both
   if (
     any(
@@ -183,7 +183,7 @@ trauma_03_population <- function(
     )
   }
 
-  # Ensure that df or all table arguments are fulfilled
+  # Ensure that df or all table arguments are fulfilled ----
 
   if (
     all(
@@ -200,7 +200,7 @@ trauma_03_population <- function(
     )
   }
 
-  # Ensure all *_col arguments are fulfilled
+  # Ensure all *_col arguments are fulfilled ----
 
   if (
     any(
@@ -224,7 +224,7 @@ trauma_03_population <- function(
     )
   }
 
-  # options for the progress bar
+  # options for the progress bar ----
   # a green dot for progress
   # a white line for note done yet
   options(cli.progress_bar_style = "dot")
@@ -236,7 +236,7 @@ trauma_03_population <- function(
     )
   )
 
-  # initiate the progress bar process
+  # initiate the progress bar process ----
   progress_bar_population <- cli::cli_progress_bar(
     "Running `trauma_03_population()`",
     total = 17,
@@ -247,21 +247,21 @@ trauma_03_population <- function(
 
   progress_bar_population
 
-  # Create objects that are filter helpers throughout the function
+  # Create objects that are filter helpers throughout the function ----
 
-  # injury values
+  # injury values ----
   possible_injury <- "Yes|9922005"
 
-  # 911 codes for eresponse.05
+  # 911 codes for eresponse.05 ----
   codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
 
-  # patient care provided
+  # patient care provided ----
   care_provided <- "4228001|Patient Evaluated and Care Provided"
 
-  # define transports
+  # define transports ----
   transport_responses <- "Transport by This EMS Unit \\(This Crew Only\\)|Transport by This EMS Unit, with a Member of Another Crew|Transport by Another EMS Unit, with a Member of This Crew|Patient Treated, Transported by this EMS Unit|Patient Treated, Transported with this EMS Crew in Another Vehicle|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Mutual Aid Tx & Transport|4212033|4230001|4230003|4230007|itDisposition\\.112\\.116|it4212\\.142|itDisposition\\.112\\.165|itDisposition\\.112\\.141|Treat / Transport BLS by this unit|itDisposition\\.112\\.142"
 
-  # minor values
+  # minor values ----
   minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
 
   year_values <- "2516009|years"
@@ -274,7 +274,7 @@ trauma_03_population <- function(
 
   month_values <- "months|2516007"
 
-  # utilize applicable tables to analyze the data for the measure
+  # utilize applicable tables to analyze the data for the measure ----
   if (
     any(
       !is.null(patient_scene_table),
@@ -285,7 +285,7 @@ trauma_03_population <- function(
     ) &&
       is.null(df)
   ) {
-    # Ensure all tables are of class `data.frame` or `tibble`
+    # Ensure all tables are of class `data.frame` or `tibble` ----
     if (
       !all(
         is.data.frame(patient_scene_table) ||
@@ -301,7 +301,7 @@ trauma_03_population <- function(
       )
     }
 
-    # Validate date columns if provided
+    # Validate date columns if provided ----
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
@@ -331,7 +331,7 @@ trauma_03_population <- function(
       }
     }
 
-    # validate the vitals date-time column
+    # validate the vitals date-time column ----
     vitals_date_time <- rlang::enquo(evitals_01_col)
 
     if (
@@ -346,12 +346,12 @@ trauma_03_population <- function(
     }
 
     ###_____________________________________________________________________________
-    # fact table
+    # fact table ----
     # the user should ensure that variables beyond those supplied for calculations
     # are distinct (i.e. one value or cell per patient)
     ###_____________________________________________________________________________
 
-    # progress update, these will be repeated throughout the script
+    # progress update, these will be repeated throughout the script ----
     cli::cli_progress_update(
       set = 1,
       id = progress_bar_population,
@@ -374,7 +374,7 @@ trauma_03_population <- function(
           )) /
             365,
 
-          # system age check
+          # system age check ----
           system_age_adult = {{ epatient_15_col }} >= 18 &
             grepl(
               pattern = year_values,
@@ -396,7 +396,7 @@ trauma_03_population <- function(
             ),
           system_age_minor = system_age_minor1 | system_age_minor2,
 
-          # calculated age check
+          # calculated age check ----
           calc_age_adult = patient_age_in_years_col >= 18,
           calc_age_minor = patient_age_in_years_col < 18 &
             patient_age_in_years_col >= 2
@@ -410,7 +410,7 @@ trauma_03_population <- function(
       final_data <- patient_scene_table |>
         dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
         dplyr::mutate(
-          # system age check
+          # system age check ----
           system_age_adult = {{ epatient_15_col }} >= 18 &
             grepl(
               pattern = year_values,
@@ -435,7 +435,7 @@ trauma_03_population <- function(
     }
 
     ###_____________________________________________________________________________
-    ### dimension tables
+    ### dimension tables ----
     ### each dimension table is turned into a vector of unique IDs
     ### that are then utilized on the fact table to create distinct variables
     ### that tell if the patient had the characteristic or not for final
@@ -448,7 +448,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # possible injury
+    # possible injury ----
     possible_injury_data <- situation_table |>
       dplyr::select({{ erecord_01_col }}, {{ esituation_02_col }}) |>
       dplyr::distinct() |>
@@ -466,7 +466,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # patient care provided
+    # patient care provided ----
     patient_care_data <- disposition_table |>
       dplyr::select({{ erecord_01_col }}, {{ edisposition_28_col }}) |>
       dplyr::distinct() |>
@@ -484,7 +484,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # 911 calls
+    # 911 calls ----
     call_911_data <- response_table |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct() |>
@@ -502,7 +502,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # transports
+    # transports ----
     transport_data <- disposition_table |>
       dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
       dplyr::distinct() |>
@@ -528,7 +528,7 @@ trauma_03_population <- function(
         rlang::quo_is_null(rlang::enquo(evitals_27_col))
       )
     ) {
-      # create a vitals table that has the initial and last pain scores
+      # create a vitals table that has the initial and last pain scores ----
       vitals_table_mutate <- vitals_table |>
         dplyr::select(
           {{ erecord_01_col }},
@@ -539,7 +539,7 @@ trauma_03_population <- function(
         dplyr::distinct() |>
         dplyr::group_by({{ erecord_01_col }}) |>
         dplyr::mutate(
-          # Initial and last pain scale times
+          # Initial and last pain scale times ----
           initial_pain_scale_time = dplyr::first(
             {{ evitals_01_col }},
             na_rm = TRUE
@@ -562,7 +562,7 @@ trauma_03_population <- function(
         force = TRUE
       )
 
-      # pain scale > 0 and corresponding vitals time not missing
+      # pain scale > 0 and corresponding vitals time not missing ----
       pain_scale_time_data <- vitals_table_mutate |>
         dplyr::filter(
           {{ evitals_27_initial_col }} > 0,
@@ -577,7 +577,7 @@ trauma_03_population <- function(
         force = TRUE
       )
 
-      # pain scale change
+      # pain scale change ----
       pain_scale_data <- vitals_table_mutate |>
         dplyr::filter(
           dplyr::if_all(
@@ -596,7 +596,7 @@ trauma_03_population <- function(
         !rlang::quo_is_null(rlang::enquo(evitals_27_col))
       )
     ) {
-      # create a vitals table that has the initial and last pain scores
+      # create a vitals table that has the initial and last pain scores ----
       vitals_table_mutate <- vitals_table |>
         dplyr::select(
           {{ erecord_01_col }},
@@ -606,7 +606,7 @@ trauma_03_population <- function(
         dplyr::distinct() |>
         dplyr::group_by({{ erecord_01_col }}) |>
         dplyr::mutate(
-          # Initial and last pain scales
+          # Initial and last pain scales ----
           initial_pain_scale = dplyr::first(
             {{ evitals_27_col }},
             order_by = {{ evitals_01_col }},
@@ -618,7 +618,7 @@ trauma_03_population <- function(
             na_rm = TRUE
           ),
 
-          # Initial and last pain scale times
+          # Initial and last pain scale times ----
           initial_pain_scale_time = dplyr::first(
             {{ evitals_01_col }},
             na_rm = TRUE
@@ -635,7 +635,7 @@ trauma_03_population <- function(
         ) |>
         dplyr::distinct()
 
-      # pain scale > 0 and corresponding vitals time not missing
+      # pain scale > 0 and corresponding vitals time not missing ----
       pain_scale_time_data <- vitals_table_mutate |>
         dplyr::filter(
           initial_pain_scale > 0,
@@ -650,7 +650,7 @@ trauma_03_population <- function(
         force = TRUE
       )
 
-      # pain scale change
+      # pain scale change ----
       pain_scale_data <- vitals_table_mutate |>
         dplyr::filter(
           dplyr::if_all(
@@ -670,7 +670,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # assign variables to final data
+    # assign variables to final data ----
     computing_population <- final_data |>
       dplyr::mutate(
         PAIN_SCALE_TIME = {{ erecord_01_col }} %in% pain_scale_time_data,
@@ -687,7 +687,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # get the initial population
+    # get the initial population ----
     initial_population <- computing_population |>
       dplyr::filter(
         INJURY,
@@ -701,7 +701,7 @@ trauma_03_population <- function(
         TRANSPORT
       )
 
-    # Adult and Pediatric Populations
+    # Adult and Pediatric Populations ----
 
     cli::cli_progress_update(
       set = 10,
@@ -715,7 +715,7 @@ trauma_03_population <- function(
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # filter adult
+      # filter adult ----
       adult_pop <- initial_population |>
         dplyr::filter(system_age_adult | calc_age_adult)
 
@@ -725,7 +725,7 @@ trauma_03_population <- function(
         force = TRUE
       )
 
-      # filter peds
+      # filter peds ----
       peds_pop <- initial_population |>
         dplyr::filter(system_age_minor | calc_age_minor)
     } else if (
@@ -734,7 +734,7 @@ trauma_03_population <- function(
         is.null(patient_DOB_col)
       )
     ) {
-      # filter adult
+      # filter adult ----
       adult_pop <- initial_population |>
         dplyr::filter(system_age_adult)
 
@@ -744,7 +744,7 @@ trauma_03_population <- function(
         force = TRUE
       )
 
-      # filter peds
+      # filter peds ----
       peds_pop <- initial_population |>
         dplyr::filter(system_age_minor)
     }
@@ -755,7 +755,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # summarize counts for populations filtered
+    # summarize counts for populations filtered ----
     filter_counts <- tibble::tibble(
       filter = c(
         "911 calls",
@@ -783,7 +783,7 @@ trauma_03_population <- function(
       )
     )
 
-    # get the populations of interest
+    # get the populations of interest ----
 
     cli::cli_progress_update(
       set = 13,
@@ -791,7 +791,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # gather data into a list for multi-use output
+    # gather data into a list for multi-use output ----
     trauma.03.population <- list(
       filter_process = filter_counts,
       adults = adult_pop,
@@ -814,9 +814,9 @@ trauma_03_population <- function(
 
       !is.null(df)
 
-    # utilize a dataframe to analyze the data for the measure analytics
+    # utilize a dataframe to analyze the data for the measure analytics ----
   ) {
-    # Ensure df is a data frame or tibble
+    # Ensure df is a data frame or tibble ----
     if (!is.data.frame(df) && !tibble::is_tibble(df)) {
       cli::cli_abort(
         c(
@@ -826,7 +826,7 @@ trauma_03_population <- function(
       )
     }
 
-    # Validate date columns if provided
+    # Validate date columns if provided ----
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
@@ -848,7 +848,7 @@ trauma_03_population <- function(
       }
     }
 
-    # validate the vitals date-time column
+    # validate the vitals date-time column ----
     vitals_date_time <- rlang::enquo(evitals_01_col)
 
     if (
@@ -861,12 +861,12 @@ trauma_03_population <- function(
     }
 
     ###_____________________________________________________________________________
-    # fact table
+    # fact table ----
     # the user should ensure that variables beyond those supplied for calculations
     # are distinct (i.e. one value or cell per patient)
     ###_____________________________________________________________________________
 
-    # progress update, these will be repeated throughout the script
+    # progress update, these will be repeated throughout the script ----
     cli::cli_progress_update(
       set = 1,
       id = progress_bar_population,
@@ -907,7 +907,7 @@ trauma_03_population <- function(
             )) /
               365,
 
-            # system age check
+            # system age check ----
             system_age_adult = {{ epatient_15_col }} >= 18 &
               grepl(
                 pattern = year_values,
@@ -929,7 +929,7 @@ trauma_03_population <- function(
               ),
             system_age_minor = system_age_minor1 | system_age_minor2,
 
-            # calculated age check
+            # calculated age check ----
             calc_age_adult = patient_age_in_years_col >= 18,
             calc_age_minor = patient_age_in_years_col < 18 &
               patient_age_in_years_col >= 2
@@ -961,7 +961,7 @@ trauma_03_population <- function(
             )) /
               365,
 
-            # system age check
+            # system age check ----
             system_age_adult = {{ epatient_15_col }} >= 18 &
               grepl(
                 pattern = year_values,
@@ -983,7 +983,7 @@ trauma_03_population <- function(
               ),
             system_age_minor = system_age_minor1 | system_age_minor2,
 
-            # calculated age check
+            # calculated age check ----
             calc_age_adult = patient_age_in_years_col >= 18,
             calc_age_minor = patient_age_in_years_col < 18 &
               patient_age_in_years_col >= 2
@@ -1016,7 +1016,7 @@ trauma_03_population <- function(
           ) |>
           dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
           dplyr::mutate(
-            # system age check
+            # system age check ----
             system_age_adult = {{ epatient_15_col }} >= 18 &
               grepl(
                 pattern = year_values,
@@ -1058,7 +1058,7 @@ trauma_03_population <- function(
           ) |>
           dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
           dplyr::mutate(
-            # system age check
+            # system age check ----
             system_age_adult = {{ epatient_15_col }} >= 18 &
               grepl(
                 pattern = year_values,
@@ -1084,7 +1084,7 @@ trauma_03_population <- function(
     }
 
     ###_____________________________________________________________________________
-    ### dimension tables
+    ### dimension tables ----
     ### each dimension table is turned into a vector of unique IDs
     ### that are then utilized on the fact table to create distinct variables
     ### that tell if the patient had the characteristic or not for final
@@ -1097,7 +1097,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # possible injury
+    # possible injury ----
     possible_injury_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ esituation_02_col }}) |>
       dplyr::distinct() |>
@@ -1115,7 +1115,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # patient care provided
+    # patient care provided ----
     patient_care_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ edisposition_28_col }}) |>
       dplyr::distinct() |>
@@ -1133,7 +1133,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # 911 calls
+    # 911 calls ----
     call_911_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct() |>
@@ -1151,7 +1151,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # transports
+    # transports ----
     transport_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
       dplyr::distinct() |>
@@ -1177,7 +1177,7 @@ trauma_03_population <- function(
         rlang::quo_is_null(rlang::enquo(evitals_27_col))
       )
     ) {
-      # create a vitals table that has the initial and last pain scores
+      # create a vitals table that has the initial and last pain scores ----
       vitals_table_mutate <- df |>
         dplyr::select(
           {{ erecord_01_col }},
@@ -1188,7 +1188,7 @@ trauma_03_population <- function(
         dplyr::distinct() |>
         dplyr::group_by({{ erecord_01_col }}) |>
         dplyr::mutate(
-          # Initial and last pain scale times
+          # Initial and last pain scale times ----
           initial_pain_scale_time = dplyr::first(
             {{ evitals_01_col }},
             na_rm = TRUE
@@ -1211,7 +1211,7 @@ trauma_03_population <- function(
         force = TRUE
       )
 
-      # pain scale > 0 and corresponding vitals time not missing
+      # pain scale > 0 and corresponding vitals time not missing ----
       pain_scale_time_data <- vitals_table_mutate |>
         dplyr::filter(
           {{ evitals_27_initial_col }} > 0,
@@ -1226,7 +1226,7 @@ trauma_03_population <- function(
         force = TRUE
       )
 
-      # pain scale change
+      # pain scale change ----
       pain_scale_data <- vitals_table_mutate |>
         dplyr::filter(
           dplyr::if_all(
@@ -1245,7 +1245,7 @@ trauma_03_population <- function(
         !rlang::quo_is_null(rlang::enquo(evitals_27_col))
       )
     ) {
-      # create a vitals table that has the initial and last pain scores
+      # create a vitals table that has the initial and last pain scores ----
       vitals_table_mutate <- df |>
         dplyr::select(
           {{ erecord_01_col }},
@@ -1255,7 +1255,7 @@ trauma_03_population <- function(
         dplyr::distinct() |>
         dplyr::group_by({{ erecord_01_col }}) |>
         dplyr::mutate(
-          # Initial and last pain scales
+          # Initial and last pain scales ----
           initial_pain_scale = dplyr::first(
             {{ evitals_27_col }},
             order_by = {{ evitals_01_col }},
@@ -1267,7 +1267,7 @@ trauma_03_population <- function(
             na_rm = TRUE
           ),
 
-          # Initial and last pain scale times
+          # Initial and last pain scale times ----
           initial_pain_scale_time = dplyr::first(
             {{ evitals_01_col }},
             na_rm = TRUE
@@ -1284,7 +1284,7 @@ trauma_03_population <- function(
         ) |>
         dplyr::distinct()
 
-      # pain scale > 0 and corresponding vitals time not missing
+      # pain scale > 0 and corresponding vitals time not missing ----
       pain_scale_time_data <- vitals_table_mutate |>
         dplyr::filter(
           initial_pain_scale > 0,
@@ -1299,7 +1299,7 @@ trauma_03_population <- function(
         force = TRUE
       )
 
-      # pain scale change
+      # pain scale change ----
       pain_scale_data <- vitals_table_mutate |>
         dplyr::filter(
           dplyr::if_all(
@@ -1319,7 +1319,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # assign variables to final data
+    # assign variables to final data ----
     computing_population <- final_data |>
       dplyr::mutate(
         PAIN_SCALE_TIME = {{ erecord_01_col }} %in% pain_scale_time_data,
@@ -1336,7 +1336,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # get the initial population
+    # get the initial population ----
     initial_population <- computing_population |>
       dplyr::filter(
         INJURY,
@@ -1350,7 +1350,7 @@ trauma_03_population <- function(
         TRANSPORT
       )
 
-    # Adult and Pediatric Populations
+    # Adult and Pediatric Populations ----
 
     cli::cli_progress_update(
       set = 10,
@@ -1364,7 +1364,7 @@ trauma_03_population <- function(
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # filter adult
+      # filter adult ----
       adult_pop <- initial_population |>
         dplyr::filter(system_age_adult | calc_age_adult)
 
@@ -1374,7 +1374,7 @@ trauma_03_population <- function(
         force = TRUE
       )
 
-      # filter peds
+      # filter peds ----
       peds_pop <- initial_population |>
         dplyr::filter(system_age_minor | calc_age_minor)
     } else if (
@@ -1383,7 +1383,7 @@ trauma_03_population <- function(
         is.null(patient_DOB_col)
       )
     ) {
-      # filter adult
+      # filter adult ----
       adult_pop <- initial_population |>
         dplyr::filter(system_age_adult)
 
@@ -1393,7 +1393,7 @@ trauma_03_population <- function(
         force = TRUE
       )
 
-      # filter peds
+      # filter peds ----
       peds_pop <- initial_population |>
         dplyr::filter(system_age_minor)
     }
@@ -1404,7 +1404,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # summarize counts for populations filtered
+    # summarize counts for populations filtered ----
     filter_counts <- tibble::tibble(
       filter = c(
         "911 calls",
@@ -1432,7 +1432,7 @@ trauma_03_population <- function(
       )
     )
 
-    # get the populations of interest
+    # get the populations of interest ----
 
     cli::cli_progress_update(
       set = 13,
@@ -1440,7 +1440,7 @@ trauma_03_population <- function(
       force = TRUE
     )
 
-    # gather data into a list for multi-use output
+    # gather data into a list for multi-use output ----
     trauma.03.population <- list(
       filter_process = filter_counts,
       adults = adult_pop,

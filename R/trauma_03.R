@@ -148,7 +148,7 @@ trauma_03 <- function(
   correct = TRUE,
   ...
 ) {
-  # Set default method and adjustment method
+  # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # Ensure that not all table arguments AND the df argument are fulfilled ----
@@ -164,16 +164,16 @@ trauma_03 <- function(
 
       is.null(df)
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # Header
+    # Header ----
     cli::cli_h1("Trauma-03")
 
-    # Header
+    # Header ----
     cli::cli_h2("Gathering Records for Trauma-03")
 
-    # Gather the population of interest
+    # Gather the population of interest ----
     trauma_03_populations <- trauma_03_population(
       patient_scene_table = patient_scene_table,
       response_table = response_table,
@@ -195,13 +195,13 @@ trauma_03 <- function(
       transport_disposition_col = {{ transport_disposition_col }}
     )
 
-    # Create a separator
+    # Create a separator ----
     cli::cli_text("\n")
 
-    # Header for calculations
+    # Header for calculations ----
     cli::cli_h2("Calculating Trauma-03")
 
-    # summarize
+    # summarize ----
     trauma.03 <- results_summarize(
       total_population = trauma_03_populations$initial_population,
       adult_population = trauma_03_populations$adults,
@@ -216,10 +216,10 @@ trauma_03 <- function(
       ...
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
@@ -236,10 +236,10 @@ trauma_03 <- function(
       )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
     if (
       any(trauma.03$denominator < 10) &&
@@ -262,16 +262,16 @@ trauma_03 <- function(
     ) &&
       !is.null(df)
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # Header
+    # Header ----
     cli::cli_h1("Trauma-03")
 
-    # Header
+    # Header ----
     cli::cli_h2("Gathering Records for Trauma-03")
 
-    # Gather the population of interest
+    # Gather the population of interest ----
     trauma_03_populations <- trauma_03_population(
       df = df,
       erecord_01_col = {{ erecord_01_col }},
@@ -289,13 +289,13 @@ trauma_03 <- function(
       transport_disposition_col = {{ transport_disposition_col }}
     )
 
-    # Create a separator
+    # Create a separator ----
     cli::cli_text("\n")
 
-    # Header for calculations
+    # Header for calculations ----
     cli::cli_h2("Calculating Trauma-03")
 
-    # summarize
+    # summarize ----
     trauma.03 <- results_summarize(
       total_population = trauma_03_populations$initial_population,
       adult_population = trauma_03_populations$adults,
@@ -310,10 +310,10 @@ trauma_03 <- function(
       ...
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
@@ -330,10 +330,10 @@ trauma_03 <- function(
       )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
     if (
       any(trauma.03$denominator < 10) &&
