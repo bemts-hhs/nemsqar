@@ -223,7 +223,7 @@ trauma_14_population <- function(
   einjury_04_col,
   einjury_09_col
 ) {
-  # ensure that not all table arguments AND the df argument are fulfilled
+  # ensure that not all table arguments AND the df argument are fulfilled ----
   # user only passes df or all table arguments
   if (
     all(
@@ -243,7 +243,7 @@ trauma_14_population <- function(
     )
   }
 
-  # ensure that df or all table arguments are fulfilled
+  # ensure that df or all table arguments are fulfilled ----
   if (
     all(
       is.null(patient_scene_table),
@@ -262,7 +262,7 @@ trauma_14_population <- function(
     )
   }
 
-  # ensure all *_col arguments are fulfilled
+  # ensure all *_col arguments are fulfilled ----
   if (
     any(
       missing(erecord_01_col),
@@ -297,7 +297,7 @@ trauma_14_population <- function(
     )
   }
 
-  # options for the progress bar
+  # options for the progress bar ----
   # a green dot for progress
   # a white line for note done yet
   options(cli.progress_bar_style = "dot")
@@ -309,7 +309,7 @@ trauma_14_population <- function(
     )
   )
 
-  # initiate the progress bar process
+  # initiate the progress bar process ----
   progress_bar_population <- cli::cli_progress_bar(
     "Running `trauma_14_population()`",
     total = 33,
@@ -318,66 +318,66 @@ trauma_14_population <- function(
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
-  # Create objects that are filter helpers throughout the function
+  # Create objects that are filter helpers throughout the function ----
 
-  # injury values
+  # injury values ----
   possible_injury <- "Yes|9922005"
 
-  # 911 codes for eresponse.05
+  # 911 codes for eresponse.05 ----
   codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
 
-  # define transports
+  # define transports ----
   transport_responses <- "Transport by This EMS Unit \\(This Crew Only\\)|Transport by This EMS Unit, with a Member of Another Crew|Transport by Another EMS Unit, with a Member of This Crew|Patient Treated, Transported by this EMS Unit|Patient Treated, Transported with this EMS Crew in Another Vehicle|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Mutual Aid Tx & Transport|4212033|4230001|4230003|4230007|itDisposition\\.112\\.116|it4212\\.142|itDisposition\\.112\\.165|itDisposition\\.112\\.141|Treat / Transport BLS by this unit|itDisposition\\.112\\.142"
 
-  # GCS motor values
+  # GCS motor values ----
   GCS_motor_values <- "no motor response|extension to pain|flexion to pain|withdrawal from pain|localizing pain|5|4|3|2|1"
 
-  # lung assessment values
+  # lung assessment values ----
   lung_assessment_values <- "Breath Sounds-Absent|Breath Sounds-Decreased|Increased Respiratory Effort|3523001|3523003|3523011"
 
-  # chest assessment values
+  # chest assessment values ----
   chest_assessment_values <- "3525005|Accessory Muscles Used with Breathing|3525023|Flail Segment|3525039|Retraction"
 
-  # respiratory effort values
+  # respiratory effort values ----
   respiratory_effort_values <- "Apneic|Labored|Mechanically Assisted \\(BVM, CPAP, etc\\.\\)|Rapid|Shallow|Weak/Agonal|3315001|3315003|3315005|3315009|3315011|3315013"
 
-  # airway management values
+  # airway management values ----
   airway_management_values <- "243142003|Dual pressure spontaneous ventilation support \\(regime/therapy\\)|47545007|Continuous positive airway pressure ventilation treatment \\(regime/therapy\\)|429705000|Insertion of esophageal tracheal combitube \\(procedure\\)|427753009|Insertion of esophageal tracheal double lumen supraglottic airway \\(procedure\\)|424979004|Laryngeal mask airway insertion \\(procedure\\)|23674004|Orotracheal intubation \\(procedure\\)|450601000124103|Orotracheal intubation using bougie device \\(procedure\\)|241689008|Rapid sequence induction \\(procedure\\)|450611000124100|Insertion of single lumen supraglottic airway device \\(procedure\\)"
 
-  # trauma triage criteria values for 65+ age group
+  # trauma triage criteria values for 65+ age group ----
   trauma_triage_1_2_values_65 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity \\(e.g., flail chest\\)|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|2903017|Respiratory Rate <10 or >29 breaths per minute \\(<20 in infants aged <1\\) or need for ventilatory support|3903021|Two or more proximal long-bone fractures"
 
-  # trauma triage criteria values
+  # trauma triage criteria values ----
   trauma_triage_1_2_values_10_64 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity \\(e.g., flail chest\\)|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|2903017|Respiratory Rate <10 or >29 breaths per minute \\(<20 in infants aged <1\\) or need for ventilatory support|3903021|Two or more proximal long-bone fractures|2903019|Systolic Blood Pressure <90 mmHg"
 
-  # trauma triage criteria values for < 10 age group
+  # trauma triage criteria values for < 10 age group ----
   trauma_triage_1_2_values_10 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity \\(e.g., flail chest\\)|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|3903021|Two or more proximal long-bone fractures"
 
-  # extremities assessment values
+  # extremities assessment values ----
   extremities_assessment_values <- "3516043|Motor Function-Abnormal/Weakness|3516067|Sensation-Absent"
 
-  # neurological assessment values
+  # neurological assessment values ----
   neurological_assessment_values <- "3520017|Hemiplegia-Left|3520019|Hemiplegia-Right|3520043|Weakness-Left Sided|3520045|Weakness-Right Sided"
 
-  # procedures values
+  # procedures values ----
   tourniquet_values <- "20655006|Application of tourniquet \\(procedure\\)|24173005|Tourniquet procedure \\(procedure\\)|241731009|Tourniquet positioning \\(uninflated\\) \\(procedure\\)|241733007|Tourniquet cuff inflation \\(procedure\\)|241734001|Upper tourniquet cuff inflation \\(procedure\\)|241735000|Lower tourniquet cuff inflation \\(procedure\\)|241736004|Manual tourniquet application \\(procedure\\)|398260007|Tourniquet positioned on patient \\(procedure\\)|447686008|Application of pressure to wound \\(procedure\\)"
 
-  # trauma triage criteria (steps 3 and 4) values
+  # trauma triage criteria (steps 3 and 4) values ----
   trauma_triage_3_4_values <- "2904001|Auto v\\. Pedestrian/Bicyclist Thrown, Run Over, or >20 MPH Accident|2904007|Crash Death in Same Passenger Compartment|2904009|Crash Ejection \\(partial or complete\\) from automobile|2904011|Crash Intrusion, Including roof: > 12 in\\. occupant site; > 18 in\\. any site|2904013|Crash Vehicle Telemetry Data \\(AACN\\) Consistent with High Risk of Injury"
 
-  # type of scene delay values
+  # type of scene delay values ----
   scene_delay_values <- "2210011|Extrication"
 
-  # cause of injury matches values
+  # cause of injury matches values ----
   cause_of_injury_values <- "(?:V20|V21|V22|V23|V24|V25|V26|V27|V28|V29|V30|V31|V32|V33|V34|V35|V36|V37|V38|V39|V80|V86)|Motorcycle rider injured in collision with pedestrian or animal|Motorcycle rider injured in collision with pedal cycle|Motorcycle rider injured in collision with two- or three- wheeled motor vehicle|Motorcycle rider injured in collision with car, pick-up truck or van|Motorcycle rider injured in collision with heavy transport vehicle or bus|Motorcycle rider injured in collision with railway train or railway vehicle|Motorcycle rider injured in collision with other nonmotor vehicle|Motorcycle rider injured in collision with fixed or stationary object|Motorcycle rider injured in noncollision transport accident|Motorcycle rider injured in other and unspecified transport accidents|Occupant of three-wheeled motor vehicle injured in collision with pedestrian or animal|Occupant of three-wheeled motor vehicle injured in collision with pedal cycle|Occupant of three-wheeled motor vehicle injured in collision with two- or three- wheeled motor vehicle|Occupant of three-wheeled motor vehicle injured in collision with car, pick-up truck or van|Occupant of three-wheeled motor vehicle injured in collision with heavy transport vehicle or bus|Occupant of three-wheeled motor vehicle injured in collision with railway train or railway vehicle|Occupant of three-wheeled motor vehicle injured in collision with other nonmotor vehicle|Occupant of three-wheeled motor vehicle injured in collision with fixed or stationary object|Occupant of three-wheeled motor vehicle injured in noncollision transport accident|Occupant of three-wheeled motor vehicle injured in other and unspecified transport accidents|Animal-rider or occupant of animal drawn vehicle injured in transport accident|Occupant of special all-terrain or other off-road motor vehicle, injured in transport accident"
 
-  # hospital capability values
+  # hospital capability values ----
   trauma_alert_values_65 <- "4224003|Yes-Adult Trauma|4224017|Yes-Trauma"
 
-  # hospital capability values
+  # hospital capability values ----
   trauma_alert_values_10_64 <- "4224003|Yes-Adult Trauma|4224017|Yes-Trauma \\(General\\)|4224011|Yes-Pediatric Trauma"
 
-  # days, hours, minutes, months
+  # days, hours, minutes, months ----
   minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
 
   year_values <- "2516009|years"
@@ -390,7 +390,7 @@ trauma_14_population <- function(
 
   month_values <- "months|2516007"
 
-  # utilize applicable tables to analyze the data for the measure
+  # utilize applicable tables to analyze the data for the measure ----
   if (
     all(
       !is.null(patient_scene_table),
@@ -404,7 +404,7 @@ trauma_14_population <- function(
     ) &&
       is.null(df)
   ) {
-    # Ensure df is a data frame or tibble
+    # Ensure df is a data frame or tibble ----
     if (
       any(
         !(is.data.frame(patient_scene_table) &&
@@ -436,18 +436,18 @@ trauma_14_population <- function(
       )
     }
 
-    # Only check the date columns if they are in fact passed
+    # Only check the date columns if they are in fact passed ----
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # Use quasiquotation on the date variables to check format
+      # Use quasiquotation on the date variables to check format ----
       incident_date <- rlang::enquo(incident_date_col)
       patient_dob <- rlang::enquo(patient_DOB_col)
 
-      # Convert quosures to names and check the column classes
+      # Convert quosures to names and check the column classes ----
       incident_date_name <- rlang::as_name(incident_date)
       patient_dob_name <- rlang::as_name(patient_dob)
 
@@ -466,7 +466,7 @@ trauma_14_population <- function(
     progress_bar_population
 
     ###_____________________________________________________________________________
-    # fact table
+    # fact table ----
     # the user should ensure that variables beyond those supplied for calculations
     # are distinct (i.e. one value or cell per patient)
     ###_____________________________________________________________________________
@@ -493,7 +493,7 @@ trauma_14_population <- function(
           )) /
             365,
 
-          # system age check
+          # system age check ----
           system_age_65 = {{ epatient_15_col }} >= 65 &
             grepl(
               pattern = year_values,
@@ -521,7 +521,7 @@ trauma_14_population <- function(
             ),
           system_age_10 = system_age_10_1 | system_age_10_2,
 
-          # calculated age check
+          # calculated age check ----
           calc_age_65 = patient_age_in_years_col >= 65,
           calc_age_10_64 = patient_age_in_years_col < 65 &
             patient_age_in_years_col >= 10,
@@ -536,7 +536,7 @@ trauma_14_population <- function(
       final_data <- patient_scene_table |>
         dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
         dplyr::mutate(
-          # system age check
+          # system age check ----
           system_age_65 = {{ epatient_15_col }} >= 65 &
             grepl(
               pattern = year_values,
@@ -567,7 +567,7 @@ trauma_14_population <- function(
     }
 
     ###_____________________________________________________________________________
-    ### dimension tables
+    ### dimension tables ----
     ### each dimension table is turned into a vector of unique IDs
     ### that are then utilized on the fact table to create distinct variables
     ### that tell if the patient had the characteristic or not for final
@@ -600,7 +600,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # transports
+    # transports ----
     transport_data <- disposition_table |>
       dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
       dplyr::distinct() |>
@@ -620,7 +620,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # 911 calls
+    # 911 calls ----
     call_911_data <- response_table |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct() |>
@@ -638,7 +638,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # GCS
+    # GCS ----
     GCS_data <- vitals_table |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_21_col }}) |>
       dplyr::distinct() |>
@@ -656,7 +656,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # lung assessment
+    # lung assessment ----
     lung_assessment_data <- exam_table |>
       dplyr::select({{ erecord_01_col }}, {{ eexam_23_col }}) |>
       dplyr::distinct() |>
@@ -676,7 +676,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # chest assessment
+    # chest assessment ----
     chest_data <- exam_table |>
       dplyr::select({{ erecord_01_col }}, {{ eexam_25_col }}) |>
       dplyr::distinct() |>
@@ -696,7 +696,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # respiratory effort
+    # respiratory effort ----
     respiratory_effort_data <- vitals_table |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_15_col }}) |>
       dplyr::distinct() |>
@@ -716,7 +716,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # airway management
+    # airway management ----
     airway_management_data <- procedures_table |>
       dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
       dplyr::distinct() |>
@@ -736,7 +736,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # pulse oximetry
+    # pulse oximetry ----
     pulse_oximetry_data <- vitals_table |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}) |>
       dplyr::distinct() |>
@@ -752,7 +752,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # SBP
+    # SBP ----
     SBP_data <- vitals_table |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |>
       dplyr::distinct() |>
@@ -768,7 +768,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # heart rate and SBP
+    # heart rate and SBP ----
     HR_SBP_data_10_65_plus <- vitals_table |>
       dplyr::select(
         {{ erecord_01_col }},
@@ -788,7 +788,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # trauma triage criteria steps 1 and 2 age 65+
+    # trauma triage criteria steps 1 and 2 age 65+ ----
     trauma_triage_1_2_data_65 <- injury_table |>
       dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
       dplyr::distinct() |>
@@ -808,7 +808,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # trauma triage criteria steps 1 and 2 age 10 - 65
+    # trauma triage criteria steps 1 and 2 age 10 - 65 ----
     trauma_triage_1_2_data_10_64 <- injury_table |>
       dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
       dplyr::distinct() |>
@@ -828,7 +828,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # trauma triage criteria steps 1 and 2 age < 10
+    # trauma triage criteria steps 1 and 2 age < 10 ----
     trauma_triage_1_2_data_10 <- injury_table |>
       dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
       dplyr::distinct() |>
@@ -848,7 +848,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # extremities assessment
+    # extremities assessment ----
     extremities_assessment_data <- exam_table |>
       dplyr::select({{ erecord_01_col }}, {{ eexam_16_col }}) |>
       dplyr::distinct() |>
@@ -868,8 +868,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # neurological assessment
-
+    # neurological assessment ----
     neurological_assessment_data <- exam_table |>
       dplyr::select({{ erecord_01_col }}, {{ eexam_20_col }}) |>
       dplyr::distinct() |>
@@ -889,8 +888,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # tourniquet
-
+    # tourniquet ----
     tourniquet_data <- procedures_table |>
       dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
       dplyr::distinct() |>
@@ -910,8 +908,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # trauma triage criteria steps 3 and 4
-
+    # trauma triage criteria steps 3 and 4 ----
     trauma_triage_3_4_data <- injury_table |>
       dplyr::select({{ erecord_01_col }}, {{ einjury_04_col }}) |>
       dplyr::distinct() |>
@@ -931,8 +928,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # fall height
-
+    # fall height ----
     fall_height_data <- injury_table |>
       dplyr::select({{ erecord_01_col }}, {{ einjury_09_col }}) |>
       dplyr::distinct() |>
@@ -948,8 +944,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # scene delay
-
+    # scene delay ----
     scene_delay_data <- response_table |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_10_col }}) |>
       dplyr::distinct() |>
@@ -969,8 +964,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # cause of injury
-
+    # cause of injury ----
     cause_of_injury_data <- injury_table |>
       dplyr::select({{ erecord_01_col }}, {{ einjury_01_col }}) |>
       dplyr::distinct() |>
@@ -990,8 +984,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # respiratory rate for < 10 yrs population
-
+    # respiratory rate for < 10 yrs population ----
     respiratory_rate_data <- vitals_table |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_14_col }}) |>
       dplyr::distinct() |>
@@ -1007,7 +1000,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # SBP check variable for ages < 10 years
+    # SBP check variable for ages < 10 years ----
     # if using calculated and system ages
     if (
       all(
@@ -1038,7 +1031,7 @@ trauma_14_population <- function(
         dplyr::distinct({{ erecord_01_col }}) |>
         dplyr::pull({{ erecord_01_col }})
 
-      # SBP check variable for ages < 10 years
+      # SBP check variable for ages < 10 years ----
       # if using system ages only
     } else if (
       all(
@@ -1075,7 +1068,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # trauma alert >= 65 years
+    # trauma alert >= 65 years ----
     trauma_alert_65 <- disposition_table |>
       dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |>
       dplyr::distinct() |>
@@ -1095,7 +1088,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # trauma alert > 10 and < 65 years
+    # trauma alert > 10 and < 65 years ----
     trauma_alert_10_64 <- disposition_table |>
       dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |>
       dplyr::distinct() |>
@@ -1115,7 +1108,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # assign variables to final data
+    # assign variables to final data ----
     computing_population <- final_data |>
       dplyr::mutate(
         CALL_911 = {{ erecord_01_col }} %in% call_911_data,
@@ -1154,7 +1147,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # get the initial population
+    # get the initial population ----
     initial_population <- computing_population |>
       dplyr::filter(
         POSSIBLE_INJURY,
@@ -1162,7 +1155,7 @@ trauma_14_population <- function(
         TRANSPORTS
       )
 
-    # Adult and Pediatric Populations
+    # Adult and Pediatric Populations ----
 
     cli::cli_progress_update(
       set = 29,
@@ -1171,14 +1164,14 @@ trauma_14_population <- function(
     )
 
     if (
-      # use the system generated and calculated ages
+      # use the system generated and calculated ages ----
 
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # filter older adult
+      # filter older adult ----
       pop_65 <- initial_population |>
         dplyr::filter(system_age_65 | calc_age_65) |>
         dplyr::filter(
@@ -1205,7 +1198,7 @@ trauma_14_population <- function(
         force = TRUE
       )
 
-      # filter ages 10 to 65
+      # filter ages 10 to 65 ----
       pop_10_64 <- initial_population |>
         dplyr::filter(system_age_10_64 | calc_age_10_64) |>
         dplyr::filter(
@@ -1231,7 +1224,7 @@ trauma_14_population <- function(
         force = TRUE
       )
 
-      # filter ages < 10
+      # filter ages < 10 ----
       pop_10 <- initial_population |>
         dplyr::filter(system_age_10 | calc_age_10) |>
         dplyr::filter(
@@ -1253,14 +1246,14 @@ trauma_14_population <- function(
             INJURY_CAUSE
         )
     } else if (
-      # only use the system generated values
+      # only use the system generated values ----
 
       all(
         is.null(incident_date_col),
         is.null(patient_DOB_col)
       )
     ) {
-      # filter older adult
+      # filter older adult ----
       pop_65 <- initial_population |>
         dplyr::filter(system_age_65) |>
         dplyr::filter(
@@ -1287,7 +1280,7 @@ trauma_14_population <- function(
         force = TRUE
       )
 
-      # filter ages 10 to 65
+      # filter ages 10 to 65 ----
       pop_10_64 <- initial_population |>
         dplyr::filter(system_age_10_64) |>
         dplyr::filter(
@@ -1313,7 +1306,7 @@ trauma_14_population <- function(
         force = TRUE
       )
 
-      # filter ages < 10
+      # filter ages < 10 ----
       pop_10 <- initial_population |>
         dplyr::filter(system_age_10) |>
         dplyr::filter(
@@ -1337,14 +1330,14 @@ trauma_14_population <- function(
     }
 
     # summarize
-    # progress update, these will be repeated throughout the script
+    # progress update, these will be repeated throughout the script ----
     cli::cli_progress_update(
       set = 32,
       id = progress_bar_population,
       force = TRUE
     )
 
-    # summarize counts for populations filtered
+    # summarize counts for populations filtered ----
     filter_counts <- tibble::tibble(
       filter = c(
         "Situation possible injury",
@@ -1418,7 +1411,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # get the population of interest
+    # get the population of interest ----
     trauma.14.population <- list(
       filter_process = filter_counts,
       population_65 = pop_65,
@@ -1444,9 +1437,9 @@ trauma_14_population <- function(
     ) &&
       !is.null(df)
 
-    # utilize a dataframe to analyze the data for the measure analytics
+    # utilize a dataframe to analyze the data for the measure analytics ----
   ) {
-    # Ensure df is a data frame or tibble
+    # Ensure df is a data frame or tibble ----
     if (!is.data.frame(df) && !tibble::is_tibble(df)) {
       cli::cli_abort(
         c(
@@ -1456,14 +1449,14 @@ trauma_14_population <- function(
       )
     }
 
-    # only check the date columns if they are in fact passed
+    # only check the date columns if they are in fact passed ----
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # use quasiquotation on the date variables to check format
+      # use quasiquotation on the date variables to check format ----
       incident_date <- rlang::enquo(incident_date_col)
       patient_dob <- rlang::enquo(patient_DOB_col)
 
@@ -1482,13 +1475,13 @@ trauma_14_population <- function(
     progress_bar_population
 
     ###_____________________________________________________________________________
-    # from the full dataframe with all variables
+    # from the full dataframe with all variables ----
     # create one fact table and several dimension tables
     # to complete calculations and avoid issues due to row
     # explosion
     ###_____________________________________________________________________________
 
-    # fact table
+    # fact table ----
     # the user should ensure that variables beyond those supplied for calculations
     # are distinct (i.e. one value or cell per patient)
 
@@ -1538,7 +1531,7 @@ trauma_14_population <- function(
           )) /
             365,
 
-          # system age check
+          # system age check ----
           system_age_65 = {{ epatient_15_col }} >= 65 &
             grepl(
               pattern = year_values,
@@ -1566,7 +1559,7 @@ trauma_14_population <- function(
             ),
           system_age_10 = system_age_10_1 | system_age_10_2,
 
-          # calculated age check
+          # calculated age check ----
           calc_age_65 = patient_age_in_years_col >= 65,
           calc_age_10_64 = patient_age_in_years_col < 65 &
             patient_age_in_years_col >= 10,
@@ -1605,7 +1598,7 @@ trauma_14_population <- function(
         ) |>
         dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
         dplyr::mutate(
-          # system age check
+          # system age check ----
           system_age_65 = {{ epatient_15_col }} >= 65 &
             grepl(
               pattern = year_values,
@@ -1636,7 +1629,7 @@ trauma_14_population <- function(
     }
 
     ###_____________________________________________________________________________
-    ### dimension tables
+    ### dimension tables ----
     ### each dimension table is turned into a vector of unique IDs
     ### that are then utilized on the fact table to create distinct variables
     ### that tell if the patient had the characteristic or not for final
@@ -1649,7 +1642,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # possible injury
+    # possible injury ----
     possible_injury_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ esituation_02_col }}) |>
       dplyr::distinct() |>
@@ -1669,7 +1662,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # transports
+    # transports ----
     transport_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
       dplyr::distinct() |>
@@ -1689,7 +1682,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # 911 calls
+    # 911 calls ----
     call_911_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct() |>
@@ -1707,7 +1700,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # GCS
+    # GCS ----
     GCS_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_21_col }}) |>
       dplyr::distinct() |>
@@ -1725,7 +1718,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # lung assessment
+    # lung assessment ----
     lung_assessment_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eexam_23_col }}) |>
       dplyr::distinct() |>
@@ -1745,7 +1738,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # chest assessment
+    # chest assessment ----
     chest_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eexam_25_col }}) |>
       dplyr::distinct() |>
@@ -1765,7 +1758,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # respiratory effort
+    # respiratory effort ----
     respiratory_effort_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_15_col }}) |>
       dplyr::distinct() |>
@@ -1785,7 +1778,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # airway management
+    # airway management ----
     airway_management_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
       dplyr::distinct() |>
@@ -1805,7 +1798,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # pulse oximetry
+    # pulse oximetry ----
     pulse_oximetry_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_12_col }}) |>
       dplyr::distinct() |>
@@ -1821,7 +1814,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # SBP
+    # SBP ----
     SBP_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_06_col }}) |>
       dplyr::distinct() |>
@@ -1837,7 +1830,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # heart rate and SBP
+    # heart rate and SBP ----
     HR_SBP_data_10_65_plus <- df |>
       dplyr::select(
         {{ erecord_01_col }},
@@ -1857,7 +1850,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # trauma triage criteria steps 1 and 2 age 65+
+    # trauma triage criteria steps 1 and 2 age 65+ ----
     trauma_triage_1_2_data_65 <- df |>
       dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
       dplyr::distinct() |>
@@ -1877,7 +1870,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # trauma triage criteria steps 1 and 2 age 10 - 65
+    # trauma triage criteria steps 1 and 2 age 10 - 65 ----
     trauma_triage_1_2_data_10_64 <- df |>
       dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
       dplyr::distinct() |>
@@ -1897,7 +1890,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # trauma triage criteria steps 1 and 2 age < 10
+    # trauma triage criteria steps 1 and 2 age < 10 ----
     trauma_triage_1_2_data_10 <- df |>
       dplyr::select({{ erecord_01_col }}, {{ einjury_03_col }}) |>
       dplyr::distinct() |>
@@ -1917,7 +1910,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # extremities assessment
+    # extremities assessment ----
     extremities_assessment_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eexam_16_col }}) |>
       dplyr::distinct() |>
@@ -1937,8 +1930,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # neurological assessment
-
+    # neurological assessment ----
     neurological_assessment_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eexam_20_col }}) |>
       dplyr::distinct() |>
@@ -1958,8 +1950,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # tourniquet
-
+    # tourniquet ----
     tourniquet_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
       dplyr::distinct() |>
@@ -1979,8 +1970,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # trauma triage criteria steps 3 and 4
-
+    # trauma triage criteria steps 3 and 4 ----
     trauma_triage_3_4_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ einjury_04_col }}) |>
       dplyr::distinct() |>
@@ -2000,8 +1990,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # fall height
-
+    # fall height ----
     fall_height_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ einjury_09_col }}) |>
       dplyr::distinct() |>
@@ -2017,8 +2006,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # scene delay
-
+    # scene delay ----
     scene_delay_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_10_col }}) |>
       dplyr::distinct() |>
@@ -2038,8 +2026,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # cause of injury
-
+    # cause of injury ----
     cause_of_injury_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ einjury_01_col }}) |>
       dplyr::distinct() |>
@@ -2059,8 +2046,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # respiratory rate for < 10 yrs population
-
+    # respiratory rate for < 10 yrs population ----
     respiratory_rate_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ evitals_14_col }}) |>
       dplyr::distinct() |>
@@ -2076,7 +2062,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # SBP check variable for ages < 10 years
+    # SBP check variable for ages < 10 years ----
     # if using calculated and system ages
     if (
       all(
@@ -2106,7 +2092,7 @@ trauma_14_population <- function(
         dplyr::distinct({{ erecord_01_col }}) |>
         dplyr::pull({{ erecord_01_col }})
 
-      # SBP check variable for ages < 10 years
+      # SBP check variable for ages < 10 years ----
       # if using system ages only
     } else if (
       all(
@@ -2141,7 +2127,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # trauma alert >= 65 years
+    # trauma alert >= 65 years ----
     trauma_alert_65 <- df |>
       dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |>
       dplyr::filter(
@@ -2160,7 +2146,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # trauma alert > 10 and < 65 years
+    # trauma alert > 10 and < 65 years ----
     trauma_alert_10_64 <- df |>
       dplyr::select({{ erecord_01_col }}, {{ edisposition_24_col }}) |>
       dplyr::filter(
@@ -2179,7 +2165,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # assign variables to final data
+    # assign variables to final data ----
     computing_population <- final_data |>
       dplyr::mutate(
         CALL_911 = {{ erecord_01_col }} %in% call_911_data,
@@ -2218,7 +2204,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # get the initial population
+    # get the initial population ----
     initial_population <- computing_population |>
       dplyr::filter(
         POSSIBLE_INJURY,
@@ -2226,7 +2212,7 @@ trauma_14_population <- function(
         TRANSPORTS
       )
 
-    # Adult and Pediatric Populations
+    # Adult and Pediatric Populations ----
 
     cli::cli_progress_update(
       set = 29,
@@ -2235,14 +2221,14 @@ trauma_14_population <- function(
     )
 
     if (
-      # use the system generated and calculated ages
+      # use the system generated and calculated ages ----
 
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # filter older adult
+      # filter older adult ----
       pop_65 <- initial_population |>
         dplyr::filter(system_age_65 | calc_age_65) |>
         dplyr::filter(
@@ -2269,7 +2255,7 @@ trauma_14_population <- function(
         force = TRUE
       )
 
-      # filter ages 10 to 65
+      # filter ages 10 to 65 ----
       pop_10_64 <- initial_population |>
         dplyr::filter(system_age_10_64 | calc_age_10_64) |>
         dplyr::filter(
@@ -2295,7 +2281,7 @@ trauma_14_population <- function(
         force = TRUE
       )
 
-      # filter ages < 10
+      # filter ages < 10 ----
       pop_10 <- initial_population |>
         dplyr::filter(system_age_10 | calc_age_10) |>
         dplyr::filter(
@@ -2317,14 +2303,14 @@ trauma_14_population <- function(
             INJURY_CAUSE
         )
     } else if (
-      # only use the system generated values
+      # only use the system generated values ----
 
       all(
         is.null(incident_date_col),
         is.null(patient_DOB_col)
       )
     ) {
-      # filter older adult
+      # filter older adult ----
       pop_65 <- initial_population |>
         dplyr::filter(system_age_65) |>
         dplyr::filter(
@@ -2351,7 +2337,7 @@ trauma_14_population <- function(
         force = TRUE
       )
 
-      # filter ages 10 to 65
+      # filter ages 10 to 65 ----
       pop_10_64 <- initial_population |>
         dplyr::filter(system_age_10_64) |>
         dplyr::filter(
@@ -2377,7 +2363,7 @@ trauma_14_population <- function(
         force = TRUE
       )
 
-      # filter ages < 10
+      # filter ages < 10 ----
       pop_10 <- initial_population |>
         dplyr::filter(system_age_10) |>
         dplyr::filter(
@@ -2400,7 +2386,7 @@ trauma_14_population <- function(
         )
     }
 
-    # summarize
+    # summarize ----
     # progress update, these will be repeated throughout the script
     cli::cli_progress_update(
       set = 32,
@@ -2408,7 +2394,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # summarize counts for populations filtered
+    # summarize counts for populations filtered ----
     filter_counts <- tibble::tibble(
       filter = c(
         "Situation possible injury",
@@ -2482,7 +2468,7 @@ trauma_14_population <- function(
       force = TRUE
     )
 
-    # get the population of interest
+    # get the population of interest ----
     trauma.14.population <- list(
       filter_process = filter_counts,
       population_65 = pop_65,

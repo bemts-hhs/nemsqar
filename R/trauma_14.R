@@ -197,7 +197,7 @@ trauma_14 <- function(
   correct = TRUE,
   ...
 ) {
-  # Set default method and adjustment method
+  # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # Ensure that not all table arguments AND the df argument are fulfilled ----
@@ -215,13 +215,13 @@ trauma_14 <- function(
     ) &&
       is.null(df)
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("Trauma-14")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for Trauma-14")
 
     trauma_14_populations <- trauma_14_population(
@@ -260,13 +260,13 @@ trauma_14 <- function(
       einjury_09_col = {{ einjury_09_col }}
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # header for calculations
+    # header for calculations ----
     cli::cli_h2("Calculating Trauma-14")
 
-    # 65+ population
+    # 65+ population ----
     population_65 <- trauma_14_populations$population_65 |>
       summarize_measure(
         measure_name = "Trauma-14",
@@ -279,7 +279,7 @@ trauma_14 <- function(
         ...
       )
 
-    # 10 to 64 population
+    # 10 to 64 population ----
     population_10_64 <- trauma_14_populations$population_10_64 |>
       summarize_measure(
         measure_name = "Trauma-14",
@@ -292,7 +292,7 @@ trauma_14 <- function(
         ...
       )
 
-    # patients < 10 yrs
+    # patients < 10 yrs ----
     population_10 <- trauma_14_populations$population_10 |>
       summarize_measure(
         measure_name = "Trauma-14",
@@ -305,17 +305,17 @@ trauma_14 <- function(
         ...
       )
 
-    # summary
+    # summary ----
     trauma.14 <- dplyr::bind_rows(
       population_65,
       population_10_64,
       population_10
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
@@ -332,10 +332,10 @@ trauma_14 <- function(
       )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
     if (
       any(trauma.14$denominator < 10) &&
@@ -361,13 +361,13 @@ trauma_14 <- function(
     ) &&
       !is.null(df)
   ) {
-    # Start timing the function execution
+    # Start timing the function execution ----
     start_time <- Sys.time()
 
-    # header
+    # header ----
     cli::cli_h1("Trauma-14")
 
-    # header
+    # header ----
     cli::cli_h2("Gathering Records for Trauma-14")
 
     trauma_14_populations <- trauma_14_population(
@@ -399,10 +399,10 @@ trauma_14 <- function(
       einjury_09_col = {{ einjury_09_col }}
     )
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # header for calculations
+    # header for calculations ----
     cli::cli_h2("Calculating Trauma-14")
 
     # 65+ population
@@ -418,7 +418,7 @@ trauma_14 <- function(
         ...
       )
 
-    # 10 to 64 population
+    # 10 to 64 population ----
     population_10_64 <- trauma_14_populations$population_10_64 |>
       summarize_measure(
         measure_name = "Trauma-14",
@@ -431,7 +431,7 @@ trauma_14 <- function(
         ...
       )
 
-    # patients < 10 yrs
+    # patients < 10 yrs ----
     population_10 <- trauma_14_populations$population_10 |>
       summarize_measure(
         measure_name = "Trauma-14",
@@ -444,7 +444,7 @@ trauma_14 <- function(
         ...
       )
 
-    # summary
+    # summary ----
     trauma.14 <- dplyr::bind_rows(
       population_65,
       population_10_64,
@@ -454,7 +454,7 @@ trauma_14 <- function(
     # create a separator
     cli::cli_text("\n")
 
-    # Calculate and display the runtime
+    # Calculate and display the runtime ----
     end_time <- Sys.time()
     run_time_secs <- difftime(end_time, start_time, units = "secs")
     run_time_secs <- as.numeric(run_time_secs)
@@ -471,10 +471,10 @@ trauma_14 <- function(
       )
     }
 
-    # create a separator
+    # create a separator ----
     cli::cli_text("\n")
 
-    # when confidence interval is "wilson", check for n < 10
+    # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
     if (
       any(trauma.14$denominator < 10) &&
