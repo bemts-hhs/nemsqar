@@ -145,7 +145,7 @@ pediatrics_03b_population <- function(
     )
   }
 
-  # ensure all *_col arguments are fulfilled
+  # ensure all *_col arguments are fulfilled ----
   if (
     any(
       missing(erecord_01_col),
@@ -179,13 +179,13 @@ pediatrics_03b_population <- function(
     )
   }
 
-  # 911 codes for eresponse.05
+  # 911 codes for eresponse.05 ----
   codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
 
-  # non-weight-based medications
+  # non-weight-based medications ----
   non_weight_based_meds <- "inhalation|topical|9927049|9927009"
 
-  # days, hours, minutes, months
+  # days, hours, minutes, months ----
   minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
 
   year_values <- "2516009|years"
@@ -198,7 +198,7 @@ pediatrics_03b_population <- function(
 
   month_values <- "months|2516007"
 
-  # options for the progress bar
+  # options for the progress bar ----
   # a green dot for progress
   # a white line for note done yet
   options(cli.progress_bar_style = "dot")
@@ -210,7 +210,7 @@ pediatrics_03b_population <- function(
     )
   )
 
-  # initiate the progress bar process
+  # initiate the progress bar process ----
   progress_bar_population <- cli::cli_progress_bar(
     "Running `pediatrics_03b_population()`",
     total = 9,
@@ -219,7 +219,7 @@ pediatrics_03b_population <- function(
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
-  # utilize applicable tables to analyze the data for the measure
+  # utilize applicable tables to analyze the data for the measure ----
   if (
     all(
       !is.null(patient_scene_table),
@@ -229,7 +229,7 @@ pediatrics_03b_population <- function(
     ) &&
       is.null(df)
   ) {
-    # Ensure df is a data frame or tibble
+    # Ensure df is a data frame or tibble ----
     if (
       any(
         !(is.data.frame(patient_scene_table) &&
@@ -251,18 +251,18 @@ pediatrics_03b_population <- function(
       )
     }
 
-    # Only check the date columns if they are in fact passed
+    # Only check the date columns if they are in fact passed ----
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # Use quasiquotation on the date variables to check format
+      # Use quasiquotation on the date variables to check format ----
       incident_date <- rlang::enquo(incident_date_col)
       patient_dob <- rlang::enquo(patient_DOB_col)
 
-      # Convert quosures to names and check the column classes
+      # Convert quosures to names and check the column classes ----
       incident_date_name <- rlang::as_name(incident_date)
       patient_dob_name <- rlang::as_name(patient_dob)
 
@@ -287,13 +287,13 @@ pediatrics_03b_population <- function(
     )
 
     ###_____________________________________________________________________________
-    # from the full dataframe with all variables
+    # from the full dataframe with all variables ----
     # create one fact table and several dimension tables
     # to complete calculations and avoid issues due to row
     # explosion
     ###_____________________________________________________________________________
 
-    # fact table
+    # fact table ----
     # the user should ensure that variables beyond those supplied for calculations
     # are distinct (i.e. one value or cell per patient)
 
@@ -313,7 +313,7 @@ pediatrics_03b_population <- function(
           )) /
             365,
 
-          # system age check
+          # system age check ----
           system_age_check1 = {{ epatient_15_col }} < 18 &
             grepl(
               pattern = year_values,
@@ -328,7 +328,7 @@ pediatrics_03b_population <- function(
             ),
           system_age_check = system_age_check1 | system_age_check2,
 
-          # calculated age check
+          # calculated age check ----
           calc_age_check = patient_age_in_years_col < 18
         )
     } else if (
@@ -340,7 +340,7 @@ pediatrics_03b_population <- function(
       final_data <- patient_scene_table |>
         dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
         dplyr::mutate(
-          # system age check
+          # system age check ----
           system_age_check1 = {{ epatient_15_col }} < 18 &
             grepl(
               pattern = year_values,
@@ -358,7 +358,7 @@ pediatrics_03b_population <- function(
     }
 
     ###_____________________________________________________________________________
-    ### dimension tables
+    ### dimension tables ----
     ### each dimension table is turned into a vector of unique IDs
     ### that are then utilized on the fact table to create distinct variables
     ### that tell if the patient had the characteristic or not for final
@@ -371,7 +371,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # non-weight based medications
+    # non-weight based medications ----
 
     non_weight_based_meds_data <- medications_table |>
       dplyr::select({{ erecord_01_col }}, {{ emedications_04_col }}) |>
@@ -390,7 +390,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # meds not missing
+    # meds not missing ----
 
     meds_not_missing_data <- medications_table |>
       dplyr::select({{ erecord_01_col }}, {{ emedications_03_col }}) |>
@@ -405,7 +405,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # 911 calls
+    # 911 calls ----
 
     call_911_data <- response_table |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
@@ -424,7 +424,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # documented weight 1
+    # documented weight 1 ----
 
     documented_weight_data1 <- exam_table |>
       dplyr::select({{ erecord_01_col }}, {{ eexam_01_col }}) |>
@@ -441,7 +441,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # documented weight 2
+    # documented weight 2 ----
     documented_weight_data2 <- exam_table |>
       dplyr::select({{ erecord_01_col }}, {{ eexam_02_col }}) |>
       dplyr::distinct() |>
@@ -457,7 +457,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # assign variables to the final data
+    # assign variables to the final data ----
     computing_population <- final_data |>
       dplyr::mutate(
         NON_WEIGHT_BASED = {{ erecord_01_col }} %in% non_weight_based_meds_data,
@@ -474,19 +474,19 @@ pediatrics_03b_population <- function(
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # get the initial population
+      # get the initial population ----
       initial_population <- computing_population |>
         dplyr::filter(
-          # age filter
+          # age filter ----
           system_age_check | calc_age_check,
 
-          # only rows where meds are passed
+          # only rows where meds are passed ----
           MEDS_NOT_MISSING,
 
-          # only 911 calls
+          # only 911 calls ----
           CALL_911,
 
-          # exclude non-weight based meds
+          # exclude non-weight based meds ----
           !NON_WEIGHT_BASED
         )
     } else if (
@@ -497,16 +497,16 @@ pediatrics_03b_population <- function(
     ) {
       initial_population <- computing_population |>
         dplyr::filter(
-          # age filter
+          # age filter ----
           system_age_check,
 
-          # only rows where meds are passed
+          # only rows where meds are passed ----
           MEDS_NOT_MISSING,
 
-          # only 911 calls
+          # only 911 calls ----
           CALL_911,
 
-          # exclude non-weight based meds
+          # exclude non-weight based meds ----
           !NON_WEIGHT_BASED
         )
     }
@@ -517,7 +517,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # summarize counts for populations filtered
+    # summarize counts for populations filtered ----
     filter_counts <- tibble::tibble(
       filter = c(
         "Meds not missing",
@@ -543,14 +543,14 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # get the population of interest
+    # get the population of interest ----
     pediatrics.03b.population <- list(
       filter_process = filter_counts,
       initial_population = initial_population,
       computing_population = computing_population
     )
 
-    # get the summary of results, already filtered down to the target age group for the measure
+    # get the summary of results, already filtered down to the target age group for the measure ----
 
     cli::cli_progress_done(id = progress_bar_population)
 
@@ -565,9 +565,9 @@ pediatrics_03b_population <- function(
     ) &&
       !is.null(df)
   ) {
-    # utilize a dataframe to analyze the data for the measure analytics
+    # utilize a dataframe to analyze the data for the measure analytics ----
 
-    # Ensure df is a data frame or tibble
+    # Ensure df is a data frame or tibble ----
     if (!is.data.frame(df) && !tibble::is_tibble(df)) {
       cli::cli_abort(
         c(
@@ -577,14 +577,14 @@ pediatrics_03b_population <- function(
       )
     }
 
-    # only check the date columns if they are in fact passed
+    # only check the date columns if they are in fact passed ----
     if (
       all(
         !rlang::quo_is_null(rlang::enquo(incident_date_col)),
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # use quasiquotation on the date variables to check format
+      # use quasiquotation on the date variables to check format ----
       incident_date <- rlang::enquo(incident_date_col)
       patient_dob <- rlang::enquo(patient_DOB_col)
 
@@ -600,7 +600,7 @@ pediatrics_03b_population <- function(
       }
     }
 
-    # initiate the progress bar process
+    # initiate the progress bar process ----
     progress_bar_population <- cli::cli_progress_bar(
       "Running `pediatrics_03b_population()`",
       total = 9,
@@ -618,13 +618,13 @@ pediatrics_03b_population <- function(
     )
 
     ###_____________________________________________________________________________
-    # from the full dataframe with all variables
+    # from the full dataframe with all variables ----
     # create one fact table and several dimension tables
     # to complete calculations and avoid issues due to row
     # explosion
     ###_____________________________________________________________________________
 
-    # fact table
+    # fact table ----
     # the user should ensure that variables beyond those supplied for calculations
     # are distinct (i.e. one value or cell per patient)
 
@@ -653,7 +653,7 @@ pediatrics_03b_population <- function(
           )) /
             365,
 
-          # system age check
+          # system age check ----
           system_age_check1 = {{ epatient_15_col }} < 18 &
             grepl(
               pattern = year_values,
@@ -668,7 +668,7 @@ pediatrics_03b_population <- function(
             ),
           system_age_check = system_age_check1 | system_age_check2,
 
-          # calculated age check
+          # calculated age check ----
           calc_age_check = patient_age_in_years_col < 18
         )
     } else if (
@@ -689,7 +689,7 @@ pediatrics_03b_population <- function(
         ) |>
         dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
         dplyr::mutate(
-          # system age check
+          # system age check ----
           system_age_check1 = {{ epatient_15_col }} < 18 &
             grepl(
               pattern = year_values,
@@ -707,7 +707,7 @@ pediatrics_03b_population <- function(
     }
 
     ###_____________________________________________________________________________
-    ### dimension tables
+    ### dimension tables ----
     ### each dimension table is turned into a vector of unique IDs
     ### that are then utilized on the fact table to create distinct variables
     ### that tell if the patient had the characteristic or not for final
@@ -720,7 +720,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # non-weight based medications
+    # non-weight based medications ----
 
     non_weight_based_meds_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ emedications_04_col }}) |>
@@ -739,7 +739,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # meds not missing
+    # meds not missing ----
 
     meds_not_missing_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ emedications_03_col }}) |>
@@ -754,7 +754,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # 911 calls
+    # 911 calls ----
 
     call_911_data <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
@@ -773,7 +773,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # documented weight 1
+    # documented weight 1 ----
 
     documented_weight_data1 <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eexam_01_col }}) |>
@@ -790,7 +790,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # documented weight 2
+    # documented weight 2 ----
     documented_weight_data2 <- df |>
       dplyr::select({{ erecord_01_col }}, {{ eexam_02_col }}) |>
       dplyr::distinct() |>
@@ -806,7 +806,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # assign variables to the final data
+    # assign variables to the final data ----
     computing_population <- final_data |>
       dplyr::mutate(
         NON_WEIGHT_BASED = {{ erecord_01_col }} %in% non_weight_based_meds_data,
@@ -823,19 +823,19 @@ pediatrics_03b_population <- function(
         !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
       )
     ) {
-      # get the initial population
+      # get the initial population ----
       initial_population <- computing_population |>
         dplyr::filter(
-          # age filter
+          # age filter ----
           system_age_check | calc_age_check,
 
-          # only rows where meds are passed
+          # only rows where meds are passed ----
           MEDS_NOT_MISSING,
 
-          # only 911 calls
+          # only 911 calls ----
           CALL_911,
 
-          # exclude non-weight based meds
+          # exclude non-weight based meds ----
           !NON_WEIGHT_BASED
         )
     } else if (
@@ -846,16 +846,16 @@ pediatrics_03b_population <- function(
     ) {
       initial_population <- computing_population |>
         dplyr::filter(
-          # age filter
+          # age filter ----
           system_age_check,
 
-          # only rows where meds are passed
+          # only rows where meds are passed ----
           MEDS_NOT_MISSING,
 
-          # only 911 calls
+          # only 911 calls ----
           CALL_911,
 
-          # exclude non-weight based meds
+          # exclude non-weight based meds ----
           !NON_WEIGHT_BASED
         )
     }
@@ -866,7 +866,7 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # summarize counts for populations filtered
+    # summarize counts for populations filtered ----
     filter_counts <- tibble::tibble(
       filter = c(
         "Meds not missing",
@@ -892,18 +892,17 @@ pediatrics_03b_population <- function(
       force = TRUE
     )
 
-    # get the population of interest
+    # get the population of interest ----
     pediatrics.03b.population <- list(
       filter_process = filter_counts,
       initial_population = initial_population,
       computing_population = computing_population
     )
 
-    # get the summary of results, already filtered down to the target age group for the measure
-
+    # get the summary of results, already filtered down to the target age group for the measure ----
     cli::cli_progress_done(id = progress_bar_population)
 
-    # summary
+    # summary ----
     return(pediatrics.03b.population)
   }
 }
