@@ -194,10 +194,48 @@ hypoglycemia_01_population <- function(
 
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions ----
   # 911 codes for eresponse.05
-  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
+  codes_911 <- paste(
+    "2205001",
+    "2205003",
+    "2205009",
+    "Emergency Response \\(Primary Response Area\\)",
+    "Emergency Response \\(Intercept\\)",
+    "Emergency Response \\(Mutual Aid\\)",
+    sep = "|"
+  )
 
   # get codes as a regex to filter primary/secondary impression fields ----
-  hypoglycemia_treatment_codes <- "4832|4850|377980|376937|372326|237653|260258|309778|1795610|1795477|1794567|1165823|1165822|1165819|Glucagon|Glucose|Glucose Oral Gel|Glucose Injectable Solution|Glucose Chewable Tablet|Glucose 500 MG/ML Injectable Solution|Glucose 250 MG/ML Injectable Solution|Glucose 50 MG/ML Injectable Solution|250 ML Glucose 50 MG/ML Injection|500 ML Glucose 100 MG ML Injection|Glucose Injection|Glucose Oral Product|Glucose Oral Liquid Product|Glucose Injectable Product"
+  hypoglycemia_treatment_codes <- paste(
+    "4832",
+    "4850",
+    "377980",
+    "376937",
+    "372326",
+    "237653",
+    "260258",
+    "309778",
+    "1795610",
+    "1795477",
+    "1794567",
+    "1165823",
+    "1165822",
+    "1165819",
+    "Glucagon",
+    "Glucose",
+    "Glucose Oral Gel",
+    "Glucose Injectable Solution",
+    "Glucose Chewable Tablet",
+    "Glucose 500 MG/ML Injectable Solution",
+    "Glucose 250 MG/ML Injectable Solution",
+    "Glucose 50 MG/ML Injectable Solution",
+    "250 ML Glucose 50 MG/ML Injection",
+    "500 ML Glucose 100 MG ML Injection",
+    "Glucose Injection",
+    "Glucose Oral Product",
+    "Glucose Oral Liquid Product",
+    "Glucose Injectable Product",
+    sep = "|"
+  )
 
   # hypoglycemia procedures ----
 
@@ -249,8 +287,82 @@ hypoglycemia_01_population <- function(
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
-  # utilize applicable tables to analyze the data for the measure ----
+  ####### CREATE SEPARATE TABLES FROM DF IF TABLES ARE MISSING ----
   if (
+    all(
+      is.null(patient_scene_table),
+      is.null(response_table),
+      is.null(situation_table),
+      is.null(vitals_table),
+      is.null(medications_table),
+      is.null(procedures_table)
+    ) &&
+      !is.null(df)
+  ) {
+    # Ensure df is a data frame or tibble
+    validate_data_structure(
+      input = df,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      logic = "or",
+      type = "error"
+    )
+
+    # make tables from df ----
+    # patient
+    patient_scene_table <- df |>
+      dplyr::select(
+        -{{ esituation_11_col }},
+        -{{ esituation_12_col }},
+        -{{ emedications_03_col }},
+        -{{ eresponse_05_col }},
+        -{{ eprocedures_03_col }},
+        -{{ evitals_18_col }},
+        -{{ evitals_23_col }},
+        -{{ evitals_26_col }}
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+
+    # response ----
+    response_table <- df |>
+      dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
+      dplyr::distinct()
+
+    # arrest ----
+    situation_table <- df |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ esituation_11_col }},
+        {{ esituation_12_col }}
+      ) |>
+      dplyr::distinct()
+
+    # vitals ----
+    medications_table <- df |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ emedications_03_col }}
+      ) |>
+      dplyr::distinct()
+
+    # vitals ----
+    vitals_table <- df |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ evitals_18_col }},
+        {{ evitals_23_col }},
+        {{ evitals_26_col }}
+      ) |>
+      dplyr::distinct()
+
+    # procedures ----
+    procedures_table <- df |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ eprocedures_03_col }}
+      ) |>
+      dplyr::distinct()
+  } else if (
+    # utilize applicable tables to analyze the data for the measure ----
     all(
       !is.null(patient_scene_table),
       !is.null(response_table),
@@ -262,1101 +374,607 @@ hypoglycemia_01_population <- function(
       is.null(df)
   ) {
     # Ensure df is a data frame or tibble ----
-    if (
-      any(
-        !(is.data.frame(patient_scene_table) &&
-          tibble::is_tibble(patient_scene_table)) ||
-
-          !(is.data.frame(response_table) &&
-            tibble::is_tibble(response_table)) ||
-
-          !(is.data.frame(situation_table) &&
-            tibble::is_tibble(situation_table)) ||
-
-          !(is.data.frame(vitals_table) && tibble::is_tibble(vitals_table)) ||
-
-          !(is.data.frame(medications_table) &&
-            tibble::is_tibble(medications_table)) ||
-
-          !(is.data.frame(procedures_table) &&
-            tibble::is_tibble(procedures_table))
-      )
-    ) {
-      cli::cli_abort(
-        c(
-          "An object of class {.cls data.frame} or {.cls tibble} is required for each of the *_table arguments."
-        )
-      )
-    }
-
-    # Only check the date columns if they are in fact passed ----
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      # Use quasiquotation on the date variables to check format ----
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_DOB_col)
-
-      # Convert quosures to names and check the column classes ----
-      incident_date_name <- rlang::as_name(incident_date)
-      patient_dob_name <- rlang::as_name(patient_dob)
-
-      if (
-        (!lubridate::is.Date(patient_scene_table[[incident_date_name]]) &
-          !lubridate::is.POSIXct(patient_scene_table[[incident_date_name]])) ||
-          (!lubridate::is.Date(patient_scene_table[[patient_dob_name]]) &
-            !lubridate::is.POSIXct(patient_scene_table[[patient_dob_name]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class. Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or a similar class."
-        )
-      }
-    }
-
-    progress_bar_population
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 1,
-      id = progress_bar_population,
-      force = TRUE
+    # Ensure all tables are of class `data.frame` or `tibble` ----
+    validate_data_structure(
+      input = patient_scene_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
     )
 
-    ###_____________________________________________________________________________
-    # fact table ----
-    # the user should ensure that variables beyond those supplied for calculations
-    # are distinct (i.e. one value or cell per patient)
-    ###_____________________________________________________________________________
-
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      # filter the table to get the initial population ----
-      final_data <- patient_scene_table |>
-        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
-        dplyr::mutate(
-          patient_age_in_years_col = as.numeric(difftime(
-            time1 = {{ incident_date_col }},
-            time2 = {{ patient_DOB_col }},
-            units = "days"
-          )) /
-            365,
-          patient_age_in_days_col = as.numeric(difftime(
-            time1 = {{ incident_date_col }},
-            time2 = {{ patient_DOB_col }},
-            units = "days"
-          )),
-
-          # system age check ----
-          system_age_adult = {{ epatient_15_col }} >= 18 &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor1 = {{ epatient_15_col }} < 18 &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor2 = !is.na({{ epatient_15_col }}) &
-            grepl(
-              pattern = minor_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor3 = !({{ epatient_15_col }} < 1 &
-            grepl(
-              pattern = day_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            )) &
-            !({{ epatient_15_col }} < 24 &
-              grepl(
-                pattern = hour_values,
-                x = {{ epatient_16_col }},
-                ignore.case = TRUE
-              )) &
-            !({{ epatient_15_col }} < 120 &
-              grepl(
-                pattern = minute_values,
-                x = {{ epatient_16_col }},
-                ignore.case = TRUE
-              )),
-          system_age_minor = (system_age_minor1 | system_age_minor2) &
-            system_age_minor3,
-
-          # calculated age check ----
-          calc_age_adult = patient_age_in_years_col >= 18,
-          calc_age_minor = patient_age_in_years_col < 18 &
-            patient_age_in_days_col >= 1
-        )
-    } else if (
-      all(
-        is.null(incident_date_col),
-        is.null(patient_DOB_col)
-      )
-    ) {
-      final_data <- patient_scene_table |>
-        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
-        dplyr::mutate(
-          # system age check ----
-          system_age_adult = {{ epatient_15_col }} >= 18 &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor1 = {{ epatient_15_col }} < 18 &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor2 = !is.na({{ epatient_15_col }}) &
-            grepl(
-              pattern = minor_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor3 = !({{ epatient_15_col }} < 1 &
-            grepl(
-              pattern = day_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            )) &
-            !({{ epatient_15_col }} < 24 &
-              grepl(
-                pattern = hour_values,
-                x = {{ epatient_16_col }},
-                ignore.case = TRUE
-              )) &
-            !({{ epatient_15_col }} < 120 &
-              grepl(
-                pattern = minute_values,
-                x = {{ epatient_16_col }},
-                ignore.case = TRUE
-              )),
-          system_age_minor = (system_age_minor1 | system_age_minor2) &
-            system_age_minor3
-        )
-    }
-
-    ###_____________________________________________________________________________
-    ### dimension tables ----
-    ### each dimension table is turned into a vector of unique IDs
-    ### that are then utilized on the fact table to create distinct variables
-    ### that tell if the patient had the characteristic or not for final
-    ### calculations of the numerator and filtering
-    ###_____________________________________________________________________________
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 2,
-      id = progress_bar_population,
-      force = TRUE
+    validate_data_structure(
+      input = response_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
     )
 
-    # altered mental status 1 ----
-    altered_data1 <- situation_table |>
-      dplyr::select({{ erecord_01_col }}, {{ esituation_11_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(grepl(
-        pattern = altered_mental_status,
-        x = {{ esituation_11_col }},
-        ignore.case = TRUE
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 3,
-      id = progress_bar_population,
-      force = TRUE
+    validate_data_structure(
+      input = situation_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
     )
 
-    # altered mental status 2 ----
-    altered_data2 <- situation_table |>
-      dplyr::select({{ erecord_01_col }}, {{ esituation_12_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(grepl(
-        pattern = altered_mental_status,
-        x = {{ esituation_12_col }},
-        ignore.case = TRUE
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 4,
-      id = progress_bar_population,
-      force = TRUE
+    validate_data_structure(
+      input = medications_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
     )
 
-    # AVPU ----
-    AVPU_data <- vitals_table |>
-      dplyr::select({{ erecord_01_col }}, {{ evitals_26_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(grepl(
-        pattern = avpu_responses,
-        x = {{ evitals_26_col }},
-        ignore.case = TRUE
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 5,
-      id = progress_bar_population,
-      force = TRUE
+    validate_data_structure(
+      input = vitals_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
     )
 
-    # GCS ----
-    GCS_data <- vitals_table |>
-      dplyr::select({{ erecord_01_col }}, {{ evitals_23_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter({{ evitals_23_col }} < 15) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 6,
-      id = progress_bar_population,
-      force = TRUE
+    validate_data_structure(
+      input = procedures_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
     )
 
-    # diabetes data 1 ----
-    diabetes_data1 <- situation_table |>
-      dplyr::select({{ erecord_01_col }}, {{ esituation_11_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(grepl(
-        pattern = diabetes_codes,
-        x = {{ esituation_11_col }},
-        ignore.case = TRUE
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
+    # get distinct tables when passed to table arguments ----
+    # patient
+    patient_scene_table <- patient_scene_table |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 7,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # diabetes data 2 ----
-    diabetes_data2 <- situation_table |>
-      dplyr::select({{ erecord_01_col }}, {{ esituation_12_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(grepl(
-        pattern = diabetes_codes,
-        x = {{ esituation_12_col }},
-        ignore.case = TRUE
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 8,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # blood glucose ----
-    blood_glucose_data <- vitals_table |>
-      dplyr::select({{ erecord_01_col }}, {{ evitals_18_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter({{ evitals_18_col }} < 60) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 9,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # 911 calls ----
-    call_911_data <- response_table |>
+    # response ----
+    response_table <- response_table |>
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(grepl(
-        pattern = codes_911,
-        x = {{ eresponse_05_col }},
-        ignore.case = TRUE
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
+      dplyr::distinct()
 
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 10,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # correct treatment 1 ----
-    correct_treatment_data1 <- medications_table |>
-      dplyr::select({{ erecord_01_col }}, {{ emedications_03_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-        grepl(
-          pattern = hypoglycemia_treatment_codes,
-          x = {{ emedications_03_col }},
-          ignore.case = TRUE
-        )
+    # arrest ----
+    situation_table <- situation_table |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ esituation_11_col }},
+        {{ esituation_12_col }}
       ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
+      dplyr::distinct()
 
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 11,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # correct treatment 2 ----
-    correct_treatment_data2 <- procedures_table |>
-      dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-        grepl(
-          pattern = hypoglycemia_treatment_codes,
-          x = {{ eprocedures_03_col }},
-          ignore.case = TRUE
-        )
+    # vitals ----
+    medications_table <- medications_table |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ emedications_03_col }}
       ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
+      dplyr::distinct()
 
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 12,
-      id = progress_bar_population,
-      force = TRUE
+    # vitals ----
+    vitals_table <- vitals_table |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ evitals_18_col }},
+        {{ evitals_23_col }},
+        {{ evitals_26_col }}
+      ) |>
+      dplyr::distinct()
+
+    # procedures ----
+    procedures_table <- procedures_table |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ eprocedures_03_col }}
+      ) |>
+      dplyr::distinct()
+  }
+
+  # Only check the date columns if they are in fact passed ----
+  if (
+    all(
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
+  ) {
+    # Use quasiquotation on the date variables to check format ----
+    incident_date <- rlang::enquo(incident_date_col)
+    patient_dob <- rlang::enquo(patient_DOB_col)
 
-    # assign variables to the final data ----
-    computing_population <- final_data |>
+    # Convert quosures to names and check the column classes ----
+    incident_date_name <- rlang::as_name(incident_date)
+    patient_dob_name <- rlang::as_name(patient_dob)
+
+    validate_class(
+      input = patient_scene_table[[incident_date_name]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "incident_date_col"
+    )
+    validate_class(
+      input = patient_scene_table[[patient_dob_name]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "patient_DOB_col"
+    )
+  }
+
+  progress_bar_population
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 1,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  ###_____________________________________________________________________________
+  # fact table ----
+  # the user should ensure that variables beyond those supplied for calculations
+  # are distinct (i.e. one value or cell per patient)
+  ###_____________________________________________________________________________
+
+  if (
+    all(
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    )
+  ) {
+    # filter the table to get the initial population ----
+    final_data <- patient_scene_table |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
       dplyr::mutate(
-        GCS = {{ erecord_01_col }} %in% GCS_data,
-        AVPU = {{ erecord_01_col }} %in% AVPU_data,
-        CALL_911 = {{ erecord_01_col }} %in% call_911_data,
-        ALTERED1 = {{ erecord_01_col }} %in% altered_data1,
-        ALTERED2 = {{ erecord_01_col }} %in% altered_data2,
-        ALTERED = ALTERED1 | ALTERED2,
-        DIABETES1 = {{ erecord_01_col }} %in% diabetes_data1,
-        DIABETES2 = {{ erecord_01_col }} %in% diabetes_data2,
-        DIABETES = DIABETES1 | DIABETES2,
-        BLOOD_GLUCOSE = {{ erecord_01_col }} %in% blood_glucose_data,
-        TREATMENT1 = {{ erecord_01_col }} %in% correct_treatment_data1,
-        TREATMENT2 = {{ erecord_01_col }} %in% correct_treatment_data2,
-        TREATMENT = TREATMENT1 | TREATMENT2
+        patient_age_in_years_col = as.numeric(difftime(
+          time1 = {{ incident_date_col }},
+          time2 = {{ patient_DOB_col }},
+          units = "days"
+        )) /
+          365,
+        patient_age_in_days_col = as.numeric(difftime(
+          time1 = {{ incident_date_col }},
+          time2 = {{ patient_DOB_col }},
+          units = "days"
+        )),
+
+        # system age check ----
+        system_age_adult = {{ epatient_15_col }} >= 18 &
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor1 = {{ epatient_15_col }} < 18 &
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor2 = !is.na({{ epatient_15_col }}) &
+          grepl(
+            pattern = minor_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor3 = !({{ epatient_15_col }} < 1 &
+          grepl(
+            pattern = day_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          )) &
+          !({{ epatient_15_col }} < 24 &
+            grepl(
+              pattern = hour_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            )) &
+          !({{ epatient_15_col }} < 120 &
+            grepl(
+              pattern = minute_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            )),
+        system_age_minor = (system_age_minor1 | system_age_minor2) &
+          system_age_minor3,
+
+        # calculated age check ----
+        calc_age_adult = patient_age_in_years_col >= 18,
+        calc_age_minor = patient_age_in_years_col < 18 &
+          patient_age_in_days_col >= 1
       )
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 13,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # get the initial population ----
-
-    initial_population <- computing_population |>
-      dplyr::filter(
-        (DIABETES & (GCS | AVPU)) |
-
-          (ALTERED & BLOOD_GLUCOSE) &
-
-            CALL_911,
-
-        system_age_minor3
-      )
-
-    # Adult and Pediatric Populations ----
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 14,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    if (
-      # use the system generated and calculated ages ----
-
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      # filter adult ----
-      adult_pop <- initial_population |>
-        dplyr::filter(system_age_adult | calc_age_adult)
-
-      # progress update, these will be repeated throughout the script ----
-      cli::cli_progress_update(
-        set = 15,
-        id = progress_bar_population,
-        force = TRUE
-      )
-
-      # filter peds ----
-      peds_pop <- initial_population |>
-        dplyr::filter(system_age_minor | calc_age_minor)
-    } else if (
-      # only use the system generated values ----
-
-      all(
-        is.null(incident_date_col),
-        is.null(patient_DOB_col)
-      )
-    ) {
-      # filter adult ----
-      adult_pop <- initial_population |>
-        dplyr::filter(system_age_adult)
-
-      # progress update, these will be repeated throughout the script ----
-      cli::cli_progress_update(
-        set = 15,
-        id = progress_bar_population,
-        force = TRUE
-      )
-
-      # filter peds ----
-      peds_pop <- initial_population |>
-        dplyr::filter(system_age_minor)
-    }
-
-    # summarize ----
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 16,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # summarize counts for populations filtered ----
-    filter_counts <- tibble::tibble(
-      filter = c(
-        "Diabetes/Hypoglycemia and Verbal, Painful, Unresponsive or GCS < 15",
-        "Altered mental status and low blood glucose",
-        "911 calls",
-        "Adults denominator",
-        "Peds denominator",
-        "Initial population",
-        "Total dataset"
-      ),
-      count = c(
-        sum(
-          computing_population$DIABETES &
-            (computing_population$AVPU | computing_population$GCS),
-          na.rm = TRUE
-        ),
-        sum(
-          computing_population$ALTERED & computing_population$BLOOD_GLUCOSE,
-          na.rm = TRUE
-        ),
-        sum(computing_population$CALL_911, na.rm = TRUE),
-        nrow(adult_pop),
-        nrow(peds_pop),
-        nrow(initial_population),
-        nrow(computing_population)
-      )
-    )
-
-    cli::cli_progress_update(
-      set = 17,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # get the population of interest ----
-    hypoglycemia.01.population <- list(
-      filter_process = filter_counts,
-      adults = adult_pop,
-      peds = peds_pop,
-      initial_population = initial_population,
-      computing_population = computing_population
-    )
-
-    cli::cli_progress_done(id = progress_bar_population)
-
-    return(hypoglycemia.01.population)
   } else if (
     all(
-      is.null(patient_scene_table),
-      is.null(response_table),
-      is.null(situation_table),
-      is.null(vitals_table),
-      is.null(medications_table),
-      is.null(procedures_table)
-    ) &&
-      !is.null(df)
+      is.null(incident_date_col),
+      is.null(patient_DOB_col)
+    )
   ) {
-    # utilize a dataframe to analyze the data for the measure analytics ----
-
-    # Ensure df is a data frame or tibble ----
-    if (!is.data.frame(df) && !tibble::is_tibble(df)) {
-      cli::cli_abort(
-        c(
-          "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-          "i" = "The passed object is of class {.val {class(df)}}."
-        )
-      )
-    }
-
-    # only check the date columns if they are in fact passed ----
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      # use quasiquotation on the date variables to check format ----
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_DOB_col)
-
-      if (
-        (!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-          !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-          (!lubridate::is.Date(df[[rlang::as_name(patient_dob)]]) &
-            !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
-        )
-      }
-    }
-
-    progress_bar_population
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 1,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    ###_____________________________________________________________________________
-    # from the full dataframe with all variables ----
-    # create one fact table and several dimension tables
-    # to complete calculations and avoid issues due to row
-    # explosion
-    ###_____________________________________________________________________________
-
-    # fact table ----
-    # the user should ensure that variables beyond those supplied for calculations
-    # are distinct (i.e. one value or cell per patient)
-
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      final_data <- df |>
-        dplyr::select(
-          -c(
-            {{ eresponse_05_col }},
-            {{ esituation_11_col }},
-            {{ esituation_12_col }},
-            {{ evitals_18_col }},
-            {{ evitals_23_col }},
-            {{ evitals_26_col }},
-            {{ emedications_03_col }},
-            {{ eprocedures_03_col }}
-          )
-        ) |>
-        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
-        dplyr::mutate(
-          patient_age_in_years_col = as.numeric(difftime(
-            time1 = {{ incident_date_col }},
-            time2 = {{ patient_DOB_col }},
-            units = "days"
-          )) /
-            365,
-          patient_age_in_days_col = as.numeric(difftime(
-            time1 = {{ incident_date_col }},
-            time2 = {{ patient_DOB_col }},
-            units = "days"
-          )),
-
-          # system age check ----
-          system_age_adult = {{ epatient_15_col }} >= 18 &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor1 = {{ epatient_15_col }} < 18 &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor2 = !is.na({{ epatient_15_col }}) &
-            grepl(
-              pattern = minor_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor3 = !({{ epatient_15_col }} < 1 &
-            grepl(
-              pattern = day_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            )) &
-            !({{ epatient_15_col }} < 24 &
-              grepl(
-                pattern = hour_values,
-                x = {{ epatient_16_col }},
-                ignore.case = TRUE
-              )) &
-            !({{ epatient_15_col }} < 120 &
-              grepl(
-                pattern = minute_values,
-                x = {{ epatient_16_col }},
-                ignore.case = TRUE
-              )),
-          system_age_minor = (system_age_minor1 | system_age_minor2) &
-            system_age_minor3,
-
-          # calculated age check ----
-          calc_age_adult = patient_age_in_years_col >= 18,
-          calc_age_minor = patient_age_in_years_col < 18 &
-            patient_age_in_days_col >= 1
-        )
-    } else if (
-      all(
-        is.null(incident_date_col),
-        is.null(patient_DOB_col)
-      )
-    ) {
-      final_data <- df |>
-        dplyr::select(
-          -c(
-            {{ eresponse_05_col }},
-            {{ esituation_11_col }},
-            {{ esituation_12_col }},
-            {{ evitals_18_col }},
-            {{ evitals_23_col }},
-            {{ evitals_26_col }},
-            {{ emedications_03_col }},
-            {{ eprocedures_03_col }}
-          )
-        ) |>
-        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
-        dplyr::mutate(
-          # system age check ----
-          system_age_adult = {{ epatient_15_col }} >= 18 &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor1 = {{ epatient_15_col }} < 18 &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor2 = !is.na({{ epatient_15_col }}) &
-            grepl(
-              pattern = minor_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor3 = !({{ epatient_15_col }} < 1 &
-            grepl(
-              pattern = day_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            )) &
-            !({{ epatient_15_col }} < 24 &
-              grepl(
-                pattern = hour_values,
-                x = {{ epatient_16_col }},
-                ignore.case = TRUE
-              )) &
-            !({{ epatient_15_col }} < 120 &
-              grepl(
-                pattern = minute_values,
-                x = {{ epatient_16_col }},
-                ignore.case = TRUE
-              )),
-          system_age_minor = (system_age_minor1 | system_age_minor2) &
-            system_age_minor3
-        )
-    }
-
-    ###_____________________________________________________________________________
-    ### dimension tables ----
-    ### each dimension table is turned into a vector of unique IDs
-    ### that are then utilized on the fact table to create distinct variables
-    ### that tell if the patient had the characteristic or not for final
-    ### calculations of the numerator and filtering
-    ###_____________________________________________________________________________
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 2,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # altered mental status 1 ----
-    altered_data1 <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ esituation_11_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(grepl(
-        pattern = altered_mental_status,
-        x = {{ esituation_11_col }},
-        ignore.case = TRUE
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 3,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # altered mental status 2 ----
-    altered_data2 <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ esituation_12_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(grepl(
-        pattern = altered_mental_status,
-        x = {{ esituation_12_col }},
-        ignore.case = TRUE
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 4,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # AVPU ----
-    AVPU_data <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ evitals_26_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(grepl(
-        pattern = avpu_responses,
-        x = {{ evitals_26_col }},
-        ignore.case = TRUE
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 5,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # GCS ----
-    GCS_data <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ evitals_23_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter({{ evitals_23_col }} < 15) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 6,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # diabetes data 1 ----
-    diabetes_data1 <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ esituation_11_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(grepl(
-        pattern = diabetes_codes,
-        x = {{ esituation_11_col }},
-        ignore.case = TRUE
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 7,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # diabetes data 2 ----
-    diabetes_data2 <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ esituation_12_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(grepl(
-        pattern = diabetes_codes,
-        x = {{ esituation_12_col }},
-        ignore.case = TRUE
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 8,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # blood glucose ----
-    blood_glucose_data <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ evitals_18_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter({{ evitals_18_col }} < 60) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 9,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # 911 calls ----
-    call_911_data <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(grepl(
-        pattern = codes_911,
-        x = {{ eresponse_05_col }},
-        ignore.case = TRUE
-      )) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 10,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # correct treatment 1 ----
-    correct_treatment_data1 <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ emedications_03_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-        grepl(
-          pattern = hypoglycemia_treatment_codes,
-          x = {{ emedications_03_col }},
-          ignore.case = TRUE
-        )
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 11,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # correct treatment 2 ----
-    correct_treatment_data2 <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-        grepl(
-          pattern = hypoglycemia_treatment_codes,
-          x = {{ eprocedures_03_col }},
-          ignore.case = TRUE
-        )
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 12,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # assign variables to the final data ----
-    computing_population <- final_data |>
+    final_data <- patient_scene_table |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
       dplyr::mutate(
-        GCS = {{ erecord_01_col }} %in% GCS_data,
-        AVPU = {{ erecord_01_col }} %in% AVPU_data,
-        CALL_911 = {{ erecord_01_col }} %in% call_911_data,
-        ALTERED1 = {{ erecord_01_col }} %in% altered_data1,
-        ALTERED2 = {{ erecord_01_col }} %in% altered_data2,
-        ALTERED = ALTERED1 | ALTERED2,
-        DIABETES1 = {{ erecord_01_col }} %in% diabetes_data1,
-        DIABETES2 = {{ erecord_01_col }} %in% diabetes_data2,
-        DIABETES = DIABETES1 | DIABETES2,
-        BLOOD_GLUCOSE = {{ erecord_01_col }} %in% blood_glucose_data,
-        TREATMENT1 = {{ erecord_01_col }} %in% correct_treatment_data1,
-        TREATMENT2 = {{ erecord_01_col }} %in% correct_treatment_data2,
-        TREATMENT = TREATMENT1 | TREATMENT2
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 13,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # get the initial population ----
-
-    initial_population <- computing_population |>
-      dplyr::filter(
-        (DIABETES & (GCS | AVPU)) |
-
-          (ALTERED & BLOOD_GLUCOSE) &
-
-            CALL_911,
-
-        system_age_minor3
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
-
-    # Adult and Pediatric Populations ----
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 14,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    if (
-      # use the system generated and calculated ages ----
-
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+        # system age check ----
+        system_age_adult = {{ epatient_15_col }} >= 18 &
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor1 = {{ epatient_15_col }} < 18 &
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor2 = !is.na({{ epatient_15_col }}) &
+          grepl(
+            pattern = minor_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor3 = !({{ epatient_15_col }} < 1 &
+          grepl(
+            pattern = day_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          )) &
+          !({{ epatient_15_col }} < 24 &
+            grepl(
+              pattern = hour_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            )) &
+          !({{ epatient_15_col }} < 120 &
+            grepl(
+              pattern = minute_values,
+              x = {{ epatient_16_col }},
+              ignore.case = TRUE
+            )),
+        system_age_minor = (system_age_minor1 | system_age_minor2) &
+          system_age_minor3
       )
-    ) {
-      # filter adult
-      adult_pop <- initial_population |>
-        dplyr::filter(system_age_adult | calc_age_adult)
-
-      # progress update, these will be repeated throughout the script ----
-      cli::cli_progress_update(
-        set = 15,
-        id = progress_bar_population,
-        force = TRUE
-      )
-
-      # filter peds ----
-      peds_pop <- initial_population |>
-        dplyr::filter(system_age_minor | calc_age_minor)
-    } else if (
-      # only use the system generated values ----
-
-      all(
-        is.null(incident_date_col),
-        is.null(patient_DOB_col)
-      )
-    ) {
-      # filter adult ----
-      adult_pop <- initial_population |>
-        dplyr::filter(system_age_adult)
-
-      # progress update, these will be repeated throughout the script ----
-      cli::cli_progress_update(
-        set = 15,
-        id = progress_bar_population,
-        force = TRUE
-      )
-
-      # filter peds ----
-      peds_pop <- initial_population |>
-        dplyr::filter(system_age_minor)
-    }
-
-    # summarize ----
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 16,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # summarize counts for populations filtered ----
-    filter_counts <- tibble::tibble(
-      filter = c(
-        "Diabetes/Hypoglycemia and Verbal, Painful, Unresponsive or GCS < 15",
-        "Altered mental status and low blood glucose",
-        "911 calls",
-        "Adults denominator",
-        "Peds denominator",
-        "Initial population",
-        "Total dataset"
-      ),
-      count = c(
-        sum(
-          computing_population$DIABETES &
-            (computing_population$AVPU | computing_population$GCS),
-          na.rm = TRUE
-        ),
-        sum(
-          computing_population$ALTERED & computing_population$BLOOD_GLUCOSE,
-          na.rm = TRUE
-        ),
-        sum(computing_population$CALL_911, na.rm = TRUE),
-        nrow(adult_pop),
-        nrow(peds_pop),
-        nrow(initial_population),
-        nrow(computing_population)
-      )
-    )
-
-    cli::cli_progress_update(
-      set = 17,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # get the population of interest ----
-    hypoglycemia.01.population <- list(
-      filter_process = filter_counts,
-      adults = adult_pop,
-      peds = peds_pop,
-      initial_population = initial_population,
-      computing_population = computing_population
-    )
-
-    cli::cli_progress_done(id = progress_bar_population)
-
-    return(hypoglycemia.01.population)
   }
+
+  ###_____________________________________________________________________________
+  ### dimension tables ----
+  ### each dimension table is turned into a vector of unique IDs
+  ### that are then utilized on the fact table to create distinct variables
+  ### that tell if the patient had the characteristic or not for final
+  ### calculations of the numerator and filtering
+  ###_____________________________________________________________________________
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 2,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # altered mental status 1 ----
+  altered_data1 <- situation_table |>
+    dplyr::select({{ erecord_01_col }}, {{ esituation_11_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter(grepl(
+      pattern = altered_mental_status,
+      x = {{ esituation_11_col }},
+      ignore.case = TRUE
+    )) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 3,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # altered mental status 2 ----
+  altered_data2 <- situation_table |>
+    dplyr::select({{ erecord_01_col }}, {{ esituation_12_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter(grepl(
+      pattern = altered_mental_status,
+      x = {{ esituation_12_col }},
+      ignore.case = TRUE
+    )) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 4,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # AVPU ----
+  AVPU_data <- vitals_table |>
+    dplyr::select({{ erecord_01_col }}, {{ evitals_26_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter(grepl(
+      pattern = avpu_responses,
+      x = {{ evitals_26_col }},
+      ignore.case = TRUE
+    )) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 5,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # GCS ----
+  GCS_data <- vitals_table |>
+    dplyr::select({{ erecord_01_col }}, {{ evitals_23_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter({{ evitals_23_col }} < 15) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 6,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # diabetes data 1 ----
+  diabetes_data1 <- situation_table |>
+    dplyr::select({{ erecord_01_col }}, {{ esituation_11_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter(grepl(
+      pattern = diabetes_codes,
+      x = {{ esituation_11_col }},
+      ignore.case = TRUE
+    )) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 7,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # diabetes data 2 ----
+  diabetes_data2 <- situation_table |>
+    dplyr::select({{ erecord_01_col }}, {{ esituation_12_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter(grepl(
+      pattern = diabetes_codes,
+      x = {{ esituation_12_col }},
+      ignore.case = TRUE
+    )) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 8,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # blood glucose ----
+  blood_glucose_data <- vitals_table |>
+    dplyr::select({{ erecord_01_col }}, {{ evitals_18_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter({{ evitals_18_col }} < 60) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 9,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # 911 calls ----
+  call_911_data <- response_table |>
+    dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter(grepl(
+      pattern = codes_911,
+      x = {{ eresponse_05_col }},
+      ignore.case = TRUE
+    )) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 10,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # correct treatment 1 ----
+  correct_treatment_data1 <- medications_table |>
+    dplyr::select({{ erecord_01_col }}, {{ emedications_03_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter(
+      grepl(
+        pattern = hypoglycemia_treatment_codes,
+        x = {{ emedications_03_col }},
+        ignore.case = TRUE
+      )
+    ) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 11,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # correct treatment 2 ----
+  correct_treatment_data2 <- procedures_table |>
+    dplyr::select({{ erecord_01_col }}, {{ eprocedures_03_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter(
+      grepl(
+        pattern = hypoglycemia_treatment_codes,
+        x = {{ eprocedures_03_col }},
+        ignore.case = TRUE
+      )
+    ) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 12,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # assign variables to the final data ----
+  computing_population <- final_data |>
+    dplyr::mutate(
+      GCS = {{ erecord_01_col }} %in% GCS_data,
+      AVPU = {{ erecord_01_col }} %in% AVPU_data,
+      CALL_911 = {{ erecord_01_col }} %in% call_911_data,
+      ALTERED1 = {{ erecord_01_col }} %in% altered_data1,
+      ALTERED2 = {{ erecord_01_col }} %in% altered_data2,
+      ALTERED = ALTERED1 | ALTERED2,
+      DIABETES1 = {{ erecord_01_col }} %in% diabetes_data1,
+      DIABETES2 = {{ erecord_01_col }} %in% diabetes_data2,
+      DIABETES = DIABETES1 | DIABETES2,
+      BLOOD_GLUCOSE = {{ erecord_01_col }} %in% blood_glucose_data,
+      TREATMENT1 = {{ erecord_01_col }} %in% correct_treatment_data1,
+      TREATMENT2 = {{ erecord_01_col }} %in% correct_treatment_data2,
+      TREATMENT = TREATMENT1 | TREATMENT2
+    )
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 13,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # get the initial population ----
+
+  initial_population <- computing_population |>
+    dplyr::filter(
+      (DIABETES & (GCS | AVPU)) |
+
+        (ALTERED & BLOOD_GLUCOSE) &
+
+          CALL_911,
+
+      system_age_minor3
+    )
+
+  # Adult and Pediatric Populations ----
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 14,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  if (
+    # use the system generated and calculated ages ----
+
+    all(
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    )
+  ) {
+    # filter adult ----
+    adult_pop <- initial_population |>
+      dplyr::filter(system_age_adult | calc_age_adult)
+
+    # progress update, these will be repeated throughout the script ----
+    cli::cli_progress_update(
+      set = 15,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # filter peds ----
+    peds_pop <- initial_population |>
+      dplyr::filter(system_age_minor | calc_age_minor)
+  } else if (
+    # only use the system generated values ----
+
+    all(
+      is.null(incident_date_col),
+      is.null(patient_DOB_col)
+    )
+  ) {
+    # filter adult ----
+    adult_pop <- initial_population |>
+      dplyr::filter(system_age_adult)
+
+    # progress update, these will be repeated throughout the script ----
+    cli::cli_progress_update(
+      set = 15,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # filter peds ----
+    peds_pop <- initial_population |>
+      dplyr::filter(system_age_minor)
+  }
+
+  # summarize ----
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 16,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # summarize counts for populations filtered ----
+  filter_counts <- tibble::tibble(
+    filter = c(
+      "Diabetes/Hypoglycemia and Verbal, Painful, Unresponsive or GCS < 15",
+      "Altered mental status and low blood glucose",
+      "911 calls",
+      "Adults denominator",
+      "Peds denominator",
+      "Initial population",
+      "Total dataset"
+    ),
+    count = c(
+      sum(
+        computing_population$DIABETES &
+          (computing_population$AVPU | computing_population$GCS),
+        na.rm = TRUE
+      ),
+      sum(
+        computing_population$ALTERED & computing_population$BLOOD_GLUCOSE,
+        na.rm = TRUE
+      ),
+      sum(computing_population$CALL_911, na.rm = TRUE),
+      nrow(adult_pop),
+      nrow(peds_pop),
+      nrow(initial_population),
+      nrow(computing_population)
+    )
+  )
+
+  cli::cli_progress_update(
+    set = 17,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # get the population of interest ----
+  hypoglycemia.01.population <- list(
+    filter_process = filter_counts,
+    adults = adult_pop,
+    peds = peds_pop,
+    initial_population = initial_population,
+    computing_population = computing_population
+  )
+
+  cli::cli_progress_done(id = progress_bar_population)
+
+  return(hypoglycemia.01.population)
 }
