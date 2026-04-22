@@ -327,7 +327,7 @@ hypoglycemia_01_population <- function(
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct()
 
-    # arrest ----
+    # situation ----
     situation_table <- df |>
       dplyr::select(
         {{ erecord_01_col }},
@@ -336,7 +336,7 @@ hypoglycemia_01_population <- function(
       ) |>
       dplyr::distinct()
 
-    # vitals ----
+    # medications ----
     medications_table <- df |>
       dplyr::select(
         {{ erecord_01_col }},
@@ -373,7 +373,6 @@ hypoglycemia_01_population <- function(
     ) &&
       is.null(df)
   ) {
-    # Ensure df is a data frame or tibble ----
     # Ensure all tables are of class `data.frame` or `tibble` ----
     validate_data_structure(
       input = patient_scene_table,
@@ -427,7 +426,7 @@ hypoglycemia_01_population <- function(
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct()
 
-    # arrest ----
+    # situation ----
     situation_table <- situation_table |>
       dplyr::select(
         {{ erecord_01_col }},
@@ -436,7 +435,7 @@ hypoglycemia_01_population <- function(
       ) |>
       dplyr::distinct()
 
-    # vitals ----
+    # medications ----
     medications_table <- medications_table |>
       dplyr::select(
         {{ erecord_01_col }},
