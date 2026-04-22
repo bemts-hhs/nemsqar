@@ -338,6 +338,42 @@ airway_05_population <- function(
     ) &&
       is.null(df)
   ) {
+    # Ensure all tables are of class `data.frame` or `tibble` ----
+    validate_data_structure(
+      input = patient_scene_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
+    )
+
+    validate_data_structure(
+      input = procedures_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
+    )
+
+    validate_data_structure(
+      input = vitals_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
+    )
+
+    validate_data_structure(
+      input = response_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
+    )
+
+    validate_data_structure(
+      input = arrest_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
+    )
+
     # get distinct tables when passed to table arguments ----
     # patient ----
     patient_scene_table <- patient_scene_table |>
@@ -383,42 +419,6 @@ airway_05_population <- function(
       return(dplyr::tibble())
     }
   }
-
-  # Ensure all tables are of class `data.frame` or `tibble` ----
-  validate_data_structure(
-    input = patient_scene_table,
-    structure_type = c("data.frame", "tbl", "tbl_df"),
-    type = "error",
-    logic = "or"
-  )
-
-  validate_data_structure(
-    input = procedures_table,
-    structure_type = c("data.frame", "tbl", "tbl_df"),
-    type = "error",
-    logic = "or"
-  )
-
-  validate_data_structure(
-    input = vitals_table,
-    structure_type = c("data.frame", "tbl", "tbl_df"),
-    type = "error",
-    logic = "or"
-  )
-
-  validate_data_structure(
-    input = response_table,
-    structure_type = c("data.frame", "tbl", "tbl_df"),
-    type = "error",
-    logic = "or"
-  )
-
-  validate_data_structure(
-    input = arrest_table,
-    structure_type = c("data.frame", "tbl", "tbl_df"),
-    type = "error",
-    logic = "or"
-  )
 
   # Validate date columns if provided ----
   if (

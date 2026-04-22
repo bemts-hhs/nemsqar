@@ -79,26 +79,53 @@ testthat::test_that("asthma_01_population validates date column formats", {
       esituation_12_col = esituation_12,
       emedications_03_col = emedications_03
     ),
-    "one or both"
+    "must be of class.*date.*date-time"
   )
 
+  # test data
+  patient_scene_table <- tibble::tibble(
+    incident_date = c("bad1", "bad2", "bad3", "bad4", "bad5"),
+    patient_DOB = c("bad6", "bad7", "bad8", "bad9", "bad10"),
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    epatient_15 = c(10, 20, 30, 40, 50),
+    epatient_16 = c("years", "years", "years", "years", "years")
+  )
+
+  response_table <- tibble::tibble(
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    eresponse_05 = c("x", "y", "z", "w", "v")
+  )
+
+  situation_table <- tibble::tibble(
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    esituation_11 = c("s1", "s2", "s3", "s4", "s5"),
+    esituation_12 = c("t1", "t2", "t3", "t4", "t5")
+  )
+
+  medications_table <- tibble::tibble(
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    emedications_03 = c("m1", "m2", "m3", "m4", "m5")
+  )
+
+  # test
   testthat::expect_error(
-    asthma_01_population(
-      patient_scene_table = tibble::tibble(),
-      response_table = tibble::tibble(),
-      situation_table = tibble::tibble(),
-      medications_table = tibble::tibble(),
-      erecord_01_col = character(),
-      incident_date_col = "stuff",
-      patient_DOB_col = "stuff",
-      epatient_15_col = numeric(),
-      epatient_16_col = character(),
-      eresponse_05_col = character(),
-      esituation_11_col = character(),
-      esituation_12_col = character(),
-      emedications_03_col = character()
+    nemsqar::asthma_01_population(
+      df = NULL,
+      patient_scene_table = patient_scene_table,
+      response_table = response_table,
+      situation_table = situation_table,
+      medications_table = medications_table,
+      erecord_01_col = erecord_01,
+      incident_date_col = incident_date,
+      patient_DOB_col = patient_DOB,
+      epatient_15_col = epatient_15,
+      epatient_16_col = epatient_16,
+      eresponse_05_col = eresponse_05,
+      esituation_11_col = esituation_11,
+      esituation_12_col = esituation_12,
+      emedications_03_col = emedications_03
     ),
-    regexp = "one or both"
+    regexp = "must be of class.*date.*date-time"
   )
 })
 
