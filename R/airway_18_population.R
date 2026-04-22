@@ -206,7 +206,42 @@ airway_18_population <- function(
   codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
 
   # endotracheal intubation attempts ----
-  endotracheal_intubation <- "673005|Indirect laryngoscopy|49077009|Flexible fiberoptic laryngoscopy|78121007|Direct laryngoscopy|112798008|Insertion of endotracheal tube|16883004|Endotracheal intubation, emergency procedure|182682004|Emergency laryngeal intubation|232674004|Orotracheal intubation|232677006|Tracheal intubation using rigid bronchoscope|232678001|Orotracheal fiberoptic intubation|232679009|Nasotracheal intubation|232682004|Nasotracheal fiberoptic intubation|232680007|Nasal intubation awake|241689008|Rapid sequence induction|304341005|Awake intubation|397892004|Retrograde intubation|418613003|Tracheal intubation through a laryngeal mask airway|429705000|Intubation, combitube|424979004|Laryngeal mask airway insertion|427753009|Insertion of esophageal tracheal double lumen supraglottic airway|429161001|Insertion of endotracheal tube using laryngoscope|450601000124103|Orotracheal intubation using bougie device|450611000124|Insertion of Single Lumen Supraglottic Airway Device|1141752008|Flexible video intubation laryngoscope |285696003|Fiberoptic laryngoscope |420311007|Flexible fiberoptic laryngoscope |421100004|Rigid fiberoptic laryngoscope |44738004|Laryngoscope device |469919007|Flexible video laryngoscope |700640001|Rigid intubation laryngoscope |701054002|Flexible fiberoptic intubation laryngoscope |706013009|Intubation laryngoscope |734928009|Rigid non-bladed video intubation laryngoscope |879788006|Channeled video intubation laryngoscope "
+  endotracheal_intubation <- paste(
+    "673005|Indirect laryngoscopy",
+    "49077009|Flexible fiberoptic laryngoscopy",
+    "78121007|Direct laryngoscopy",
+    "112798008|Insertion of endotracheal tube",
+    "16883004|Endotracheal intubation, emergency procedure",
+    "182682004|Emergency laryngeal intubation",
+    "232674004|Orotracheal intubation",
+    "232677006|Tracheal intubation using rigid bronchoscope",
+    "232678001|Orotracheal fiberoptic intubation",
+    "232679009|Nasotracheal intubation",
+    "232682004|Nasotracheal fiberoptic intubation",
+    "232680007|Nasal intubation awake",
+    "241689008|Rapid sequence induction",
+    "304341005|Awake intubation",
+    "397892004|Retrograde intubation",
+    "418613003|Tracheal intubation through a laryngeal mask airway",
+    "429705000|Intubation, combitube",
+    "424979004|Laryngeal mask airway insertion",
+    "427753009|Insertion of esophageal tracheal double lumen supraglottic airway",
+    "429161001|Insertion of endotracheal tube using laryngoscope",
+    "450601000124103|Orotracheal intubation using bougie device",
+    "450611000124|Insertion of Single Lumen Supraglottic Airway Device",
+    "1141752008|Flexible video intubation laryngoscope",
+    "285696003|Fiberoptic laryngoscope",
+    "420311007|Flexible fiberoptic laryngoscope",
+    "421100004|Rigid fiberoptic laryngoscope",
+    "44738004|Laryngoscope device",
+    "469919007|Flexible video laryngoscope",
+    "700640001|Rigid intubation laryngoscope",
+    "701054002|Flexible fiberoptic intubation laryngoscope",
+    "706013009|Intubation laryngoscope",
+    "734928009|Rigid non-bladed video intubation laryngoscope",
+    "879788006|Channeled video intubation laryngoscope",
+    sep = "|"
+  )
 
   # waveform ETCO2 ----
   waveform_etc02_codes <- "4004019|Waveform ETCO2"
