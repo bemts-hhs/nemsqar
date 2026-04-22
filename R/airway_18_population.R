@@ -203,7 +203,15 @@ airway_18_population <- function(
   }
 
   # 911 codes for eResponse.05 ----
-  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
+  codes_911 <- paste(
+    "2205001",
+    "2205003",
+    "2205009",
+    "Emergency Response \\(Primary Response Area\\)",
+    "Emergency Response \\(Intercept\\)",
+    "Emergency Response \\(Mutual Aid\\)",
+    sep = "|"
+  )
 
   # endotracheal intubation attempts ----
   endotracheal_intubation <- paste(
@@ -283,12 +291,17 @@ airway_18_population <- function(
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
-  # use quasiquotation to validate the ----
-  # airway placement confirmation method column
-  airway_confirmation_col <- rlang::enquo(eairway_04_col)
-
   # progress update, these will be repeated throughout the script ----
   cli::cli_progress_update(set = 1, id = progress_bar_population, force = TRUE)
+
+  # Use quasiquotation on the vitals, airway, and procedures datetime fields ----
+  vitals_datetime <- rlang::enquo(evitals_01_col)
+  procedures_datetime <- rlang::enquo(eprocedures_01_col)
+
+  # use quasiquotation on the airway datetime field and the airway ----
+  # placement confirmation method
+  airway_datetime <- rlang::enquo(eairway_02_col)
+  airway_confirmation_col <- rlang::enquo(eairway_04_col)
 
   ####### CREATE SEPARATE TABLES FROM DF IF TABLES ARE MISSING ----
 
@@ -305,85 +318,47 @@ airway_18_population <- function(
     # utilize a dataframe to analyze the data for the measure analytics ----
   ) {
     # Ensure df is a data frame or tibble ----
-    if (!is.data.frame(df) && !tibble::is_tibble(df)) {
-      cli::cli_abort(
-        c(
-          "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-          "i" = "The passed object is of class {.val {class(df)}}."
-        )
-      )
-    }
-
-    # Validate date columns if provided ----
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_DOB_col)
-
-      if (
-        (!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-          !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-          (!lubridate::is.Date(df[[rlang::as_name(patient_dob)]]) &
-            !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
-        )
-      }
-    }
-
-    # Use quasiquotation on the vitals, airway, and procedures datetime fields ----
-    vitals_datetime <- rlang::enquo(evitals_01_col)
-    procedures_datetime <- rlang::enquo(eprocedures_01_col)
-    airway_datetime <- rlang::enquo(eairway_02_col)
-
-    if (!rlang::quo_is_null(airway_datetime)) {
-      # Validate the datetime fields in the df ----
-      if (
-        (!lubridate::is.Date(df[[rlang::as_name(airway_datetime)]]) &
-          !lubridate::is.POSIXct(df[[rlang::as_name(airway_datetime)]])) ||
-          (!lubridate::is.Date(df[[rlang::as_name(vitals_datetime)]]) &
-            !lubridate::is.POSIXct(df[[rlang::as_name(vitals_datetime)]])) ||
-          (!lubridate::is.Date(df[[rlang::as_name(procedures_datetime)]]) &
-            !lubridate::is.POSIXct(df[[rlang::as_name(procedures_datetime)]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
-        )
-      }
-    } else if (rlang::quo_is_null(airway_datetime)) {
-      # Validate the datetime fields in the df ----
-      if (
-        (!lubridate::is.Date(df[[rlang::as_name(vitals_datetime)]]) &
-          !lubridate::is.POSIXct(df[[rlang::as_name(vitals_datetime)]])) ||
-          (!lubridate::is.Date(df[[rlang::as_name(procedures_datetime)]]) &
-            !lubridate::is.POSIXct(df[[rlang::as_name(procedures_datetime)]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
-        )
-      }
-    }
+    validate_data_structure(
+      input = df,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      logic = "or",
+      type = "error"
+    )
 
     # make tables from df ----
     # patient
-    patient_scene_table <- df |>
-      dplyr::select(
-        -{{ evitals_01_col }},
-        -{{ evitals_16_col }},
-        -{{ eairway_02_col }},
-        -{{ eairway_04_col }},
-        -{{ eprocedures_01_col }},
-        -{{ eprocedures_02_col }},
-        -{{ eprocedures_03_col }},
-        -{{ eprocedures_06_col }},
-        -{{ eresponse_05_col }}
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+    if (
+      all(
+        !rlang::quo_is_null(airway_datetime),
+        !rlang::quo_is_null(airway_confirmation_col)
+      )
+    ) {
+      patient_scene_table <- df |>
+        dplyr::select(
+          -{{ evitals_01_col }},
+          -{{ evitals_16_col }},
+          -{{ eairway_02_col }},
+          -{{ eairway_04_col }},
+          -{{ eprocedures_01_col }},
+          -{{ eprocedures_02_col }},
+          -{{ eprocedures_03_col }},
+          -{{ eprocedures_06_col }},
+          -{{ eresponse_05_col }}
+        ) |>
+        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+    } else {
+      patient_scene_table <- df |>
+        dplyr::select(
+          -{{ evitals_01_col }},
+          -{{ evitals_16_col }},
+          -{{ eprocedures_01_col }},
+          -{{ eprocedures_02_col }},
+          -{{ eprocedures_03_col }},
+          -{{ eprocedures_06_col }},
+          -{{ eresponse_05_col }}
+        ) |>
+        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+    }
 
     # response ----
     response_table <- df |>
@@ -443,105 +418,50 @@ airway_18_population <- function(
     all(
       !is.null(patient_scene_table),
       !is.null(response_table),
-      !is.null(airway_table),
+      !is.null(airway_table) || is.null(airway_table),
       !is.null(procedures_table),
       !is.null(vitals_table)
     ) &&
       is.null(df)
   ) {
     # Ensure all tables are of class `data.frame` or `tibble` ----
-    if (
-      !all(
-        is.data.frame(patient_scene_table) ||
-          tibble::is_tibble(patient_scene_table),
-        is.data.frame(procedures_table) || tibble::is_tibble(procedures_table),
-        is.data.frame(vitals_table) || tibble::is_tibble(vitals_table),
-        is.data.frame(response_table) || tibble::is_tibble(response_table),
-        is.data.frame(airway_table) || tibble::is_tibble(airway_table)
+    # Ensure all tables are of class `data.frame` or `tibble` ----
+    validate_data_structure(
+      input = patient_scene_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
+    )
+
+    validate_data_structure(
+      input = procedures_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
+    )
+
+    validate_data_structure(
+      input = vitals_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
+    )
+
+    validate_data_structure(
+      input = response_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
+    )
+
+    # optionally use eairway fields ----
+    if (!is.null(airway_table)) {
+      validate_data_structure(
+        input = airway_table,
+        structure_type = c("data.frame", "tbl", "tbl_df"),
+        type = "error",
+        logic = "or"
       )
-    ) {
-      cli::cli_abort(
-        "One or more of the tables passed to {.fn airway_18_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
-      )
-    }
-
-    # Validate date columns if provided ----
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_DOB_col)
-
-      if (
-        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(
-          incident_date
-        )]]) &
-          !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(
-            incident_date
-          )]])) ||
-          (!lubridate::is.Date(patient_scene_table[[rlang::as_name(
-            patient_dob
-          )]]) &
-            !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(
-              patient_dob
-            )]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
-        )
-      }
-    }
-
-    # Use quasiquotation on the vitals, airway, and procedures datetime fields ----
-    vitals_datetime <- rlang::enquo(evitals_01_col)
-    procedures_datetime <- rlang::enquo(eprocedures_01_col)
-    airway_datetime <- rlang::enquo(eairway_02_col)
-
-    if (!rlang::quo_is_null(airway_datetime)) {
-      # Validate the datetime fields in the df ----
-      if (
-        (!lubridate::is.Date(airway_table[[rlang::as_name(airway_datetime)]]) &
-          !lubridate::is.POSIXct(airway_table[[rlang::as_name(
-            airway_datetime
-          )]])) ||
-          (!lubridate::is.Date(vitals_table[[rlang::as_name(
-            vitals_datetime
-          )]]) &
-            !lubridate::is.POSIXct(vitals_table[[rlang::as_name(
-              vitals_datetime
-            )]])) ||
-          (!lubridate::is.Date(procedures_table[[rlang::as_name(
-            procedures_datetime
-          )]]) &
-            !lubridate::is.POSIXct(procedures_table[[rlang::as_name(
-              procedures_datetime
-            )]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eairway_02_col}, {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
-        )
-      }
-    } else if (rlang::quo_is_null(airway_datetime)) {
-      # Validate the datetime fields in the df ----
-      if (
-        (!lubridate::is.Date(vitals_table[[rlang::as_name(vitals_datetime)]]) &
-          !lubridate::is.POSIXct(vitals_table[[rlang::as_name(
-            vitals_datetime
-          )]])) ||
-          (!lubridate::is.Date(procedures_table[[rlang::as_name(
-            procedures_datetime
-          )]]) &
-            !lubridate::is.POSIXct(procedures_table[[rlang::as_name(
-              procedures_datetime
-            )]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var eprocedures_01_col}, and {.var evitals_01_col}, one or a combination of these variables were not of class {.cls Date} or a similar class. Please format your {.var eprocedures_01_col}, and {.var evitals_01_col} to class {.cls Date} or a similar class."
-        )
-      }
     }
 
     # get distinct tables when passed to table arguments ----
@@ -554,14 +474,17 @@ airway_18_population <- function(
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct()
 
-    # airway ----
-    airway_table <- airway_table |>
-      dplyr::select(
-        {{ erecord_01_col }},
-        {{ eairway_02_col }},
-        {{ eairway_04_col }}
-      ) |>
-      dplyr::distinct()
+    # optionally use eairway fields ----
+    if (!is.null(airway_table)) {
+      # airway ----
+      airway_table <- airway_table |>
+        dplyr::select(
+          {{ erecord_01_col }},
+          {{ eairway_02_col }},
+          {{ eairway_04_col }}
+        ) |>
+        dplyr::distinct()
+    }
 
     # vitals ----
     vitals_table <- vitals_table |>
@@ -593,6 +516,85 @@ airway_18_population <- function(
       )
       return(tibble::tibble())
     }
+  }
+
+  # Validate date columns if provided ----
+  if (
+    all(
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    )
+  ) {
+    incident_date <- rlang::enquo(incident_date_col)
+    patient_dob <- rlang::enquo(patient_DOB_col)
+
+    validate_class(
+      input = patient_scene_table[[rlang::as_name(
+        incident_date
+      )]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "incident_date_col"
+    )
+
+    validate_class(
+      input = patient_scene_table[[rlang::as_name(
+        patient_dob
+      )]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "patient_DOB_col"
+    )
+  }
+
+  if (!rlang::quo_is_null(airway_datetime)) {
+    # Validate the datetime fields in the applicable tables ----
+    validate_class(
+      input = vitals_table[[rlang::as_name(vitals_datetime)]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "evitals_01_col"
+    )
+
+    validate_class(
+      input = procedures_table[[rlang::as_name(
+        procedures_datetime
+      )]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "eprocedures_01_col"
+    )
+
+    validate_class(
+      input = airway_table[[rlang::as_name(airway_datetime)]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "eprocedures_01_col"
+    )
+  } else if (rlang::quo_is_null(airway_datetime)) {
+    # Validate the datetime fields in the applicable tables ----
+    validate_class(
+      input = vitals_table[[rlang::as_name(vitals_datetime)]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "evitals_01_col"
+    )
+
+    validate_class(
+      input = procedures_table[[rlang::as_name(
+        procedures_datetime
+      )]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "eprocedures_01_col"
+    )
   }
 
   cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)

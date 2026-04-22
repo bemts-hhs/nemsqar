@@ -455,7 +455,7 @@ airway_05_population <- function(
   vitals_datetime <- rlang::enquo(evitals_01_col)
   procedures_datetime <- rlang::enquo(eprocedures_01_col)
 
-  # Validate the datetime fields in the patient_scene_table ----
+  # Validate the datetime fields in the vitals and procedures tables ----
   validate_class(
     input = vitals_table[[rlang::as_name(vitals_datetime)]],
     class_type = c("date", "date-time"),
