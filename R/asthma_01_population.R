@@ -168,10 +168,35 @@ asthma_01_population <- function(
   }
 
   # 911 codes for eresponse.05 ----
-  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
+  codes_911 <- paste(
+    "2205001",
+    "2205003",
+    "2205009",
+    "Emergency Response \\(Primary Response Area\\)",
+    "Emergency Response \\(Intercept\\)",
+    "Emergency Response \\(Mutual Aid\\)",
+    sep = "|"
+  )
 
   # get codes as a regex to filter primary/secondary impression fields ----
-  beta_agonist <- "435|7688|214199|237159|487066|1154062|1163444|1649559|1165719|2108209|2108252|albuterol|ipratropium|levalbuterol|metaproterenol"
+  beta_agonist <- paste(
+    "435",
+    "7688",
+    "214199",
+    "237159",
+    "487066",
+    "1154062",
+    "1163444",
+    "1649559",
+    "1165719",
+    "2108209",
+    "2108252",
+    "albuterol",
+    "ipratropium",
+    "levalbuterol",
+    "metaproterenol",
+    sep = "|"
+  )
 
   # codes for asthma or acute bronchospasm ----
   asthma_codes <- "(?:J45|J98.01)|asthma|acute bronchospasm"
