@@ -436,7 +436,8 @@ airway_05_population <- function(
       )]],
       class_type = c("date", "date-time"),
       logic = "or",
-      type = "error"
+      type = "error",
+      var_name = "incident_date_col"
     )
 
     validate_class(
@@ -445,7 +446,8 @@ airway_05_population <- function(
       )]],
       class_type = c("date", "date-time"),
       logic = "or",
-      type = "error"
+      type = "error",
+      var_name = "patient_DOB_col"
     )
   }
 
@@ -458,7 +460,8 @@ airway_05_population <- function(
     input = vitals_table[[rlang::as_name(vitals_datetime)]],
     class_type = c("date", "date-time"),
     logic = "or",
-    type = "error"
+    type = "error",
+    var_name = "evitals_01_col"
   )
 
   validate_class(
@@ -467,7 +470,8 @@ airway_05_population <- function(
     )]],
     class_type = c("date", "date-time"),
     logic = "or",
-    type = "error"
+    type = "error",
+    var_name = "eprocedures_01_col"
   )
 
   cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)
