@@ -1,5 +1,5 @@
 testthat::test_that("airway_01 requires either df or all required tables", {
-  testthat::expect_no_success(airway_01())  # No input provided
+  testthat::expect_null(airway_01())  # No input provided
 
   testthat::expect_error(airway_01(df = tibble::tibble()))  # Empty df
 

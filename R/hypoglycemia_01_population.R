@@ -11,44 +11,11 @@
 #' weight is taken. This function segments the data into pediatric populations,
 #' computing the proportion of cases that have a documented weight.
 #'
-#' @param df A data frame or tibble containing emergency response records.
-#'   Default is `NULL`.
-#' @param patient_scene_table A data.frame or tibble containing at least
-#'   epatient and escene fields as a fact table. Default is `NULL`.
-#' @param response_table A data.frame or tibble containing at least the
-#'   eresponse fields needed for this measure's calculations. Default is `NULL`.
-#' @param situation_table A data.frame or tibble containing at least the
-#'   esituation fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param vitals_table A data.frame or tibble containing at least the evitals
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param medications_table A data.frame or tibble containing at least the
-#'   emedications fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param procedures_table A data.frame or tibble containing at least the
-#'   eprocedures fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param erecord_01_col Column representing the unique record identifier.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column representing the patient's numeric age agnostic
-#'   of unit.
-#' @param epatient_16_col Column representing the patient's age unit ("Years",
-#'   "Months", "Days", "Hours", or "Minute").
-#' @param eresponse_05_col Column containing response type codes.
-#' @param esituation_11_col Column for primary impression fields, containing
-#'   ICD-10 codes.
-#' @param esituation_12_col Column for secondary impression fields, containing
-#'   ICD-10 codes.
+#' @inheritParams asthma_01_population
+#' @inheritParams airway_18_population
 #' @param evitals_18_col Column for blood glucose levels.
 #' @param evitals_23_col Column for Glasgow Coma Scale (GCS) scores.
 #' @param evitals_26_col Column for AVPU alertness levels.
-#' @param emedications_03_col Column for administered medications.
-#' @param eprocedures_03_col Column for procedures performed.
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

@@ -15,15 +15,6 @@
 #'  * unique: Character vector of argument names that appear only in the target
 #'    function.
 #'
-#' @seealso
-#' Related functions.
-#'
-#' @examples
-#' compare_formals(
-#'   airway_18_population,
-#'   list(airway_05, airway_01)
-#' )
-#'
 #' @author
 #' Nicolas Foss, Ed.D., MS
 #'

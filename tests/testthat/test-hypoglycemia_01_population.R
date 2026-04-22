@@ -96,7 +96,7 @@ testthat::test_that("hypoglycemia_01_population validates date column formats", 
     )
   )
 
-  testthat::expect_no_success(
+  testthat::expect_null(
     hypoglycemia_01_population(
       patient_scene_table = tibble::tibble(),
       response_table = tibble::tibble(),

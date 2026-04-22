@@ -33,31 +33,31 @@ hypoglycemia_01(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing emergency response records.
-Default is \code{NULL}.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
 \item{patient_scene_table}{A data.frame or tibble containing at least
-ePatient and eScene fields as a fact table. Default is \code{NULL}.}
+epatient, escene, and earrest.01 fields as a fact table.}
 
 \item{response_table}{A data.frame or tibble containing at least the
-eResponse fields needed for this measure's calculations. Default is \code{NULL}.}
+eresponse fields needed for this measure's calculations.}
 
 \item{situation_table}{A data.frame or tibble containing at least the
 eSituation fields needed for this measure's calculations. Default is
 \code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing at least the eVitals
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A dataframe or tibble containing at least the eVitals
+fields needed.}
 
 \item{medications_table}{A data.frame or tibble containing at least the
 eMedications fields needed for this measure's calculations. Default is
 \code{NULL}.}
 
-\item{procedures_table}{A data.frame or tibble containing at least the
-eProcedures fields needed for this measure's calculations. Default is
-\code{NULL}.}
+\item{procedures_table}{A dataframe or tibble containing at least the
+eProcedures fields needed.}
 
-\item{erecord_01_col}{Column representing the unique record identifier.}
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -71,15 +71,16 @@ restrictions.}
 of unit.}
 
 \item{epatient_16_col}{Column representing the patient's age unit ("Years",
-"Months", "Days", "Hours", or "Minute").}
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column containing response type codes.}
+\item{eresponse_05_col}{Column that contains eResponse.05.}
 
-\item{esituation_11_col}{Column for primary impression fields, containing
-ICD-10 codes.}
+\item{esituation_11_col}{Column that contains eSituation.11 provider primary
+impression data.}
 
-\item{esituation_12_col}{Column for secondary impression fields, containing
-ICD-10 codes.}
+\item{esituation_12_col}{Column that contains all eSituation.12 values as
+(possible a single comma-separated list), provider secondary impression
+data.}
 
 \item{evitals_18_col}{Column for blood glucose levels.}
 
@@ -87,9 +88,11 @@ ICD-10 codes.}
 
 \item{evitals_26_col}{Column for AVPU alertness levels.}
 
-\item{emedications_03_col}{Column for administered medications.}
+\item{emedications_03_col}{Column that contains all eMedications.03 values as
+a single comma-separated list.}
 
-\item{eprocedures_03_col}{Column for procedures performed.}
+\item{eprocedures_03_col}{Column containing procedure codes with or without
+procedure names.}
 
 \item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
 \code{TRUE}, the function calculates a confidence interval for the proportion

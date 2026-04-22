@@ -25,16 +25,6 @@ Identify which arguments of a target function are unique and which are shared
 with a set of comparison functions. Useful for determining whether roxygen2's
 \verb{@inheritParams} is appropriate.
 }
-\examples{
-compare_formals(
-  airway_18_population,
-  list(airway_05, airway_01)
-)
-
-}
-\seealso{
-Related functions.
-}
 \author{
 Nicolas Foss, Ed.D., MS
 }

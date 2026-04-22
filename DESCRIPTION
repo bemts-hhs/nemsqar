@@ -29,12 +29,14 @@ Imports:
     cli,
     dplyr (>= 1.1.4),
     glue,
+    hms,
     lifecycle,
     lubridate (>= 1.9.4),
     rlang,
     stats,
     tibble (>= 3.2.1),
-    tidyselect (>= 1.2.1)
+    tidyselect (>= 1.2.1),
+    utils
 Suggests: 
     testthat (>= 3.0.0),
     tidyr

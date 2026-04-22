@@ -70,7 +70,7 @@ validate_set <- function(
   if (length(invalid_values) > 0) {
     if (length(valid_set) <= 10) {
       # Clip invalid_values down to a length of <= 10
-      invalid_values <- head(invalid_values, n = 10)
+      invalid_values <- utils::head(invalid_values, n = 10)
 
       # Call the validate_error_type function to handle the message display
       # For small valid_set
@@ -87,10 +87,10 @@ validate_set <- function(
       # For large valid_set
 
       # Clip valid_set down to a length of <= 10
-      valid_set <- head(valid_set, n = 10)
+      valid_set <- utils::head(valid_set, n = 10)
 
       # Clip invalid_values down to a length of <= 10
-      invalid_values <- head(invalid_values, n = 10)
+      invalid_values <- utils::head(invalid_values, n = 10)
 
       # Modified messaging
       validate_error_type(
