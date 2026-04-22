@@ -11,30 +11,13 @@
 #' the data by age into adult and pediatric populations, computing the
 #' proportion of cases that received beta-agonist treatment.
 #'
-#' @param df A data.frame or tibble containing EMS data. Default is `NULL`.
-#' @param patient_scene_table A data.frame or tibble containing at least
-#'   ePatient and eScene fields as a fact table. Default is `NULL`.
-#' @param response_table A data.frame or tibble containing at least the
-#'   eResponse fields needed for this measure's calculations. Default is `NULL`.
+#' @inheritParams airway_01_population
 #' @param situation_table A data.frame or tibble containing at least the
 #'   eSituation fields needed for this measure's calculations. Default is
 #'   `NULL`.
 #' @param medications_table A data.frame or tibble containing at least the
 #'   eMedications fields needed for this measure's calculations. Default is
 #'   `NULL`.
-#' @param erecord_01_col The column representing the EMS record unique
-#'   identifier. Default is `NULL`.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column representing the patient's numeric age agnostic
-#'   of unit.
-#' @param epatient_16_col Column representing the patient's age unit ("Years",
-#'   "Months", "Days", "Hours", or "Minute").
-#' @param eresponse_05_col Column that contains eResponse.05.
 #' @param esituation_11_col Column that contains eSituation.11 provider primary
 #' impression data.
 #' @param esituation_12_col Column that contains all eSituation.12 values as

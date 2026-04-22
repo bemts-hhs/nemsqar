@@ -27,13 +27,14 @@ asthma_01(
 )
 }
 \arguments{
-\item{df}{A data.frame or tibble containing EMS data. Default is \code{NULL}.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
 \item{patient_scene_table}{A data.frame or tibble containing at least
-ePatient and eScene fields as a fact table. Default is \code{NULL}.}
+epatient, escene, and earrest.01 fields as a fact table.}
 
 \item{response_table}{A data.frame or tibble containing at least the
-eResponse fields needed for this measure's calculations. Default is \code{NULL}.}
+eresponse fields needed for this measure's calculations.}
 
 \item{situation_table}{A data.frame or tibble containing at least the
 eSituation fields needed for this measure's calculations. Default is
@@ -44,7 +45,7 @@ eMedications fields needed for this measure's calculations. Default is
 \code{NULL}.}
 
 \item{erecord_01_col}{The column representing the EMS record unique
-identifier. Default is \code{NULL}.}
+identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -58,7 +59,7 @@ restrictions.}
 of unit.}
 
 \item{epatient_16_col}{Column representing the patient's age unit ("Years",
-"Months", "Days", "Hours", or "Minute").}
+"Months", "Days", "Hours", or "Minutes").}
 
 \item{eresponse_05_col}{Column that contains eResponse.05.}
 
