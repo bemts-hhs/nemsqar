@@ -11,30 +11,11 @@
 #' weight is taken. This function segments the data into pediatric populations,
 #' computing the proportion of cases that have a documented weight.
 #'
-#' @param df A data frame or tibble containing emergency response records.
-#'   Default is `NULL`.
-#' @param patient_scene_table A data.frame or tibble containing only ePatient
-#'   and eScene fields as a fact table. Default is `NULL`.
-#' @param response_table A data.frame or tibble containing only the eResponse
-#'   fields needed for this measure's calculations. Default is `NULL`.
+#' @inheritParams asthma_01_population
 #' @param exam_table A data.frame or tibble containing only the eExam fields
 #'   needed for this measure's calculations. Default is `NULL`.
-#' @param medications_table A data.frame or tibble containing only the
-#'   eMedications fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param erecord_01_col Column for unique EMS record identifiers.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column giving the calculated age value.
-#' @param epatient_16_col Column giving the provided age unit value.
-#' @param eresponse_05_col Column containing the EMS response codes.
 #' @param eexam_01_col Column containing documented weight information.
 #' @param eexam_02_col Another column for weight documentation, if applicable.
-#' @param emedications_03_col Column indicating medication administration.
 #' @param emedications_04_col Column listing medications administered.
 #'
 #' @return A list that contains the following:
