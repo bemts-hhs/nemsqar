@@ -10,40 +10,17 @@
 #' using a pediatric restraint device. This function segments the data by age
 #' into adult and pediatric populations.
 #'
-#' @param df A data frame or tibble containing EMS data where each row
-#'   represents an individual observation.
-#' @param patient_scene_table A data frame or tibble containing fields from
-#'   epatient and escene needed for this measure's calculations.
-#' @param response_table A data frame or tibble containing fields from eresponse
+#' @inheritParams airway_01_population
+#' @inheritParams safety_02_population
+#' @param injury_table A data frame or tibble containing fields from eInjury
 #'   needed for this measure's calculations.
-#' @param arrest_table A data frame or tibble containing fields from earrest
-#'   needed for this measure's calculations.
-#' @param injury_table A data frame or tibble containing fields from einjury
-#'   needed for this measure's calculations.
-#' @param procedures_table A data frame or tibble containing fields from
-#'   eprocedures needed for this measure's calculations.
-#' @param disposition_table A data frame or tibble containing fields from
-#'   edisposition needed for this measure's calculations.
-#' @param erecord_01_col The column containing unique record identifiers for
-#'   each encounter.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column name indicating the patient age.
-#' @param epatient_16_col Column name for the unit of age (e.g., "Years,"
-#'   "Months").
-#' @param eresponse_05_col Column containing response transport codes.
-#' @param earrest_01_col Column with cardiac arrest status information.
-#' @param einjury_03_col Column describing traumatic injuries, expected as a
-#'   list or text-separated entries.
-#' @param eprocedures_03_col Column listing procedures, assumed to contain
-#'   multiple procedure codes/texts in each cell.
-#' @param edisposition_14_col Column for transport dispositions.
-#' @param transport_disposition_col Columns for primary and secondary transport
-#'   dispositions.
+#' @param einjury_03_col Column describing Trauma triage criteria for the red
+#' boxes (Injury Patterns and Mental Status and Vital Signs) in the 2021 ACS
+#' National Guideline for the Field Triage of Injured Patients.
+#' @param edisposition_14_col Column giving the position of the patient during
+#' transport from the scene.
+#' @param transport_disposition_col `r lifecycle::badge("deprecated")` Use
+#' `transport_disposition_cols` instead.
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,
@@ -121,7 +98,7 @@
 #'                         earrest_01_col = earrest_01,
 #'                         einjury_03_col = einjury_03,
 #'                         edisposition_14_col = edisposition_14,
-#'                         transport_disposition_col = edisposition_30,
+#'                         transport_disposition_cols = edisposition_30,
 #'                         eprocedures_03_col = eprocedures_03
 #'                         )
 #'
@@ -150,8 +127,19 @@ safety_04_population <- function(
   einjury_03_col,
   eprocedures_03_col,
   edisposition_14_col,
-  transport_disposition_col
+  transport_disposition_cols,
+  transport_disposition_col = lifecycle::deprecated()
 ) {
+  # Handle deprecated transport_disposition_col argument ----
+  if (lifecycle::is_present(transport_disposition_col)) {
+    # Issue an error
+    lifecycle::deprecate_stop(
+      when = "1.2.0",
+      what = "safety_04_population(transport_disposition_col)",
+      with = "safety_04_population(transport_disposition_cols)"
+    )
+  }
+
   # ensure that not all table arguments AND the df argument are fulfilled ----
   # user only passes df or all table arguments
 
@@ -203,7 +191,7 @@ safety_04_population <- function(
       missing(einjury_03_col),
       missing(eprocedures_03_col),
       missing(edisposition_14_col),
-      missing(transport_disposition_col)
+      missing(transport_disposition_cols)
     )
   ) {
     cli::cli_abort(
@@ -437,10 +425,10 @@ safety_04_population <- function(
 
     # transports ----
     transport_data <- disposition_table |>
-      dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
+      dplyr::select({{ erecord_01_col }}, {{ transport_disposition_cols }}) |>
       dplyr::filter(
         dplyr::if_any(
-          {{ transport_disposition_col }},
+          {{ transport_disposition_cols }},
           ~ grepl(pattern = transport_responses, x = ., ignore.case = TRUE)
         )
       ) |>
@@ -764,7 +752,7 @@ safety_04_population <- function(
             {{ einjury_03_col }},
             {{ eprocedures_03_col }},
             {{ edisposition_14_col }},
-            {{ transport_disposition_col }}
+            {{ transport_disposition_cols }}
           )
         ) |>
         dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
@@ -816,7 +804,7 @@ safety_04_population <- function(
             {{ einjury_03_col }},
             {{ eprocedures_03_col }},
             {{ edisposition_14_col }},
-            {{ transport_disposition_col }}
+            {{ transport_disposition_cols }}
           )
         ) |>
         dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
@@ -862,10 +850,10 @@ safety_04_population <- function(
 
     # transports ----
     transport_data <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
+      dplyr::select({{ erecord_01_col }}, {{ transport_disposition_cols }}) |>
       dplyr::filter(
         dplyr::if_any(
-          {{ transport_disposition_col }},
+          {{ transport_disposition_cols }},
           ~ grepl(pattern = transport_responses, x = ., ignore.case = TRUE)
         )
       ) |>

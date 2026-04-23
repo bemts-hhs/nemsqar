@@ -8,54 +8,10 @@
 #' accommodates data with various EMS-specific codes, age descriptors, and
 #' procedure identifiers.
 #'
-#' @param df A data frame or tibble containing EMS data where each row
-#'   represents an individual observation.
-#' @param patient_scene_table A data frame or tibble containing fields from
-#'   epatient and escene needed for this measure's calculations.
-#' @param response_table A data frame or tibble containing fields from eresponse
-#'   needed for this measure's calculations.
-#' @param arrest_table A data frame or tibble containing fields from earrest
-#'   needed for this measure's calculations.
-#' @param injury_table A data frame or tibble containing fields from einjury
-#'   needed for this measure's calculations.
-#' @param procedures_table A data frame or tibble containing fields from
-#'   eprocedures needed for this measure's calculations.
-#' @param disposition_table A data frame or tibble containing fields from
-#'   edisposition needed for this measure's calculations.
-#' @param erecord_01_col The column containing unique record identifiers for
-#'   each encounter.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column name indicating the patient age.
-#' @param epatient_16_col Column name for the unit of age (e.g., "Years,"
-#'   "Months").
-#' @param eresponse_05_col Column containing response transport codes.
-#' @param earrest_01_col Column with cardiac arrest status information.
-#' @param einjury_03_col Column describing traumatic injuries, expected as a
-#'   list or text-separated entries.
-#' @param eprocedures_03_col Column listing procedures, assumed to contain
-#'   multiple procedure codes/texts in each cell.
-#' @param edisposition_14_col Column for transport dispositions.
-#' @param transport_disposition_col Columns for primary and secondary transport
-#'   dispositions.
-#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
-#'   `TRUE`, the function calculates a confidence interval for the proportion
-#'   estimate.
-#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
-#'   method used to calculate confidence intervals. Options are `"wilson"`
-#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
-#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
-#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
-#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
-#'   confidence interval). Defaults to 0.95.
-#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
-#'   applies a continuity correction to the Wilson score interval when `method =
-#'   "wilson"`. Defaults to `TRUE`.
-#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
+#' @inheritParams airway_01_population
+#' @inheritParams safety_02_population
+#' @inheritParams safety_04_population
+#' @inheritParams airway_01
 #'
 #' @return A data.frame summarizing results for two population groups (All,
 #'   Adults and Peds) with the following columns:
@@ -98,7 +54,7 @@
 #'     earrest_01_col = earrest_01,
 #'     einjury_03_col = einjury_03,
 #'     edisposition_14_col = edisposition_14,
-#'     transport_disposition_col = edisposition_30,
+#'     transport_disposition_cols = edisposition_30,
 #'     eprocedures_03_col = eprocedures_03,
 #'     confidence_interval = TRUE
 #'   )
@@ -125,13 +81,24 @@ safety_04 <- function(
   einjury_03_col,
   eprocedures_03_col,
   edisposition_14_col,
-  transport_disposition_col,
+  transport_disposition_cols,
+  transport_disposition_col = lifecycle::deprecated(),
   confidence_interval = FALSE,
   method = c("wilson", "clopper-pearson"),
   conf.level = 0.95,
   correct = TRUE,
   ...
 ) {
+  # Handle deprecated transport_disposition_col argument ----
+  if (lifecycle::is_present(transport_disposition_col)) {
+    # Issue an error
+    lifecycle::deprecate_stop(
+      when = "1.2.0",
+      what = "safety_04(transport_disposition_col)",
+      with = "safety_04(transport_disposition_cols)"
+    )
+  }
+
   # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
@@ -175,7 +142,7 @@ safety_04 <- function(
       einjury_03_col = {{ einjury_03_col }},
       eprocedures_03_col = {{ eprocedures_03_col }},
       edisposition_14_col = {{ edisposition_14_col }},
-      transport_disposition_col = {{ transport_disposition_col }}
+      transport_disposition_cols = {{ transport_disposition_cols }}
     )
 
     # create a separator ----
@@ -270,7 +237,7 @@ safety_04 <- function(
       einjury_03_col = {{ einjury_03_col }},
       eprocedures_03_col = {{ eprocedures_03_col }},
       edisposition_14_col = {{ edisposition_14_col }},
-      transport_disposition_col = {{ transport_disposition_col }}
+      transport_disposition_cols = {{ transport_disposition_cols }}
     )
 
     # create a separator ----
