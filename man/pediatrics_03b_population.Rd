@@ -59,7 +59,7 @@ of unit.}
 \item{eresponse_05_col}{Column that contains eResponse.05 or the response
 type.}
 
-\item{eexam_01_col}{Column containing bstimated patient body weight in
+\item{eexam_01_col}{Column containing estimated patient body weight in
 kilograms.}
 
 \item{eexam_02_col}{Column containing data on length based tape measure for

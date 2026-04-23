@@ -23,15 +23,16 @@ safety_01(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing EMS data.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient
-and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
-\item{erecord_01_col}{Column name containing the unique patient record
+\item{erecord_01_col}{The column representing the EMS record unique
 identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
@@ -42,15 +43,17 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{Column containing age.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{Column for age units.}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column containing response mode codes (e.g., 911
-response codes).}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{eresponse_24_col}{Column detailing additional response descriptors as
-text.}
+\item{eresponse_24_col}{Column detailing documentation of response mode
+techniques used for this EMS response.}
 
 \item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
 \code{TRUE}, the function calculates a confidence interval for the proportion

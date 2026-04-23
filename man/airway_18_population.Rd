@@ -194,7 +194,5 @@ result$filter_process
 
 }
 \author{
-Nicolas Foss, Ed.D., MS
-
 Nicolas Foss, Ed.D., MS, Samuel Kordik, BBA, BS
 }

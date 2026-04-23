@@ -36,7 +36,7 @@ testthat::test_that("respiratory_02_population rejects invalid argument combinat
       evitals_12_col = numeric(),
       eprocedures_03_col = character()
     ),
-    "An object of class"
+    "must be of class.*data\\.frame.*tbl.*tbl_df"
   )
 })
 
@@ -86,21 +86,51 @@ testthat::test_that("respiratory_02_population validates date column formats", {
     )
   )
 
-  testthat::expect_null(
+  # Fake tables for table-argument pathway
+  patient_scene_table <- tibble::tibble(
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    incident_date = as.character(Sys.Date()), # wrong class
+    patient_dob = as.character(Sys.Date() - 365), # wrong class
+    epatient_15 = c(10, 20, 30, 40, 50),
+    epatient_16 = rep("years", 5)
+  )
+
+  response_table <- tibble::tibble(
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    eresponse_05 = rep("x", 5)
+  )
+
+  medications_table <- tibble::tibble(
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    emedications_03 = rep("m1", 5)
+  )
+
+  procedures_table <- tibble::tibble(
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    eprocedures_03 = rep("p1", 5)
+  )
+
+  vitals_table <- tibble::tibble(
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    evitals_12 = rnorm(5)
+  )
+
+  testthat::expect_error(
     respiratory_02_population(
-      patient_scene_table = tibble::tibble(),
-      response_table = tibble::tibble(),
-      medications_table = tibble::tibble(),
-      procedures_table = tibble::tibble(),
-      erecord_01_col = character(),
-      incident_date_col = "stuff",
-      patient_DOB_col = "stuff",
-      epatient_15_col = numeric(),
-      epatient_16_col = character(),
-      eresponse_05_col = character(),
-      emedications_03_col = character(),
-      evitals_12_col = numeric(),
-      eprocedures_03_col = character()
+      patient_scene_table = patient_scene_table,
+      response_table = response_table,
+      medications_table = medications_table,
+      procedures_table = procedures_table,
+      vitals_table = vitals_table,
+      erecord_01_col = erecord_01,
+      incident_date_col = incident_date,
+      patient_DOB_col = patient_dob,
+      epatient_15_col = epatient_15,
+      epatient_16_col = epatient_16,
+      eresponse_05_col = eresponse_05,
+      emedications_03_col = emedications_03,
+      evitals_12_col = evitals_12,
+      eprocedures_03_col = eprocedures_03
     )
   )
 })

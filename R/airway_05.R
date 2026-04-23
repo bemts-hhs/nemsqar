@@ -139,6 +139,62 @@ airway_05 <- function(
   # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
+  # Check for tables or DF ----
+
+  if (
+    any(
+      !is.null(patient_scene_table),
+      !is.null(response_table),
+      !is.null(arrest_table),
+      !is.null(procedures_table),
+      !is.null(vitals_table)
+    ) &&
+      !is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn airway_05} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all four table arguments."
+    )
+  }
+
+  # Ensure that df or all table arguments are fulfilled ----
+
+  if (
+    all(
+      is.null(patient_scene_table),
+      is.null(procedures_table),
+      is.null(vitals_table),
+      is.null(arrest_table),
+      is.null(response_table)
+    ) &&
+      is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn airway_05} requires either a {.cls data.frame} or {.cls tibble} passed to the {.var df} argument, or all table arguments to be fulfilled. Please choose one approach."
+    )
+  }
+
+  # ensure all *_col arguments are fulfilled ----
+  if (
+    any(
+      missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
+      missing(earrest_01_col),
+      missing(eresponse_05_col),
+      missing(evitals_01_col),
+      missing(evitals_12_col),
+      missing(eprocedures_01_col),
+      missing(eprocedures_02_col),
+      missing(eprocedures_03_col)
+    )
+  ) {
+    cli::cli_abort(
+      "One or more of the *_col arguments is missing.  Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn airway_05}."
+    )
+  }
+
   # utilize applicable tables to analyze the data for the measure ----
   if (
     all(

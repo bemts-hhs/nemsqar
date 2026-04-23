@@ -14,7 +14,7 @@
 #' @inheritParams asthma_01_population
 #' @param exam_table A data.frame or tibble containing only the eExam fields
 #'   needed for this measure's calculations. Default is `NULL`.
-#' @param eexam_01_col Column containing bstimated patient body weight in
+#' @param eexam_01_col Column containing estimated patient body weight in
 #' kilograms.
 #' @param eexam_02_col Column containing data on length based tape measure for
 #' patients.

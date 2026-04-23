@@ -229,7 +229,7 @@ respiratory_01_population <- function(
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct()
 
-    # exam ----
+    # vitals ----
     vitals_table <- df |>
       dplyr::select(
         {{ erecord_01_col }},
@@ -238,7 +238,7 @@ respiratory_01_population <- function(
       ) |>
       dplyr::distinct()
 
-    # medications ----
+    # situations ----
     situation_table <- df |>
       dplyr::select(
         {{ erecord_01_col }},
@@ -295,7 +295,7 @@ respiratory_01_population <- function(
       dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
       dplyr::distinct()
 
-    # exam ----
+    # vitals ----
     vitals_table <- vitals_table |>
       dplyr::select(
         {{ erecord_01_col }},
@@ -304,7 +304,7 @@ respiratory_01_population <- function(
       ) |>
       dplyr::distinct()
 
-    # medications ----
+    # situation ----
     situation_table <- situation_table |>
       dplyr::select(
         {{ erecord_01_col }},

@@ -112,10 +112,6 @@
 #' # show the results of filtering at each step
 #' result$filter_process
 #'
-#' @author Nicolas Foss, Ed.D., MS
-#'
-#' @export
-#'
 #' @author Nicolas Foss, Ed.D., MS, Samuel Kordik, BBA, BS
 #'
 #' @export

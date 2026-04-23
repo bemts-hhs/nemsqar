@@ -477,7 +477,7 @@ testthat::test_that("airway_18 handles unexpected column names", {
 })
 
 testthat::test_that("airway_18 handles empty input data", {
-  testthat::expect_null(
+  testthat::expect_error(
     airway_18()
   )
 })

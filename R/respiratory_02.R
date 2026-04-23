@@ -83,6 +83,57 @@ respiratory_02 <- function(
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
   # Ensure that not all table arguments AND the df argument are fulfilled ----
+  # user only passes df or all table arguments
+  if (
+    any(
+      !is.null(patient_scene_table),
+      !is.null(response_table),
+      !is.null(vitals_table),
+      !is.null(medications_table),
+      !is.null(procedures_table)
+    ) &&
+
+      !is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn respiratory_02} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
+    )
+  }
+
+  # ensure that df or all table arguments are fulfilled ----
+  if (
+    all(
+      is.null(patient_scene_table),
+      is.null(response_table),
+      is.null(vitals_table),
+      is.null(medications_table),
+      is.null(procedures_table)
+    ) &&
+      is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn respiratory_02} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
+    )
+  }
+
+  # ensure all *_col arguments are fulfilled ----
+  if (
+    any(
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
+      missing(eresponse_05_col),
+      missing(evitals_12_col),
+      missing(emedications_03_col),
+      missing(eprocedures_03_col)
+    )
+  ) {
+    cli::cli_abort(
+      "One or more of the *_col arguments is missing.  Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn respiratory_02}."
+    )
+  }
+
   # User must pass either `df` or all table arguments, but not both
   if (
     all(

@@ -84,6 +84,43 @@ respiratory_01 <- function(
 
   # Ensure that not all table arguments AND the df argument are fulfilled ----
   # User must pass either `df` or all table arguments, but not both
+
+  if (
+    any(
+      !is.null(patient_scene_table),
+      !is.null(response_table),
+      !is.null(situation_table),
+      !is.null(vitals_table)
+    ) &&
+
+      !is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn respiratory_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
+    )
+  }
+
+  # ensure all *_col arguments are fulfilled ----
+  if (
+    any(
+      missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
+      missing(eresponse_05_col),
+      missing(esituation_11_col),
+      missing(esituation_12_col),
+      missing(evitals_12_col),
+      missing(evitals_14_col)
+    )
+  ) {
+    cli::cli_abort(
+      "One or more of the *_col arguments is missing.  Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn respiratory_01}."
+    )
+  }
+
+  # User must pass either `df` or all table arguments, but not both
   if (
     all(
       !is.null(patient_scene_table),

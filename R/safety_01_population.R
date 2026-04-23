@@ -9,22 +9,9 @@
 #' were not used in an EMS dataset. This function segments the data by age into
 #' adult and pediatric populations.
 #'
-#' @param df A data frame or tibble containing EMS data.
-#' @param patient_scene_table A data frame or tibble containing only epatient
-#'   and escene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eresponse
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param erecord_01_col Column name containing the unique patient record
-#'   identifier.
-#' @param incident_date_col Date or POSIXct column indicating the date of the
-#'   incident.
-#' @param patient_DOB_col Date or POSIXct column for the patient’s date of birth
-#' @param epatient_15_col Column containing age.
-#' @param epatient_16_col Column for age units.
-#' @param eresponse_05_col Column containing response mode codes (e.g., 911
-#'   response codes).
-#' @param eresponse_24_col Column detailing additional response descriptors as
-#'   text.
+#' @inheritParams airway_01_population
+#' @param eresponse_24_col Column detailing documentation of response mode
+#' techniques used for this EMS response.
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

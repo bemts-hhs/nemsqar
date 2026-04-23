@@ -94,6 +94,57 @@ pediatrics_03b <- function(
   # User must pass either `df` or all table arguments, but not both
 
   if (
+    any(
+      !is.null(patient_scene_table),
+      !is.null(response_table),
+      !is.null(exam_table),
+      !is.null(medications_table)
+    ) &&
+
+      !is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn pediatrics_03b} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
+    )
+  }
+
+  # ensure all *_col arguments are fulfilled ----
+  if (
+    any(
+      missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
+      missing(eresponse_05_col),
+      missing(eexam_01_col),
+      missing(eexam_02_col),
+      missing(emedications_03_col),
+      missing(emedications_04_col)
+    )
+  ) {
+    cli::cli_abort(
+      "One or more of the *_col arguments is missing.  Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn pediatrics_03b}."
+    )
+  }
+
+  if (
+    all(
+      is.null(patient_scene_table),
+      is.null(response_table),
+      is.null(exam_table),
+      is.null(medications_table)
+    ) &&
+      is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn pediatrics_03b} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
+    )
+  }
+
+  # User must pass either `df` or all table arguments, but not both
+
+  if (
     all(
       !is.null(patient_scene_table),
       !is.null(response_table),
