@@ -45,6 +45,9 @@ eProcedures fields needed.}
 \item{vitals_table}{A dataframe or tibble containing at least the eVitals
 fields needed.}
 
+\item{airway_table}{A data frame or tibble containing only the eAirway fields
+needed for this measure's calculations. Default is \code{NULL}.}
+
 \item{response_table}{A data.frame or tibble containing at least the
 eResponse fields needed for this measure's calculations.}
 
@@ -79,8 +82,16 @@ procedure names.}
 \item{eprocedures_06_col}{Column indicating whether or not procedure was
 successful.}
 
+\item{eairway_02_col}{Column name for date/time airway device placement
+confirmation. Default is \code{NULL}.}
+
+\item{eairway_04_col}{Column name for confirmation of airway device
+placement. Default is \code{NULL}.}
+
 \item{evitals_01_col}{Date-time or POSIXct column containing vital signs
 date/time}
+
+\item{evitals_16_col}{Column name for end tidal carbon dioxide (ETCO2).}
 
 \item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
 \code{TRUE}, the function calculates a confidence interval for the proportion
