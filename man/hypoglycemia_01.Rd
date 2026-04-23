@@ -159,6 +159,8 @@ test_data <- tibble::tibble(
 hypoglycemia_01(
   df = test_data,
   erecord_01_col = erecord_01,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
   epatient_15_col = epatient_15,
   epatient_16_col = epatient_16,
   eresponse_05_col = eresponse_05,
