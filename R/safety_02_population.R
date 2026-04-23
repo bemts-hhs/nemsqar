@@ -9,32 +9,17 @@
 #' sirens were not used during patient transport. This function segments the
 #' data by age into adult and pediatric populations.
 #'
-#' @param df A data frame where each row is an observation, and each column
-#'   represents a feature.
-#' @param patient_scene_table A data.frame or tibble containing only epatient
-#'   and escene fields as a fact table.
-#' @param response_table A data.frame or tibble containing only the eresponse
-#'   fields needed for this measure's calculations.
+#' @inheritParams airway_01_population
 #' @param disposition_table A data.frame or tibble containing only the
 #'   edisposition fields needed for this measure's calculations.
-#' @param erecord_01_col The column representing the EMS record unique
-#'   identifier.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column giving the calculated age value.
-#' @param epatient_16_col Column giving the provided age unit value.
-#' @param eresponse_05_col Column giving response codes, identifying 911
-#'   responses.
-#' @param edisposition_18_col Column giving transport mode descriptors,
-#'   including possible lights-and-sirens indicators.
-#' @param edisposition_28_col Column giving patient evaluation and care
-#'   categories for the EMS response.
+#' @param edisposition_18_col Column giving documentation of transport mode
+#' techniques for this EMS response.
+#' @param edisposition_28_col Column giving patient disposition for an EMS event
+#' identifying whether a patient was evaluated and care or services were
+#' provided.
 #' @param transport_disposition_cols One or more unquoted column names (such as
-#'   edisposition.12, edisposition.30) containing transport disposition details.
+#'   edisposition.12, edisposition.30) containing transport disposition for an
+#'   EMS event identifying whether a transport occurred and by which unit.
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

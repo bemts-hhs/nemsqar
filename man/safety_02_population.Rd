@@ -21,14 +21,14 @@ safety_02_population(
 )
 }
 \arguments{
-\item{df}{A data frame where each row is an observation, and each column
-represents a feature.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data.frame or tibble containing only epatient
-and escene fields as a fact table.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data.frame or tibble containing only the eresponse
-fields needed for this measure's calculations.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
 \item{disposition_table}{A data.frame or tibble containing only the
 edisposition fields needed for this measure's calculations.}
@@ -44,21 +44,25 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{Column giving the calculated age value.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{Column giving the provided age unit value.}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column giving response codes, identifying 911
-responses.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{edisposition_18_col}{Column giving transport mode descriptors,
-including possible lights-and-sirens indicators.}
+\item{edisposition_18_col}{Column giving documentation of transport mode
+techniques for this EMS response.}
 
-\item{edisposition_28_col}{Column giving patient evaluation and care
-categories for the EMS response.}
+\item{edisposition_28_col}{Column giving patient disposition for an EMS event
+identifying whether a patient was evaluated and care or services were
+provided.}
 
 \item{transport_disposition_cols}{One or more unquoted column names (such as
-edisposition.12, edisposition.30) containing transport disposition details.}
+edisposition.12, edisposition.30) containing transport disposition for an
+EMS event identifying whether a transport occurred and by which unit.}
 }
 \value{
 A list that contains the following:
