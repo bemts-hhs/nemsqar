@@ -8,32 +8,8 @@
 #' summary table of the overall, pediatric, and adult populations, showing
 #' counts and proportions.
 #'
-#' @param df A data frame containing incident data with each row representing an
-#'   observation.
-#' @param patient_scene_table A data.frame or tibble containing at least
-#'   epatient and escene fields as a fact table.
-#' @param response_table A data.frame or tibble containing at least the
-#'   eresponse fields needed for this measure's calculations.
-#' @param vitals_table A data.frame or tibble containing at least the evitals
-#'   fields needed for this measure's calculations.
-#' @param medications_table A data.frame or tibble containing only the
-#'   emedications fields needed for this measure's calculations.
-#' @param procedures_table A data.frame or tibble containing only the
-#'   eprocedures fields needed for this measure's calculations.
-#' @param erecord_01_col Column name for eRecord.01, used to form a unique
-#'   patient ID.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col integer Column giving the calculated age value.
-#' @param epatient_16_col Column giving the provided age unit value.
-#' @param eresponse_05_col Column name for response codes (e.g., incident type).
-#' @param evitals_12_col Column name for oxygen saturation (SpO2) values.
-#' @param emedications_03_col Column name for medication codes.
-#' @param eprocedures_03_col Column name for procedure codes.
+#' @inheritParams airway_01_population
+#' @inheritParams asthma_01_population
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,
