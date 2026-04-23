@@ -203,7 +203,11 @@ safety_01_population <- function(
 
     # response ----
     response_table <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ eresponse_05_col }},
+        {{ eresponse_24_col }}
+      ) |>
       dplyr::distinct()
   } else if (
     # utilize applicable tables to analyze the data for the measure ----
@@ -227,6 +231,20 @@ safety_01_population <- function(
       type = "error",
       logic = "or"
     )
+
+    # get distinct tables when passed to table arguments ----
+    # patient
+    patient_scene_table <- patient_scene_table |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+
+    # response ----
+    response_table <- response_table |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ eresponse_05_col }},
+        {{ eresponse_24_col }}
+      ) |>
+      dplyr::distinct()
   }
 
   # Validate date columns if provided ----

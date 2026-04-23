@@ -347,7 +347,41 @@ respiratory_02_population <- function(
       type = "error",
       logic = "or"
     )
-  }
+
+    # get distinct tables when passed to table arguments ----
+    # patient
+    patient_scene_table <- patient_scene_table |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+
+    # response ----
+    response_table <- response_table |>
+      dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
+      dplyr::distinct()
+
+    # vitals ----
+    vitals_table <- vitals_table |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ evitals_12_col }}
+      ) |>
+      dplyr::distinct()
+
+    # medications ----
+    medications_table <- medications_table |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ emedications_03_col }}
+      ) |>
+      dplyr::distinct()
+
+    # procedures ----
+    procedures_table <- procedures_table |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ eprocedures_03_col }}
+      ) |>
+      dplyr::distinct()
+}
 
   # Only check the date columns if they are in fact passed ----
   if (
