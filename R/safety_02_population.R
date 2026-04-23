@@ -153,13 +153,41 @@ safety_02_population <- function(
   }
 
   # 911 codes for eresponse.05 ----
-  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
+  codes_911 <- paste(
+    "2205001",
+    "2205003",
+    "2205009",
+    "Emergency Response \\(Primary Response Area\\)",
+    "Emergency Response \\(Intercept\\)",
+    "Emergency Response \\(Mutual Aid\\)",
+    sep = "|"
+  )
 
   # patient evaluation care ----
   patient_care <- "4228001|Patient Evaluated and Care Provided"
 
   # define transports ----
-  transport_responses <- "Transport by This EMS Unit \\(This Crew Only\\)|Transport by This EMS Unit, with a Member of Another Crew|Transport by Another EMS Unit, with a Member of This Crew|Patient Treated, Transported by this EMS Unit|Patient Treated, Transported with this EMS Crew in Another Vehicle|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Mutual Aid Tx & Transport|4212033|4230001|4230003|4230007|itDisposition\\.112\\.116|it4212\\.142|itDisposition\\.112\\.165|itDisposition\\.112\\.141|Treat / Transport BLS by this unit|itDisposition\\.112\\.142"
+  transport_responses <- paste(
+    "Transport by This EMS Unit \\(This Crew Only\\)",
+    "Transport by This EMS Unit, with a Member of Another Crew",
+    "Transport by Another EMS Unit, with a Member of This Crew",
+    "Patient Treated, Transported by this EMS Unit",
+    "Patient Treated, Transported with this EMS Crew in Another Vehicle",
+    "Treat / Transport ALS by this unit",
+    "Treat / Transport BLS by this unit",
+    "Mutual Aid Tx & Transport",
+    "4212033",
+    "4230001",
+    "4230003",
+    "4230007",
+    "itDisposition\\.112\\.116",
+    "it4212\\.142",
+    "itDisposition\\.112\\.165",
+    "itDisposition\\.112\\.141",
+    "Treat / Transport BLS by this unit",
+    "itDisposition\\.112\\.142",
+    sep = "|"
+  )
 
   # get codes as a regex to find lights and siren responses ----
   no_lights_and_sirens <- "4218015|No Lights or Sirens"

@@ -43,7 +43,7 @@ testthat::test_that("safety_04_population rejects invalid argument combinations"
       transport_disposition_cols = character(),
       eprocedures_03_col = character()
     ),
-    "One or more of the tables passed to"
+    "must be of class.*data\\.frame.*tbl.*tbl_df"
   )
 })
 
@@ -82,13 +82,15 @@ testthat::test_that("safety_04_population validates date column formats", {
     safety_04_population(
       df,
       erecord_01_col = erecord_01,
+      incident_date_col = incident_date,
+      patient_DOB_col = patient_DOB,
       epatient_15_col = epatient_15,
       epatient_16_col = epatient_16,
       eresponse_05_col = eresponse_05,
       earrest_01_col = earrest_01,
       einjury_03_col = einjury_03,
       edisposition_14_col = edisposition_14,
-      transport_disposition_cols = edisposition_30,
+      transport_disposition_cols = transport_disposition,
       eprocedures_03_col = eprocedures_03
     )
   )
