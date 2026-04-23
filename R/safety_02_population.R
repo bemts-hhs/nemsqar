@@ -17,9 +17,11 @@
 #' @param edisposition_28_col Column giving patient disposition for an EMS event
 #' identifying whether a patient was evaluated and care or services were
 #' provided.
-#' @param transport_disposition_cols One or more unquoted column names (such as
+#' @param transport_disposition_col One or more unquoted column names (such as
 #'   edisposition.12, edisposition.30) containing transport disposition for an
 #'   EMS event identifying whether a transport occurred and by which unit.
+#' @param transport_disposition_cols `r lifecycle::badge("deprecated")` Use
+#' `transport_disposition_col` instead.
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,
@@ -76,7 +78,7 @@
 #'                         eresponse_05_col = eresponse_05,
 #'                         edisposition_18_col = edisposition_18,
 #'                         edisposition_28_col = edisposition_28,
-#'                         transport_disposition_cols = edisposition_30
+#'                         transport_disposition_col = edisposition_30
 #'                         )
 #'
 #' # show the results of filtering at each step
@@ -99,8 +101,19 @@ safety_02_population <- function(
   eresponse_05_col,
   edisposition_18_col,
   edisposition_28_col,
-  transport_disposition_cols
+  transport_disposition_col,
+  transport_disposition_cols = lifecycle::deprecated()
 ) {
+  # Handle deprecated transport_disposition_cols argument ----
+  if (!missing(transport_disposition_cols)) {
+    # Issue an error
+    lifecycle::deprecate_stop(
+      when = "1.2.0",
+      what = "safety_02_population(transport_disposition_cols)",
+      with = "safety_02_population(transport_disposition_col)"
+    )
+  }
+
   # ensure that not all table arguments AND the df argument are fulfilled ----
   # user only passes df or all table arguments
 
@@ -144,7 +157,7 @@ safety_02_population <- function(
       missing(eresponse_05_col),
       missing(edisposition_18_col),
       missing(edisposition_28_col),
-      missing(transport_disposition_cols)
+      missing(transport_disposition_col)
     )
   ) {
     cli::cli_abort(
@@ -252,7 +265,7 @@ safety_02_population <- function(
         -{{ eresponse_05_col }},
         -{{ edisposition_18_col }},
         -{{ edisposition_28_col }},
-        -c({{ transport_disposition_cols }})
+        -c({{ transport_disposition_col }})
       ) |>
       dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
@@ -270,7 +283,7 @@ safety_02_population <- function(
         {{ erecord_01_col }},
         {{ edisposition_18_col }},
         {{ edisposition_28_col }},
-        {{ transport_disposition_cols }}
+        {{ transport_disposition_col }}
       ) |>
       dplyr::distinct()
   } else if (
@@ -323,7 +336,7 @@ safety_02_population <- function(
         {{ erecord_01_col }},
         {{ edisposition_18_col }},
         {{ edisposition_28_col }},
-        {{ transport_disposition_cols }}
+        {{ transport_disposition_col }}
       ) |>
       dplyr::distinct()
   }
@@ -532,11 +545,11 @@ safety_02_population <- function(
 
   # transports ----
   transport_data <- disposition_table |>
-    dplyr::select({{ erecord_01_col }}, {{ transport_disposition_cols }}) |>
+    dplyr::select({{ erecord_01_col }}, {{ transport_disposition_col }}) |>
     dplyr::distinct() |>
     dplyr::filter(
       if_any(
-        c({{ transport_disposition_cols }}),
+        c({{ transport_disposition_col }}),
         ~ grepl(
           pattern = transport_responses,
           x = .,

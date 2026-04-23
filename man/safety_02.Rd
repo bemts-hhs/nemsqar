@@ -17,7 +17,8 @@ safety_02(
   eresponse_05_col,
   edisposition_18_col,
   edisposition_28_col,
-  transport_disposition_cols,
+  transport_disposition_col,
+  transport_disposition_cols = lifecycle::deprecated(),
   confidence_interval = FALSE,
   method = c("wilson", "clopper-pearson"),
   conf.level = 0.95,
@@ -65,9 +66,12 @@ techniques for this EMS response.}
 identifying whether a patient was evaluated and care or services were
 provided.}
 
-\item{transport_disposition_cols}{One or more unquoted column names (such as
+\item{transport_disposition_col}{One or more unquoted column names (such as
 edisposition.12, edisposition.30) containing transport disposition for an
 EMS event identifying whether a transport occurred and by which unit.}
+
+\item{transport_disposition_cols}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use
+\code{transport_disposition_col} instead.}
 
 \item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
 \code{TRUE}, the function calculates a confidence interval for the proportion
@@ -135,7 +139,7 @@ population count as well.
     eresponse_05_col = eresponse_05,
     edisposition_18_col = edisposition_18,
     edisposition_28_col = edisposition_28,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     confidence_interval = TRUE
   )
 

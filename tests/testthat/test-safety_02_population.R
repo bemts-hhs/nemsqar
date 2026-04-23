@@ -13,7 +13,7 @@ testthat::test_that("safety_02_population rejects invalid argument combinations"
       eresponse_05_col = character(),
       edisposition_18_col = character(),
       edisposition_28_col = character(),
-      transport_disposition_cols = character()
+      transport_disposition_col = character()
     ),
     "Please choose to either pass an object of class"
   )
@@ -31,7 +31,7 @@ testthat::test_that("safety_02_population rejects invalid argument combinations"
       eresponse_05_col = character(),
       edisposition_18_col = character(),
       edisposition_28_col = character(),
-      transport_disposition_cols = character()
+      transport_disposition_col = character()
     ),
     "must be of class.*data\\.frame.*tbl.*tbl_df"
   )
@@ -75,7 +75,7 @@ testthat::test_that("safety_02_population validates date column formats", {
       eresponse_05_col = eresponse_05,
       edisposition_18_col = edisposition_18,
       edisposition_28_col = edisposition_28,
-      transport_disposition_cols = edisposition_30
+      transport_disposition_col = edisposition_30
     )
   )
 
@@ -92,7 +92,7 @@ testthat::test_that("safety_02_population validates date column formats", {
       eresponse_05_col = character(),
       edisposition_18_col = character(),
       edisposition_28_col = character(),
-      transport_disposition_cols = character()
+      transport_disposition_col = character()
     )
   )
 })
@@ -117,7 +117,7 @@ testthat::test_that("safety_02_population fails with unknown columns", {
       eresponse_05_col = eresponse_05,
       edisposition_18_col = edisposition_18,
       edisposition_28_col = edisposition_28,
-      transport_disposition_cols = edisposition_30
+      transport_disposition_col = edisposition_30
     ),
     "One or more of"
   )
@@ -159,7 +159,7 @@ testthat::test_that("safety_02_population correctly classifies patient age", {
     eresponse_05_col = eresponse_05,
     edisposition_18_col = edisposition_18,
     edisposition_28_col = edisposition_28,
-    transport_disposition_cols = edisposition_30
+    transport_disposition_col = edisposition_30
   )
 
   testthat::expect_true(all(result$adults$system_age_adult == TRUE))
@@ -201,7 +201,7 @@ testthat::test_that("safety_02_population correctly filters 911 calls", {
     eresponse_05_col = eresponse_05,
     edisposition_18_col = edisposition_18,
     edisposition_28_col = edisposition_28,
-    transport_disposition_cols = edisposition_30
+    transport_disposition_col = edisposition_30
   )
 
   emergency_calls <- result$filter_process |>
@@ -260,7 +260,7 @@ testthat::test_that("safety_02_population runs correctly with table inputs", {
     eresponse_05_col = eresponse_05,
     edisposition_18_col = edisposition_18,
     edisposition_28_col = edisposition_28,
-    transport_disposition_cols = edisposition_30
+    transport_disposition_col = edisposition_30
   )
 
   testthat::expect_equal(nrow(result$filter_process), 8)

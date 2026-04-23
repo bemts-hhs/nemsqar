@@ -22,7 +22,7 @@ testthat::test_that("safety_04 produces expected results", {
     earrest_01_col = earrest_01,
     einjury_03_col = einjury_03,
     edisposition_14_col = edisposition_14,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03,
     confidence_interval = TRUE
   ))
@@ -51,7 +51,7 @@ testthat::test_that("safety_04 produces expected results", {
     earrest_01_col = earrest_01,
     einjury_03_col = einjury_03,
     edisposition_14_col = edisposition_14,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03,
     confidence_interval = TRUE
   ))
@@ -66,7 +66,7 @@ testthat::test_that("safety_04 produces expected results", {
     earrest_01_col = earrest_01,
     einjury_03_col = einjury_03,
     edisposition_14_col = edisposition_14,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03
   )
 
@@ -146,7 +146,7 @@ testthat::test_that("safety_04 produces expected results", {
     earrest_01_col = earrest_01,
     einjury_03_col = einjury_03,
     edisposition_14_col = edisposition_14,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03
   )
 
@@ -180,7 +180,7 @@ testthat::test_that("safety_04 handles missing data correctly", {
     earrest_01_col = earrest_01,
     einjury_03_col = einjury_03,
     edisposition_14_col = edisposition_14,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03
   )
 
@@ -211,7 +211,7 @@ testthat::test_that("safety_04 returns empty result for non-matching criteria", 
     earrest_01_col = earrest_01,
     einjury_03_col = einjury_03,
     edisposition_14_col = edisposition_14,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03
   )
 

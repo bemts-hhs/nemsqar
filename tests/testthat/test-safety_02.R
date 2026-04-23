@@ -21,7 +21,7 @@ testthat::test_that("safety_02 produces expected results", {
     eresponse_05_col = eresponse_05,
     edisposition_18_col = edisposition_18,
     edisposition_28_col = edisposition_28,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     confidence_interval = TRUE
   ))
 
@@ -50,7 +50,7 @@ testthat::test_that("safety_02 produces expected results", {
     eresponse_05_col = eresponse_05,
     edisposition_18_col = edisposition_18,
     edisposition_28_col = edisposition_28,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     confidence_interval = TRUE
   ))
 
@@ -65,7 +65,7 @@ testthat::test_that("safety_02 produces expected results", {
     eresponse_05_col = eresponse_05,
     edisposition_18_col = edisposition_18,
     edisposition_28_col = edisposition_28,
-    transport_disposition_cols = edisposition_30
+    transport_disposition_col = edisposition_30
   )
 
   # Check structure
@@ -128,7 +128,7 @@ testthat::test_that("safety_02 produces expected results", {
     eresponse_05_col = eresponse_05,
     edisposition_18_col = edisposition_18,
     edisposition_28_col = edisposition_28,
-    transport_disposition_cols = edisposition_30
+    transport_disposition_col = edisposition_30
   )
 
   # Check calculations
@@ -160,7 +160,7 @@ testthat::test_that("safety_02 handles missing data correctly", {
     eresponse_05_col = eresponse_05,
     edisposition_18_col = edisposition_18,
     edisposition_28_col = edisposition_28,
-    transport_disposition_cols = edisposition_30
+    transport_disposition_col = edisposition_30
   )
 
   testthat::expect_true(nrow(result) > 0)
@@ -189,7 +189,7 @@ testthat::test_that("safety_02 returns empty result for non-matching criteria", 
     eresponse_05_col = eresponse_05,
     edisposition_18_col = edisposition_18,
     edisposition_28_col = edisposition_28,
-    transport_disposition_cols = edisposition_30
+    transport_disposition_col = edisposition_30
   )
 
   testthat::expect_equal(sum(result$denominator), 0)

@@ -22,8 +22,7 @@ safety_04(
   einjury_03_col,
   eprocedures_03_col,
   edisposition_14_col,
-  transport_disposition_cols,
-  transport_disposition_col = lifecycle::deprecated(),
+  transport_disposition_col,
   confidence_interval = FALSE,
   method = c("wilson", "clopper-pearson"),
   conf.level = 0.95,
@@ -86,12 +85,9 @@ procedure names.}
 \item{edisposition_14_col}{Column giving the position of the patient during
 transport from the scene.}
 
-\item{transport_disposition_cols}{One or more unquoted column names (such as
+\item{transport_disposition_col}{One or more unquoted column names (such as
 edisposition.12, edisposition.30) containing transport disposition for an
 EMS event identifying whether a transport occurred and by which unit.}
-
-\item{transport_disposition_col}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use
-\code{transport_disposition_cols} instead.}
 
 \item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
 \code{TRUE}, the function calculates a confidence interval for the proportion
@@ -162,7 +158,7 @@ procedure identifiers.
     earrest_01_col = earrest_01,
     einjury_03_col = einjury_03,
     edisposition_14_col = edisposition_14,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03,
     confidence_interval = TRUE
   )

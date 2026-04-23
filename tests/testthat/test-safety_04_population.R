@@ -17,7 +17,7 @@ testthat::test_that("safety_04_population rejects invalid argument combinations"
       earrest_01_col = character(),
       einjury_03_col = character(),
       edisposition_14_col = character(),
-      transport_disposition_cols = character(),
+      transport_disposition_col = character(),
       eprocedures_03_col = character()
     ),
     "Please choose to either pass an object of class"
@@ -40,7 +40,7 @@ testthat::test_that("safety_04_population rejects invalid argument combinations"
       earrest_01_col = character(),
       einjury_03_col = character(),
       edisposition_14_col = character(),
-      transport_disposition_cols = character(),
+      transport_disposition_col = character(),
       eprocedures_03_col = character()
     ),
     "must be of class.*data\\.frame.*tbl.*tbl_df"
@@ -90,7 +90,7 @@ testthat::test_that("safety_04_population validates date column formats", {
       earrest_01_col = earrest_01,
       einjury_03_col = einjury_03,
       edisposition_14_col = edisposition_14,
-      transport_disposition_cols = transport_disposition,
+      transport_disposition_col = transport_disposition,
       eprocedures_03_col = eprocedures_03
     )
   )
@@ -112,7 +112,7 @@ testthat::test_that("safety_04_population validates date column formats", {
       earrest_01_col = character(),
       einjury_03_col = character(),
       edisposition_14_col = character(),
-      transport_disposition_cols = character(),
+      transport_disposition_col = character(),
       eprocedures_03_col = character()
     )
   )
@@ -141,7 +141,7 @@ testthat::test_that("safety_04_population fails with unknown columns", {
       earrest_01_col = earrest_01,
       einjury_03_col = einjury_03,
       edisposition_14_col = edisposition_14,
-      transport_disposition_cols = edisposition_30,
+      transport_disposition_col = edisposition_30,
       eprocedures_03_col = eprocedures_03
     ),
     "One or more of"
@@ -187,7 +187,7 @@ testthat::test_that("safety_04_population correctly classifies patient age", {
     earrest_01_col = earrest_01,
     einjury_03_col = einjury_03,
     edisposition_14_col = edisposition_14,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03
   )
 
@@ -219,7 +219,7 @@ testthat::test_that("safety_04_population correctly filters longboard procedures
     earrest_01_col = earrest_01,
     einjury_03_col = einjury_03,
     edisposition_14_col = edisposition_14,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03
   )
 
@@ -301,7 +301,7 @@ testthat::test_that("safety_04_population runs correctly with table inputs", {
     earrest_01_col = earrest_01,
     einjury_03_col = einjury_03,
     edisposition_14_col = edisposition_14,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03
   )
 

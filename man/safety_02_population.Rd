@@ -17,7 +17,8 @@ safety_02_population(
   eresponse_05_col,
   edisposition_18_col,
   edisposition_28_col,
-  transport_disposition_cols
+  transport_disposition_col,
+  transport_disposition_cols = lifecycle::deprecated()
 )
 }
 \arguments{
@@ -60,9 +61,12 @@ techniques for this EMS response.}
 identifying whether a patient was evaluated and care or services were
 provided.}
 
-\item{transport_disposition_cols}{One or more unquoted column names (such as
+\item{transport_disposition_col}{One or more unquoted column names (such as
 edisposition.12, edisposition.30) containing transport disposition for an
 EMS event identifying whether a transport occurred and by which unit.}
+
+\item{transport_disposition_cols}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use
+\code{transport_disposition_col} instead.}
 }
 \value{
 A list that contains the following:
@@ -130,7 +134,7 @@ data by age into adult and pediatric populations.
                         eresponse_05_col = eresponse_05,
                         edisposition_18_col = edisposition_18,
                         edisposition_28_col = edisposition_28,
-                        transport_disposition_cols = edisposition_30
+                        transport_disposition_col = edisposition_30
                         )
 
 # show the results of filtering at each step

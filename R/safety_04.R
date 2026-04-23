@@ -54,7 +54,7 @@
 #'     earrest_01_col = earrest_01,
 #'     einjury_03_col = einjury_03,
 #'     edisposition_14_col = edisposition_14,
-#'     transport_disposition_cols = edisposition_30,
+#'     transport_disposition_col = edisposition_30,
 #'     eprocedures_03_col = eprocedures_03,
 #'     confidence_interval = TRUE
 #'   )
@@ -81,24 +81,13 @@ safety_04 <- function(
   einjury_03_col,
   eprocedures_03_col,
   edisposition_14_col,
-  transport_disposition_cols,
-  transport_disposition_col = lifecycle::deprecated(),
+  transport_disposition_col,
   confidence_interval = FALSE,
   method = c("wilson", "clopper-pearson"),
   conf.level = 0.95,
   correct = TRUE,
   ...
 ) {
-  # Handle deprecated transport_disposition_col argument ----
-  if (lifecycle::is_present(transport_disposition_col)) {
-    # Issue an error
-    lifecycle::deprecate_stop(
-      when = "1.2.0",
-      what = "safety_04(transport_disposition_col)",
-      with = "safety_04(transport_disposition_cols)"
-    )
-  }
-
   # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
@@ -142,7 +131,7 @@ safety_04 <- function(
       einjury_03_col = {{ einjury_03_col }},
       eprocedures_03_col = {{ eprocedures_03_col }},
       edisposition_14_col = {{ edisposition_14_col }},
-      transport_disposition_cols = {{ transport_disposition_cols }}
+      transport_disposition_col = {{ transport_disposition_col }}
     )
 
     # create a separator ----
@@ -237,7 +226,7 @@ safety_04 <- function(
       einjury_03_col = {{ einjury_03_col }},
       eprocedures_03_col = {{ eprocedures_03_col }},
       edisposition_14_col = {{ edisposition_14_col }},
-      transport_disposition_cols = {{ transport_disposition_cols }}
+      transport_disposition_col = {{ transport_disposition_col }}
     )
 
     # create a separator ----

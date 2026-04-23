@@ -50,7 +50,7 @@
 #'     eresponse_05_col = eresponse_05,
 #'     edisposition_18_col = edisposition_18,
 #'     edisposition_28_col = edisposition_28,
-#'     transport_disposition_cols = edisposition_30,
+#'     transport_disposition_col = edisposition_30,
 #'     confidence_interval = TRUE
 #'   )
 #'
@@ -71,13 +71,24 @@ safety_02 <- function(
   eresponse_05_col,
   edisposition_18_col,
   edisposition_28_col,
-  transport_disposition_cols,
+  transport_disposition_col,
+  transport_disposition_cols = lifecycle::deprecated(),
   confidence_interval = FALSE,
   method = c("wilson", "clopper-pearson"),
   conf.level = 0.95,
   correct = TRUE,
   ...
 ) {
+  # Handle deprecated transport_disposition_cols argument ----
+  if (lifecycle::is_present(transport_disposition_cols)) {
+    # Issue an error
+    lifecycle::deprecate_stop(
+      when = "1.2.0",
+      what = "safety_04(transport_disposition_cols)",
+      with = "safety_04(transport_disposition_col)"
+    )
+  }
+
   # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
@@ -124,7 +135,7 @@ safety_02 <- function(
       missing(eresponse_05_col),
       missing(edisposition_18_col),
       missing(edisposition_28_col),
-      missing(transport_disposition_cols)
+      missing(transport_disposition_col)
     )
   ) {
     cli::cli_abort(
@@ -163,7 +174,7 @@ safety_02 <- function(
       eresponse_05_col = {{ eresponse_05_col }},
       edisposition_18_col = {{ edisposition_18_col }},
       edisposition_28_col = {{ edisposition_28_col }},
-      transport_disposition_cols = {{ transport_disposition_cols }}
+      transport_disposition_col = {{ transport_disposition_col }}
     )
 
     # create a separator ----
@@ -253,7 +264,7 @@ safety_02 <- function(
       eresponse_05_col = {{ eresponse_05_col }},
       edisposition_18_col = {{ edisposition_18_col }},
       edisposition_28_col = {{ edisposition_28_col }},
-      transport_disposition_cols = {{ transport_disposition_cols }}
+      transport_disposition_col = {{ transport_disposition_col }}
     )
 
     # create a separator ----
