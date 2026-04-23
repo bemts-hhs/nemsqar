@@ -7,7 +7,7 @@
 #' Calculates the proportion of endotracheal intubation attempts with adequate
 #' oxygenation.
 #'
-#' @inheritParams airway_05_population
+#' @inheritParams airway_01_population
 #' @inheritParams airway_01
 #'
 #' @return A data.frame summarizing results for two population groups (Adults

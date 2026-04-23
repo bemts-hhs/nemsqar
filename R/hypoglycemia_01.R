@@ -6,6 +6,8 @@
 #' often hypoglycemic patients with altered mental status receive hypoglycemia
 #' treatment.
 #'
+#' @inheritParams airway_01_population
+#' @inheritParams asthma_01_population
 #' @inheritParams hypoglycemia_01_population
 #' @inheritParams airway_01
 #'

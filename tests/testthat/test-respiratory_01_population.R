@@ -35,7 +35,7 @@ testthat::test_that("respiratory_01_population rejects invalid argument combinat
       evitals_12_col = numeric(),
       evitals_14_col = numeric(),
     ),
-    "An object of class"
+    "must be of class.*data\\.frame.*tbl.*tbl_df"
   )
 })
 
@@ -56,6 +56,7 @@ testthat::test_that("respiratory_01_population rejects non-dataframe inputs", {
 })
 
 testthat::test_that("respiratory_01_population validates date column formats", {
+  # Using the df arg
   df <- tibble::tibble(
     erecord_01 = character(),
     incident_date = as.character(Sys.Date()),
@@ -87,21 +88,50 @@ testthat::test_that("respiratory_01_population validates date column formats", {
     )
   )
 
-  testthat::expect_null(
+  # Using table args
+  patient_scene_table <- tibble::tibble(
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    incident_date = as.character(Sys.Date()), # bad class
+    patient_dob = as.character(Sys.Date() - 365), # bad class
+    epatient_15 = c(10, 20, 30, 40, 50),
+    epatient_16 = rep("years", 5)
+  )
+
+  response_table <- tibble::tibble(
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    eresponse_05 = rep("x", 5)
+  )
+
+  situation_table <- tibble::tibble(
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    esituation_11 = rep("s1", 5),
+    esituation_12 = rep("t1", 5)
+  )
+
+  # vitals table is needed for resp measure
+  vitals_table <- tibble::tibble(
+    erecord_01 = c("a", "b", "c", "d", "e"),
+    evitals_12 = rnorm(5),
+    evitals_14 = rnorm(5)
+  )
+
+  # expect NULL because user passes literal strings that will not match any columns
+  testthat::expect_error(
     respiratory_01_population(
-      patient_scene_table = tibble::tibble(),
-      response_table = tibble::tibble(),
-      situation_table = tibble::tibble(),
-      erecord_01_col = character(),
-      incident_date_col = "stuff",
-      patient_DOB_col = "stuff",
-      epatient_15_col = numeric(),
-      epatient_16_col = character(),
-      eresponse_05_col = character(),
-      esituation_11_col = character(),
-      esituation_12_col = character(),
-      evitals_12_col = numeric(),
-      evitals_14_col = numeric(),
+      patient_scene_table = patient_scene_table,
+      response_table = response_table,
+      situation_table = situation_table,
+      vitals_table = vitals_table,
+      erecord_01_col = erecord_01,
+      incident_date_col = incident_date,
+      patient_DOB_col = patient_dob,
+      epatient_15_col = epatient_15,
+      epatient_16_col = epatient_16,
+      eresponse_05_col = eresponse_05,
+      esituation_11_col = esituation_11,
+      esituation_12_col = esituation_12,
+      evitals_12_col = evitals_12,
+      evitals_14_col = evitals_14
     )
   )
 })

@@ -9,11 +9,11 @@
 #' @inheritParams airway_05_population
 #' @param airway_table A data frame or tibble containing only the eAirway fields
 #'   needed for this measure's calculations. Default is `NULL`.
-#' @param eairway_02_col Column name for airway procedure data (datetime).
-#'   Default is `NULL`.
-#' @param eairway_04_col Column name for airway procedure data. Default is
-#'   `NULL`.
-#' @param evitals_16_col Column name for additional vital signs data.
+#' @param eairway_02_col Column name for date/time airway device placement
+#' confirmation. Default is `NULL`.
+#' @param eairway_04_col Column name for confirmation of airway device
+#' placement. Default is `NULL`.
+#' @param evitals_16_col Column name for end tidal carbon dioxide (ETCO2).
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

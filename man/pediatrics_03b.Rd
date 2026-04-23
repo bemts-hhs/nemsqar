@@ -32,10 +32,10 @@ pediatrics_03b(
 an observation and columns represent features.}
 
 \item{patient_scene_table}{A data.frame or tibble containing at least
-epatient, escene, and earrest.01 fields as a fact table.}
+ePatient, and eScene as a fact table.}
 
 \item{response_table}{A data.frame or tibble containing at least the
-eresponse fields needed for this measure's calculations.}
+eResponse fields needed for this measure's calculations.}
 
 \item{exam_table}{A data.frame or tibble containing only the eExam fields
 needed for this measure's calculations. Default is \code{NULL}.}
@@ -61,16 +61,21 @@ of unit.}
 \item{epatient_16_col}{Column representing the patient's age unit ("Years",
 "Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column that contains eResponse.05.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{eexam_01_col}{Column containing documented weight information.}
+\item{eexam_01_col}{Column containing bstimated patient body weight in
+kilograms.}
 
-\item{eexam_02_col}{Another column for weight documentation, if applicable.}
+\item{eexam_02_col}{Column containing data on length based tape measure for
+patients.}
 
-\item{emedications_03_col}{Column that contains all eMedications.03 values as
-a single comma-separated list.}
+\item{emedications_03_col}{Column that contains all medication administered
+to the patient (eMedications.03) values as a single comma-separated list per
+distinct eRecord.01 ID.}
 
-\item{emedications_04_col}{Column listing medications administered.}
+\item{emedications_04_col}{Column indicating route medication was
+administered to the patient.}
 
 \item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
 \code{TRUE}, the function calculates a confidence interval for the proportion

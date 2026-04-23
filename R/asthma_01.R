@@ -10,19 +10,9 @@
 #' the data by age into adult and pediatric populations, computing the
 #' proportion of cases that received beta-agonist treatment.
 #'
+#' @inheritParams airway_01_population
 #' @inheritParams asthma_01_population
 #' @inheritParams airway_01
-#' @param situation_table A data.frame or tibble containing at least the
-#'   eSituation fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param medications_table A data.frame or tibble containing at least the
-#'   eMedications fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param esituation_11_col Column that contains eSituation.11.
-#' @param esituation_12_col Column that contains all eSituation.12 values as a
-#'   single comma-separated list.
-#' @param emedications_03_col Column that contains all eMedications.03 values as
-#'   a single comma-separated list.
 #'
 #' @return A data.frame summarizing results for two population groups (All,
 #'   Adults and Peds) with the following columns:

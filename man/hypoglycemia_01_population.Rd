@@ -32,10 +32,10 @@ hypoglycemia_01_population(
 an observation and columns represent features.}
 
 \item{patient_scene_table}{A data.frame or tibble containing at least
-epatient, escene, and earrest.01 fields as a fact table.}
+ePatient, and eScene as a fact table.}
 
 \item{response_table}{A data.frame or tibble containing at least the
-eresponse fields needed for this measure's calculations.}
+eResponse fields needed for this measure's calculations.}
 
 \item{situation_table}{A data.frame or tibble containing at least the
 eSituation fields needed for this measure's calculations. Default is
@@ -68,7 +68,8 @@ of unit.}
 \item{epatient_16_col}{Column representing the patient's age unit ("Years",
 "Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column that contains eResponse.05.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
 \item{esituation_11_col}{Column that contains eSituation.11 provider primary
 impression data.}
@@ -83,8 +84,9 @@ data.}
 
 \item{evitals_26_col}{Column for AVPU alertness levels.}
 
-\item{emedications_03_col}{Column that contains all eMedications.03 values as
-a single comma-separated list.}
+\item{emedications_03_col}{Column that contains all medication administered
+to the patient (eMedications.03) values as a single comma-separated list per
+distinct eRecord.01 ID.}
 
 \item{eprocedures_03_col}{Column containing procedure codes with or without
 procedure names.}

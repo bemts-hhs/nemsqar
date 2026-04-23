@@ -83,8 +83,9 @@ nemsqa_binomial_confint <- function(
 
   # If the user passes a tibble or data.frame ----
   if (!is.null(data)) {
-    x <- data |> dplyr::pull({{ x }})
-    n <- data |> dplyr::pull({{ n }})
+    # Validate that columns exist in `data` and can be vectorized
+    x <- validate_data_pull(input = data, col = {{ x }}, type = "error")
+    n <- validate_data_pull(input = data, col = {{ n }}, type = "error")
   }
 
   # Initialize lower and upper CI bounds ----

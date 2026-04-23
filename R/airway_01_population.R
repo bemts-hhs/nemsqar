@@ -8,10 +8,10 @@
 #' @param df A dataframe or tibble contianing EMS data where each row represents
 #'   an observation and columns represent features.
 #' @param patient_scene_table A data.frame or tibble containing at least
-#'   epatient, escene, and earrest.01 fields as a fact table.
+#'   ePatient, and eScene as a fact table.
 #' @param response_table A data.frame or tibble containing at least the
-#'   eresponse fields needed for this measure's calculations.
-#' @param arrest_table A data.frame or tibble containing at least the earrest
+#'   eResponse fields needed for this measure's calculations.
+#' @param arrest_table A data.frame or tibble containing at least the eArrest
 #'   fields needed for this measure's calculations.
 #' @param procedures_table A dataframe or tibble containing at least the
 #'   eProcedures fields needed.
@@ -29,7 +29,8 @@
 #'   of unit.
 #' @param epatient_16_col Column representing the patient's age unit ("Years",
 #'   "Months", "Days", "Hours", or "Minutes").
-#' @param eresponse_05_col Column that contains eResponse.05.
+#' @param eresponse_05_col Column that contains eResponse.05 or the response
+#' type.
 #' @param earrest_01_col Column representing whether or not the patient is in
 #'   arrest.
 #' @param evitals_01_col Date-time or POSIXct column containing vital signs

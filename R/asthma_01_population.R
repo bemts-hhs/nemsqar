@@ -23,8 +23,9 @@
 #' @param esituation_12_col Column that contains all eSituation.12 values as
 #'   (possible a single comma-separated list), provider secondary impression
 #'   data.
-#' @param emedications_03_col Column that contains all eMedications.03 values as
-#'   a single comma-separated list.
+#' @param emedications_03_col Column that contains all medication administered
+#' to the patient (eMedications.03) values as a single comma-separated list per
+#' distinct eRecord.01 ID.
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

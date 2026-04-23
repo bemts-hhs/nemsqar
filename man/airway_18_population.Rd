@@ -32,7 +32,7 @@ airway_18_population(
 an observation and columns represent features.}
 
 \item{patient_scene_table}{A data.frame or tibble containing at least
-epatient, escene, and earrest.01 fields as a fact table.}
+ePatient, and eScene as a fact table.}
 
 \item{procedures_table}{A dataframe or tibble containing at least the
 eProcedures fields needed.}
@@ -44,7 +44,7 @@ fields needed.}
 needed for this measure's calculations. Default is \code{NULL}.}
 
 \item{response_table}{A data.frame or tibble containing at least the
-eresponse fields needed for this measure's calculations.}
+eResponse fields needed for this measure's calculations.}
 
 \item{erecord_01_col}{The column representing the EMS record unique
 identifier.}
@@ -63,7 +63,8 @@ of unit.}
 \item{epatient_16_col}{Column representing the patient's age unit ("Years",
 "Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column that contains eResponse.05.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
 \item{eprocedures_01_col}{Date-time or POSIXct column for procedures}
 
@@ -76,16 +77,16 @@ procedure names.}
 \item{eprocedures_06_col}{Column indicating whether or not procedure was
 successful.}
 
-\item{eairway_02_col}{Column name for airway procedure data (datetime).
-Default is \code{NULL}.}
+\item{eairway_02_col}{Column name for date/time airway device placement
+confirmation. Default is \code{NULL}.}
 
-\item{eairway_04_col}{Column name for airway procedure data. Default is
-\code{NULL}.}
+\item{eairway_04_col}{Column name for confirmation of airway device
+placement. Default is \code{NULL}.}
 
 \item{evitals_01_col}{Date-time or POSIXct column containing vital signs
 date/time}
 
-\item{evitals_16_col}{Column name for additional vital signs data.}
+\item{evitals_16_col}{Column name for end tidal carbon dioxide (ETCO2).}
 }
 \value{
 A list that contains the following:

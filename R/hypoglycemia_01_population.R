@@ -11,8 +11,8 @@
 #' weight is taken. This function segments the data into pediatric populations,
 #' computing the proportion of cases that have a documented weight.
 #'
+#' @inheritParams airway_01_population
 #' @inheritParams asthma_01_population
-#' @inheritParams airway_18_population
 #' @param evitals_18_col Column for blood glucose levels.
 #' @param evitals_23_col Column for Glasgow Coma Scale (GCS) scores.
 #' @param evitals_26_col Column for AVPU alertness levels.
