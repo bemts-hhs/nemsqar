@@ -125,7 +125,7 @@ impressions and scales, and aggregates results by unique patient encounters.
 # Return 95\% confidence intervals using the Wilson method
   stroke_01(
     df = test_data,
-    erecord_01_col = erecord_01
+    erecord_01_col = erecord_01,
     incident_date_col = NULL,
     patient_DOB_col = NULL,
     eresponse_05_col = eresponse_05,

@@ -133,7 +133,7 @@ primary and associated symptoms for syncope, determines age-based populations
 # Return 95\% confidence intervals using the Wilson method
   syncope_01(
     df = test_data,
-    erecord_01_col = erecord_01
+    erecord_01_col = erecord_01,
     incident_date_col = NULL,
     patient_DOB_col = NULL,
     epatient_15_col = epatient_15,

@@ -104,7 +104,7 @@
 #' # Return 95% confidence intervals using the Wilson method
 #'   trauma_03(
 #'     df = test_data_expanded2,
-#'     erecord_01_col = erecord_01
+#'     erecord_01_col = erecord_01,
 #'     incident_date_col = NULL,
 #'     patient_DOB_col = NULL,
 #'     epatient_15_col = epatient_15,

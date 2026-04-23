@@ -99,7 +99,7 @@ adult and pediatric populations.
 # Run the function
 result <- safety_01_population(patient_scene_table = patient_table,
                               response_table = response_table,
-                              erecord_01_col = erecord_01
+                              erecord_01_col = erecord_01,
                               incident_date_col = incident_date,
                               patient_DOB_col = patient_dob,
                               epatient_15_col = epatient_15,

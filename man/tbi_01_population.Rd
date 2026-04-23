@@ -159,7 +159,7 @@ with calculated variables for TBI identification.
                          situation_table = situation_table,
                          vitals_table = vitals_table,
                          disposition_table = disposition_table,
-                         erecord_01_col = erecord_01
+                         erecord_01_col = erecord_01,
                          incident_date_col = NULL,
                          patient_DOB_col = NULL,
                          epatient_15_col = epatient_15,

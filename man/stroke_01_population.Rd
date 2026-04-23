@@ -129,9 +129,7 @@ a stroke scale was administered. .
                               response_table = response_table,
                               situation_table = situation_table,
                               vitals_table = vitals_table,
-                              erecord_01_col = erecord_01
-                              incident_date_col = NULL,
-                              patient_DOB_col = NULL,
+                              erecord_01_col = erecord_01,
                               eresponse_05_col = eresponse_05,
                               esituation_11_col = esituation_11,
                               esituation_12_col = esituation_12,
