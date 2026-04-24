@@ -10,34 +10,8 @@
 #' distress, and certain medications were administered. This function segments
 #' the data by age into adult and pediatric populations.
 #'
-#' @param df A data frame where each row is an observation, containing all
-#'   necessary columns for analysis.
-#' @param patient_scene_table A data frame or tibble containing only epatient
-#'   and escene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eresponse
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param situation_table A data.frame or tibble containing only the esituation
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param medications_table A data.frame or tibble containing only the
-#'   emedications fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param erecord_01_col The column containing unique record identifiers for
-#'   each encounter.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column name for patient age in numeric form.
-#' @param epatient_16_col Column name for age unit (e.g., `"Years"` or
-#'   `"Months"`).
-#' @param eresponse_05_col Column name for response codes; "911" call codes are
-#'   filtered.
-#' @param esituation_11_col Column name for primary impressions.
-#' @param esituation_12_col Column name for secondary impressions.
-#' @param emedications_03_col Column name for medications administered; ideally
-#'   a list column or string with comma-separated values.
+#' @inheritParams airway_01_population
+#' @inheritParams asthma_01_population
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

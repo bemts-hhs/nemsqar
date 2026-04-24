@@ -8,48 +8,9 @@
 #' data for patients based on incident information, diagnoses, and administered
 #' medications to assess adherence to Seizure-02 metrics.
 #'
-#' @param df A data frame where each row is an observation, containing all
-#'   necessary columns for analysis.
-#' @param patient_scene_table A data frame or tibble containing only epatient
-#'   and escene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eresponse
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param situation_table A data.frame or tibble containing only the esituation
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param medications_table A data.frame or tibble containing only the
-#'   emedications fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param erecord_01_col The column containing unique record identifiers for
-#'   each encounter.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column name for patient age in numeric form.
-#' @param epatient_16_col Column name for age unit (e.g., `"Years"` or
-#'   `"Months"`).
-#' @param eresponse_05_col Column name for response codes; "911" call codes are
-#'   filtered.
-#' @param esituation_11_col Column name for primary impressions.
-#' @param esituation_12_col Column name for secondary impressions.
-#' @param emedications_03_col Column name for medications administered; ideally
-#'   a list column or string with comma-separated values.
-#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
-#'   `TRUE`, the function calculates a confidence interval for the proportion
-#'   estimate.
-#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
-#'   method used to calculate confidence intervals. Options are `"wilson"`
-#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
-#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
-#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
-#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
-#'   confidence interval). Defaults to 0.95.
-#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
-#'   applies a continuity correction to the Wilson score interval when `method =
-#'   "wilson"`. Defaults to `TRUE`.
-#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
+#' @inheritParams airway_01_population
+#' @inheritParams asthma_01_population
+#' @inheritParams airway_01
 #'
 #' @return A data.frame summarizing results for two population groups (All,
 #'   Adults and Peds) with the following columns:
