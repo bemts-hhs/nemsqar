@@ -489,13 +489,16 @@ airway_01_population <- function(
       !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
+    # Use quasiquotation on the date variables to check format ----
     incident_date <- rlang::enquo(incident_date_col)
     patient_dob <- rlang::enquo(patient_DOB_col)
 
+    # Convert quosures to names and check the column classes ----
+    incident_date_name <- rlang::as_name(incident_date)
+    patient_dob_name <- rlang::as_name(patient_dob)
+
     validate_class(
-      input = patient_scene_table[[rlang::as_name(
-        incident_date
-      )]],
+      input = patient_scene_table[[incident_date_name]],
       class_type = c("date", "date-time"),
       logic = "or",
       type = "error",
@@ -503,9 +506,7 @@ airway_01_population <- function(
     )
 
     validate_class(
-      input = patient_scene_table[[rlang::as_name(
-        patient_dob
-      )]],
+      input = patient_scene_table[[patient_dob_name]],
       class_type = c("date", "date-time"),
       logic = "or",
       type = "error",
@@ -517,9 +518,13 @@ airway_01_population <- function(
   vitals_datetime <- rlang::enquo(evitals_01_col)
   procedures_datetime <- rlang::enquo(eprocedures_01_col)
 
+  # Convert quosures to names and check the column classes ----
+  vitals_datetime_name <- rlang::as_name(vitals_datetime)
+  procedures_datetime_name <- rlang::as_name(procedures_datetime)
+
   # Validate the datetime fields in the patient_scene_table ----
   validate_class(
-    input = vitals_table[[rlang::as_name(vitals_datetime)]],
+    input = vitals_table[[vitals_datetime_name]],
     class_type = c("date", "date-time"),
     logic = "or",
     type = "error",
@@ -527,9 +532,7 @@ airway_01_population <- function(
   )
 
   validate_class(
-    input = procedures_table[[rlang::as_name(
-      procedures_datetime
-    )]],
+    input = procedures_table[[procedures_datetime_name]],
     class_type = c("date", "date-time"),
     logic = "or",
     type = "error",

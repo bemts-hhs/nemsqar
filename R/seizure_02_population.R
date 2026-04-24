@@ -182,14 +182,46 @@ seizure_02_population <- function(
   # Filter incident data for 911 response codes and the corresponding primary/secondary impressions ----
 
   # 911 codes for eresponse.05 ----
-  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
+  codes_911 <- paste(
+    "2205001",
+    "2205003",
+    "2205009",
+    "Emergency Response \\(Primary Response Area\\)",
+    "Emergency Response \\(Intercept\\)",
+    "Emergency Response \\(Mutual Aid\\)",
+    sep = "|"
+  )
 
   # get codes as a regex to filter primary/secondary impression fields ----
-  epilepsy_pattern <- "(?:\\bepilep(sy|tic)\\b)(?!.*without)(?:status\\epilepticus)?|(?:neuro|seizure)(?!.*without).*status\\sepilepticus|other\\sseizure|G40(?!\\.[a-z\\d]\\d[249])"
+  epilepsy_pattern <- paste(
+    # Base epilepsy terms, excluding "without"
+    "(?:\\bepilep(sy|tic)\\b)(?!.*without)(?:status\\sepilepticus)?",
+
+    # Neuro or seizure terms linked to status epilepticus
+    "(?:neuro|seizure)(?!.*without).*status\\sepilepticus",
+
+    # Other seizure category
+    "other\\sseizure",
+
+    # ICD-10 G40 codes, excluding specific subcodes
+    "G40(?!\\.[a-z\\d]\\d[249])",
+
+    sep = "|"
+  )
 
   # medication values for seizure_02 ----
+  medication_pattern <- paste(
+    "3322",
+    "6960",
+    "203128",
+    "6470",
+    "diazepam",
+    "midazolam",
+    "midazolam hydrochloride",
+    "lorazepam",
 
-  medication_pattern = "3322|6960|203128|6470|diazepam|midazolam|midazolam hydrochloride|lorazepam"
+    sep = "|"
+  )
 
   # minor values ----
   minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
@@ -204,8 +236,61 @@ seizure_02_population <- function(
 
   month_values <- "months|2516007"
 
-  # utilize applicable tables to analyze the data for the measure ----
+  ####### CREATE SEPARATE TABLES FROM DF IF TABLES ARE MISSING ----
   if (
+    all(
+      is.null(patient_scene_table),
+      is.null(response_table),
+      is.null(situation_table),
+      is.null(medications_table)
+    ) &&
+      !is.null(df)
+  ) {
+    # Ensure df is a data frame or tibble
+    validate_data_structure(
+      input = df,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      logic = "or",
+      type = "error"
+    )
+
+    # make tables from df ----
+    # patient
+    patient_scene_table <- df |>
+      dplyr::select(
+        -{{ eresponse_05_col }},
+        -{{ esituation_11_col }},
+        -{{ esituation_12_col }},
+        -{{ emedications_03_col }}
+      ) |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+
+    # response ----
+    response_table <- df |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ eresponse_05_col }}
+      ) |>
+      dplyr::distinct()
+
+    # procedures ----
+    medications_table <- df |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ emedications_03_col }}
+      ) |>
+      dplyr::distinct()
+
+    # disposition ----
+    situation_table <- df |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ esituation_11_col }},
+        {{ esituation_12_col }}
+      ) |>
+      dplyr::distinct()
+  } else if (
+    # utilize applicable tables to analyze the data for the measure ----
     any(
       !is.null(patient_scene_table),
       !is.null(medications_table),
@@ -215,709 +300,390 @@ seizure_02_population <- function(
       is.null(df)
   ) {
     # Ensure all tables are of class `data.frame` or `tibble` ----
-    if (
-      !all(
-        is.data.frame(patient_scene_table) ||
-          tibble::is_tibble(patient_scene_table),
-        is.data.frame(medications_table) ||
-          tibble::is_tibble(medications_table),
-        is.data.frame(situation_table) || tibble::is_tibble(situation_table),
-        is.data.frame(response_table) || tibble::is_tibble(response_table)
-      )
-    ) {
-      cli::cli_abort(
-        "One or more of the tables passed to {.fn seizure_02_population} were not of class {.cls data.frame} nor {.cls tibble}. When passing multiple tables, all tables must be of class {.cls data.frame} or {.cls tibble}."
-      )
-    }
-
-    # Validate date columns if provided ----
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_DOB_col)
-
-      if (
-        (!lubridate::is.Date(patient_scene_table[[rlang::as_name(
-          incident_date
-        )]]) &
-          !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(
-            incident_date
-          )]])) ||
-          (!lubridate::is.Date(patient_scene_table[[rlang::as_name(
-            patient_dob
-          )]]) &
-            !lubridate::is.POSIXct(patient_scene_table[[rlang::as_name(
-              patient_dob
-            )]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both were not of class {.cls Date} or a similar class. Please format these variables to class {.cls Date} or a similar class."
-        )
-      }
-    }
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 1,
-      id = progress_bar_population,
-      force = TRUE
+    validate_data_structure(
+      input = patient_scene_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
     )
 
-    ###_____________________________________________________________________________
-    # fact table ----
-    # the user should ensure that variables beyond those supplied for calculations
-    # are distinct (i.e. one value or cell per patient)
-    ###_____________________________________________________________________________
-
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      # filter the table to get the initial population regardless of age ----
-      final_data <- patient_scene_table |>
-        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
-        # create the age in years variable ----
-
-        dplyr::mutate(
-          patient_age_in_years_col = as.numeric(difftime(
-            time1 = {{ incident_date_col }},
-            time2 = {{ patient_DOB_col }},
-            units = "days"
-          )) /
-            365,
-
-          # system age checks ----
-          system_age_adult = {{ epatient_15_col }} >= 18 &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor1 = ({{ epatient_15_col }} < 18 &
-            {{ epatient_15_col }} >= 2) &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor2 = {{ epatient_15_col }} >= 24 &
-            grepl(
-              pattern = month_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor = system_age_minor1 | system_age_minor2,
-
-          # calculated age checks ----
-          calc_age_adult = patient_age_in_years_col >= 18,
-          calc_age_minor = patient_age_in_years_col < 18 &
-            patient_age_in_years_col >= 2
-        )
-    } else if (
-      all(
-        is.null(incident_date_col),
-        is.null(patient_DOB_col)
-      )
-    ) {
-      # filter the table to get the initial population regardless of age ----
-      final_data <- patient_scene_table |>
-        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
-        dplyr::mutate(
-          # system age checks ----
-          system_age_adult = {{ epatient_15_col }} >= 18 &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor1 = ({{ epatient_15_col }} < 18 &
-            {{ epatient_15_col }} >= 2) &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor2 = {{ epatient_15_col }} >= 24 &
-            grepl(
-              pattern = month_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor = system_age_minor1 | system_age_minor2
-        )
-    }
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 2,
-      id = progress_bar_population,
-      force = TRUE
+    validate_data_structure(
+      input = response_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
     )
 
-    ###_____________________________________________________________________________
-    ### dimension tables ----
-    ### each dimension table is turned into a vector of unique IDs
-    ### that are then utilized on the fact table to create distinct variables
-    ### that tell if the patient had the characteristic or not for final
-    ### calculations of the numerator and filtering
-    ###_____________________________________________________________________________
+    validate_data_structure(
+      input = situation_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
+    )
 
-    # 911 calls ----
-    call_911_data <- response_table |>
-      dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-        grepl(
-          pattern = codes_911,
-          x = {{ eresponse_05_col }},
-          ignore.case = TRUE
-        )
+    validate_data_structure(
+      input = medications_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
+    )
+
+    # patient
+    patient_scene_table <- patient_scene_table |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+
+    # response ----
+    response_table <- response_table |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ eresponse_05_col }}
       ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
+      dplyr::distinct()
 
-    cli::cli_progress_update(
-      set = 3,
-      id = progress_bar_population,
-      force = TRUE
-    )
+    # procedures ----
+    medications_table <- medications_table |>
+      dplyr::select(
+        {{ erecord_01_col }},
+        {{ emedications_03_col }}
+      ) |>
+      dplyr::distinct()
 
-    # seizure ----
-    seizure_data <- situation_table |>
+    # disposition ----
+    situation_table <- situation_table |>
       dplyr::select(
         {{ erecord_01_col }},
         {{ esituation_11_col }},
         {{ esituation_12_col }}
       ) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-        dplyr::if_any(
-          c({{ esituation_11_col }}, {{ esituation_12_col }}),
-          ~ grepl(
-            pattern = epilepsy_pattern,
-            x = .,
-            ignore.case = TRUE,
-            perl = TRUE
-          )
-        )
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    cli::cli_progress_update(
-      set = 4,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # benzodiazepine check ----
-    benzodiazepine_data <- medications_table |>
-      dplyr::select({{ erecord_01_col }}, {{ emedications_03_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-        grepl(
-          pattern = medication_pattern,
-          x = {{ emedications_03_col }},
-          ignore.case = TRUE
-        )
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    cli::cli_progress_update(
-      set = 5,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # get the computing population that is the full dataset with identified categories ----
-    computing_population <- final_data |>
-      dplyr::mutate(
-        CALL_911 = {{ erecord_01_col }} %in% call_911_data,
-        SEIZURE = {{ erecord_01_col }} %in% seizure_data,
-        BENZO_MED = {{ erecord_01_col }} %in% benzodiazepine_data
-      )
-
-    cli::cli_progress_update(
-      set = 6,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # get the initial population ----
-    initial_population <- computing_population |>
-      dplyr::filter(
-        # seizure patients ----
-        SEIZURE,
-
-        # 911 calls ----
-        CALL_911
-      )
-
-    # Adult and Pediatric Populations ----
-
-    cli::cli_progress_update(
-      set = 7,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      # filter adult ----
-      adult_pop <- initial_population |>
-        dplyr::filter(system_age_adult | calc_age_adult)
-
-      cli::cli_progress_update(
-        set = 8,
-        id = progress_bar_population,
-        force = TRUE
-      )
-
-      # filter peds ----
-      peds_pop <- initial_population |>
-        dplyr::filter(system_age_minor | calc_age_minor)
-    } else if (
-      all(
-        is.null(incident_date_col),
-        is.null(patient_DOB_col)
-      )
-    ) {
-      # filter adult ----
-      adult_pop <- initial_population |>
-        dplyr::filter(system_age_adult)
-
-      cli::cli_progress_update(
-        set = 8,
-        id = progress_bar_population,
-        force = TRUE
-      )
-
-      # filter peds ----
-      peds_pop <- initial_population |>
-        dplyr::filter(system_age_minor)
-    }
-
-    cli::cli_progress_update(
-      set = 9,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # summarize counts for populations filtered ----
-    filter_counts <- tibble::tibble(
-      filter = c(
-        "911 calls",
-        "Seizure cases",
-        "Benzodiazepine cases",
-        "Adults denominator",
-        "Peds denominator",
-        "Initial population",
-        "Total dataset"
-      ),
-      count = c(
-        sum(computing_population$CALL_911, na.rm = TRUE),
-        sum(computing_population$SEIZURE, na.rm = TRUE),
-        sum(computing_population$BENZO_MED, na.rm = TRUE),
-        nrow(adult_pop),
-        nrow(peds_pop),
-        nrow(initial_population),
-        nrow(computing_population)
-      )
-    )
-
-    # get the populations of interest ----
-
-    cli::cli_progress_update(
-      set = 10,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # gather data into a list for multi-use output ----
-    seizure.02.population <- list(
-      filter_process = filter_counts,
-      adults = adult_pop,
-      peds = peds_pop,
-      initial_population = initial_population,
-      computing_population = computing_population
-    )
-
-    cli::cli_progress_done(id = progress_bar_population)
-
-    return(seizure.02.population)
-  } else if (
-    any(
-      is.null(patient_scene_table),
-      is.null(medications_table),
-      is.null(situation_table),
-      is.null(response_table)
-    ) &&
-      !is.null(df)
-
-    # utilize a dataframe to analyze the data for the measure analytics ----
-  ) {
-    # Ensure df is a data frame or tibble ----
-    if (!is.data.frame(df) && !tibble::is_tibble(df)) {
-      cli::cli_abort(
-        c(
-          "An object of class {.cls data.frame} or {.cls tibble} is required as the first argument.",
-          "i" = "The passed object is of class {.val {class(df)}}."
-        )
-      )
-    }
-
-    # only check the date columns if they are in fact passed ----
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      # use quasiquotation on the date variables to check format ----
-      incident_date <- rlang::enquo(incident_date_col)
-      patient_dob <- rlang::enquo(patient_DOB_col)
-
-      if (
-        (!lubridate::is.Date(df[[rlang::as_name(incident_date)]]) &
-          !lubridate::is.POSIXct(df[[rlang::as_name(incident_date)]])) ||
-          (!lubridate::is.Date(df[[rlang::as_name(patient_dob)]]) &
-            !lubridate::is.POSIXct(df[[rlang::as_name(patient_dob)]]))
-      ) {
-        cli::cli_abort(
-          "For the variables {.var incident_date_col} and {.var patient_DOB_col}, one or both of these variables were not of class {.cls Date} or a similar class.  Please format your {.var incident_date_col} and {.var patient_DOB_col} to class {.cls Date} or similar class."
-        )
-      }
-    }
-
-    progress_bar_population
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 1,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    ###_____________________________________________________________________________
-    # from the full dataframe with all variables ----
-    # create one fact table and several dimension tables
-    # to complete calculations and avoid issues due to row
-    # explosion
-    ###_____________________________________________________________________________
-
-    # fact table ----
-    # the user should ensure that variables beyond those supplied for calculations
-    # are distinct (i.e. one value or cell per patient)
-
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      # filter the table to get the initial population regardless of age ----
-      final_data <- df |>
-        dplyr::select(
-          -c(
-            {{ eresponse_05_col }},
-            {{ esituation_11_col }},
-            {{ esituation_12_col }},
-            {{ emedications_03_col }}
-          )
-        ) |>
-        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
-        # create the age in years variable ----
-
-        dplyr::mutate(
-          patient_age_in_years_col = as.numeric(difftime(
-            time1 = {{ incident_date_col }},
-            time2 = {{ patient_DOB_col }},
-            units = "days"
-          )) /
-            365,
-
-          # system age checks ----
-          system_age_adult = {{ epatient_15_col }} >= 18 &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor1 = ({{ epatient_15_col }} < 18 &
-            {{ epatient_15_col }} >= 2) &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor2 = {{ epatient_15_col }} >= 24 &
-            grepl(
-              pattern = month_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor = system_age_minor1 | system_age_minor2,
-
-          # calculated age checks ----
-          calc_age_adult = patient_age_in_years_col >= 18,
-          calc_age_minor = patient_age_in_years_col < 18 &
-            patient_age_in_years_col >= 2
-        )
-    } else if (
-      all(
-        is.null(incident_date_col),
-        is.null(patient_DOB_col)
-      )
-    ) {
-      # filter the table to get the initial population regardless of age ----
-      final_data <- df |>
-        dplyr::select(
-          -c(
-            {{ eresponse_05_col }},
-            {{ esituation_11_col }},
-            {{ esituation_12_col }},
-            {{ emedications_03_col }}
-          )
-        ) |>
-        dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
-        dplyr::mutate(
-          # system age checks ----
-          system_age_adult = {{ epatient_15_col }} >= 18 &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor1 = ({{ epatient_15_col }} < 18 &
-            {{ epatient_15_col }} >= 2) &
-            grepl(
-              pattern = year_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor2 = {{ epatient_15_col }} >= 24 &
-            grepl(
-              pattern = month_values,
-              x = {{ epatient_16_col }},
-              ignore.case = TRUE
-            ),
-          system_age_minor = system_age_minor1 | system_age_minor2
-        )
-    }
-
-    # progress update, these will be repeated throughout the script ----
-    cli::cli_progress_update(
-      set = 2,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    ###_____________________________________________________________________________
-    ### dimension tables ----
-    ### each dimension table is turned into a vector of unique IDs
-    ### that are then utilized on the fact table to create distinct variables
-    ### that tell if the patient had the characteristic or not for final
-    ### calculations of the numerator and filtering
-    ###_____________________________________________________________________________
-
-    # 911 calls ----
-    call_911_data <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-        grepl(
-          pattern = codes_911,
-          x = {{ eresponse_05_col }},
-          ignore.case = TRUE
-        )
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    cli::cli_progress_update(
-      set = 3,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # seizure ----
-    seizure_data <- df |>
-      dplyr::select(
-        {{ erecord_01_col }},
-        {{ esituation_11_col }},
-        {{ esituation_12_col }}
-      ) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-        dplyr::if_any(
-          c({{ esituation_11_col }}, {{ esituation_12_col }}),
-          ~ grepl(
-            pattern = epilepsy_pattern,
-            x = .,
-            ignore.case = TRUE,
-            perl = TRUE
-          )
-        )
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    cli::cli_progress_update(
-      set = 4,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # benzodiazepine check ----
-    benzodiazepine_data <- df |>
-      dplyr::select({{ erecord_01_col }}, {{ emedications_03_col }}) |>
-      dplyr::distinct() |>
-      dplyr::filter(
-        grepl(
-          pattern = medication_pattern,
-          x = {{ emedications_03_col }},
-          ignore.case = TRUE
-        )
-      ) |>
-      dplyr::distinct({{ erecord_01_col }}) |>
-      dplyr::pull({{ erecord_01_col }})
-
-    cli::cli_progress_update(
-      set = 5,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # get the computing population that is the full dataset with identified categories ----
-    computing_population <- final_data |>
-      dplyr::mutate(
-        CALL_911 = {{ erecord_01_col }} %in% call_911_data,
-        SEIZURE = {{ erecord_01_col }} %in% seizure_data,
-        BENZO_MED = {{ erecord_01_col }} %in% benzodiazepine_data
-      )
-
-    cli::cli_progress_update(
-      set = 6,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # get the initial population ----
-    initial_population <- computing_population |>
-      dplyr::filter(
-        # seizure patients ----
-        SEIZURE,
-
-        # 911 calls ----
-        CALL_911
-      )
-
-    # Adult and Pediatric Populations ----
-
-    cli::cli_progress_update(
-      set = 7,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    if (
-      all(
-        !rlang::quo_is_null(rlang::enquo(incident_date_col)),
-        !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
-      )
-    ) {
-      # filter adult ----
-      adult_pop <- initial_population |>
-        dplyr::filter(system_age_adult | calc_age_adult)
-
-      cli::cli_progress_update(
-        set = 8,
-        id = progress_bar_population,
-        force = TRUE
-      )
-
-      # filter peds ----
-      peds_pop <- initial_population |>
-        dplyr::filter(system_age_minor | calc_age_minor)
-    } else if (
-      all(
-        is.null(incident_date_col),
-        is.null(patient_DOB_col)
-      )
-    ) {
-      # filter adult ----
-      adult_pop <- initial_population |>
-        dplyr::filter(system_age_adult)
-
-      cli::cli_progress_update(
-        set = 8,
-        id = progress_bar_population,
-        force = TRUE
-      )
-
-      # filter peds ----
-      peds_pop <- initial_population |>
-        dplyr::filter(system_age_minor)
-    }
-
-    cli::cli_progress_update(
-      set = 9,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # summarize counts for populations filtered ----
-    filter_counts <- tibble::tibble(
-      filter = c(
-        "911 calls",
-        "Seizure cases",
-        "Benzodiazepine cases",
-        "Adults denominator",
-        "Peds denominator",
-        "Initial population",
-        "Total dataset"
-      ),
-      count = c(
-        sum(computing_population$CALL_911, na.rm = TRUE),
-        sum(computing_population$SEIZURE, na.rm = TRUE),
-        sum(computing_population$BENZO_MED, na.rm = TRUE),
-        nrow(adult_pop),
-        nrow(peds_pop),
-        nrow(initial_population),
-        nrow(computing_population)
-      )
-    )
-
-    # get the populations of interest ----
-
-    cli::cli_progress_update(
-      set = 10,
-      id = progress_bar_population,
-      force = TRUE
-    )
-
-    # gather data into a list for multi-use output ----
-    seizure.02.population <- list(
-      filter_process = filter_counts,
-      adults = adult_pop,
-      peds = peds_pop,
-      initial_population = initial_population,
-      computing_population = computing_population
-    )
-
-    cli::cli_progress_done(id = progress_bar_population)
-
-    return(seizure.02.population)
+      dplyr::distinct()
   }
+
+  # Validate date columns if provided ----
+  if (
+    all(
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    )
+  ) {
+    # Use quasiquotation on the date variables to check format ----
+    incident_date <- rlang::enquo(incident_date_col)
+    patient_dob <- rlang::enquo(patient_DOB_col)
+
+    # Convert quosures to names and check the column classes ----
+    incident_date_name <- rlang::as_name(incident_date)
+    patient_dob_name <- rlang::as_name(patient_dob)
+
+    validate_class(
+      input = patient_scene_table[[incident_date_name]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "incident_date_col"
+    )
+
+    validate_class(
+      input = patient_scene_table[[patient_dob_name]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "patient_DOB_col"
+    )
+  }
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 1,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  ###_____________________________________________________________________________
+  # fact table ----
+  # the user should ensure that variables beyond those supplied for calculations
+  # are distinct (i.e. one value or cell per patient)
+  ###_____________________________________________________________________________
+
+  if (
+    all(
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    )
+  ) {
+    # filter the table to get the initial population regardless of age ----
+    final_data <- patient_scene_table |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
+      # create the age in years variable ----
+
+      dplyr::mutate(
+        patient_age_in_years_col = as.numeric(difftime(
+          time1 = {{ incident_date_col }},
+          time2 = {{ patient_DOB_col }},
+          units = "days"
+        )) /
+          365,
+
+        # system age checks ----
+        system_age_adult = {{ epatient_15_col }} >= 18 &
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor1 = ({{ epatient_15_col }} < 18 &
+          {{ epatient_15_col }} >= 2) &
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor2 = {{ epatient_15_col }} >= 24 &
+          grepl(
+            pattern = month_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor = system_age_minor1 | system_age_minor2,
+
+        # calculated age checks ----
+        calc_age_adult = patient_age_in_years_col >= 18,
+        calc_age_minor = patient_age_in_years_col < 18 &
+          patient_age_in_years_col >= 2
+      )
+  } else if (
+    all(
+      is.null(incident_date_col),
+      is.null(patient_DOB_col)
+    )
+  ) {
+    # filter the table to get the initial population regardless of age ----
+    final_data <- patient_scene_table |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
+      dplyr::mutate(
+        # system age checks ----
+        system_age_adult = {{ epatient_15_col }} >= 18 &
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor1 = ({{ epatient_15_col }} < 18 &
+          {{ epatient_15_col }} >= 2) &
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor2 = {{ epatient_15_col }} >= 24 &
+          grepl(
+            pattern = month_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor = system_age_minor1 | system_age_minor2
+      )
+  }
+
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 2,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  ###_____________________________________________________________________________
+  ### dimension tables ----
+  ### each dimension table is turned into a vector of unique IDs
+  ### that are then utilized on the fact table to create distinct variables
+  ### that tell if the patient had the characteristic or not for final
+  ### calculations of the numerator and filtering
+  ###_____________________________________________________________________________
+
+  # 911 calls ----
+  call_911_data <- response_table |>
+    dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter(
+      grepl(
+        pattern = codes_911,
+        x = {{ eresponse_05_col }},
+        ignore.case = TRUE
+      )
+    ) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  cli::cli_progress_update(
+    set = 3,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # seizure ----
+  seizure_data <- situation_table |>
+    dplyr::select(
+      {{ erecord_01_col }},
+      {{ esituation_11_col }},
+      {{ esituation_12_col }}
+    ) |>
+    dplyr::distinct() |>
+    dplyr::filter(
+      dplyr::if_any(
+        c({{ esituation_11_col }}, {{ esituation_12_col }}),
+        ~ grepl(
+          pattern = epilepsy_pattern,
+          x = .,
+          ignore.case = TRUE,
+          perl = TRUE
+        )
+      )
+    ) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  cli::cli_progress_update(
+    set = 4,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # benzodiazepine check ----
+  benzodiazepine_data <- medications_table |>
+    dplyr::select({{ erecord_01_col }}, {{ emedications_03_col }}) |>
+    dplyr::distinct() |>
+    dplyr::filter(
+      grepl(
+        pattern = medication_pattern,
+        x = {{ emedications_03_col }},
+        ignore.case = TRUE
+      )
+    ) |>
+    dplyr::distinct({{ erecord_01_col }}) |>
+    dplyr::pull({{ erecord_01_col }})
+
+  cli::cli_progress_update(
+    set = 5,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # get the computing population that is the full dataset with identified categories ----
+  computing_population <- final_data |>
+    dplyr::mutate(
+      CALL_911 = {{ erecord_01_col }} %in% call_911_data,
+      SEIZURE = {{ erecord_01_col }} %in% seizure_data,
+      BENZO_MED = {{ erecord_01_col }} %in% benzodiazepine_data
+    )
+
+  cli::cli_progress_update(
+    set = 6,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # get the initial population ----
+  initial_population <- computing_population |>
+    dplyr::filter(
+      # seizure patients ----
+      SEIZURE,
+
+      # 911 calls ----
+      CALL_911
+    )
+
+  # Adult and Pediatric Populations ----
+
+  cli::cli_progress_update(
+    set = 7,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  if (
+    all(
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    )
+  ) {
+    # filter adult ----
+    adult_pop <- initial_population |>
+      dplyr::filter(system_age_adult | calc_age_adult)
+
+    cli::cli_progress_update(
+      set = 8,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # filter peds ----
+    peds_pop <- initial_population |>
+      dplyr::filter(system_age_minor | calc_age_minor)
+  } else if (
+    all(
+      is.null(incident_date_col),
+      is.null(patient_DOB_col)
+    )
+  ) {
+    # filter adult ----
+    adult_pop <- initial_population |>
+      dplyr::filter(system_age_adult)
+
+    cli::cli_progress_update(
+      set = 8,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # filter peds ----
+    peds_pop <- initial_population |>
+      dplyr::filter(system_age_minor)
+  }
+
+  cli::cli_progress_update(
+    set = 9,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # summarize counts for populations filtered ----
+  filter_counts <- tibble::tibble(
+    filter = c(
+      "911 calls",
+      "Seizure cases",
+      "Benzodiazepine cases",
+      "Adults denominator",
+      "Peds denominator",
+      "Initial population",
+      "Total dataset"
+    ),
+    count = c(
+      sum(computing_population$CALL_911, na.rm = TRUE),
+      sum(computing_population$SEIZURE, na.rm = TRUE),
+      sum(computing_population$BENZO_MED, na.rm = TRUE),
+      nrow(adult_pop),
+      nrow(peds_pop),
+      nrow(initial_population),
+      nrow(computing_population)
+    )
+  )
+
+  # get the populations of interest ----
+
+  cli::cli_progress_update(
+    set = 10,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # gather data into a list for multi-use output ----
+  seizure.02.population <- list(
+    filter_process = filter_counts,
+    adults = adult_pop,
+    peds = peds_pop,
+    initial_population = initial_population,
+    computing_population = computing_population
+  )
+
+  cli::cli_progress_done(id = progress_bar_population)
+
+  return(seizure.02.population)
 }

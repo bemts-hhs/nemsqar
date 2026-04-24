@@ -381,7 +381,7 @@ respiratory_02_population <- function(
         {{ eprocedures_03_col }}
       ) |>
       dplyr::distinct()
-}
+  }
 
   # Only check the date columns if they are in fact passed ----
   if (

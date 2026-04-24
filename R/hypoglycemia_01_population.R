@@ -462,7 +462,7 @@ hypoglycemia_01_population <- function(
       dplyr::distinct()
   }
 
-  # Only check the date columns if they are in fact passed ----
+  # Validate date columns if provided ----
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
@@ -484,6 +484,7 @@ hypoglycemia_01_population <- function(
       type = "error",
       var_name = "incident_date_col"
     )
+
     validate_class(
       input = patient_scene_table[[patient_dob_name]],
       class_type = c("date", "date-time"),

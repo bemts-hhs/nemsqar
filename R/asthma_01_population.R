@@ -364,21 +364,23 @@ asthma_01_population <- function(
       dplyr::distinct()
   }
 
-  # only check the date columns if they are in fact passed ----
+  # Validate date columns if provided ----
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
       !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
     )
   ) {
-    # use quasiquotation on the date variables to check format ----
+    # Use quasiquotation on the date variables to check format ----
     incident_date <- rlang::enquo(incident_date_col)
     patient_dob <- rlang::enquo(patient_DOB_col)
 
+    # Convert quosures to names and check the column classes ----
+    incident_date_name <- rlang::as_name(incident_date)
+    patient_dob_name <- rlang::as_name(patient_dob)
+
     validate_class(
-      input = patient_scene_table[[rlang::as_name(
-        incident_date
-      )]],
+      input = patient_scene_table[[incident_date_name]],
       class_type = c("date", "date-time"),
       logic = "or",
       type = "error",
@@ -386,9 +388,7 @@ asthma_01_population <- function(
     )
 
     validate_class(
-      input = patient_scene_table[[rlang::as_name(
-        patient_dob
-      )]],
+      input = patient_scene_table[[patient_dob_name]],
       class_type = c("date", "date-time"),
       logic = "or",
       type = "error",
