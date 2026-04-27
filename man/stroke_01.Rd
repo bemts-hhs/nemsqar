@@ -59,6 +59,12 @@ data.}
 
 \item{evitals_26_col}{Column for AVPU alertness levels.}
 
+\item{evitals_29_col}{The column containing the stroke scale score achieved
+during assessment.}
+
+\item{evitals_30_col}{The column containing stroke scale type descriptors
+(e.g., FAST, NIH, etc.).}
+
 \item{confidence_interval}{Logical. If \code{TRUE}, the function calculates a
 confidence interval for the proportion estimate.}
 

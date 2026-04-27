@@ -6,43 +6,12 @@
 #' on specific criteria in a patient dataset. It produces a subset of the data
 #' with calculated variables for TBI identification.
 #'
-#' @param df A data frame or tibble containing the patient data.
-#' @param patient_scene_table A data frame or tibble containing only epatient
-#'   and escene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eresponse
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param situation_table A data.frame or tibble containing only the esituation
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param disposition_table A data.frame or tibble containing only the
-#'   edisposition fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param vitals_table A data.frame or tibble containing only the evitals fields
-#'   needed for this measure's calculations. Default is `NULL`.
-#' @param erecord_01_col Column name in df with the patient’s unique record ID.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column name in df with the patient’s age value.
-#' @param epatient_16_col Column name in df with the patient’s age unit (e.g.,
-#'   years, months).
-#' @param eresponse_05_col Column name in df with response codes for the type of
-#'   EMS call.
-#' @param esituation_11_col Column name in df with the primary provider
-#'   impression.
-#' @param esituation_12_col Column name in df with the secondary provider
-#'   impression.
-#' @param transport_disposition_col Column name in df with the transport
-#'   disposition.
-#' @param evitals_06_col Column name in df with systolic blood pressure (SBP).
-#' @param evitals_12_col Column name in df with pulse oximetry values.
-#' @param evitals_16_col Column name in df with ETC02 values.
-#'   values.
-#' @param evitals_23_col Column name in df with Glasgow Coma Scale (GCS) scores.
-#' @param evitals_26_col Column name in df with AVPU (alert, verbal, painful,
-#'   unresponsive) values.
+#' @inheritParams airway_01_population
+#' @inheritParams hypoglycemia_01_population
+#' @inheritParams safety_02_population
+#' @param evitals_16_col Column with numeric value of the patient's exhaled end
+#' tidal carbon dioxide (ETCO2) level measured as a unit of pressure in
+#' millimeters of mercury (mmHg), percentage or, kilopascal (kPa).
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

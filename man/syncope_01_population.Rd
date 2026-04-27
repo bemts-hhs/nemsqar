@@ -24,22 +24,24 @@ syncope_01_population(
 )
 }
 \arguments{
-\item{df}{Main data frame containing EMS records.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient
-and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
-\item{situation_table}{A data.frame or tibble containing only the esituation
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data.frame or tibble containing at least the
+eSituation fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing only the evitals fields
-needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A dataframe or tibble containing at least the eVitals
+fields needed.}
 
-\item{erecord_01_col}{The column containing unique record identifiers for
-each encounter.}
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -49,24 +51,30 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{Column representing the patient age (numeric).}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{Column for the patient age units (e.g., "Years",
-"Months").}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column containing response type codes, specifically
-911 codes.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{esituation_09_col}{Column with primary symptoms associated with the
-patient encounter.}
+\item{esituation_09_col}{Column with primary sign and symptom present in the
+patient or observed by EMS personnel.}
 
-\item{esituation_10_col}{Column with other associated symptoms.}
+\item{esituation_10_col}{Column with other symptoms identified by the patient
+or observed by EMS personnel.}
 
-\item{esituation_11_col}{Column for primary impression code.}
+\item{esituation_11_col}{Column that contains eSituation.11 provider primary
+impression data.}
 
-\item{esituation_12_col}{Column for secondary impression codes.}
+\item{esituation_12_col}{Column that contains all eSituation.12 values as
+(possible a single comma-separated list), provider secondary impression
+data.}
 
-\item{evitals_04_col}{Column with ECG information if available.}
+\item{evitals_04_col}{Column with type of ECG associated with the cardiac
+rhythm if available.}
 }
 \value{
 A list that contains the following:

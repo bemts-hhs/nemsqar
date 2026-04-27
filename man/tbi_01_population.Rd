@@ -28,25 +28,27 @@ tbi_01_population(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing the patient data.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient
-and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
-\item{situation_table}{A data.frame or tibble containing only the esituation
-fields needed for this measure's calculations. Default is \code{NULL}.}
-
-\item{disposition_table}{A data.frame or tibble containing only the
-edisposition fields needed for this measure's calculations. Default is
+\item{situation_table}{A data.frame or tibble containing at least the
+eSituation fields needed for this measure's calculations. Default is
 \code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing only the evitals fields
-needed for this measure's calculations. Default is \code{NULL}.}
+\item{disposition_table}{A data.frame or tibble containing only the
+edisposition fields needed for this measure's calculations.}
 
-\item{erecord_01_col}{Column name in df with the patient’s unique record ID.}
+\item{vitals_table}{A dataframe or tibble containing at least the eVitals
+fields needed.}
+
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -56,34 +58,38 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{Column name in df with the patient’s age value.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{Column name in df with the patient’s age unit (e.g.,
-years, months).}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column name in df with response codes for the type of
-EMS call.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{esituation_11_col}{Column name in df with the primary provider
-impression.}
+\item{esituation_11_col}{Column that contains eSituation.11 provider primary
+impression data.}
 
-\item{esituation_12_col}{Column name in df with the secondary provider
-impression.}
+\item{esituation_12_col}{Column that contains all eSituation.12 values as
+(possible a single comma-separated list), provider secondary impression
+data.}
 
-\item{transport_disposition_col}{Column name in df with the transport
-disposition.}
+\item{transport_disposition_col}{One or more unquoted column names (such as
+edisposition.12, edisposition.30) containing transport disposition for an
+EMS event identifying whether a transport occurred and by which unit.}
 
-\item{evitals_06_col}{Column name in df with systolic blood pressure (SBP).}
+\item{evitals_06_col}{Numeric column containing systolic blood pressure
+values}
 
-\item{evitals_12_col}{Column name in df with pulse oximetry values.}
+\item{evitals_12_col}{Numeric column containing pulse oximetry values.}
 
-\item{evitals_16_col}{Column name in df with ETC02 values.
-values.}
+\item{evitals_16_col}{Column with numeric value of the patient's exhaled end
+tidal carbon dioxide (ETCO2) level measured as a unit of pressure in
+millimeters of mercury (mmHg), percentage or, kilopascal (kPa).}
 
-\item{evitals_23_col}{Column name in df with Glasgow Coma Scale (GCS) scores.}
+\item{evitals_23_col}{Column for Glasgow Coma Scale (GCS) scores.}
 
-\item{evitals_26_col}{Column name in df with AVPU (alert, verbal, painful,
-unresponsive) values.}
+\item{evitals_26_col}{Column for AVPU alertness levels.}
 }
 \value{
 A list that contains the following:

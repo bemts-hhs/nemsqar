@@ -11,6 +11,7 @@
 #' @inheritParams asthma_01_population
 #' @inheritParams hypoglycemia_01_population
 #' @inheritParams airway_01
+#' @inheritParams stroke_01_population
 #'
 #' @return A data.frame summarizing results for two population groups (All,
 #'   Adults and Peds) with the following columns:
