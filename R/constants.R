@@ -8,6 +8,7 @@
 #' All objects defined in this file are internal and are not exported.
 #'
 #' @keywords internal
+#' @noRd
 
 # 911 codes for eResponse.05 ----
 codes_911 <- paste(
