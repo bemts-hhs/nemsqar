@@ -198,74 +198,6 @@ airway_18_population <- function(
     )
   }
 
-  # 911 codes for eResponse.05 ----
-  codes_911 <- paste(
-    "2205001",
-    "2205003",
-    "2205009",
-    "Emergency Response \\(Primary Response Area\\)",
-    "Emergency Response \\(Intercept\\)",
-    "Emergency Response \\(Mutual Aid\\)",
-    sep = "|"
-  )
-
-  # endotracheal intubation attempts ----
-  endotracheal_intubation <- paste(
-    "673005|Indirect laryngoscopy",
-    "49077009|Flexible fiberoptic laryngoscopy",
-    "78121007|Direct laryngoscopy",
-    "112798008|Insertion of endotracheal tube",
-    "16883004|Endotracheal intubation, emergency procedure",
-    "182682004|Emergency laryngeal intubation",
-    "232674004|Orotracheal intubation",
-    "232677006|Tracheal intubation using rigid bronchoscope",
-    "232678001|Orotracheal fiberoptic intubation",
-    "232679009|Nasotracheal intubation",
-    "232682004|Nasotracheal fiberoptic intubation",
-    "232680007|Nasal intubation awake",
-    "241689008|Rapid sequence induction",
-    "304341005|Awake intubation",
-    "397892004|Retrograde intubation",
-    "418613003|Tracheal intubation through a laryngeal mask airway",
-    "429705000|Intubation, combitube",
-    "424979004|Laryngeal mask airway insertion",
-    "427753009|Insertion of esophageal tracheal double lumen supraglottic airway",
-    "429161001|Insertion of endotracheal tube using laryngoscope",
-    "450601000124103|Orotracheal intubation using bougie device",
-    "450611000124|Insertion of Single Lumen Supraglottic Airway Device",
-    "1141752008|Flexible video intubation laryngoscope",
-    "285696003|Fiberoptic laryngoscope",
-    "420311007|Flexible fiberoptic laryngoscope",
-    "421100004|Rigid fiberoptic laryngoscope",
-    "44738004|Laryngoscope device",
-    "469919007|Flexible video laryngoscope",
-    "700640001|Rigid intubation laryngoscope",
-    "701054002|Flexible fiberoptic intubation laryngoscope",
-    "706013009|Intubation laryngoscope",
-    "734928009|Rigid non-bladed video intubation laryngoscope",
-    "879788006|Channeled video intubation laryngoscope",
-    sep = "|"
-  )
-
-  # waveform ETCO2 ----
-  waveform_etc02_codes <- "4004019|Waveform ETCO2"
-
-  # answer yes! ----
-  yes_code <- "9923003|Yes"
-
-  # minor values ----
-  minor_values <- "days|hours|minutes|months"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
-
   # options for the progress bar ----
   # a green dot for progress
   # a white line for note done yet
@@ -294,18 +226,10 @@ airway_18_population <- function(
   vitals_datetime <- rlang::enquo(evitals_01_col)
   procedures_datetime <- rlang::enquo(eprocedures_01_col)
 
-  # Convert quosures to names and check the column classes ----
-  vitals_datetime_name <- rlang::as_name(vitals_datetime)
-  procedures_datetime_name <- rlang::as_name(procedures_datetime)
-
   # use quasiquotation on the airway datetime field and the airway ----
   # placement confirmation method
   airway_datetime <- rlang::enquo(eairway_02_col)
   airway_confirmation_col <- rlang::enquo(eairway_04_col)
-
-  # Convert quosures to names and check the column classes ----
-  airway_datetime_name <- rlang::as_name(airway_datetime)
-  airway_confirmation_col_name <- rlang::as_name(airway_confirmation_col)
 
   ####### CREATE SEPARATE TABLES FROM DF IF TABLES ARE MISSING ----
 
@@ -536,10 +460,42 @@ airway_18_population <- function(
     # Convert quosures to names and check the column classes ----
     incident_date_name <- rlang::as_name(incident_date)
     patient_dob_name <- rlang::as_name(patient_dob)
+
+    validate_class(
+      input = patient_scene_table[[incident_date_name]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "incident_date_col"
+    )
+
+    validate_class(
+      input = patient_scene_table[[patient_dob_name]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "patient_DOB_col"
+    )
   }
 
+  # Convert quosures to names and check the column classes ----
+  vitals_datetime_name <- rlang::as_name(vitals_datetime)
+  procedures_datetime_name <- rlang::as_name(procedures_datetime)
+
+  # Convert quosures to names and check the column classes on the airway ----
+  # datetime field and the airway placement confirmation method
+  if (
+    all(
+      !rlang::quo_is_null(airway_datetime),
+      !rlang::quo_is_null(airway_confirmation_col)
+    )
+  ) {
+    airway_datetime_name <- rlang::as_name(airway_datetime)
+    airway_confirmation_col_name <- rlang::as_name(airway_confirmation_col)
+  }
+
+  # Validate the datetime fields in the applicable tables ----
   if (!rlang::quo_is_null(airway_datetime)) {
-    # Validate the datetime fields in the applicable tables ----
     validate_class(
       input = vitals_table[[vitals_datetime_name]],
       class_type = c("date", "date-time"),
@@ -561,10 +517,11 @@ airway_18_population <- function(
       class_type = c("date", "date-time"),
       logic = "or",
       type = "error",
-      var_name = "eprocedures_01_col"
+      var_name = "eairway_02_col"
     )
-  } else if (rlang::quo_is_null(airway_datetime)) {
+
     # Validate the datetime fields in the applicable tables ----
+  } else if (rlang::quo_is_null(airway_datetime)) {
     validate_class(
       input = vitals_table[[vitals_datetime_name]],
       class_type = c("date", "date-time"),
@@ -599,7 +556,7 @@ airway_18_population <- function(
       ) |
         is.na({{ eprocedures_02_col }}), # Procedure PTA is not Yes
       target_procedures = grepl(
-        pattern = endotracheal_intubation,
+        pattern = endotracheal_intubation_airway_18,
         x = {{ eprocedures_03_col }},
         ignore.case = TRUE
       ), # Procedure name/code in list

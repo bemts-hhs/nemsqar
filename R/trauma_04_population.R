@@ -316,78 +316,9 @@ trauma_04_population <- function(
     "Running `trauma_04_population()`",
     total = 31,
     type = "tasks",
-    clear = F,
+    clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
-
-  # Create objects that are filter helpers throughout the function ----
-
-  # injury values ----
-  possible_injury <- "Yes|9922005"
-
-  # 911 codes for eresponse.05 ----
-  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
-
-  # define transports ----
-  transport_responses <- "Transport by This EMS Unit \\(This Crew Only\\)|Transport by This EMS Unit, with a Member of Another Crew|Transport by Another EMS Unit, with a Member of This Crew|Patient Treated, Transported by this EMS Unit|Patient Treated, Transported with this EMS Crew in Another Vehicle|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Mutual Aid Tx & Transport|4212033|4230001|4230003|4230007|itDisposition\\.112\\.116|it4212\\.142|itDisposition\\.112\\.165|itDisposition\\.112\\.141|Treat / Transport BLS by this unit|itDisposition\\.112\\.142"
-
-  # GCS motor values ----
-  GCS_motor_values <- "no motor response|extension to pain|flexion to pain|withdrawal from pain|localizing pain|5|4|3|2|1"
-
-  # lung assessment values ----
-  lung_assessment_values <- "Breath Sounds-Absent|Breath Sounds-Decreased|Increased Respiratory Effort|3523001|3523003|3523011"
-
-  # chest assessment values ----
-  chest_assessment_values <- "3525005|Accessory Muscles Used with Breathing|3525023|Flail Segment|3525039|Retraction"
-
-  # respiratory effort values ----
-  respiratory_effort_values <- "Apneic|Labored|Mechanically Assisted|Rapid|Shallow|Weak/Agonal|3315001|3315003|3315005|3315009|3315011|3315013"
-
-  # airway management values ----
-  airway_management_values <- "243142003|Dual pressure spontaneous ventilation support|47545007|Continuous positive airway pressure ventilation treatment|429705000|Insertion of esophageal tracheal combitube|427753009|Insertion of esophageal tracheal double lumen supraglottic airway|424979004|Laryngeal mask airway insertion|23674004|Orotracheal intubation|450601000124103|Orotracheal intubation using bougie device|241689008|Rapid sequence induction|450611000124100|Insertion of single lumen supraglottic airway device"
-
-  # trauma triage criteria values for 65+ age group ----
-  trauma_triage_1_2_values_65 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|2903017|Respiratory Rate <10 or >29 breaths per minute \\(<20 in infants aged <1\\) or need for ventilatory support|3903021|Two or more proximal long-bone fractures"
-
-  # trauma triage criteria values ----
-  trauma_triage_1_2_values_10_64 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|2903017|Respiratory Rate <10 or >29 breaths per minute \\(<20 in infants aged <1\\) or need for ventilatory support|3903021|Two or more proximal long-bone fractures|2903019|Systolic Blood Pressure <90 mmHg"
-
-  # trauma triage criteria values for < 10 age group ----
-  trauma_triage_1_2_values_10 <- "2903001|Amputation proximal to wrist or ankle|3903003|Crushed, degloved, mangled, or pulseless extremity|2903005|Chest wall instability or deformity|2903009|Open or depressed skull fracture|2903011|Paralysis|3903013|Pelvic fractures|2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee|3903021|Two or more proximal long-bone fractures"
-
-  # extremities assessment values ----
-  extremities_assessment_values <- "3516043|Motor Function-Abnormal/Weakness|3516067|Sensation-Absent"
-
-  # neurological assessment values ----
-  neurological_assessment_values <- "3520017|Hemiplegia-Left|3520019|Hemiplegia-Right|3520043|Weakness-Left Sided|3520045|Weakness-Right Sided"
-
-  # procedures values ----
-  tourniquet_values <- "20655006|Application of tourniquet|24173005|Tourniquet procedure|241731009|Tourniquet positioning|241733007|Tourniquet cuff inflation|241734001|Upper tourniquet cuff inflation|241735000|Lower tourniquet cuff inflation|241736004|Manual tourniquet application|398260007|Tourniquet positioned on patient|447686008|Application of pressure to wound"
-
-  # trauma triage criteria (steps 3 and 4) values ----
-  trauma_triage_3_4_values <- "2904001|Auto v\\. Pedestrian/Bicyclist Thrown, Run Over, or >20 MPH Accident|2904007|Crash Death in Same Passenger Compartment|2904009|Crash Ejection \\(partial or complete\\) from automobile|2904011|Crash Intrusion, Including roof: > 12 in\\. occupant site; > 18 in\\. any site|2904013|Crash Vehicle Telemetry Data \\(AACN\\) Consistent with High Risk of Injury"
-
-  # type of scene delay values ----
-  scene_delay_values <- "2210011|Extrication"
-
-  # cause of injury matches values ----
-  cause_of_injury_values <- "(?:V20|V21|V22|V23|V24|V25|V26|V27|V28|V29|V30|V31|V32|V33|V34|V35|V36|V37|V38|V39|V80|V86)|Motorcycle rider injured in collision with pedestrian or animal|Motorcycle rider injured in collision with pedal cycle|Motorcycle rider injured in collision with two- or three- wheeled motor vehicle|Motorcycle rider injured in collision with car, pick-up truck or van|Motorcycle rider injured in collision with heavy transport vehicle or bus|Motorcycle rider injured in collision with railway train or railway vehicle|Motorcycle rider injured in collision with other nonmotor vehicle|Motorcycle rider injured in collision with fixed or stationary object|Motorcycle rider injured in noncollision transport accident|Motorcycle rider injured in other and unspecified transport accidents|Occupant of three-wheeled motor vehicle injured in collision with pedestrian or animal|Occupant of three-wheeled motor vehicle injured in collision with pedal cycle|Occupant of three-wheeled motor vehicle injured in collision with two- or three- wheeled motor vehicle|Occupant of three-wheeled motor vehicle injured in collision with car, pick-up truck or van|Occupant of three-wheeled motor vehicle injured in collision with heavy transport vehicle or bus|Occupant of three-wheeled motor vehicle injured in collision with railway train or railway vehicle|Occupant of three-wheeled motor vehicle injured in collision with other nonmotor vehicle|Occupant of three-wheeled motor vehicle injured in collision with fixed or stationary object|Occupant of three-wheeled motor vehicle injured in noncollision transport accident|Occupant of three-wheeled motor vehicle injured in other and unspecified transport accidents|Animal-rider or occupant of animal drawn vehicle injured in transport accident|Occupant of special all-terrain or other off-road motor vehicle, injured in transport accident"
-
-  # hospital capability values ----
-  hospital_capability_values <- "9908021|9908023|9908025|9908027|9908029|trauma center"
-
-  # days, hours, minutes, months ----
-  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
 
   # utilize applicable tables to analyze the data for the measure ----
   if (

@@ -160,39 +160,9 @@ respiratory_01_population <- function(
     "Running `respiratory_01_population()`",
     total = 13,
     type = "tasks",
-    clear = F,
+    clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
-
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions ----
-
-  # 911 codes for eresponse.05 ----
-  codes_911 <- paste(
-    "2205001",
-    "2205003",
-    "2205009",
-    "Emergency Response \\(Primary Response Area\\)",
-    "Emergency Response \\(Intercept\\)",
-    "Emergency Response \\(Mutual Aid\\)",
-    sep = "|"
-  )
-
-  # get codes as a regex to filter primary impression fields ----
-  resp_codes <- "(?:I50.9|J00|J05|J18.9|J20.9|J44.1|J45.901|J80|J81|J93.9|J96|J98.01|J98.9|R05|R06|R09.2|T17.9)"
-
-  # days, hours, minutes, months ----
-
-  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
 
   ####### CREATE SEPARATE TABLES FROM DF IF TABLES ARE MISSING ----
   if (

@@ -165,59 +165,6 @@ safety_02_population <- function(
     )
   }
 
-  # 911 codes for eresponse.05 ----
-  codes_911 <- paste(
-    "2205001",
-    "2205003",
-    "2205009",
-    "Emergency Response \\(Primary Response Area\\)",
-    "Emergency Response \\(Intercept\\)",
-    "Emergency Response \\(Mutual Aid\\)",
-    sep = "|"
-  )
-
-  # patient evaluation care ----
-  patient_care <- "4228001|Patient Evaluated and Care Provided"
-
-  # define transports ----
-  transport_responses <- paste(
-    "Transport by This EMS Unit \\(This Crew Only\\)",
-    "Transport by This EMS Unit, with a Member of Another Crew",
-    "Transport by Another EMS Unit, with a Member of This Crew",
-    "Patient Treated, Transported by this EMS Unit",
-    "Patient Treated, Transported with this EMS Crew in Another Vehicle",
-    "Treat / Transport ALS by this unit",
-    "Treat / Transport BLS by this unit",
-    "Mutual Aid Tx & Transport",
-    "4212033",
-    "4230001",
-    "4230003",
-    "4230007",
-    "itDisposition\\.112\\.116",
-    "it4212\\.142",
-    "itDisposition\\.112\\.165",
-    "itDisposition\\.112\\.141",
-    "Treat / Transport BLS by this unit",
-    "itDisposition\\.112\\.142",
-    sep = "|"
-  )
-
-  # get codes as a regex to find lights and siren responses ----
-  no_lights_and_sirens <- "4218015|No Lights or Sirens"
-
-  # minor values ----
-  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
-
   # options for the progress bar ----
   # a green dot for progress
   # a white line for note done yet
@@ -235,7 +182,7 @@ safety_02_population <- function(
     "Running `safety_02_population()`",
     total = 11,
     type = "tasks",
-    clear = F,
+    clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
@@ -529,7 +476,7 @@ safety_02_population <- function(
     dplyr::distinct() |>
     dplyr::filter(
       grepl(
-        pattern = no_lights_and_sirens,
+        pattern = disposition_no_lights_and_sirens,
         x = {{ edisposition_18_col }},
         ignore.case = TRUE
       )

@@ -163,33 +163,6 @@ pediatrics_03b_population <- function(
     )
   }
 
-  # 911 codes for eresponse.05 ----
-  codes_911 <- paste(
-    "2205001",
-    "2205003",
-    "2205009",
-    "Emergency Response \\(Primary Response Area\\)",
-    "Emergency Response \\(Intercept\\)",
-    "Emergency Response \\(Mutual Aid\\)",
-    sep = "|"
-  )
-
-  # non-weight-based medications ----
-  non_weight_based_meds <- "inhalation|topical|9927049|9927009"
-
-  # days, hours, minutes, months ----
-  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
-
   # options for the progress bar ----
   # a green dot for progress
   # a white line for note done yet
@@ -207,7 +180,7 @@ pediatrics_03b_population <- function(
     "Running `pediatrics_03b_population()`",
     total = 9,
     type = "tasks",
-    clear = F,
+    clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 

@@ -161,67 +161,6 @@ respiratory_02_population <- function(
     )
   }
 
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions ----
-  # 911 codes for eresponse.05 ----
-  codes_911 <- paste(
-    "2205001",
-    "2205003",
-    "2205009",
-    "Emergency Response \\(Primary Response Area\\)",
-    "Emergency Response \\(Intercept\\)",
-    "Emergency Response \\(Mutual Aid\\)",
-    sep = "|"
-  )
-
-  # oxygen ----
-  oxygen_values <- "7806|Oxygen"
-
-  # oxygen therapy ----
-  oxygen_therapy_values <- "57485005|Oxygen Therapy"
-
-  # not values for meds ----
-  not_med <- paste(
-    "8801001",
-    "8801003",
-    "8801009",
-    "8801019",
-    "8801027",
-    "Contraindication Noted",
-    "Denied by Order",
-    "Medication Already Taken",
-    "Refused",
-    "Order Criteria Not Met",
-    sep = "|"
-  )
-
-  # not values for procedures ----
-  not_proc <- paste(
-    "8801001",
-    "8801023",
-    "8801003",
-    "8801027",
-    "8801019",
-    "Contraindicated Noted",
-    "Unable to Complete",
-    "Denied By Order",
-    "Order Criteria Not Met",
-    "Refused",
-    sep = "|"
-  )
-
-  # days, hours, minutes, months ----
-  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
-
   # options for the progress bar ----
   # a green dot for progress
   # a white line for note done yet
@@ -239,7 +178,7 @@ respiratory_02_population <- function(
     "Running `respiratory_02_population()`",
     total = 11,
     type = "tasks",
-    clear = F,
+    clear = FALSE,
     format = "{cli::pb_name} [Completed {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 

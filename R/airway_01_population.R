@@ -231,53 +231,6 @@ airway_01_population <- function(
     )
   }
 
-  ###### CODES ----
-
-  procedures_code <- paste(
-    "673005|Indirect laryngoscopy",
-    "49077009|Flexible fiberoptic laryngoscopy",
-    "78121007|Direct laryngoscopy",
-    "112798008|Insertion of endotracheal tube",
-    "16883004|Endotracheal intubation, emergency procedure",
-    "182682004|Emergency laryngeal intubation",
-    "232674004|Orotracheal intubation",
-    "232677006|Tracheal intubation using rigid bronchoscope",
-    "232678001|Orotracheal fiberoptic intubation",
-    "232679009|Nasotracheal intubation",
-    "232682004|Nasotracheal fiberoptic intubation",
-    "232680007|Nasal intubation awake",
-    "241689008|Intubation, Rapid Sequence Intubation (RSI)",
-    "304341005|Awake intubation",
-    "397892004|Retrograde intubation",
-    "429161001|Insertion of endotracheal tube using laryngoscope",
-    "450601000124103|Orotracheal intubation using bougie device",
-    "1141752008|Flexible video intubation laryngoscope",
-    "285696003|Fiberoptic laryngoscope",
-    "420311007|Flexible fiberoptic laryngoscope",
-    "421100004|Rigid fiberoptic laryngoscope",
-    "44738004|Laryngoscope device",
-    "469919007|Flexible video laryngoscope",
-    "700640001|Rigid intubation laryngoscope",
-    "701054002|Flexible fiberoptic intubation laryngoscope",
-    "706013009|Intubation laryngoscope",
-    "734928009|Rigid non-bladed video intubation laryngoscope",
-    "879788006|Channeled video intubation laryngoscope",
-    sep = "|"
-  )
-
-  # 911 codes for eresponse.05 ----
-  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
-
   # options for the progress bar ----
   # a green dot for progress
   # a white line for note done yet
@@ -295,7 +248,7 @@ airway_01_population <- function(
     "Running `airway_01_population()`",
     total = 19,
     type = "tasks",
-    clear = F,
+    clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
@@ -550,13 +503,13 @@ airway_01_population <- function(
       dplyr::mutate(
         non_missing_procedure_time = !is.na({{ eprocedures_01_col }}), # Procedure date/time not null
         not_performed_prior = !grepl(
-          pattern = "9923003|Yes",
+          pattern = yes_code,
           x = {{ eprocedures_02_col }},
           ignore.case = TRUE
         ) |
           is.na({{ eprocedures_02_col }}), # Procedure PTA is not Yes
         target_procedures = grepl(
-          pattern = procedures_code,
+          pattern = procedures_code_airway_01,
           x = {{ eprocedures_03_col }},
           ignore.case = TRUE
         ) # Procedure name/code in list
@@ -573,7 +526,7 @@ airway_01_population <- function(
           vitals_range_end
         ),
         successful_procedure = grepl(
-          pattern = "9923003|Yes",
+          pattern = yes_code,
           x = {{ eprocedures_06_col }},
           ignore.case = TRUE
         ),
@@ -762,7 +715,7 @@ airway_01_population <- function(
   arrest_table_filter <- arrest_table |>
     dplyr::mutate(
       exclude_pta_ca = !grepl(
-        pattern = "3001003|Yes, Prior",
+        pattern = cardiac_arrest_response_prior,
         x = {{ earrest_01_col }},
         ignore.case = TRUE
       )

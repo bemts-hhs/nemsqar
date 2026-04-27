@@ -186,119 +186,6 @@ safety_04_population <- function(
     )
   }
 
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions ----
-
-  # transport code eresponse.05 ----
-  transport_code <- "2205005|Interfacility Transport"
-
-  # define transports ----
-  transport_responses <- paste(
-    "Transport by This EMS Unit \\(This Crew Only\\)",
-    "Transport by This EMS Unit, with a Member of Another Crew",
-    "Transport by Another EMS Unit, with a Member of This Crew",
-    "Patient Treated, Transported by this EMS Unit",
-    "Patient Treated, Transported with this EMS Crew in Another Vehicle",
-    "Treat / Transport ALS by this unit",
-    "Treat / Transport BLS by this unit",
-    "Mutual Aid Tx & Transport",
-    "4212033",
-    "4230001",
-    "4230003",
-    "4230007",
-    "itDisposition\\.112\\.116",
-    "it4212\\.142",
-    "itDisposition\\.112\\.165",
-    "itDisposition\\.112\\.141",
-    "itDisposition\\.112\\.142",
-    sep = "|"
-  )
-
-  # get codes as a regex to find cardiac arrest responses ----
-  cardiac_arrest_responses <- paste(
-    "3001005",
-    "3001003",
-    "Yes, Prior to Any EMS Arrival \\(includes Transport EMS & Medical First Responders\\)",
-    "Yes, After Any EMS Arrival \\(includes Transport EMS & Medical First Responders\\)",
-    sep = "|"
-  )
-
-  # get applicable trauma triage codes for steps 1 and 2 ----
-  trauma_triage_crit <- paste(
-    "2903001",
-    "Amputation proximal to wrist or ankle",
-    "2903003",
-    "Crushed, degloved, mangled, or pulseless extremity",
-    "2903005",
-    "Chest wall instability or deformity",
-    "2903007",
-    "Glasgow Coma Score <=13",
-    "2903009",
-    "Open or depressed skull fracture",
-    "2903011",
-    "Paralysis",
-    "2903013",
-    "Pelvic fractures",
-    "2903015",
-    "All penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee",
-    "2903017",
-    "Respiratory Rate <10 or >29 breaths per minute \\(<20 in infants aged <1 year\\) or need for ventilatory support",
-    "3903019",
-    "Systolic Blood Pressure <90 mmHg",
-    "2903021",
-    "Two or more long-bone fractures",
-    sep = "|"
-  )
-
-  # procedure exclusion related to long board ----
-
-  long_board <- "450591000124106|Immobilization using long board"
-
-  # additional procedures in the exclusion ----
-  airway_procedures <- paste(
-    "16883004",
-    "Endotracheal intubation, emergency procedure",
-    "182682004",
-    "Emergency laryngeal intubation",
-    "232674004",
-    "Orotracheal intubation",
-    "232678001",
-    "Orotracheal fiberoptic intubation",
-    "232682004",
-    "Nasotracheal fiberoptic intubation",
-    "232685002",
-    "Insertion of tracheostomy tube",
-    "304341005",
-    "Awake intubation",
-    "418613003",
-    "Tracheal intubation through a laryngeal mask airway",
-    "424979004",
-    "Laryngeal mask airway insertion",
-    "427753009",
-    "Insertion of esophageal tracheal double lumen supraglottic airway",
-    "429161001",
-    "Insertion of endotracheal tube using laryngoscope",
-    "450611000124",
-    "Insertion of Single Lumen Supraglottic Airway Device",
-    sep = "|"
-  )
-
-  # car seat code for edisposition.14 ----
-
-  car_seat <- "4214001|Car Seat"
-
-  # minor values ----
-  minor_values <- "days|hours|minutes|2516001|2516003|2516005"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
-
   # options for the progress bar ----
   # a green dot for progress
   # a white line for note done yet
@@ -316,7 +203,7 @@ safety_04_population <- function(
     "Running `safety_04_population()`",
     total = 13,
     type = "tasks",
-    clear = F,
+    clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
@@ -654,7 +541,7 @@ safety_04_population <- function(
     dplyr::select({{ erecord_01_col }}, {{ eresponse_05_col }}) |>
     dplyr::filter(
       grepl(
-        pattern = transport_code,
+        pattern = interfacility_transport_code,
         x = {{ eresponse_05_col }},
         ignore.case = TRUE
       )
@@ -693,7 +580,7 @@ safety_04_population <- function(
     dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
     dplyr::filter(
       grepl(
-        pattern = trauma_triage_crit,
+        pattern = trauma_triage_crit_safety_04,
         x = {{ einjury_03_col }},
         ignore.case = TRUE
       )
@@ -733,7 +620,7 @@ safety_04_population <- function(
     dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
     dplyr::filter(
       grepl(
-        pattern = airway_procedures,
+        pattern = airway_procedures_safety_04,
         x = {{ eprocedures_03_col }},
         ignore.case = TRUE
       )

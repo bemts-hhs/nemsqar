@@ -240,38 +240,11 @@ ttr_01_population <- function(
     "Running `ttr_01_population()`",
     total = 13,
     type = "tasks",
-    clear = F,
+    clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   progress_bar_population
-
-  # Create objects that are filter helpers throughout the function ----
-
-  # 911 codes for eresponse.05 ----
-  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
-
-  # define transports ----
-  no_transport_responses <- "4230009|patient refused transport|no transport|4230013"
-
-  # cardiac arrest response ----
-  cardiac_arrest_response <- "3001003|Yes, Prior to Any EMS Arrival"
-
-  # AVPU responses ----
-  avpu_responses <- "3326001|Alert|3326003|Verbal|3326005|Painful|3326007|Unresponsive"
-
-  # minor values ----
-  minor_values <- "days|hours|minutes|months"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
 
   if (
     any(

@@ -173,68 +173,11 @@ seizure_02_population <- function(
     "Running `seizure_02_population()`",
     total = 10,
     type = "tasks",
-    clear = F,
+    clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   progress_bar_population
-
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions ----
-
-  # 911 codes for eresponse.05 ----
-  codes_911 <- paste(
-    "2205001",
-    "2205003",
-    "2205009",
-    "Emergency Response \\(Primary Response Area\\)",
-    "Emergency Response \\(Intercept\\)",
-    "Emergency Response \\(Mutual Aid\\)",
-    sep = "|"
-  )
-
-  # get codes as a regex to filter primary/secondary impression fields ----
-  epilepsy_pattern <- paste(
-    # Base epilepsy terms, excluding "without"
-    "(?:\\bepilep(sy|tic)\\b)(?!.*without)(?:status\\sepilepticus)?",
-
-    # Neuro or seizure terms linked to status epilepticus
-    "(?:neuro|seizure)(?!.*without).*status\\sepilepticus",
-
-    # Other seizure category
-    "other\\sseizure",
-
-    # ICD-10 G40 codes, excluding specific subcodes
-    "G40(?!\\.[a-z\\d]\\d[249])",
-
-    sep = "|"
-  )
-
-  # medication values for seizure_02 ----
-  medication_pattern <- paste(
-    "3322",
-    "6960",
-    "203128",
-    "6470",
-    "diazepam",
-    "midazolam",
-    "midazolam hydrochloride",
-    "lorazepam",
-
-    sep = "|"
-  )
-
-  # minor values ----
-  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
 
   ####### CREATE SEPARATE TABLES FROM DF IF TABLES ARE MISSING ----
   if (
@@ -552,7 +495,7 @@ seizure_02_population <- function(
     dplyr::distinct() |>
     dplyr::filter(
       grepl(
-        pattern = medication_pattern,
+        pattern = seizure_medication_pattern,
         x = {{ emedications_03_col }},
         ignore.case = TRUE
       )

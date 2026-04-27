@@ -228,38 +228,11 @@ tbi_01_population <- function(
     "Running `tbi_01_population()`",
     total = 15,
     type = "tasks",
-    clear = F,
+    clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   progress_bar_population
-
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions ----
-
-  # 911 codes for eresponse.05 ----
-  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
-
-  # avpu not values ----
-  avpu_values <- "3326003|3326005|3326007|Verbal|Painful|Unresponsive"
-
-  # TBI injuries ----
-  tbi_injuries <- "(?:S02|S04\\.4|S06|S06\\.X9|S06\\.0|S07\\.1|S09\\.90|T74\\.4)"
-
-  # define transports ----
-  transport_responses <- "Transport by This EMS Unit \\(This Crew Only\\)|Transport by This EMS Unit, with a Member of Another Crew|Transport by Another EMS Unit, with a Member of This Crew|Patient Treated, Transported by this EMS Unit|Patient Treated, Transported with this EMS Crew in Another Vehicle|Treat / Transport ALS by this unit|Treat / Transport BLS by this unit|Mutual Aid Tx & Transport|4212033|4230001|4230003|4230007|itDisposition\\.112\\.116|it4212\\.142|itDisposition\\.112\\.165|itDisposition\\.112\\.141|Treat / Transport BLS by this unit|itDisposition\\.112\\.142"
-
-  # minor values ----
-  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
 
   # utilize applicable tables to analyze the data for the measure ----
   if (
@@ -420,7 +393,7 @@ tbi_01_population <- function(
       dplyr::select({{ erecord_01_col }}, {{ evitals_26_col }}) |>
       dplyr::distinct() |>
       dplyr::filter(grepl(
-        pattern = avpu_values,
+        pattern = avpu_responses,
         x = {{ evitals_26_col }},
         ignore.case = TRUE
       )) |>
@@ -819,7 +792,7 @@ tbi_01_population <- function(
       dplyr::select({{ erecord_01_col }}, {{ evitals_26_col }}) |>
       dplyr::distinct() |>
       dplyr::filter(grepl(
-        pattern = avpu_values,
+        pattern = avpu_responses,
         x = {{ evitals_26_col }},
         ignore.case = TRUE
       )) |>

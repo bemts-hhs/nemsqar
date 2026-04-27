@@ -192,80 +192,6 @@ hypoglycemia_01_population <- function(
     )
   }
 
-  # Filter incident data for 911 response codes and the corresponding primary/secondary impressions ----
-  # 911 codes for eresponse.05
-  codes_911 <- paste(
-    "2205001",
-    "2205003",
-    "2205009",
-    "Emergency Response \\(Primary Response Area\\)",
-    "Emergency Response \\(Intercept\\)",
-    "Emergency Response \\(Mutual Aid\\)",
-    sep = "|"
-  )
-
-  # get codes as a regex to filter primary/secondary impression fields ----
-  hypoglycemia_treatment_codes <- paste(
-    "4832",
-    "4850",
-    "377980",
-    "376937",
-    "372326",
-    "237653",
-    "260258",
-    "309778",
-    "1795610",
-    "1795477",
-    "1794567",
-    "1165823",
-    "1165822",
-    "1165819",
-    "Glucagon",
-    "Glucose",
-    "Glucose Oral Gel",
-    "Glucose Injectable Solution",
-    "Glucose Chewable Tablet",
-    "Glucose 500 MG/ML Injectable Solution",
-    "Glucose 250 MG/ML Injectable Solution",
-    "Glucose 50 MG/ML Injectable Solution",
-    "250 ML Glucose 50 MG/ML Injection",
-    "500 ML Glucose 100 MG ML Injection",
-    "Glucose Injection",
-    "Glucose Oral Product",
-    "Glucose Oral Liquid Product",
-    "Glucose Injectable Product",
-    sep = "|"
-  )
-
-  # hypoglycemia procedures ----
-
-  hypoglycemia_procedure_codes <- "710925007|225285007|Provision of food|Giving oral fluid"
-
-  # code(s) for altered mental status ----
-  altered_mental_status <- "R41.82|Altered Mental Status, unspecified"
-
-  # codes for diabetes via primary and secondary impression ----
-
-  diabetes_codes <- "(?:E13.64|E16.2)|Other specified diabetes mellitus with hypoglycemia|Hypoglycemia, unspecified"
-
-  # AVPU responses ----
-
-  avpu_responses <- "Unresponsive|Verbal|Painful|3326003|3326005|3326007"
-
-  # days, hours, minutes, months ----
-
-  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
-
   # options for the progress bar ----
   # a green dot for progress
   # a white line for note done yet
@@ -283,7 +209,7 @@ hypoglycemia_01_population <- function(
     "Running `hypoglycemia_01_population()`",
     total = 17,
     type = "tasks",
-    clear = F,
+    clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 

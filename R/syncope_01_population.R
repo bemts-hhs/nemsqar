@@ -202,36 +202,11 @@ syncope_01_population <- function(
     "Running `syncope_01_population()`",
     total = 10,
     type = "tasks",
-    clear = F,
+    clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
   )
 
   progress_bar_population
-
-  # dplyr::filter incident data for 911 response codes and the corresponding primary/secondary impressions ----
-  # dplyr::filter down the primary / other associated symptoms
-
-  # 911 codes for eresponse.05 ----
-  codes_911 <- "2205001|2205003|2205009|Emergency Response \\(Primary Response Area\\)|Emergency Response \\(Intercept\\)|Emergency Response \\(Mutual Aid\\)"
-
-  # primary and secondary provider impression values ----
-  syncope_pattern <- "(?:R(?:55|40.4))|Syncope and collapse|Transient alteration of awareness"
-
-  # ECG pattern ----
-  ecg_pattern <- "12 Lead-Left Sided \\(Normal\\)|12 Lead-Right Sided|15 Lead|18 Lead|3304007|3304009|3304011|3304013"
-
-  # minor values ----
-  minor_values <- "days|2516001|hours|2516003|minutes|2516005|months|2516007"
-
-  year_values <- "2516009|years"
-
-  day_values <- "days|2516001"
-
-  hour_values <- "hours|2516003"
-
-  minute_values <- "minutes|2516005"
-
-  month_values <- "months|2516007"
 
   # utilize applicable tables to analyze the data for the measure ----
   if (
