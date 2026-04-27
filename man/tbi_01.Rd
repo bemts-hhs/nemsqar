@@ -88,6 +88,10 @@ values}
 
 \item{evitals_12_col}{Numeric column containing pulse oximetry values.}
 
+\item{evitals_16_col}{Column with numeric value of the patient's exhaled end
+tidal carbon dioxide (ETCO2) level measured as a unit of pressure in
+millimeters of mercury (mmHg), percentage or, kilopascal (kPa).}
+
 \item{evitals_23_col}{Column for Glasgow Coma Scale (GCS) scores.}
 
 \item{evitals_26_col}{Column for AVPU alertness levels.}

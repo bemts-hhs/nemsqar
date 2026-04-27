@@ -9,6 +9,7 @@
 #' @inheritParams airway_01_population
 #' @inheritParams hypoglycemia_01_population
 #' @inheritParams safety_02_population
+#' @inheritParams tbi_01_population
 #' @inheritParams airway_01
 #'
 #' @return A data.frame summarizing results for two population groups (All,
