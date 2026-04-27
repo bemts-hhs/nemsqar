@@ -445,7 +445,7 @@ ttr_01_population <- function(
       dplyr::distinct() |>
       dplyr::filter(
         !grepl(
-          pattern = cardiac_arrest_response,
+          pattern = cardiac_arrest_response_prior,
           x = {{ earrest_01_col }},
           ignore.case = TRUE
         ) |
@@ -842,7 +842,7 @@ ttr_01_population <- function(
       dplyr::distinct() |>
       dplyr::filter(
         !grepl(
-          pattern = cardiac_arrest_response,
+          pattern = cardiac_arrest_response_prior,
           x = {{ earrest_01_col }},
           ignore.case = TRUE
         )

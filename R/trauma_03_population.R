@@ -444,7 +444,7 @@ trauma_03_population <- function(
       dplyr::select({{ erecord_01_col }}, {{ edisposition_28_col }}) |>
       dplyr::distinct() |>
       dplyr::filter(grepl(
-        pattern = care_provided,
+        pattern = patient_care,
         x = {{ edisposition_28_col }},
         ignore.case = TRUE
       )) |>
@@ -1093,7 +1093,7 @@ trauma_03_population <- function(
       dplyr::select({{ erecord_01_col }}, {{ edisposition_28_col }}) |>
       dplyr::distinct() |>
       dplyr::filter(grepl(
-        pattern = care_provided,
+        pattern = patient_care,
         x = {{ edisposition_28_col }},
         ignore.case = TRUE
       )) |>
