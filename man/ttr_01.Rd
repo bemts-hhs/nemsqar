@@ -96,6 +96,22 @@ expressed as a number per minute.}
 \item{evitals_23_col}{Column for Glasgow Coma Scale (GCS) scores.}
 
 \item{evitals_26_col}{Column for AVPU alertness levels.}
+
+\item{confidence_interval}{Logical. If \code{TRUE}, the function calculates a
+confidence interval for the proportion estimate.}
+
+\item{method}{Character. Specifies the method used to calculate confidence
+intervals. Options are \code{"wilson"} (Wilson score interval) and
+\code{"clopper-pearson"} (exact binomial interval). Partial matching is supported,
+so \code{"w"} and \code{"c"} can be used as shorthand.}
+
+\item{conf.level}{Numeric. The confidence level for the interval, expressed
+as a proportion (e.g., 0.95 for a 95\% confidence interval). Defaults to 0.95.}
+
+\item{correct}{Logical. If \code{TRUE}, applies a continuity correction to the
+Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+
+\item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }
 \value{
 A data.frame summarizing results for two population groups (All,
