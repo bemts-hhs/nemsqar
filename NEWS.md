@@ -14,12 +14,10 @@
 * Abbreviate the code base by removing separate workflows for the 'df' and
   'table' data sources. Unify these by always ending up with 'tables' by
   splitting up a 'df' if supplied, and then only needing to proceed with major
-  data validation and the analysis once no matter what. 
+  data validation and the analysis on objects named like `*_table`. 
 * Replace data validation that involve rlang::as_name(quo) with making this code
   more readable by creating a separate `*_name` object for applicable columns
-  and then running validation on `object[[name]]`. You need to do this across
-  all functions, make sure to check all `*_population()` functions in the
-  package to ensure this method is used consistently. 
+  and then running validation on `object[[name]]`.
 
 # nemsqar 1.1.3
 - Added navigation to all major functions in the package. This was done by
