@@ -3,9 +3,9 @@
 #' @description
 #'
 #' This function calculates the Trauma-08 measure, which evaluates the
-#completeness ' of pain scale documentation for patients experiencing traumatic
-#injury. It determines ' the total population, adult population, and pediatric
-#population meeting the criteria ' for the Trauma-08 measure.
+#' completeness ' of pain scale documentation for patients experiencing
+#' traumatic injury. It determines ' the total population, adult population, and
+#' pediatric population meeting the criteria ' for the Trauma-08 measure.
 #
 #' @inheritParams airway_01_population
 #' @inheritParams asthma_01_population
