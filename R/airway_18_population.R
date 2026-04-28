@@ -13,7 +13,9 @@
 #' confirmation. Default is `NULL`.
 #' @param eairway_04_col Column name for confirmation of airway device
 #' placement. Default is `NULL`.
-#' @param evitals_16_col Column name for end tidal carbon dioxide (ETCO2).
+#' @param evitals_16_col Column with numeric value of the patient's exhaled end
+#' tidal carbon dioxide (ETCO2) level measured as a unit of pressure in
+#' millimeters of mercury (mmHg), percentage or, kilopascal (kPa).
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

@@ -91,7 +91,9 @@ placement. Default is \code{NULL}.}
 \item{evitals_01_col}{Date-time or POSIXct column containing vital signs
 date/time}
 
-\item{evitals_16_col}{Column name for end tidal carbon dioxide (ETCO2).}
+\item{evitals_16_col}{Column with numeric value of the patient's exhaled end
+tidal carbon dioxide (ETCO2) level measured as a unit of pressure in
+millimeters of mercury (mmHg), percentage or, kilopascal (kPa).}
 
 \item{confidence_interval}{Logical. If \code{TRUE}, the function calculates a
 confidence interval for the proportion estimate.}

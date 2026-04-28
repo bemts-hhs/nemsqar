@@ -93,51 +93,63 @@ injury.}
 \item{eresponse_05_col}{Column that contains eResponse.05 or the response
 type.}
 
-\item{eresponse_10_col}{Column name containing scene delay information.}
+\item{eresponse_10_col}{Column name containing informatin about scene delays,
+if any, of the EMS unit associated with the EMS event.}
 
 \item{transport_disposition_col}{One or more unquoted column names (such as
 edisposition.12, edisposition.30) containing transport disposition for an
 EMS event identifying whether a transport occurred and by which unit.}
 
-\item{edisposition_24_col}{Column name containing pre-hospital trauma alert
-information.}
+\item{edisposition_24_col}{Column name containing the indication that an
+alert (or activation) was called by EMS to the appropriate destination
+healthcare facility team. The alert (or activation) should occur prior to the
+EMS Unit arrival at the destination with the patient.}
 
 \item{evitals_06_col}{Numeric column containing systolic blood pressure
-values}
+values.}
 
-\item{evitals_10_col}{Column name containing heart rate values.}
+\item{evitals_10_col}{Column name containing the patient's heart rate
+expressed as a number per minute.}
 
 \item{evitals_12_col}{Numeric column containing pulse oximetry values.}
 
 \item{evitals_14_col}{Column containing data on patient's respiratory rate
 expressed as a number per minute.}
 
-\item{evitals_15_col}{Column name containing respiratory effort values.}
+\item{evitals_15_col}{Column name containing the patient's respiratory
+effort.}
 
-\item{evitals_21_col}{Column name containing Glasgow Coma Scale (GCS) Motor
-values.}
+\item{evitals_21_col}{Column name containing the patient's Glasgow Coma Score
+Motor response.}
 
-\item{eexam_16_col}{Column name containing extremities assessment details.}
+\item{eexam_16_col}{Column name containing the assessment findings associated
+with the patient's extremities.}
 
-\item{eexam_20_col}{Column name containing neurological assessment details.}
+\item{eexam_20_col}{Column name containing the assessment findings of the
+patient's neurological examination.}
 
-\item{eexam_23_col}{Column name containing lung assessment details.}
+\item{eexam_23_col}{Column name containing the assessment findings associated
+with the patient's lungs.}
 
-\item{eexam_25_col}{Column name containing chest assessment details.}
+\item{eexam_25_col}{Column name containing the assessment findings associated
+with the patient's chest.}
 
 \item{eprocedures_03_col}{Column containing procedure codes with or without
 procedure names.}
 
-\item{einjury_01_col}{Column name containing injury cause details.}
+\item{einjury_01_col}{Column name containing the category of the
+reported/suspected external cause of the injury.}
 
 \item{einjury_03_col}{Column describing Trauma triage criteria for the red
 boxes (Injury Patterns and Mental Status and Vital Signs) in the 2021 ACS
 National Guideline for the Field Triage of Injured Patients.}
 
-\item{einjury_04_col}{Column name containing trauma triage steps 3 and 4
-information.}
+\item{einjury_04_col}{Column name containing Trauma triage criteria for the
+yellow boxes (Mechanism of Injury and EMS Judgment) in the current ACS
+National Guideline for the Field Triage of Injured Patients.}
 
-\item{einjury_09_col}{Column name containing fall height information.}
+\item{einjury_09_col}{Column name containing the distance in feet the patient
+fell, measured from the lowest point of the patient to the ground.}
 }
 \value{
 A list that contains the following:

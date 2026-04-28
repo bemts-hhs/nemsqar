@@ -12,8 +12,10 @@
 #' @inheritParams safety_04_population
 #' @inheritParams trauma_01_population
 #' @inheritParams trauma_04_population
-#' @param edisposition_24_col Column name containing pre-hospital trauma alert
-#'   information.
+#' @param edisposition_24_col Column name containing the indication that an
+#' alert (or activation) was called by EMS to the appropriate destination
+#' healthcare facility team. The alert (or activation) should occur prior to the
+#' EMS Unit arrival at the destination with the patient.
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

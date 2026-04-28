@@ -11,22 +11,34 @@
 #' @inheritParams safety_04_population
 #' @inheritParams trauma_01_population
 #' @inheritParams pediatrics_03b_population
-#' @param eresponse_10_col Column name containing scene delay information.
-#' @param edisposition_23_col Column name containing trauma hospital
-#'   verification information.
-#' @param evitals_10_col Column name containing heart rate values.
-#' @param evitals_14_col Column name containing capillary refill information.
-#' @param evitals_15_col Column name containing respiratory effort values.
-#' @param evitals_21_col Column name containing Glasgow Coma Scale (GCS) Motor
-#'   values.
-#' @param eexam_16_col Column name containing extremities assessment details.
-#' @param eexam_20_col Column name containing neurological assessment details.
-#' @param eexam_23_col Column name containing lung assessment details.
-#' @param eexam_25_col Column name containing chest assessment details.
-#' @param einjury_01_col Column name containing injury cause details.
-#' @param einjury_04_col Column name containing trauma triage steps 3 and 4
-#'   information.
-#' @param einjury_09_col Column name containing fall height information.
+#' @param eresponse_10_col Column name containing informatin about scene delays,
+#' if any, of the EMS unit associated with the EMS event.
+#' @param edisposition_23_col Column name containing primary hospital capability
+#' associated with the patient's condition for this transport (e.g., Trauma,
+#' STEMI, Peds, etc.).
+#' @param evitals_10_col Column name containing the patient's heart rate
+#' expressed as a number per minute.
+#' @param evitals_14_col Column name containing the patient's respiratory rate
+#' expressed as a number per minute.
+#' @param evitals_15_col Column name containing the patient's respiratory
+#' effort.
+#' @param evitals_21_col Column name containing the patient's Glasgow Coma Score
+#' Motor response.
+#' @param eexam_16_col Column name containing the assessment findings associated
+#' with the patient's extremities.
+#' @param eexam_20_col Column name containing the assessment findings of the
+#' patient's neurological examination.
+#' @param eexam_23_col Column name containing the assessment findings associated
+#' with the patient's lungs.
+#' @param eexam_25_col Column name containing the assessment findings associated
+#' with the patient's chest.
+#' @param einjury_01_col Column name containing the category of the
+#' reported/suspected external cause of the injury.
+#' @param einjury_04_col Column name containing Trauma triage criteria for the
+#' yellow boxes (Mechanism of Injury and EMS Judgment) in the current ACS
+#' National Guideline for the Field Triage of Injured Patients.
+#' @param einjury_09_col Column name containing the distance in feet the patient
+#' fell, measured from the lowest point of the patient to the ground.
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

@@ -74,7 +74,7 @@ type.}
 date/time}
 
 \item{evitals_06_col}{Numeric column containing systolic blood pressure
-values}
+values.}
 
 \item{evitals_12_col}{Numeric column containing pulse oximetry values.}
 

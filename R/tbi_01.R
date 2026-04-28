@@ -7,6 +7,7 @@
 #' with calculated variables for TBI identification.
 #'
 #' @inheritParams airway_01_population
+#' @inheritParams airway_18_population
 #' @inheritParams hypoglycemia_01_population
 #' @inheritParams safety_02_population
 #' @inheritParams tbi_01_population

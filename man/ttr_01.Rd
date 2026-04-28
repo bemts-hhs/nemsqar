@@ -34,26 +34,26 @@ ttr_01(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing the dataset to analyze. Default
-is \code{NULL}.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient
-and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
-\item{disposition_table}{A data frame or tibble containing only the
-edisposition fields needed for this measure's calculations. Default is
-\code{NULL}.}
+\item{disposition_table}{A data.frame or tibble containing only the
+edisposition fields needed for this measure's calculations.}
 
-\item{vitals_table}{A data frame or tibble containing only the evitals fields
-needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A dataframe or tibble containing at least the eVitals
+fields needed.}
 
-\item{arrest_table}{A data frame or tibble containing only the earrest fields
-needed for this measure's calculations. Default is \code{NULL}.}
+\item{arrest_table}{A data.frame or tibble containing at least the eArrest
+fields needed for this measure's calculations.}
 
-\item{erecord_01_col}{A column specifying unique patient records.}
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -63,57 +63,39 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{A column indicating the patient’s age in numeric form.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{A column specifying the unit of patient age (e.g.,
-"Years", "Days").}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{A column specifying the type of response (e.g., 911
-codes).}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{transport_disposition_col}{A column specifying transport disposition
-for the patient.}
+\item{transport_disposition_col}{One or more unquoted column names (such as
+edisposition.12, edisposition.30) containing transport disposition for an
+EMS event identifying whether a transport occurred and by which unit.}
 
-\item{earrest_01_col}{A column containing cardiac arrest data.}
+\item{earrest_01_col}{Column representing whether or not the patient is in
+arrest.}
 
-\item{evitals_06_col}{A column containing systolic blood pressure (SBP) data
-from initial vital signs.}
+\item{evitals_06_col}{Numeric column containing systolic blood pressure
+values.}
 
-\item{evitals_07_col}{A column containing diastolic blood pressure (DBP) data
-from initial vital signs.}
+\item{evitals_07_col}{A column containing the patient's diastolic blood
+pressure.}
 
-\item{evitals_10_col}{A column containing heart rate data from initial vital
-signs.}
+\item{evitals_10_col}{Column name containing the patient's heart rate
+expressed as a number per minute.}
 
-\item{evitals_12_col}{A column containing spO2 data from the initial vital
-signs.}
+\item{evitals_12_col}{Numeric column containing pulse oximetry values.}
 
-\item{evitals_14_col}{A column containing respiratory rate data from initial
-vital signs.}
+\item{evitals_14_col}{Column name containing the patient's respiratory rate
+expressed as a number per minute.}
 
-\item{evitals_23_col}{A column containing total Glasgow Coma Scale (GCS)
-scores from initial vital signs.}
+\item{evitals_23_col}{Column for Glasgow Coma Scale (GCS) scores.}
 
-\item{evitals_26_col}{A column containing alert, verbal, painful,
-unresponsive (AVPU) vital signs.}
-
-\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
-\code{TRUE}, the function calculates a confidence interval for the proportion
-estimate.}
-
-\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Character. Specifies the
-method used to calculate confidence intervals. Options are \code{"wilson"}
-(Wilson score interval) and \code{"clopper-pearson"} (exact binomial interval).
-Partial matching is supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
-
-\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Numeric. The confidence
-level for the interval, expressed as a proportion (e.g., 0.95 for a 95\%
-confidence interval). Defaults to 0.95.}
-
-\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Logical. If \code{TRUE},
-applies a continuity correction to the Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
-
-\item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
+\item{evitals_26_col}{Column for AVPU alertness levels.}
 }
 \value{
 A data.frame summarizing results for two population groups (All,

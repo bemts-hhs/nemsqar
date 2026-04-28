@@ -7,11 +7,9 @@
 #' with calculated variables for TBI identification.
 #'
 #' @inheritParams airway_01_population
+#' @inheritParams airway_18_population
 #' @inheritParams hypoglycemia_01_population
 #' @inheritParams safety_02_population
-#' @param evitals_16_col Column with numeric value of the patient's exhaled end
-#' tidal carbon dioxide (ETCO2) level measured as a unit of pressure in
-#' millimeters of mercury (mmHg), percentage or, kilopascal (kPa).
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

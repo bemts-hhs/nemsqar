@@ -72,7 +72,7 @@ edisposition.12, edisposition.30) containing transport disposition for an
 EMS event identifying whether a transport occurred and by which unit.}
 
 \item{evitals_06_col}{Numeric column containing systolic blood pressure
-values}
+values.}
 
 \item{evitals_14_col}{Column containing data on patient's respiratory rate
 expressed as a number per minute.}

@@ -79,7 +79,7 @@ edisposition.12, edisposition.30) containing transport disposition for an
 EMS event identifying whether a transport occurred and by which unit.}
 
 \item{evitals_06_col}{Numeric column containing systolic blood pressure
-values}
+values.}
 
 \item{evitals_12_col}{Numeric column containing pulse oximetry values.}
 

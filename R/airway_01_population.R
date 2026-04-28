@@ -36,7 +36,7 @@
 #' @param evitals_01_col Date-time or POSIXct column containing vital signs
 #'   date/time
 #' @param evitals_06_col Numeric column containing systolic blood pressure
-#'   values
+#'   values.
 #' @param evitals_12_col Numeric column containing pulse oximetry values.
 #' @param eprocedures_01_col Date-time or POSIXct column for procedures
 #' @param eprocedures_02_col Column name for whether or not the procedure was
