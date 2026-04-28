@@ -5,63 +5,15 @@
 #' This function processes EMS data to generate the population needed to
 #' calculate the Trauma-14 NEMSQA measure.
 #'
-#' @param df A data frame or tibble containing EMS data with all relevant
-#'   columns.
-#' @param patient_scene_table A data frame or tibble containing fields from
-#'   epatient and escene needed for this measure's calculations.
-#' @param situation_table A data frame or tibble containing fields from
-#'   esituation needed for this measure's calculations.
-#' @param response_table A data frame or tibble containing fields from eresponse
-#'   needed for this measure's calculations.
-#' @param disposition_table A data frame or tibble containing fields from
-#'   edisposition needed for this measure's calculations.
-#' @param vitals_table A data frame or tibble containing fields from evitals
-#'   needed for this measure's calculations.
-#' @param exam_table A data frame or tibble containing fields from eexam needed
-#'   for this measure's calculations.
-#' @param procedures_table A data frame or tibble containing fields from
-#'   eprocedures needed for this measure's calculations.
-#' @param injury_table A data frame or tibble containing fields from einjury
-#'   needed for this measure's calculations.
-#' @param erecord_01_col The column representing the EMS record unique
-#'   identifier.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col The column for patient age numeric value.
-#' @param epatient_16_col The column for patient age unit (e.g., "Years",
-#'   "Months").
-#' @param esituation_02_col The column containing information on the presence of
-#'   injury.
-#' @param eresponse_05_col The column representing the 911 response type.
-#' @param eresponse_10_col Column name containing scene delay information.
-#' @param transport_disposition_col The column for patient transport
-#'   disposition.
+#' @inheritParams airway_01_population
+#' @inheritParams asthma_01_population
+#' @inheritParams respiratory_01_population
+#' @inheritParams safety_02_population
+#' @inheritParams safety_04_population
+#' @inheritParams trauma_01_population
+#' @inheritParams trauma_04_population
 #' @param edisposition_24_col Column name containing pre-hospital trauma alert
 #'   information.
-#' @param evitals_06_col Column name containing systolic blood pressure (SBP)
-#'   values.
-#' @param evitals_10_col Column name containing heart rate values.
-#' @param evitals_12_col Column name containing pulse oximetry values.
-#' @param evitals_14_col Column name containing capillary refill information.
-#' @param evitals_15_col Column name containing respiratory effort values.
-#' @param evitals_21_col Column name containing Glasgow Coma Scale (GCS) Motor
-#'   values.
-#' @param eexam_16_col Column name containing extremities assessment details.
-#' @param eexam_20_col Column name containing neurological assessment details.
-#' @param eexam_23_col Column name containing lung assessment details.
-#' @param eexam_25_col Column name containing chest assessment details.
-#' @param eprocedures_03_col Column name containing airway management or
-#'   tourniquet usage details.
-#' @param einjury_01_col Column name containing injury cause details.
-#' @param einjury_03_col Column name containing trauma triage steps 1 and 2
-#'   information.
-#' @param einjury_04_col Column name containing trauma triage steps 3 and 4
-#'   information.
-#' @param einjury_09_col Column name containing fall height information.
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

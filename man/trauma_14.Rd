@@ -47,32 +47,33 @@ trauma_14(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing EMS data with all relevant
-columns.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data frame or tibble containing fields from
-epatient and escene needed for this measure's calculations.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data frame or tibble containing fields from eresponse
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
+
+\item{situation_table}{A data.frame or tibble containing at least the
+eSituation fields needed for this measure's calculations. Default is
+\code{NULL}.}
+
+\item{vitals_table}{A dataframe or tibble containing at least the eVitals
+fields needed.}
+
+\item{exam_table}{A data.frame or tibble containing only the eExam fields
+needed for this measure's calculations. Default is \code{NULL}.}
+
+\item{procedures_table}{A dataframe or tibble containing at least the
+eProcedures fields needed.}
+
+\item{injury_table}{A data frame or tibble containing fields from eInjury
 needed for this measure's calculations.}
 
-\item{situation_table}{A data frame or tibble containing fields from
-esituation needed for this measure's calculations.}
-
-\item{vitals_table}{A data frame or tibble containing fields from evitals
-needed for this measure's calculations.}
-
-\item{exam_table}{A data frame or tibble containing fields from eexam needed
-for this measure's calculations.}
-
-\item{procedures_table}{A data frame or tibble containing fields from
-eprocedures needed for this measure's calculations.}
-
-\item{injury_table}{A data frame or tibble containing fields from einjury
-needed for this measure's calculations.}
-
-\item{disposition_table}{A data frame or tibble containing fields from
-edisposition needed for this measure's calculations.}
+\item{disposition_table}{A data.frame or tibble containing only the
+edisposition fields needed for this measure's calculations.}
 
 \item{erecord_01_col}{The column representing the EMS record unique
 identifier.}
@@ -85,32 +86,36 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{The column for patient age numeric value.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{The column for patient age unit (e.g., "Years",
-"Months").}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{esituation_02_col}{The column containing information on the presence of
+\item{esituation_02_col}{Column indicating whether or not there was an
 injury.}
 
-\item{eresponse_05_col}{The column representing the 911 response type.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
 \item{eresponse_10_col}{Column name containing scene delay information.}
 
-\item{transport_disposition_col}{The column for patient transport
-disposition.}
+\item{transport_disposition_col}{One or more unquoted column names (such as
+edisposition.12, edisposition.30) containing transport disposition for an
+EMS event identifying whether a transport occurred and by which unit.}
 
 \item{edisposition_24_col}{Column name containing pre-hospital trauma alert
 information.}
 
-\item{evitals_06_col}{Column name containing systolic blood pressure (SBP)
-values.}
+\item{evitals_06_col}{Numeric column containing systolic blood pressure
+values}
 
 \item{evitals_10_col}{Column name containing heart rate values.}
 
-\item{evitals_12_col}{Column name containing pulse oximetry values.}
+\item{evitals_12_col}{Numeric column containing pulse oximetry values.}
 
-\item{evitals_14_col}{Column name containing capillary refill information.}
+\item{evitals_14_col}{Column containing data on patient's respiratory rate
+expressed as a number per minute.}
 
 \item{evitals_15_col}{Column name containing respiratory effort values.}
 
@@ -125,34 +130,33 @@ values.}
 
 \item{eexam_25_col}{Column name containing chest assessment details.}
 
-\item{eprocedures_03_col}{Column name containing airway management or
-tourniquet usage details.}
+\item{eprocedures_03_col}{Column containing procedure codes with or without
+procedure names.}
 
 \item{einjury_01_col}{Column name containing injury cause details.}
 
-\item{einjury_03_col}{Column name containing trauma triage steps 1 and 2
-information.}
+\item{einjury_03_col}{Column describing Trauma triage criteria for the red
+boxes (Injury Patterns and Mental Status and Vital Signs) in the 2021 ACS
+National Guideline for the Field Triage of Injured Patients.}
 
 \item{einjury_04_col}{Column name containing trauma triage steps 3 and 4
 information.}
 
 \item{einjury_09_col}{Column name containing fall height information.}
 
-\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
-\code{TRUE}, the function calculates a confidence interval for the proportion
-estimate.}
+\item{confidence_interval}{Logical. If \code{TRUE}, the function calculates a
+confidence interval for the proportion estimate.}
 
-\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Character. Specifies the
-method used to calculate confidence intervals. Options are \code{"wilson"}
-(Wilson score interval) and \code{"clopper-pearson"} (exact binomial interval).
-Partial matching is supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
+\item{method}{Character. Specifies the method used to calculate confidence
+intervals. Options are \code{"wilson"} (Wilson score interval) and
+\code{"clopper-pearson"} (exact binomial interval). Partial matching is supported,
+so \code{"w"} and \code{"c"} can be used as shorthand.}
 
-\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Numeric. The confidence
-level for the interval, expressed as a proportion (e.g., 0.95 for a 95\%
-confidence interval). Defaults to 0.95.}
+\item{conf.level}{Numeric. The confidence level for the interval, expressed
+as a proportion (e.g., 0.95 for a 95\% confidence interval). Defaults to 0.95.}
 
-\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Logical. If \code{TRUE},
-applies a continuity correction to the Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+\item{correct}{Logical. If \code{TRUE}, applies a continuity correction to the
+Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
 
 \item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }
