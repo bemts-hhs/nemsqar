@@ -1,3 +1,5 @@
+# nemsqar 1.1.4
+
 # nemsqar 1.1.3
 - Added navigation to all major functions in the package. This was done by
   adding `----` to the end of most comments.
