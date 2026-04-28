@@ -69,7 +69,8 @@ injury.}
 \item{eresponse_05_col}{Column that contains eResponse.05 or the response
 type.}
 
-\item{evitals_01_col}{The column for the time of pain scale measurement.}
+\item{evitals_01_col}{The column for the date/time vital signs were taken on
+the patient.}
 
 \item{evitals_27_col}{Column giving the patient's indication of pain from a
 scale of 0-10.}
