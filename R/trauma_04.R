@@ -13,6 +13,7 @@
 #' @inheritParams safety_02_population
 #' @inheritParams safety_04_population
 #' @inheritParams trauma_01_population
+#' @inheritParams trauma_04_population
 #' @inheritParams pediatrics_03b_population
 #' @inheritParams airway_01
 #'

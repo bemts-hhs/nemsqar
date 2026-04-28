@@ -10,41 +10,12 @@
 #' documented based on specific criteria and calculates related ECG measures.
 #' This function segments the data by age into adult and pediatric populations.
 #'
-#' @param df A data frame or tibble containing EMS data with all relevant
-#'   columns. Default is `NULL`.
-#' @param patient_scene_table A data frame or tibble containing only epatient
-#'   and escene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eresponse
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param situation_table A data frame or tibble containing only the esituation
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param disposition_table A data frame or tibble containing only the
-#'   edisposition fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param vitals_table A data frame or tibble containing only the evitals fields
-#'   needed for this measure's calculations. Default is `NULL`.
-#' @param erecord_01_col A column specifying unique patient records.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col A column indicating the patient’s age in numeric form.
-#' @param epatient_16_col A column specifying the unit of patient age (e.g.,
-#'   "Years", "Days").
-#' @param esituation_02_col A column containing information about the nature of
-#'   the patient’s condition (e.g., injury type).
-#' @param eresponse_05_col A column specifying the type of response (e.g., 911
-#'   codes).
-#' @param transport_disposition_col A column specifying transport disposition
-#'   for the patient.
-#' @param evitals_06_col A column containing systolic blood pressure (SBP) data
-#'   from initial vital signs.
-#' @param evitals_14_col A column containing respiratory rate data from initial
-#'   vital signs.
-#' @param evitals_23_col A column containing total Glasgow Coma Scale (GCS)
-#'   scores from initial vital signs.
+#' @inheritParams airway_01_population
+#' @inheritParams asthma_01_population
+#' @inheritParams hypoglycemia_01_population
+#' @inheritParams respiratory_01_population
+#' @inheritParams safety_02_population
+#' @inheritParams trauma_01_population
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,

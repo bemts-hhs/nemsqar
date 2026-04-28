@@ -25,26 +25,27 @@ trauma_08_population(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing EMS data with all relevant
-columns. Default is \code{NULL}.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient
-and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
-\item{situation_table}{A data frame or tibble containing only the esituation
-fields needed for this measure's calculations. Default is \code{NULL}.}
-
-\item{disposition_table}{A data frame or tibble containing only the
-edisposition fields needed for this measure's calculations. Default is
+\item{situation_table}{A data.frame or tibble containing at least the
+eSituation fields needed for this measure's calculations. Default is
 \code{NULL}.}
 
-\item{vitals_table}{A data frame or tibble containing only the evitals fields
-needed for this measure's calculations. Default is \code{NULL}.}
+\item{disposition_table}{A data.frame or tibble containing only the
+edisposition fields needed for this measure's calculations.}
 
-\item{erecord_01_col}{A column specifying unique patient records.}
+\item{vitals_table}{A dataframe or tibble containing at least the eVitals
+fields needed.}
+
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -54,28 +55,29 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{A column indicating the patient’s age in numeric form.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{A column specifying the unit of patient age (e.g.,
-"Years", "Days").}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{esituation_02_col}{A column containing information about the nature of
-the patient’s condition (e.g., injury type).}
+\item{esituation_02_col}{Column indicating whether or not there was an
+injury.}
 
-\item{eresponse_05_col}{A column specifying the type of response (e.g., 911
-codes).}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{transport_disposition_col}{A column specifying transport disposition
-for the patient.}
+\item{transport_disposition_col}{One or more unquoted column names (such as
+edisposition.12, edisposition.30) containing transport disposition for an
+EMS event identifying whether a transport occurred and by which unit.}
 
-\item{evitals_06_col}{A column containing systolic blood pressure (SBP) data
-from initial vital signs.}
+\item{evitals_06_col}{Numeric column containing systolic blood pressure
+values}
 
-\item{evitals_14_col}{A column containing respiratory rate data from initial
-vital signs.}
+\item{evitals_14_col}{Column containing data on patient's respiratory rate
+expressed as a number per minute.}
 
-\item{evitals_23_col}{A column containing total Glasgow Coma Scale (GCS)
-scores from initial vital signs.}
+\item{evitals_23_col}{Column for Glasgow Coma Scale (GCS) scores.}
 }
 \value{
 A list that contains the following:
