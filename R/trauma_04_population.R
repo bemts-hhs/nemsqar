@@ -471,6 +471,13 @@ trauma_04_population <- function(
       logic = "or"
     )
 
+    validate_data_structure(
+      input = disposition_table,
+      structure_type = c("data.frame", "tbl", "tbl_df"),
+      type = "error",
+      logic = "or"
+    )
+
     # get distinct tables when passed to table arguments ----
     # patient ----
     patient_scene_table <- patient_scene_table |>
