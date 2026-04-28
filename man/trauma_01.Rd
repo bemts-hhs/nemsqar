@@ -67,12 +67,18 @@ of unit.}
 \item{epatient_16_col}{Column representing the patient's age unit ("Years",
 "Months", "Days", "Hours", or "Minutes").}
 
+\item{esituation_02_col}{Column indicating whether or not there was an
+injury.}
+
 \item{eresponse_05_col}{Column that contains eResponse.05 or the response
 type.}
 
 \item{evitals_23_col}{Column for Glasgow Coma Scale (GCS) scores.}
 
 \item{evitals_26_col}{Column for AVPU alertness levels.}
+
+\item{evitals_27_col}{Column giving the patient's indication of pain from a
+scale of 0-10.}
 
 \item{edisposition_28_col}{Column giving patient disposition for an EMS event
 identifying whether a patient was evaluated and care or services were

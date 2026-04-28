@@ -8,54 +8,11 @@
 #' tables, identifies eligible patients, and summarizes results for adult and
 #' pediatric populations.
 #'
-#' @param df A data frame or tibble containing EMS data with all relevant
-#'   columns. Default is `NULL`.
-#' @param patient_scene_table A data frame or tibble containing only epatient
-#'   and escene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eresponse
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param situation_table A data frame or tibble containing only the esituation
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param disposition_table A data frame or tibble containing only the
-#'   edisposition fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param vitals_table A data frame or tibble containing only the evitals fields
-#'   needed for this measure's calculations. Default is `NULL`.
-#' @param erecord_01_col The column representing the EMS record unique
-#'   identifier.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col The column for patient age numeric value.
-#' @param epatient_16_col The column for patient age unit (e.g., "Years",
-#'   "Months").
-#' @param esituation_02_col The column containing information on the presence of
-#'   injury.
-#' @param eresponse_05_col The column representing the 911 response type.
-#' @param edisposition_28_col The column for patient care disposition details.
-#' @param transport_disposition_col The column for patient transport
-#'   disposition.
-#' @param evitals_01_col The column for the time of pain scale measurement.
-#' @param evitals_27_col The column for the full set of pain scale scores.
-#' @param evitals_27_initial_col The column for the initial pain scale score.
-#' @param evitals_27_last_col The column for the last pain scale score.
-#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
-#'   `TRUE`, the function calculates a confidence interval for the proportion
-#'   estimate.
-#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
-#'   method used to calculate confidence intervals. Options are `"wilson"`
-#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
-#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
-#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
-#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
-#'   confidence interval). Defaults to 0.95.
-#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
-#'   applies a continuity correction to the Wilson score interval when `method =
-#'   "wilson"`. Defaults to `TRUE`.
-#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
+#' @inheritParams airway_01_population
+#' @inheritParams asthma_01_population
+#' @inheritParams trauma_01_population
+#' @inheritParams trauma_03_population
+#' @inheritParams airway_01
 #'
 #' @return A data.frame summarizing results for two population groups (All,
 #'   Adults and Peds) with the following columns:

@@ -10,42 +10,14 @@
 #' and calculates related ECG measures. This function segments the data by age
 #' into adult and pediatric populations.
 #'
-#' @param df A data frame or tibble containing EMS data with all relevant
-#'   columns. Default is `NULL`.
-#' @param patient_scene_table A data frame or tibble containing only epatient
-#'   and escene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eresponse
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param situation_table A data frame or tibble containing only the esituation
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param disposition_table A data frame or tibble containing only the
-#'   edisposition fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param vitals_table A data frame or tibble containing only the evitals fields
-#'   needed for this measure's calculations. Default is `NULL`.
-#' @param erecord_01_col The column representing the EMS record unique
-#'   identifier.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col The column for patient age numeric value.
-#' @param epatient_16_col The column for patient age unit (e.g., "Years",
-#'   "Months").
-#' @param esituation_02_col The column containing information on the presence of
-#'   injury.
-#' @param eresponse_05_col The column representing the 911 response type.
+#' @inheritParams airway_01_population
+#' @inheritParams asthma_01_population
+#' @inheritParams trauma_01_population
 #' @param evitals_01_col The column for the time of pain scale measurement.
-#' @param evitals_27_col The column for the pain scale score. Default is `NULL`.
 #' @param evitals_27_initial_col The column for the initial pain scale score.
 #'   Default is `NULL`.
 #' @param evitals_27_last_col The column for the last pain scale score. Default
 #'   is `NULL`.
-#' @param edisposition_28_col The column for patient care disposition details.
-#' @param transport_disposition_col The column for patient transport
-#'   disposition.
 #'
 #' @return A list that contains the following:
 #' * a tibble with counts for each filtering step,
