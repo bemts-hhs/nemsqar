@@ -316,7 +316,6 @@ syncope_01_population <- function(
   }
 
   # Validate date columns if provided ----
-  # Validate date columns if provided ----
   if (
     all(
       !rlang::quo_is_null(rlang::enquo(incident_date_col)),
