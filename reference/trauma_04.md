@@ -57,42 +57,42 @@ trauma_04(
 
 - df:
 
-  A data frame or tibble containing EMS data with all relevant columns.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing only epatient and escene fields as a
+  A data.frame or tibble containing at least ePatient, and eScene as a
   fact table.
 
 - response_table:
 
-  A data.frame or tibble containing only the eresponse fields needed for
-  this measure's calculations.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - situation_table:
 
-  A data.frame or tibble containing only the esituation fields needed
-  for this measure's calculations.
+  A data.frame or tibble containing at least the eSituation fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - vitals_table:
 
-  A data.frame or tibble containing only the evitals fields needed for
-  this measure's calculations.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - exam_table:
 
-  A data.frame or tibble containing only the eexam fields needed for
-  this measure's calculations.
+  A data.frame or tibble containing only the eExam fields needed for
+  this measure's calculations. Default is `NULL`.
 
 - procedures_table:
 
-  A data.frame or tibble containing only the eprocedures fields needed
-  for this measure's calculations.
+  A dataframe or tibble containing at least the eProcedures fields
+  needed.
 
 - injury_table:
 
-  A data.frame or tibble containing only the einjury fields needed for
-  this measure's calculations.
+  A data frame or tibble containing fields from eInjury needed for this
+  measure's calculations.
 
 - disposition_table:
 
@@ -116,115 +116,133 @@ trauma_04(
 
 - epatient_15_col:
 
-  The column for patient age numeric value.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  The column for patient age unit (e.g., "Years", "Months").
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - esituation_02_col:
 
-  The column containing information on the presence of injury.
+  Column indicating whether or not there was an injury.
 
 - eresponse_05_col:
 
-  The column representing the 911 response type.
+  Column that contains eResponse.05 or the response type.
 
 - eresponse_10_col:
 
-  Column name containing scene delay information.
+  Column name containing informatin about scene delays, if any, of the
+  EMS unit associated with the EMS event.
 
 - transport_disposition_col:
 
-  The column for patient transport disposition.
+  One or more unquoted column names (such as edisposition.12,
+  edisposition.30) containing transport disposition for an EMS event
+  identifying whether a transport occurred and by which unit.
 
 - edisposition_23_col:
 
-  Column name containing trauma hospital verification information.
+  Column name containing primary hospital capability associated with the
+  patient's condition for this transport (e.g., Trauma, STEMI, Peds,
+  etc.).
 
 - evitals_06_col:
 
-  Column name containing systolic blood pressure (SBP) values.
+  Numeric column containing systolic blood pressure values.
 
 - evitals_10_col:
 
-  Column name containing heart rate values.
+  Column name containing the patient's heart rate expressed as a number
+  per minute.
 
 - evitals_12_col:
 
-  Column name containing pulse oximetry values.
+  Numeric column containing pulse oximetry values.
 
 - evitals_14_col:
 
-  Column name containing capillary refill information.
+  Column name containing the patient's respiratory rate expressed as a
+  number per minute.
 
 - evitals_15_col:
 
-  Column name containing respiratory effort values.
+  Column name containing the patient's respiratory effort.
 
 - evitals_21_col:
 
-  Column name containing Glasgow Coma Scale (GCS) Motor values.
+  Column name containing the patient's Glasgow Coma Score Motor
+  response.
 
 - eexam_16_col:
 
-  Column name containing extremities assessment details.
+  Column name containing the assessment findings associated with the
+  patient's extremities.
 
 - eexam_20_col:
 
-  Column name containing neurological assessment details.
+  Column name containing the assessment findings of the patient's
+  neurological examination.
 
 - eexam_23_col:
 
-  Column name containing lung assessment details.
+  Column name containing the assessment findings associated with the
+  patient's lungs.
 
 - eexam_25_col:
 
-  Column name containing chest assessment details.
+  Column name containing the assessment findings associated with the
+  patient's chest.
 
 - eprocedures_03_col:
 
-  Column name containing airway management or tourniquet usage details.
+  Column containing procedure codes with or without procedure names.
 
 - einjury_01_col:
 
-  Column name containing injury cause details.
+  Column name containing the category of the reported/suspected external
+  cause of the injury.
 
 - einjury_03_col:
 
-  Column name containing trauma triage steps 1 and 2 information.
+  Column describing Trauma triage criteria for the red boxes (Injury
+  Patterns and Mental Status and Vital Signs) in the 2021 ACS National
+  Guideline for the Field Triage of Injured Patients.
 
 - einjury_04_col:
 
-  Column name containing trauma triage steps 3 and 4 information.
+  Column name containing Trauma triage criteria for the yellow boxes
+  (Mechanism of Injury and EMS Judgment) in the current ACS National
+  Guideline for the Field Triage of Injured Patients.
 
 - einjury_09_col:
 
-  Column name containing fall height information.
+  Column name containing the distance in feet the patient fell, measured
+  from the lowest point of the patient to the ground.
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 
@@ -292,6 +310,8 @@ Nicolas Foss, Ed.D., MS
   trauma_04(
     df = test_data,
     erecord_01_col = erecord_01,
+    incident_date_col = NULL,
+    patient_DOB_col = NULL,
     epatient_15_col = epatient_15,
     epatient_16_col = epatient_16,
     eresponse_05_col = eresponse_05,
@@ -358,7 +378,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating Trauma-04 ──
 #> 
 #> 
-#> ✔ Function completed in 0.47s.
+#> ✔ Function completed in 0.49s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 3 × 8

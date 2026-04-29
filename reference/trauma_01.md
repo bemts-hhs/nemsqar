@@ -39,36 +39,36 @@ trauma_01(
 
 - df:
 
-  A data frame or tibble containing EMS records. Default is `NULL`.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data frame or tibble containing only epatient and escene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data frame or tibble containing only the eresponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - situation_table:
 
-  A data.frame or tibble containing only the esituation fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eSituation fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - disposition_table:
 
   A data.frame or tibble containing only the edisposition fields needed
-  for this measure's calculations. Default is `NULL`.
+  for this measure's calculations.
 
 - vitals_table:
 
-  A data.frame or tibble containing only the evitals fields needed for
-  this measure's calculations. Default is `NULL`.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - erecord_01_col:
 
-  Column name representing the EMS record ID.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -83,63 +83,66 @@ trauma_01(
 
 - epatient_15_col:
 
-  Column name for the patient's age in numeric format.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column name for the unit of age (e.g., "Years", "Months").
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - esituation_02_col:
 
-  Column name indicating if the situation involved an injury.
+  Column indicating whether or not there was an injury.
 
 - eresponse_05_col:
 
-  Column name for the type of EMS response (e.g., 911 call).
+  Column that contains eResponse.05 or the response type.
 
 - evitals_23_col:
 
-  Column name for the Glasgow Coma Scale (GCS) total score.
+  Column for Glasgow Coma Scale (GCS) scores.
 
 - evitals_26_col:
 
-  Column name for AVPU (Alert, Voice, Pain, Unresponsive) status.
+  Column for AVPU alertness levels.
 
 - evitals_27_col:
 
-  Column name for the pain scale assessment.
+  Column giving the patient's indication of pain from a scale of 0-10.
 
 - edisposition_28_col:
 
-  Column name for patient care disposition details.
+  Column giving patient disposition for an EMS event identifying whether
+  a patient was evaluated and care or services were provided.
 
 - transport_disposition_col:
 
-  Column name for transport disposition details.
+  One or more unquoted column names (such as edisposition.12,
+  edisposition.30) containing transport disposition for an EMS event
+  identifying whether a transport occurred and by which unit.
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 
@@ -194,6 +197,8 @@ Nicolas Foss, Ed.D., MS
   trauma_01(
     df = test_data,
     erecord_01_col = erecord_01,
+    incident_date_col = NULL,
+    patient_DOB_col = NULL,
     epatient_15_col = epatient_15,
     epatient_16_col = epatient_16,
     eresponse_05_col = eresponse_05,

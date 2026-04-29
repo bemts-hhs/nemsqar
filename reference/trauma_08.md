@@ -1,6 +1,10 @@
 # Trauma-08 Calculation
 
 This function calculates the Trauma-08 measure, which evaluates the
+completeness ' of pain scale documentation for patients experiencing
+traumatic injury. It determines ' the total population, adult
+population, and pediatric population meeting the criteria ' for the
+Trauma-08 measure.
 
 ## Usage
 
@@ -35,37 +39,36 @@ trauma_08(
 
 - df:
 
-  A data frame or tibble containing EMS data with all relevant columns.
-  Default is `NULL`.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data frame or tibble containing only epatient and escene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data frame or tibble containing only the eresponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - situation_table:
 
-  A data frame or tibble containing only the esituation fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eSituation fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - disposition_table:
 
-  A data frame or tibble containing only the edisposition fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing only the edisposition fields needed
+  for this measure's calculations.
 
 - vitals_table:
 
-  A data frame or tibble containing only the evitals fields needed for
-  this measure's calculations. Default is `NULL`.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - erecord_01_col:
 
-  A column specifying unique patient records.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -80,62 +83,62 @@ trauma_08(
 
 - epatient_15_col:
 
-  A column indicating the patient’s age in numeric form.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  A column specifying the unit of patient age (e.g., "Years", "Days").
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - esituation_02_col:
 
-  A column containing information about the nature of the patient’s
-  condition (e.g., injury type).
+  Column indicating whether or not there was an injury.
 
 - eresponse_05_col:
 
-  A column specifying the type of response (e.g., 911 codes).
+  Column that contains eResponse.05 or the response type.
 
 - transport_disposition_col:
 
-  A column specifying transport disposition for the patient.
+  One or more unquoted column names (such as edisposition.12,
+  edisposition.30) containing transport disposition for an EMS event
+  identifying whether a transport occurred and by which unit.
 
 - evitals_06_col:
 
-  A column containing systolic blood pressure (SBP) data from initial
-  vital signs.
+  Numeric column containing systolic blood pressure values.
 
 - evitals_14_col:
 
-  A column containing respiratory rate data from initial vital signs.
+  Column containing data on patient's respiratory rate expressed as a
+  number per minute.
 
 - evitals_23_col:
 
-  A column containing total Glasgow Coma Scale (GCS) scores from initial
-  vital signs.
+  Column for Glasgow Coma Scale (GCS) scores.
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 
@@ -222,7 +225,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating Trauma-08 ──
 #> 
 #> 
-#> ✔ Function completed in 0.16s.
+#> ✔ Function completed in 0.17s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 2 × 8

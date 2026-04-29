@@ -45,23 +45,22 @@ airway_18(
 
 - df:
 
-  A data frame or tibble containing the dataset to be processed. Default
-  is `NULL`.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data frame or tibble containing only ePatient and eScene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - procedures_table:
 
-  A data frame or tibble containing only the eProcedures fields needed
-  for this measure's calculations. Default is `NULL`.
+  A dataframe or tibble containing at least the eProcedures fields
+  needed.
 
 - vitals_table:
 
-  A data frame or tibble containing only the eVitals fields needed for
-  this measure's calculations. Default is `NULL`.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - airway_table:
 
@@ -70,36 +69,40 @@ airway_18(
 
 - response_table:
 
-  A data frame or tibble containing only the eResponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - erecord_01_col:
 
-  Column name containing the unique patient record identifier.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
-  Column name containing the incident date. Default is `NULL`.
+  Column that contains the incident date. This defaults to `NULL` as it
+  is optional in case not available due to PII restrictions.
 
 - patient_DOB_col:
 
-  Column name containing the patient's date of birth. Default is `NULL`.
+  Column that contains the patient's date of birth. This defaults to
+  `NULL` as it is optional in case not available due to PII
+  restrictions.
 
 - epatient_15_col:
 
-  Column name for patient information (exact purpose unclear).
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column name for patient information (exact purpose unclear).
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column name for emergency response codes.
+  Column that contains eResponse.05 or the response type.
 
 - eprocedures_01_col:
 
-  Column name for procedure times or other related data.
+  Date-time or POSIXct column for procedures
 
 - eprocedures_02_col:
 
@@ -108,51 +111,54 @@ airway_18(
 
 - eprocedures_03_col:
 
-  Column name for procedure codes.
+  Column containing procedure codes with or without procedure names.
 
 - eprocedures_06_col:
 
-  Column name for procedure success codes.
+  Column indicating whether or not procedure was successful.
 
 - eairway_02_col:
 
-  Column name for airway procedure data (datetime). Default is `NULL`.
+  Column name for date/time airway device placement confirmation.
+  Default is `NULL`.
 
 - eairway_04_col:
 
-  Column name for airway procedure data. Default is `NULL`.
+  Column name for confirmation of airway device placement. Default is
+  `NULL`.
 
 - evitals_01_col:
 
-  Column name for vital signs data (datetime).
+  Date-time or POSIXct column containing vital signs date/time
 
 - evitals_16_col:
 
-  Column name for additional vital signs data.
+  Column with numeric value of the patient's exhaled end tidal carbon
+  dioxide (ETCO2) level measured as a unit of pressure in millimeters of
+  mercury (mmHg), percentage or, kilopascal (kPa).
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 

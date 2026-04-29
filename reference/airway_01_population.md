@@ -41,17 +41,17 @@ airway_01_population(
 
 - patient_scene_table:
 
-  A data.frame or tibble containing at least epatient, escene, and
-  earrest.01 fields as a fact table.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data.frame or tibble containing at least the eresponse fields needed
+  A data.frame or tibble containing at least the eResponse fields needed
   for this measure's calculations.
 
 - arrest_table:
 
-  A data.frame or tibble containing at least the earrest fields needed
+  A data.frame or tibble containing at least the eArrest fields needed
   for this measure's calculations.
 
 - procedures_table:
@@ -93,7 +93,7 @@ airway_01_population(
 
 - eresponse_05_col:
 
-  Column that contains eResponse.05.
+  Column that contains eResponse.05 or the response type.
 
 - evitals_01_col:
 
@@ -101,7 +101,7 @@ airway_01_population(
 
 - evitals_06_col:
 
-  Numeric column containing systolic blood pressure values
+  Numeric column containing systolic blood pressure values.
 
 - evitals_12_col:
 

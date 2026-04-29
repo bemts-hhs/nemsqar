@@ -31,56 +31,52 @@ stroke_01_population(
 
 - df:
 
-  A data frame or tibble containing the dataset. Each row should
-  represent a unique patient encounter.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data frame or tibble containing only epatient and escene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data frame or tibble containing only the eresponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - situation_table:
 
-  A data.frame or tibble containing only the esituation fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eSituation fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - vitals_table:
 
-  A data.frame or tibble containing only the evitals fields needed for
-  this measure's calculations. Default is `NULL`.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - erecord_01_col:
 
-  The column containing unique record identifiers for each encounter.
+  The column representing the EMS record unique identifier.
 
 - eresponse_05_col:
 
-  The column containing EMS response codes, which should include 911
-  response codes.
+  Column that contains eResponse.05 or the response type.
 
 - esituation_11_col:
 
-  The column containing the primary impression codes or descriptions
-  related to the situation.
+  Column that contains eSituation.11 provider primary impression data.
 
 - esituation_12_col:
 
-  The column containing secondary impression codes or descriptions
-  related to the situation.
+  Column that contains all eSituation.12 values as (possible a single
+  comma-separated list), provider secondary impression data.
 
 - evitals_23_col:
 
-  The column containing the Glasgow Coma Scale (GCS) score.
+  Column for Glasgow Coma Scale (GCS) scores.
 
 - evitals_26_col:
 
-  The column containing the AVPU (alert, verbal, pain, unresponsive)
-  scale value.
+  Column for AVPU alertness levels.
 
 - evitals_29_col:
 

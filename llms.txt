@@ -151,13 +151,15 @@ Washick (Washington D.C. Fire) for all their input and consultation!
   : Asthma-01 Calculation
 - [`asthma_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/asthma_01_population.md)
   : Asthma-01 Populations
+- [`compare_formals()`](https://bemts-hhs.github.io/nemsqar/reference/compare_formals.md)
+  : Compare formals across functions
 - [`hypoglycemia_01()`](https://bemts-hhs.github.io/nemsqar/reference/hypoglycemia_01.md)
   : Hypoglycemia-01
 - [`hypoglycemia_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/hypoglycemia_01_population.md)
   : Hypoglycemia-01 Populations
 - [`nemsqa_binomial_confint()`](https://bemts-hhs.github.io/nemsqar/reference/nemsqa_binomial_confint.md)
-  **\[experimental\]** : Wilson and Clopper-Pearson Confidence Intervals
-  for Binomial Proportions
+  : Wilson and Clopper-Pearson Confidence Intervals for Binomial
+  Proportions
 - [`nemsqar_airway_table`](https://bemts-hhs.github.io/nemsqar/reference/nemsqar_airway_table.md)
   : Synthetic Test Data for eAirway Fields in National EMS Information
   System
@@ -261,4 +263,26 @@ Washick (Washington D.C. Fire) for all their input and consultation!
   : TTR-01 Calculation
 - [`ttr_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/ttr_01_population.md)
   : TTR-01 Populations
+- [`validate_character_factor()`](https://bemts-hhs.github.io/nemsqar/reference/validate_character_factor.md)
+  : Validate a Character or Factor Input
+- [`validate_choice()`](https://bemts-hhs.github.io/nemsqar/reference/validate_choice.md)
+  : Validate Choice
+- [`validate_class()`](https://bemts-hhs.github.io/nemsqar/reference/validate_class.md)
+  : Validate Class
+- [`validate_complete()`](https://bemts-hhs.github.io/nemsqar/reference/validate_complete.md)
+  : Validate Complete Input
+- [`validate_data_pull()`](https://bemts-hhs.github.io/nemsqar/reference/validate_data_pull.md)
+  : Validate Data Extraction
+- [`validate_data_structure()`](https://bemts-hhs.github.io/nemsqar/reference/validate_data_structure.md)
+  : Validate Data Structure
+- [`validate_error_type()`](https://bemts-hhs.github.io/nemsqar/reference/validate_error_type.md)
+  : Validate Error Type
+- [`validate_length()`](https://bemts-hhs.github.io/nemsqar/reference/validate_length.md)
+  : Validate Length of an Input
+- [`validate_names()`](https://bemts-hhs.github.io/nemsqar/reference/validate_names.md)
+  : Validate Column Names
+- [`validate_numeric()`](https://bemts-hhs.github.io/nemsqar/reference/validate_numeric.md)
+  : Validate Numeric Input
+- [`validate_set()`](https://bemts-hhs.github.io/nemsqar/reference/validate_set.md)
+  : Validate Set Equality
 

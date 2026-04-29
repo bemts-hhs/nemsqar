@@ -40,18 +40,18 @@ hypoglycemia_01(
 
 - df:
 
-  A data frame or tibble containing emergency response records. Default
-  is `NULL`.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing at least ePatient and eScene fields
-  as a fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
   A data.frame or tibble containing at least the eResponse fields needed
-  for this measure's calculations. Default is `NULL`.
+  for this measure's calculations.
 
 - situation_table:
 
@@ -60,8 +60,7 @@ hypoglycemia_01(
 
 - vitals_table:
 
-  A data.frame or tibble containing at least the eVitals fields needed
-  for this measure's calculations. Default is `NULL`.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - medications_table:
 
@@ -70,12 +69,12 @@ hypoglycemia_01(
 
 - procedures_table:
 
-  A data.frame or tibble containing at least the eProcedures fields
-  needed for this measure's calculations. Default is `NULL`.
+  A dataframe or tibble containing at least the eProcedures fields
+  needed.
 
 - erecord_01_col:
 
-  Column representing the unique record identifier.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -95,19 +94,20 @@ hypoglycemia_01(
 - epatient_16_col:
 
   Column representing the patient's age unit ("Years", "Months", "Days",
-  "Hours", or "Minute").
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column containing response type codes.
+  Column that contains eResponse.05 or the response type.
 
 - esituation_11_col:
 
-  Column for primary impression fields, containing ICD-10 codes.
+  Column that contains eSituation.11 provider primary impression data.
 
 - esituation_12_col:
 
-  Column for secondary impression fields, containing ICD-10 codes.
+  Column that contains all eSituation.12 values as (possible a single
+  comma-separated list), provider secondary impression data.
 
 - evitals_18_col:
 
@@ -123,35 +123,36 @@ hypoglycemia_01(
 
 - emedications_03_col:
 
-  Column for administered medications.
+  Column that contains all medication administered to the patient
+  (eMedications.03) values as a single comma-separated list per distinct
+  eRecord.01 ID.
 
 - eprocedures_03_col:
 
-  Column for procedures performed.
+  Column containing procedure codes with or without procedure names.
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 
@@ -209,6 +210,8 @@ test_data <- tibble::tibble(
 hypoglycemia_01(
   df = test_data,
   erecord_01_col = erecord_01,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
   epatient_15_col = epatient_15,
   epatient_16_col = epatient_16,
   eresponse_05_col = eresponse_05,
@@ -249,7 +252,7 @@ hypoglycemia_01(
 #> ── Calculating Hypoglycemia-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.25s.
+#> ✔ Function completed in 0.26s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 3 × 8

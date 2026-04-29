@@ -32,32 +32,31 @@ respiratory_01_population(
 
 - df:
 
-  A data frame containing incident data with each row representing an
-  observation.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing at least epatient and escene fields
-  as a fact table.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data.frame or tibble containing at least the eresponse fields needed
+  A data.frame or tibble containing at least the eResponse fields needed
   for this measure's calculations.
 
 - situation_table:
 
-  A data.frame or tibble containing at least the esituation fields
-  needed for this measure's calculations.
+  A data.frame or tibble containing at least the eSituation fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - vitals_table:
 
-  A data.frame or tibble containing at least the evitals fields needed
-  for this measure's calculations.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - erecord_01_col:
 
-  Unique Patient ID
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -72,33 +71,34 @@ respiratory_01_population(
 
 - epatient_15_col:
 
-  Column giving the calculated age value.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column giving the provided age unit value.
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column name for 911 response codes (e.g., 2205001, 2205003, 2205009).
+  Column that contains eResponse.05 or the response type.
 
 - esituation_11_col:
 
-  Column name for primary impression codes related to respiratory
-  distress.
+  Column that contains eSituation.11 provider primary impression data.
 
 - esituation_12_col:
 
-  Column name for secondary impression codes related to respiratory
-  distress.
+  Column that contains all eSituation.12 values as (possible a single
+  comma-separated list), provider secondary impression data.
 
 - evitals_12_col:
 
-  Column name for the first vital sign measurement.
+  Numeric column containing pulse oximetry values.
 
 - evitals_14_col:
 
-  Column name for the second vital sign measurement.
+  Column containing data on patient's respiratory rate expressed as a
+  number per minute.
 
 ## Value
 

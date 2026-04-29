@@ -19,7 +19,7 @@ administered."><meta property="og:image" content="https://bemts-hhs.github.io/ne
 
     <a class="navbar-brand me-2" href="../index.html">nemsqar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -40,7 +40,7 @@ administered."><meta property="og:image" content="https://bemts-hhs.github.io/ne
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Pediatrics-03B Calculation</h1>
-      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/v1.1.3/R/pediatrics_03b.R" class="external-link"><code>R/pediatrics_03b.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/main/R/pediatrics_03b.R" class="external-link"><code>R/pediatrics_03b.R</code></a></small>
       <div class="d-none name"><code>pediatrics_03b.Rd</code></div>
     </div>
 
@@ -85,18 +85,18 @@ administered.</p>
 
 
 <dl><dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
-<dd><p>A data frame or tibble containing emergency response records.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.</p></dd>
 
 
 <dt id="arg-patient-scene-table">patient_scene_table<a class="anchor" aria-label="anchor" href="#arg-patient-scene-table"></a></dt>
-<dd><p>A data.frame or tibble containing only ePatient
-and eScene fields as a fact table. Default is <code>NULL</code>.</p></dd>
+<dd><p>A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.</p></dd>
 
 
 <dt id="arg-response-table">response_table<a class="anchor" aria-label="anchor" href="#arg-response-table"></a></dt>
-<dd><p>A data.frame or tibble containing only the eResponse
-fields needed for this measure's calculations. Default is <code>NULL</code>.</p></dd>
+<dd><p>A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.</p></dd>
 
 
 <dt id="arg-exam-table">exam_table<a class="anchor" aria-label="anchor" href="#arg-exam-table"></a></dt>
@@ -105,13 +105,14 @@ needed for this measure's calculations. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-medications-table">medications_table<a class="anchor" aria-label="anchor" href="#arg-medications-table"></a></dt>
-<dd><p>A data.frame or tibble containing only the
+<dd><p>A data.frame or tibble containing at least the
 eMedications fields needed for this measure's calculations. Default is
 <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-erecord-col">erecord_01_col<a class="anchor" aria-label="anchor" href="#arg-erecord-col"></a></dt>
-<dd><p>Column for unique EMS record identifiers.</p></dd>
+<dd><p>The column representing the EMS record unique
+identifier.</p></dd>
 
 
 <dt id="arg-incident-date-col">incident_date_col<a class="anchor" aria-label="anchor" href="#arg-incident-date-col"></a></dt>
@@ -127,55 +128,61 @@ restrictions.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_15_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>Column giving the calculated age value.</p></dd>
+<dd><p>Column representing the patient's numeric age agnostic
+of unit.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_16_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>Column giving the provided age unit value.</p></dd>
+<dd><p>Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").</p></dd>
 
 
 <dt id="arg-eresponse-col">eresponse_05_col<a class="anchor" aria-label="anchor" href="#arg-eresponse-col"></a></dt>
-<dd><p>Column containing the EMS response codes.</p></dd>
+<dd><p>Column that contains eResponse.05 or the response
+type.</p></dd>
 
 
 <dt id="arg-eexam-col">eexam_01_col<a class="anchor" aria-label="anchor" href="#arg-eexam-col"></a></dt>
-<dd><p>Column containing documented weight information.</p></dd>
+<dd><p>Column containing estimated patient body weight in
+kilograms.</p></dd>
 
 
 <dt id="arg-eexam-col">eexam_02_col<a class="anchor" aria-label="anchor" href="#arg-eexam-col"></a></dt>
-<dd><p>Another column for weight documentation, if applicable.</p></dd>
+<dd><p>Column containing data on length based tape measure for
+patients.</p></dd>
 
 
 <dt id="arg-emedications-col">emedications_03_col<a class="anchor" aria-label="anchor" href="#arg-emedications-col"></a></dt>
-<dd><p>Column indicating medication administration.</p></dd>
+<dd><p>Column that contains all medication administered
+to the patient (eMedications.03) values as a single comma-separated list per
+distinct eRecord.01 ID.</p></dd>
 
 
 <dt id="arg-emedications-col">emedications_04_col<a class="anchor" aria-label="anchor" href="#arg-emedications-col"></a></dt>
-<dd><p>Column listing medications administered.</p></dd>
+<dd><p>Column indicating route medication was
+administered to the patient.</p></dd>
 
 
 <dt id="arg-confidence-interval">confidence_interval<a class="anchor" aria-label="anchor" href="#arg-confidence-interval"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a> Logical. If
-<code>TRUE</code>, the function calculates a confidence interval for the proportion
-estimate.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, the function calculates a
+confidence interval for the proportion estimate.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>Character. Specifies the
-method used to calculate confidence intervals. Options are <code>"wilson"</code>
-(Wilson score interval) and <code>"clopper-pearson"</code> (exact binomial interval).
-Partial matching is supported, so <code>"w"</code> and <code>"c"</code> can be used as shorthand.</p></dd>
+<dd><p>Character. Specifies the method used to calculate confidence
+intervals. Options are <code>"wilson"</code> (Wilson score interval) and
+<code>"clopper-pearson"</code> (exact binomial interval). Partial matching is supported,
+so <code>"w"</code> and <code>"c"</code> can be used as shorthand.</p></dd>
 
 
 <dt id="arg-conf-level">conf.level<a class="anchor" aria-label="anchor" href="#arg-conf-level"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>Numeric. The confidence
-level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
-confidence interval). Defaults to 0.95.</p></dd>
+<dd><p>Numeric. The confidence level for the interval, expressed
+as a proportion (e.g., 0.95 for a 95% confidence interval). Defaults to 0.95.</p></dd>
 
 
 <dt id="arg-correct">correct<a class="anchor" aria-label="anchor" href="#arg-correct"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>Logical. If <code>TRUE</code>,
-applies a continuity correction to the Wilson score interval when <code>method = "wilson"</code>. Defaults to <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, applies a continuity correction to the
+Wilson score interval when <code>method = "wilson"</code>. Defaults to <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -256,7 +263,7 @@ of decimal places.</p></li>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Calculating Pediatrics-03b</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Function completed in <span style="color: #00BB00;">0.15s</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Function completed in <span style="color: #00BB00;">0.14s</span>.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In `prop.test()`: Chi-squared approximation may be incorrect for any n &lt; 10.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 1 × 8</span></span>

@@ -36,18 +36,18 @@ pediatrics_03b_population(
 
 - df:
 
-  A data frame or tibble containing emergency response records. Default
-  is `NULL`.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing only ePatient and eScene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data.frame or tibble containing only the eResponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - exam_table:
 
@@ -56,12 +56,12 @@ pediatrics_03b_population(
 
 - medications_table:
 
-  A data.frame or tibble containing only the eMedications fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eMedications fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - erecord_01_col:
 
-  Column for unique EMS record identifiers.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -76,31 +76,34 @@ pediatrics_03b_population(
 
 - epatient_15_col:
 
-  Column giving the calculated age value.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column giving the provided age unit value.
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column containing the EMS response codes.
+  Column that contains eResponse.05 or the response type.
 
 - eexam_01_col:
 
-  Column containing documented weight information.
+  Column containing estimated patient body weight in kilograms.
 
 - eexam_02_col:
 
-  Another column for weight documentation, if applicable.
+  Column containing data on length based tape measure for patients.
 
 - emedications_03_col:
 
-  Column indicating medication administration.
+  Column that contains all medication administered to the patient
+  (eMedications.03) values as a single comma-separated list per distinct
+  eRecord.01 ID.
 
 - emedications_04_col:
 
-  Column listing medications administered.
+  Column indicating route medication was administered to the patient.
 
 ## Value
 

@@ -9,7 +9,7 @@ of interest needed to perform calculations to obtain performance data."><meta pr
 
     <a class="navbar-brand me-2" href="../index.html">nemsqar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,7 +30,7 @@ of interest needed to perform calculations to obtain performance data."><meta pr
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Airway-18 Populations</h1>
-      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/v1.1.3/R/airway_18_population.R" class="external-link"><code>R/airway_18_population.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/main/R/airway_18_population.R" class="external-link"><code>R/airway_18_population.R</code></a></small>
       <div class="d-none name"><code>airway_18_population.Rd</code></div>
     </div>
 
@@ -70,24 +70,23 @@ of interest needed to perform calculations to obtain performance data.</p>
 
 
 <dl><dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
-<dd><p>A data frame or tibble containing the dataset to be processed.
-Default is <code>NULL</code>.</p></dd>
+<dd><p>A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.</p></dd>
 
 
 <dt id="arg-patient-scene-table">patient_scene_table<a class="anchor" aria-label="anchor" href="#arg-patient-scene-table"></a></dt>
-<dd><p>A data frame or tibble containing only ePatient
-and eScene fields as a fact table. Default is <code>NULL</code>.</p></dd>
+<dd><p>A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.</p></dd>
 
 
 <dt id="arg-procedures-table">procedures_table<a class="anchor" aria-label="anchor" href="#arg-procedures-table"></a></dt>
-<dd><p>A data frame or tibble containing only the
-eProcedures fields needed for this measure's calculations. Default is
-<code>NULL</code>.</p></dd>
+<dd><p>A dataframe or tibble containing at least the
+eProcedures fields needed.</p></dd>
 
 
 <dt id="arg-vitals-table">vitals_table<a class="anchor" aria-label="anchor" href="#arg-vitals-table"></a></dt>
-<dd><p>A data frame or tibble containing only the eVitals fields
-needed for this measure's calculations. Default is <code>NULL</code>.</p></dd>
+<dd><p>A dataframe or tibble containing at least the eVitals
+fields needed.</p></dd>
 
 
 <dt id="arg-airway-table">airway_table<a class="anchor" aria-label="anchor" href="#arg-airway-table"></a></dt>
@@ -96,12 +95,12 @@ needed for this measure's calculations. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-response-table">response_table<a class="anchor" aria-label="anchor" href="#arg-response-table"></a></dt>
-<dd><p>A data frame or tibble containing only the eResponse
-fields needed for this measure's calculations. Default is <code>NULL</code>.</p></dd>
+<dd><p>A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.</p></dd>
 
 
 <dt id="arg-erecord-col">erecord_01_col<a class="anchor" aria-label="anchor" href="#arg-erecord-col"></a></dt>
-<dd><p>Column name containing the unique patient record
+<dd><p>The column representing the EMS record unique
 identifier.</p></dd>
 
 
@@ -118,22 +117,22 @@ restrictions.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_15_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>Column name for patient information (exact purpose
-unclear).</p></dd>
+<dd><p>Column representing the patient's numeric age agnostic
+of unit.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_16_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>Column name for patient information (exact purpose
-unclear).</p></dd>
+<dd><p>Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").</p></dd>
 
 
 <dt id="arg-eresponse-col">eresponse_05_col<a class="anchor" aria-label="anchor" href="#arg-eresponse-col"></a></dt>
-<dd><p>Column name for emergency response codes.</p></dd>
+<dd><p>Column that contains eResponse.05 or the response
+type.</p></dd>
 
 
 <dt id="arg-eprocedures-col">eprocedures_01_col<a class="anchor" aria-label="anchor" href="#arg-eprocedures-col"></a></dt>
-<dd><p>Column name for procedure times or other related
-data.</p></dd>
+<dd><p>Date-time or POSIXct column for procedures</p></dd>
 
 
 <dt id="arg-eprocedures-col">eprocedures_02_col<a class="anchor" aria-label="anchor" href="#arg-eprocedures-col"></a></dt>
@@ -142,29 +141,34 @@ performed prior to EMS care being provided.</p></dd>
 
 
 <dt id="arg-eprocedures-col">eprocedures_03_col<a class="anchor" aria-label="anchor" href="#arg-eprocedures-col"></a></dt>
-<dd><p>Column name for procedure codes.</p></dd>
+<dd><p>Column containing procedure codes with or without
+procedure names.</p></dd>
 
 
 <dt id="arg-eprocedures-col">eprocedures_06_col<a class="anchor" aria-label="anchor" href="#arg-eprocedures-col"></a></dt>
-<dd><p>Column name for procedure success codes.</p></dd>
+<dd><p>Column indicating whether or not procedure was
+successful.</p></dd>
 
 
 <dt id="arg-eairway-col">eairway_02_col<a class="anchor" aria-label="anchor" href="#arg-eairway-col"></a></dt>
-<dd><p>Column name for airway procedure data (datetime).
-Default is <code>NULL</code>.</p></dd>
+<dd><p>Column name for date/time airway device placement
+confirmation. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-eairway-col">eairway_04_col<a class="anchor" aria-label="anchor" href="#arg-eairway-col"></a></dt>
-<dd><p>Column name for airway procedure data. Default is
-<code>NULL</code>.</p></dd>
+<dd><p>Column name for confirmation of airway device
+placement. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_01_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name for vital signs data (datetime).</p></dd>
+<dd><p>Date-time or POSIXct column containing vital signs
+date/time</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_16_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name for additional vital signs data.</p></dd>
+<dd><p>Column with numeric value of the patient's exhaled end
+tidal carbon dioxide (ETCO2) level measured as a unit of pressure in
+millimeters of mercury (mmHg), percentage or, kilopascal (kPa).</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -176,8 +180,7 @@ Default is <code>NULL</code>.</p></dd>
 </ul></div>
     <div class="section level2">
     <h2 id="author">Author<a class="anchor" aria-label="anchor" href="#author"></a></h2>
-    <p>Nicolas Foss, Ed.D., MS</p>
-<p>Nicolas Foss, Ed.D., MS, Samuel Kordik, BBA, BS</p>
+    <p>Nicolas Foss, Ed.D., MS, Samuel Kordik, BBA, BS</p>
     </div>
 
     <div class="section level2">

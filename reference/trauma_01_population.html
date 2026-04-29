@@ -17,7 +17,7 @@ pediatric populations."><meta property="og:image" content="https://bemts-hhs.git
 
     <a class="navbar-brand me-2" href="../index.html">nemsqar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ pediatric populations."><meta property="og:image" content="https://bemts-hhs.git
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Trauma-01 Population</h1>
-      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/v1.1.3/R/trauma_01_population.R" class="external-link"><code>R/trauma_01_population.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/main/R/trauma_01_population.R" class="external-link"><code>R/trauma_01_population.R</code></a></small>
       <div class="d-none name"><code>trauma_01_population.Rd</code></div>
     </div>
 
@@ -80,80 +80,84 @@ pediatric populations.</p>
 
 
 <dl><dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
-<dd><p>A data frame or tibble containing EMS records. Default is <code>NULL</code>.</p></dd>
+<dd><p>A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.</p></dd>
 
 
 <dt id="arg-patient-scene-table">patient_scene_table<a class="anchor" aria-label="anchor" href="#arg-patient-scene-table"></a></dt>
-<dd><p>A data frame or tibble containing only epatient
-and escene fields as a fact table. Default is <code>NULL</code>.</p></dd>
+<dd><p>A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.</p></dd>
 
 
 <dt id="arg-response-table">response_table<a class="anchor" aria-label="anchor" href="#arg-response-table"></a></dt>
-<dd><p>A data frame or tibble containing only the eresponse
-fields needed for this measure's calculations. Default is <code>NULL</code>.</p></dd>
+<dd><p>A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.</p></dd>
 
 
 <dt id="arg-situation-table">situation_table<a class="anchor" aria-label="anchor" href="#arg-situation-table"></a></dt>
-<dd><p>A data.frame or tibble containing only the esituation
-fields needed for this measure's calculations. Default is <code>NULL</code>.</p></dd>
+<dd><p>A data.frame or tibble containing at least the
+eSituation fields needed for this measure's calculations. Default is
+<code>NULL</code>.</p></dd>
 
 
 <dt id="arg-disposition-table">disposition_table<a class="anchor" aria-label="anchor" href="#arg-disposition-table"></a></dt>
 <dd><p>A data.frame or tibble containing only the
-edisposition fields needed for this measure's calculations. Default is
-<code>NULL</code>.</p></dd>
+edisposition fields needed for this measure's calculations.</p></dd>
 
 
 <dt id="arg-vitals-table">vitals_table<a class="anchor" aria-label="anchor" href="#arg-vitals-table"></a></dt>
-<dd><p>A data.frame or tibble containing only the evitals fields
-needed for this measure's calculations. Default is <code>NULL</code>.</p></dd>
+<dd><p>A dataframe or tibble containing at least the eVitals
+fields needed.</p></dd>
 
 
 <dt id="arg-erecord-col">erecord_01_col<a class="anchor" aria-label="anchor" href="#arg-erecord-col"></a></dt>
-<dd><p>Column name representing the EMS record ID.</p></dd>
+<dd><p>The column representing the EMS record unique
+identifier.</p></dd>
 
 
 <dt id="arg-incident-date-col">incident_date_col<a class="anchor" aria-label="anchor" href="#arg-incident-date-col"></a></dt>
-<dd><p>Column name for the incident date. Default is
-<code>NULL</code>.</p></dd>
+<dd><p>Column that contains the incident date. This
+defaults to <code>NULL</code> as it is optional in case not available due to PII
+restrictions.</p></dd>
 
 
 <dt id="arg-patient-dob-col">patient_DOB_col<a class="anchor" aria-label="anchor" href="#arg-patient-dob-col"></a></dt>
-<dd><p>Column name for the patient's date of birth. Default
-is <code>NULL</code>.</p></dd>
+<dd><p>Column that contains the patient's date of birth. This
+defaults to <code>NULL</code> as it is optional in case not available due to PII
+restrictions.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_15_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>Column name for the patient's age in numeric format.</p></dd>
+<dd><p>Column representing the patient's numeric age agnostic
+of unit.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_16_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>Column name for the unit of age (e.g., "Years",
-"Months").</p></dd>
+<dd><p>Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").</p></dd>
 
 
 <dt id="arg-esituation-col">esituation_02_col<a class="anchor" aria-label="anchor" href="#arg-esituation-col"></a></dt>
-<dd><p>Column name indicating if the situation involved an
+<dd><p>Column indicating whether or not there was an
 injury.</p></dd>
 
 
 <dt id="arg-eresponse-col">eresponse_05_col<a class="anchor" aria-label="anchor" href="#arg-eresponse-col"></a></dt>
-<dd><p>Column name for the type of EMS response (e.g., 911
-call).</p></dd>
+<dd><p>Column that contains eResponse.05 or the response
+type.</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_23_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name for the Glasgow Coma Scale (GCS) total
-score.</p></dd>
+<dd><p>Column for Glasgow Coma Scale (GCS) scores.</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_26_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name for AVPU (Alert, Voice, Pain, Unresponsive)
-status.</p></dd>
+<dd><p>Column for AVPU alertness levels.</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_27_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name for the pain scale assessment.</p></dd>
+<dd><p>Column giving the patient's indication of pain from a
+scale of 0-10.</p></dd>
 
 
 <dt id="arg-edisposition-col">edisposition_28_col<a class="anchor" aria-label="anchor" href="#arg-edisposition-col"></a></dt>
@@ -161,8 +165,9 @@ status.</p></dd>
 
 
 <dt id="arg-transport-disposition-col">transport_disposition_col<a class="anchor" aria-label="anchor" href="#arg-transport-disposition-col"></a></dt>
-<dd><p>Column name for transport disposition
-details.</p></dd>
+<dd><p>One or more unquoted column names (such as
+edisposition.12, edisposition.30) containing transport disposition for an
+EMS event identifying whether a transport occurred and by which unit.</p></dd>
 
 </dl></div>
     <div class="section level2">

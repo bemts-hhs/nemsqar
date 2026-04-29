@@ -36,32 +36,32 @@ seizure_02(
 
 - df:
 
-  A data frame where each row is an observation, containing all
-  necessary columns for analysis.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data frame or tibble containing only epatient and escene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data frame or tibble containing only the eresponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - situation_table:
 
-  A data.frame or tibble containing only the esituation fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eSituation fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - medications_table:
 
-  A data.frame or tibble containing only the emedications fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eMedications fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - erecord_01_col:
 
-  The column containing unique record identifiers for each encounter.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -76,52 +76,54 @@ seizure_02(
 
 - epatient_15_col:
 
-  Column name for patient age in numeric form.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column name for age unit (e.g., `"Years"` or `"Months"`).
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column name for response codes; "911" call codes are filtered.
+  Column that contains eResponse.05 or the response type.
 
 - esituation_11_col:
 
-  Column name for primary impressions.
+  Column that contains eSituation.11 provider primary impression data.
 
 - esituation_12_col:
 
-  Column name for secondary impressions.
+  Column that contains all eSituation.12 values as (possible a single
+  comma-separated list), provider secondary impression data.
 
 - emedications_03_col:
 
-  Column name for medications administered; ideally a list column or
-  string with comma-separated values.
+  Column that contains all medication administered to the patient
+  (eMedications.03) values as a single comma-separated list per distinct
+  eRecord.01 ID.
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 
@@ -173,6 +175,8 @@ Nicolas Foss, Ed.D., MS
   seizure_02(
     df = test_data,
     erecord_01_col = erecord_01,
+    incident_date_col = NULL,
+    patient_DOB_col = NULL,
     epatient_15_col = epatient_15,
     epatient_16_col = epatient_16,
     eresponse_05_col = eresponse_05,
@@ -202,7 +206,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating Seizure-02 ──
 #> 
 #> 
-#> ✔ Function completed in 0.18s.
+#> ✔ Function completed in 0.16s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 3 × 8

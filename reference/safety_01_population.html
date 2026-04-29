@@ -15,7 +15,7 @@ adult and pediatric populations.'><meta property="og:image" content="https://bem
 
     <a class="navbar-brand me-2" href="../index.html">nemsqar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ adult and pediatric populations.'><meta property="og:image" content="https://bem
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Safety-01 Populations</h1>
-      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/v1.1.3/R/safety_01_population.R" class="external-link"><code>R/safety_01_population.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/main/R/safety_01_population.R" class="external-link"><code>R/safety_01_population.R</code></a></small>
       <div class="d-none name"><code>safety_01_population.Rd</code></div>
     </div>
 
@@ -69,49 +69,55 @@ adult and pediatric populations.</p>
 
 
 <dl><dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
-<dd><p>A data frame or tibble containing EMS data.</p></dd>
+<dd><p>A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.</p></dd>
 
 
 <dt id="arg-patient-scene-table">patient_scene_table<a class="anchor" aria-label="anchor" href="#arg-patient-scene-table"></a></dt>
-<dd><p>A data frame or tibble containing only epatient
-and escene fields as a fact table. Default is <code>NULL</code>.</p></dd>
+<dd><p>A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.</p></dd>
 
 
 <dt id="arg-response-table">response_table<a class="anchor" aria-label="anchor" href="#arg-response-table"></a></dt>
-<dd><p>A data frame or tibble containing only the eresponse
-fields needed for this measure's calculations. Default is <code>NULL</code>.</p></dd>
+<dd><p>A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.</p></dd>
 
 
 <dt id="arg-erecord-col">erecord_01_col<a class="anchor" aria-label="anchor" href="#arg-erecord-col"></a></dt>
-<dd><p>Column name containing the unique patient record
+<dd><p>The column representing the EMS record unique
 identifier.</p></dd>
 
 
 <dt id="arg-incident-date-col">incident_date_col<a class="anchor" aria-label="anchor" href="#arg-incident-date-col"></a></dt>
-<dd><p>Date or POSIXct column indicating the date of the
-incident.</p></dd>
+<dd><p>Column that contains the incident date. This
+defaults to <code>NULL</code> as it is optional in case not available due to PII
+restrictions.</p></dd>
 
 
 <dt id="arg-patient-dob-col">patient_DOB_col<a class="anchor" aria-label="anchor" href="#arg-patient-dob-col"></a></dt>
-<dd><p>Date or POSIXct column for the patient’s date of birth</p></dd>
+<dd><p>Column that contains the patient's date of birth. This
+defaults to <code>NULL</code> as it is optional in case not available due to PII
+restrictions.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_15_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>Column containing age.</p></dd>
+<dd><p>Column representing the patient's numeric age agnostic
+of unit.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_16_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>Column for age units.</p></dd>
+<dd><p>Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").</p></dd>
 
 
 <dt id="arg-eresponse-col">eresponse_05_col<a class="anchor" aria-label="anchor" href="#arg-eresponse-col"></a></dt>
-<dd><p>Column containing response mode codes (e.g., 911
-response codes).</p></dd>
+<dd><p>Column that contains eResponse.05 or the response
+type.</p></dd>
 
 
 <dt id="arg-eresponse-col">eresponse_24_col<a class="anchor" aria-label="anchor" href="#arg-eresponse-col"></a></dt>
-<dd><p>Column detailing additional response descriptors as
-text.</p></dd>
+<dd><p>Column detailing documentation of response mode
+techniques used for this EMS response.</p></dd>
 
 </dl></div>
     <div class="section level2">

@@ -39,33 +39,32 @@ airway_05(
 
 - df:
 
-  A dataframe or tibble containing EMS data where each row represents an
-  observation and columns represent features. Default is `NULL`.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing at least epatient, escene, and
-  earrest.01 fields as a fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data.frame or tibble containing at least the eresponse fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - arrest_table:
 
-  A data.frame or tibble containing at least the earrest fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eArrest fields needed
+  for this measure's calculations.
 
 - procedures_table:
 
   A dataframe or tibble containing at least the eProcedures fields
-  needed. Default is `NULL`.
+  needed.
 
 - vitals_table:
 
   A dataframe or tibble containing at least the eVitals fields needed.
-  Default is `NULL`.
 
 - erecord_01_col:
 
@@ -73,11 +72,14 @@ airway_05(
 
 - incident_date_col:
 
-  Column that contains the incident date. Default is `NULL`.
+  Column that contains the incident date. This defaults to `NULL` as it
+  is optional in case not available due to PII restrictions.
 
 - patient_DOB_col:
 
-  Column that contains the patient's date of birth. Default is `NULL`.
+  Column that contains the patient's date of birth. This defaults to
+  `NULL` as it is optional in case not available due to PII
+  restrictions.
 
 - epatient_15_col:
 
@@ -94,7 +96,7 @@ airway_05(
 
 - eresponse_05_col:
 
-  Column that contains eResponse.05.
+  Column that contains eResponse.05 or the response type.
 
 - evitals_01_col:
 
@@ -119,27 +121,26 @@ airway_05(
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 

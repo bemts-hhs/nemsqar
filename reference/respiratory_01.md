@@ -38,32 +38,31 @@ respiratory_01(
 
 - df:
 
-  A data frame containing incident data with each row representing an
-  observation.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing at least epatient and escene fields
-  as a fact table.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data.frame or tibble containing at least the eresponse fields needed
+  A data.frame or tibble containing at least the eResponse fields needed
   for this measure's calculations.
 
 - situation_table:
 
-  A data.frame or tibble containing at least the esituation fields
-  needed for this measure's calculations.
+  A data.frame or tibble containing at least the eSituation fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - vitals_table:
 
-  A data.frame or tibble containing at least the evitals fields needed
-  for this measure's calculations.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - erecord_01_col:
 
-  Unique Patient ID
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -78,57 +77,57 @@ respiratory_01(
 
 - epatient_15_col:
 
-  Column giving the calculated age value.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column giving the provided age unit value.
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column name for 911 response codes (e.g., 2205001, 2205003, 2205009).
+  Column that contains eResponse.05 or the response type.
 
 - esituation_11_col:
 
-  Column name for primary impression codes related to respiratory
-  distress.
+  Column that contains eSituation.11 provider primary impression data.
 
 - esituation_12_col:
 
-  Column name for secondary impression codes related to respiratory
-  distress.
+  Column that contains all eSituation.12 values as (possible a single
+  comma-separated list), provider secondary impression data.
 
 - evitals_12_col:
 
-  Column name for the first vital sign measurement.
+  Numeric column containing pulse oximetry values.
 
 - evitals_14_col:
 
-  Column name for the second vital sign measurement.
+  Column containing data on patient's respiratory rate expressed as a
+  number per minute.
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 
@@ -181,6 +180,8 @@ test_data <- tibble::tibble(
 respiratory_01(
   df = test_data,
   erecord_01_col = erecord_01,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
   epatient_15_col = epatient_15,
   epatient_16_col = epatient_16,
   eresponse_05_col = eresponse_05,
@@ -204,7 +205,6 @@ respiratory_01(
 #> Running `respiratory_01_population()`  [Working on 7 of 13 tasks] ●●●●●●●●●●●●●…
 #> Running `respiratory_01_population()`  [Working on 8 of 13 tasks] ●●●●●●●●●●●●●…
 #> Running `respiratory_01_population()`  [Working on 9 of 13 tasks] ●●●●●●●●●●●●●…
-#> Running `respiratory_01_population()`  [Working on 10 of 13 tasks] ●●●●●●●●●●●●…
 #> Running `respiratory_01_population()`  [Working on 11 of 13 tasks] ●●●●●●●●●●●●…
 #> Running `respiratory_01_population()`  [Working on 12 of 13 tasks] ●●●●●●●●●●●●…
 #> Running `respiratory_01_population()`  [Working on 13 of 13 tasks] ●●●●●●●●●●●●…

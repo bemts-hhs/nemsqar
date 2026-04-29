@@ -37,42 +37,42 @@ safety_04_population(
 
 - df:
 
-  A data frame or tibble containing EMS data where each row represents
-  an individual observation.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data frame or tibble containing fields from epatient and escene
-  needed for this measure's calculations.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data frame or tibble containing fields from eresponse needed for
-  this measure's calculations.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - arrest_table:
 
-  A data frame or tibble containing fields from earrest needed for this
-  measure's calculations.
+  A data.frame or tibble containing at least the eArrest fields needed
+  for this measure's calculations.
 
 - injury_table:
 
-  A data frame or tibble containing fields from einjury needed for this
+  A data frame or tibble containing fields from eInjury needed for this
   measure's calculations.
 
 - procedures_table:
 
-  A data frame or tibble containing fields from eprocedures needed for
-  this measure's calculations.
+  A dataframe or tibble containing at least the eProcedures fields
+  needed.
 
 - disposition_table:
 
-  A data frame or tibble containing fields from edisposition needed for
-  this measure's calculations.
+  A data.frame or tibble containing only the edisposition fields needed
+  for this measure's calculations.
 
 - erecord_01_col:
 
-  The column containing unique record identifiers for each encounter.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -87,37 +87,41 @@ safety_04_population(
 
 - epatient_15_col:
 
-  Column name indicating the patient age.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column name for the unit of age (e.g., "Years," "Months").
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column containing response transport codes.
+  Column that contains eResponse.05 or the response type.
 
 - earrest_01_col:
 
-  Column with cardiac arrest status information.
+  Column representing whether or not the patient is in arrest.
 
 - einjury_03_col:
 
-  Column describing traumatic injuries, expected as a list or
-  text-separated entries.
+  Column describing Trauma triage criteria for the red boxes (Injury
+  Patterns and Mental Status and Vital Signs) in the 2021 ACS National
+  Guideline for the Field Triage of Injured Patients.
 
 - eprocedures_03_col:
 
-  Column listing procedures, assumed to contain multiple procedure
-  codes/texts in each cell.
+  Column containing procedure codes with or without procedure names.
 
 - edisposition_14_col:
 
-  Column for transport dispositions.
+  Column giving the position of the patient during transport from the
+  scene.
 
 - transport_disposition_col:
 
-  Columns for primary and secondary transport dispositions.
+  One or more unquoted column names (such as edisposition.12,
+  edisposition.30) containing transport disposition for an EMS event
+  identifying whether a transport occurred and by which unit.
 
 ## Value
 

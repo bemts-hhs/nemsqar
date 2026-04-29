@@ -37,37 +37,36 @@ respiratory_02(
 
 - df:
 
-  A data frame containing incident data with each row representing an
-  observation.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing at least epatient and escene fields
-  as a fact table.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data.frame or tibble containing at least the eresponse fields needed
+  A data.frame or tibble containing at least the eResponse fields needed
   for this measure's calculations.
 
 - vitals_table:
 
-  A data.frame or tibble containing at least the evitals fields needed
-  for this measure's calculations.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - medications_table:
 
-  A data.frame or tibble containing only the emedications fields needed
-  for this measure's calculations.
+  A data.frame or tibble containing at least the eMedications fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - procedures_table:
 
-  A data.frame or tibble containing only the eprocedures fields needed
-  for this measure's calculations.
+  A dataframe or tibble containing at least the eProcedures fields
+  needed.
 
 - erecord_01_col:
 
-  Column name for eRecord.01, used to form a unique patient ID.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -82,51 +81,53 @@ respiratory_02(
 
 - epatient_15_col:
 
-  integer Column giving the calculated age value.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column giving the provided age unit value.
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column name for response codes (e.g., incident type).
+  Column that contains eResponse.05 or the response type.
 
 - evitals_12_col:
 
-  Column name for oxygen saturation (SpO2) values.
+  Numeric column containing pulse oximetry values.
 
 - emedications_03_col:
 
-  Column name for medication codes.
+  Column that contains all medication administered to the patient
+  (eMedications.03) values as a single comma-separated list per distinct
+  eRecord.01 ID.
 
 - eprocedures_03_col:
 
-  Column name for procedure codes.
+  Column containing procedure codes with or without procedure names.
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 
@@ -178,6 +179,8 @@ Nicolas Foss, Ed.D., MS
   respiratory_02(
     df = test_data,
     erecord_01_col = erecord_01,
+    incident_date_col = NULL,
+    patient_DOB_col = NULL,
     epatient_15_col = epatient_15,
     epatient_16_col = epatient_16,
     eresponse_05_col = eresponse_05,
@@ -208,7 +211,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating Respiratory-02 ──
 #> 
 #> 
-#> ✔ Function completed in 0.18s.
+#> ✔ Function completed in 0.19s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 3 × 8

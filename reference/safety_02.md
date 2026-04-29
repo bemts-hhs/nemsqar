@@ -22,7 +22,8 @@ safety_02(
   eresponse_05_col,
   edisposition_18_col,
   edisposition_28_col,
-  transport_disposition_cols,
+  transport_disposition_col,
+  transport_disposition_cols = lifecycle::deprecated(),
   confidence_interval = FALSE,
   method = c("wilson", "clopper-pearson"),
   conf.level = 0.95,
@@ -35,18 +36,18 @@ safety_02(
 
 - df:
 
-  A data frame where each row is an observation, and each column
-  represents a feature.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing only epatient and escene fields as a
+  A data.frame or tibble containing at least ePatient, and eScene as a
   fact table.
 
 - response_table:
 
-  A data.frame or tibble containing only the eresponse fields needed for
-  this measure's calculations.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - disposition_table:
 
@@ -70,54 +71,59 @@ safety_02(
 
 - epatient_15_col:
 
-  Column giving the calculated age value.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column giving the provided age unit value.
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column giving response codes, identifying 911 responses.
+  Column that contains eResponse.05 or the response type.
 
 - edisposition_18_col:
 
-  Column giving transport mode descriptors, including possible
-  lights-and-sirens indicators.
+  Column giving documentation of transport mode techniques for this EMS
+  response.
 
 - edisposition_28_col:
 
-  Column giving patient evaluation and care categories for the EMS
-  response.
+  Column giving patient disposition for an EMS event identifying whether
+  a patient was evaluated and care or services were provided.
+
+- transport_disposition_col:
+
+  One or more unquoted column names (such as edisposition.12,
+  edisposition.30) containing transport disposition for an EMS event
+  identifying whether a transport occurred and by which unit.
 
 - transport_disposition_cols:
 
-  One or more unquoted column names (such as edisposition.12,
-  edisposition.30) containing transport disposition details.
+  **\[deprecated\]** Use `transport_disposition_col` instead.
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 
@@ -169,12 +175,14 @@ Nicolas Foss, Ed.D., MS
   safety_02(
     df = test_data,
     erecord_01_col = erecord_01,
+    incident_date_col = NULL,
+    patient_DOB_col = NULL,
     epatient_15_col = epatient_15,
     epatient_16_col = epatient_16,
     eresponse_05_col = eresponse_05,
     edisposition_18_col = edisposition_18,
     edisposition_28_col = edisposition_28,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     confidence_interval = TRUE
   )
 #> 

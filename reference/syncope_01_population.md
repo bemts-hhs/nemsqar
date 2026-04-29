@@ -34,31 +34,31 @@ syncope_01_population(
 
 - df:
 
-  Main data frame containing EMS records.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data frame or tibble containing only epatient and escene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data frame or tibble containing only the eresponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - situation_table:
 
-  A data.frame or tibble containing only the esituation fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eSituation fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - vitals_table:
 
-  A data.frame or tibble containing only the evitals fields needed for
-  this measure's calculations. Default is `NULL`.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - erecord_01_col:
 
-  The column containing unique record identifiers for each encounter.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -73,35 +73,40 @@ syncope_01_population(
 
 - epatient_15_col:
 
-  Column representing the patient age (numeric).
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column for the patient age units (e.g., "Years", "Months").
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column containing response type codes, specifically 911 codes.
+  Column that contains eResponse.05 or the response type.
 
 - esituation_09_col:
 
-  Column with primary symptoms associated with the patient encounter.
+  Column with primary sign and symptom present in the patient or
+  observed by EMS personnel.
 
 - esituation_10_col:
 
-  Column with other associated symptoms.
+  Column with other symptoms identified by the patient or observed by
+  EMS personnel.
 
 - esituation_11_col:
 
-  Column for primary impression code.
+  Column that contains eSituation.11 provider primary impression data.
 
 - esituation_12_col:
 
-  Column for secondary impression codes.
+  Column that contains all eSituation.12 values as (possible a single
+  comma-separated list), provider secondary impression data.
 
 - evitals_04_col:
 
-  Column with ECG information if available.
+  Column with type of ECG associated with the cardiac rhythm if
+  available.
 
 ## Value
 
@@ -173,6 +178,8 @@ Nicolas Foss, Ed.D., MS
                          situation_table = situation_table,
                          vitals_table = vitals_table,
                          erecord_01_col = erecord_01,
+                         incident_date_col = NULL,
+                         patient_DOB_col = NULL,
                          epatient_15_col = epatient_15,
                          epatient_16_col = epatient_16,
                          eresponse_05_col = eresponse_05,

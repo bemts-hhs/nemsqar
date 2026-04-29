@@ -37,37 +37,36 @@ trauma_08_population(
 
 - df:
 
-  A data frame or tibble containing EMS data with all relevant columns.
-  Default is `NULL`.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data frame or tibble containing only epatient and escene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data frame or tibble containing only the eresponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - situation_table:
 
-  A data frame or tibble containing only the esituation fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eSituation fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - disposition_table:
 
-  A data frame or tibble containing only the edisposition fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing only the edisposition fields needed
+  for this measure's calculations.
 
 - vitals_table:
 
-  A data frame or tibble containing only the evitals fields needed for
-  this measure's calculations. Default is `NULL`.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - erecord_01_col:
 
-  A column specifying unique patient records.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -82,38 +81,39 @@ trauma_08_population(
 
 - epatient_15_col:
 
-  A column indicating the patient’s age in numeric form.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  A column specifying the unit of patient age (e.g., "Years", "Days").
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - esituation_02_col:
 
-  A column containing information about the nature of the patient’s
-  condition (e.g., injury type).
+  Column indicating whether or not there was an injury.
 
 - eresponse_05_col:
 
-  A column specifying the type of response (e.g., 911 codes).
+  Column that contains eResponse.05 or the response type.
 
 - transport_disposition_col:
 
-  A column specifying transport disposition for the patient.
+  One or more unquoted column names (such as edisposition.12,
+  edisposition.30) containing transport disposition for an EMS event
+  identifying whether a transport occurred and by which unit.
 
 - evitals_06_col:
 
-  A column containing systolic blood pressure (SBP) data from initial
-  vital signs.
+  Numeric column containing systolic blood pressure values.
 
 - evitals_14_col:
 
-  A column containing respiratory rate data from initial vital signs.
+  Column containing data on patient's respiratory rate expressed as a
+  number per minute.
 
 - evitals_23_col:
 
-  A column containing total Glasgow Coma Scale (GCS) scores from initial
-  vital signs.
+  Column for Glasgow Coma Scale (GCS) scores.
 
 ## Value
 

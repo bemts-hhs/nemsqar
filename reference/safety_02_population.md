@@ -23,7 +23,8 @@ safety_02_population(
   eresponse_05_col,
   edisposition_18_col,
   edisposition_28_col,
-  transport_disposition_cols
+  transport_disposition_col,
+  transport_disposition_cols = lifecycle::deprecated()
 )
 ```
 
@@ -31,18 +32,18 @@ safety_02_population(
 
 - df:
 
-  A data frame where each row is an observation, and each column
-  represents a feature.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing only epatient and escene fields as a
+  A data.frame or tibble containing at least ePatient, and eScene as a
   fact table.
 
 - response_table:
 
-  A data.frame or tibble containing only the eresponse fields needed for
-  this measure's calculations.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - disposition_table:
 
@@ -66,30 +67,36 @@ safety_02_population(
 
 - epatient_15_col:
 
-  Column giving the calculated age value.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column giving the provided age unit value.
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column giving response codes, identifying 911 responses.
+  Column that contains eResponse.05 or the response type.
 
 - edisposition_18_col:
 
-  Column giving transport mode descriptors, including possible
-  lights-and-sirens indicators.
+  Column giving documentation of transport mode techniques for this EMS
+  response.
 
 - edisposition_28_col:
 
-  Column giving patient evaluation and care categories for the EMS
-  response.
+  Column giving patient disposition for an EMS event identifying whether
+  a patient was evaluated and care or services were provided.
+
+- transport_disposition_col:
+
+  One or more unquoted column names (such as edisposition.12,
+  edisposition.30) containing transport disposition for an EMS event
+  identifying whether a transport occurred and by which unit.
 
 - transport_disposition_cols:
 
-  One or more unquoted column names (such as edisposition.12,
-  edisposition.30) containing transport disposition details.
+  **\[deprecated\]** Use `transport_disposition_col` instead.
 
 ## Value
 
@@ -157,7 +164,7 @@ Nicolas Foss, Ed.D., MS
                         eresponse_05_col = eresponse_05,
                         edisposition_18_col = edisposition_18,
                         edisposition_28_col = edisposition_28,
-                        transport_disposition_cols = edisposition_30
+                        transport_disposition_col = edisposition_30
                         )
 #> Running `safety_02_population()`  [Working on 1 of 11 tasks] ●●●●──────────────…
 #> Running `safety_02_population()`  [Working on 2 of 11 tasks] ●●●●●●────────────…

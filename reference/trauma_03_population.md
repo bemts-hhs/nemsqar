@@ -38,33 +38,32 @@ trauma_03_population(
 
 - df:
 
-  A data frame or tibble containing EMS data with all relevant columns.
-  Default is `NULL`.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data frame or tibble containing only epatient and escene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data frame or tibble containing only the eresponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - situation_table:
 
-  A data frame or tibble containing only the esituation fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eSituation fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - disposition_table:
 
-  A data frame or tibble containing only the edisposition fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing only the edisposition fields needed
+  for this measure's calculations.
 
 - vitals_table:
 
-  A data frame or tibble containing only the evitals fields needed for
-  this measure's calculations. Default is `NULL`.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - erecord_01_col:
 
@@ -83,27 +82,28 @@ trauma_03_population(
 
 - epatient_15_col:
 
-  The column for patient age numeric value.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  The column for patient age unit (e.g., "Years", "Months").
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - esituation_02_col:
 
-  The column containing information on the presence of injury.
+  Column indicating whether or not there was an injury.
 
 - eresponse_05_col:
 
-  The column representing the 911 response type.
+  Column that contains eResponse.05 or the response type.
 
 - evitals_01_col:
 
-  The column for the time of pain scale measurement.
+  The column for the date/time vital signs were taken on the patient.
 
 - evitals_27_col:
 
-  The column for the pain scale score. Default is `NULL`.
+  Column giving the patient's indication of pain from a scale of 0-10.
 
 - evitals_27_initial_col:
 
@@ -115,11 +115,13 @@ trauma_03_population(
 
 - edisposition_28_col:
 
-  The column for patient care disposition details.
+  Column name for patient care disposition details.
 
 - transport_disposition_col:
 
-  The column for patient transport disposition.
+  One or more unquoted column names (such as edisposition.12,
+  edisposition.30) containing transport disposition for an EMS event
+  identifying whether a transport occurred and by which unit.
 
 ## Value
 

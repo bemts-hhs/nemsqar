@@ -35,56 +35,52 @@ stroke_01(
 
 - df:
 
-  A data frame or tibble containing the dataset. Each row should
-  represent a unique patient encounter.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data frame or tibble containing only epatient and escene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data frame or tibble containing only the eresponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - situation_table:
 
-  A data.frame or tibble containing only the esituation fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eSituation fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - vitals_table:
 
-  A data.frame or tibble containing only the evitals fields needed for
-  this measure's calculations. Default is `NULL`.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - erecord_01_col:
 
-  The column containing unique record identifiers for each encounter.
+  The column representing the EMS record unique identifier.
 
 - eresponse_05_col:
 
-  The column containing EMS response codes, which should include 911
-  response codes.
+  Column that contains eResponse.05 or the response type.
 
 - esituation_11_col:
 
-  The column containing the primary impression codes or descriptions
-  related to the situation.
+  Column that contains eSituation.11 provider primary impression data.
 
 - esituation_12_col:
 
-  The column containing secondary impression codes or descriptions
-  related to the situation.
+  Column that contains all eSituation.12 values as (possible a single
+  comma-separated list), provider secondary impression data.
 
 - evitals_23_col:
 
-  The column containing the Glasgow Coma Scale (GCS) score.
+  Column for Glasgow Coma Scale (GCS) scores.
 
 - evitals_26_col:
 
-  The column containing the AVPU (alert, verbal, pain, unresponsive)
-  scale value.
+  Column for AVPU alertness levels.
 
 - evitals_29_col:
 
@@ -98,27 +94,26 @@ stroke_01(
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 
@@ -173,6 +168,8 @@ Nicolas Foss, Ed.D., MS
   stroke_01(
     df = test_data,
     erecord_01_col = erecord_01,
+    incident_date_col = NULL,
+    patient_DOB_col = NULL,
     eresponse_05_col = eresponse_05,
     esituation_11_col = esituation_11,
     esituation_12_col = esituation_12,
@@ -204,7 +201,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating Stroke-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.18s.
+#> ✔ Function completed in 0.17s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 1 × 8

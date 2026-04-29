@@ -15,7 +15,7 @@ pre-hospital trauma activation."><meta property="og:image" content="https://bemt
 
     <a class="navbar-brand me-2" href="../index.html">nemsqar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ pre-hospital trauma activation."><meta property="og:image" content="https://bemt
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Trauma-14 Calculation</h1>
-      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/v1.1.3/R/trauma_14.R" class="external-link"><code>R/trauma_14.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/main/R/trauma_14.R" class="external-link"><code>R/trauma_14.R</code></a></small>
       <div class="d-none name"><code>trauma_14.Rd</code></div>
     </div>
 
@@ -98,48 +98,49 @@ pre-hospital trauma activation.</p>
 
 
 <dl><dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
-<dd><p>A data frame or tibble containing EMS data with all relevant
-columns.</p></dd>
+<dd><p>A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.</p></dd>
 
 
 <dt id="arg-patient-scene-table">patient_scene_table<a class="anchor" aria-label="anchor" href="#arg-patient-scene-table"></a></dt>
-<dd><p>A data frame or tibble containing fields from
-epatient and escene needed for this measure's calculations.</p></dd>
+<dd><p>A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.</p></dd>
 
 
 <dt id="arg-response-table">response_table<a class="anchor" aria-label="anchor" href="#arg-response-table"></a></dt>
-<dd><p>A data frame or tibble containing fields from eresponse
-needed for this measure's calculations.</p></dd>
+<dd><p>A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.</p></dd>
 
 
 <dt id="arg-situation-table">situation_table<a class="anchor" aria-label="anchor" href="#arg-situation-table"></a></dt>
-<dd><p>A data frame or tibble containing fields from
-esituation needed for this measure's calculations.</p></dd>
+<dd><p>A data.frame or tibble containing at least the
+eSituation fields needed for this measure's calculations. Default is
+<code>NULL</code>.</p></dd>
 
 
 <dt id="arg-vitals-table">vitals_table<a class="anchor" aria-label="anchor" href="#arg-vitals-table"></a></dt>
-<dd><p>A data frame or tibble containing fields from evitals
-needed for this measure's calculations.</p></dd>
+<dd><p>A dataframe or tibble containing at least the eVitals
+fields needed.</p></dd>
 
 
 <dt id="arg-exam-table">exam_table<a class="anchor" aria-label="anchor" href="#arg-exam-table"></a></dt>
-<dd><p>A data frame or tibble containing fields from eexam needed
-for this measure's calculations.</p></dd>
+<dd><p>A data.frame or tibble containing only the eExam fields
+needed for this measure's calculations. Default is <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-procedures-table">procedures_table<a class="anchor" aria-label="anchor" href="#arg-procedures-table"></a></dt>
-<dd><p>A data frame or tibble containing fields from
-eprocedures needed for this measure's calculations.</p></dd>
+<dd><p>A dataframe or tibble containing at least the
+eProcedures fields needed.</p></dd>
 
 
 <dt id="arg-injury-table">injury_table<a class="anchor" aria-label="anchor" href="#arg-injury-table"></a></dt>
-<dd><p>A data frame or tibble containing fields from einjury
+<dd><p>A data frame or tibble containing fields from eInjury
 needed for this measure's calculations.</p></dd>
 
 
 <dt id="arg-disposition-table">disposition_table<a class="anchor" aria-label="anchor" href="#arg-disposition-table"></a></dt>
-<dd><p>A data frame or tibble containing fields from
-edisposition needed for this measure's calculations.</p></dd>
+<dd><p>A data.frame or tibble containing only the
+edisposition fields needed for this measure's calculations.</p></dd>
 
 
 <dt id="arg-erecord-col">erecord_01_col<a class="anchor" aria-label="anchor" href="#arg-erecord-col"></a></dt>
@@ -160,124 +161,139 @@ restrictions.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_15_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>The column for patient age numeric value.</p></dd>
+<dd><p>Column representing the patient's numeric age agnostic
+of unit.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_16_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>The column for patient age unit (e.g., "Years",
-"Months").</p></dd>
+<dd><p>Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").</p></dd>
 
 
 <dt id="arg-esituation-col">esituation_02_col<a class="anchor" aria-label="anchor" href="#arg-esituation-col"></a></dt>
-<dd><p>The column containing information on the presence of
+<dd><p>Column indicating whether or not there was an
 injury.</p></dd>
 
 
 <dt id="arg-eresponse-col">eresponse_05_col<a class="anchor" aria-label="anchor" href="#arg-eresponse-col"></a></dt>
-<dd><p>The column representing the 911 response type.</p></dd>
+<dd><p>Column that contains eResponse.05 or the response
+type.</p></dd>
 
 
 <dt id="arg-eresponse-col">eresponse_10_col<a class="anchor" aria-label="anchor" href="#arg-eresponse-col"></a></dt>
-<dd><p>Column name containing scene delay information.</p></dd>
+<dd><p>Column name containing informatin about scene delays,
+if any, of the EMS unit associated with the EMS event.</p></dd>
 
 
 <dt id="arg-transport-disposition-col">transport_disposition_col<a class="anchor" aria-label="anchor" href="#arg-transport-disposition-col"></a></dt>
-<dd><p>The column for patient transport
-disposition.</p></dd>
+<dd><p>One or more unquoted column names (such as
+edisposition.12, edisposition.30) containing transport disposition for an
+EMS event identifying whether a transport occurred and by which unit.</p></dd>
 
 
 <dt id="arg-edisposition-col">edisposition_24_col<a class="anchor" aria-label="anchor" href="#arg-edisposition-col"></a></dt>
-<dd><p>Column name containing pre-hospital trauma alert
-information.</p></dd>
+<dd><p>Column name containing the indication that an
+alert (or activation) was called by EMS to the appropriate destination
+healthcare facility team. The alert (or activation) should occur prior to the
+EMS Unit arrival at the destination with the patient.</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_06_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name containing systolic blood pressure (SBP)
+<dd><p>Numeric column containing systolic blood pressure
 values.</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_10_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name containing heart rate values.</p></dd>
+<dd><p>Column name containing the patient's heart rate
+expressed as a number per minute.</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_12_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name containing pulse oximetry values.</p></dd>
+<dd><p>Numeric column containing pulse oximetry values.</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_14_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name containing capillary refill information.</p></dd>
+<dd><p>Column containing data on patient's respiratory rate
+expressed as a number per minute.</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_15_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name containing respiratory effort values.</p></dd>
+<dd><p>Column name containing the patient's respiratory
+effort.</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_21_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name containing Glasgow Coma Scale (GCS) Motor
-values.</p></dd>
+<dd><p>Column name containing the patient's Glasgow Coma Score
+Motor response.</p></dd>
 
 
 <dt id="arg-eexam-col">eexam_16_col<a class="anchor" aria-label="anchor" href="#arg-eexam-col"></a></dt>
-<dd><p>Column name containing extremities assessment details.</p></dd>
+<dd><p>Column name containing the assessment findings associated
+with the patient's extremities.</p></dd>
 
 
 <dt id="arg-eexam-col">eexam_20_col<a class="anchor" aria-label="anchor" href="#arg-eexam-col"></a></dt>
-<dd><p>Column name containing neurological assessment details.</p></dd>
+<dd><p>Column name containing the assessment findings of the
+patient's neurological examination.</p></dd>
 
 
 <dt id="arg-eexam-col">eexam_23_col<a class="anchor" aria-label="anchor" href="#arg-eexam-col"></a></dt>
-<dd><p>Column name containing lung assessment details.</p></dd>
+<dd><p>Column name containing the assessment findings associated
+with the patient's lungs.</p></dd>
 
 
 <dt id="arg-eexam-col">eexam_25_col<a class="anchor" aria-label="anchor" href="#arg-eexam-col"></a></dt>
-<dd><p>Column name containing chest assessment details.</p></dd>
+<dd><p>Column name containing the assessment findings associated
+with the patient's chest.</p></dd>
 
 
 <dt id="arg-eprocedures-col">eprocedures_03_col<a class="anchor" aria-label="anchor" href="#arg-eprocedures-col"></a></dt>
-<dd><p>Column name containing airway management or
-tourniquet usage details.</p></dd>
+<dd><p>Column containing procedure codes with or without
+procedure names.</p></dd>
 
 
 <dt id="arg-einjury-col">einjury_01_col<a class="anchor" aria-label="anchor" href="#arg-einjury-col"></a></dt>
-<dd><p>Column name containing injury cause details.</p></dd>
+<dd><p>Column name containing the category of the
+reported/suspected external cause of the injury.</p></dd>
 
 
 <dt id="arg-einjury-col">einjury_03_col<a class="anchor" aria-label="anchor" href="#arg-einjury-col"></a></dt>
-<dd><p>Column name containing trauma triage steps 1 and 2
-information.</p></dd>
+<dd><p>Column describing Trauma triage criteria for the red
+boxes (Injury Patterns and Mental Status and Vital Signs) in the 2021 ACS
+National Guideline for the Field Triage of Injured Patients.</p></dd>
 
 
 <dt id="arg-einjury-col">einjury_04_col<a class="anchor" aria-label="anchor" href="#arg-einjury-col"></a></dt>
-<dd><p>Column name containing trauma triage steps 3 and 4
-information.</p></dd>
+<dd><p>Column name containing Trauma triage criteria for the
+yellow boxes (Mechanism of Injury and EMS Judgment) in the current ACS
+National Guideline for the Field Triage of Injured Patients.</p></dd>
 
 
 <dt id="arg-einjury-col">einjury_09_col<a class="anchor" aria-label="anchor" href="#arg-einjury-col"></a></dt>
-<dd><p>Column name containing fall height information.</p></dd>
+<dd><p>Column name containing the distance in feet the patient
+fell, measured from the lowest point of the patient to the ground.</p></dd>
 
 
 <dt id="arg-confidence-interval">confidence_interval<a class="anchor" aria-label="anchor" href="#arg-confidence-interval"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a> Logical. If
-<code>TRUE</code>, the function calculates a confidence interval for the proportion
-estimate.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, the function calculates a
+confidence interval for the proportion estimate.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>Character. Specifies the
-method used to calculate confidence intervals. Options are <code>"wilson"</code>
-(Wilson score interval) and <code>"clopper-pearson"</code> (exact binomial interval).
-Partial matching is supported, so <code>"w"</code> and <code>"c"</code> can be used as shorthand.</p></dd>
+<dd><p>Character. Specifies the method used to calculate confidence
+intervals. Options are <code>"wilson"</code> (Wilson score interval) and
+<code>"clopper-pearson"</code> (exact binomial interval). Partial matching is supported,
+so <code>"w"</code> and <code>"c"</code> can be used as shorthand.</p></dd>
 
 
 <dt id="arg-conf-level">conf.level<a class="anchor" aria-label="anchor" href="#arg-conf-level"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>Numeric. The confidence
-level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
-confidence interval). Defaults to 0.95.</p></dd>
+<dd><p>Numeric. The confidence level for the interval, expressed
+as a proportion (e.g., 0.95 for a 95% confidence interval). Defaults to 0.95.</p></dd>
 
 
 <dt id="arg-correct">correct<a class="anchor" aria-label="anchor" href="#arg-correct"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>Logical. If <code>TRUE</code>,
-applies a continuity correction to the Wilson score interval when <code>method = "wilson"</code>. Defaults to <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, applies a continuity correction to the
+Wilson score interval when <code>method = "wilson"</code>. Defaults to <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -338,6 +354,8 @@ of decimal places.</p></li>
 <span class="r-in"><span>  <span class="fu">trauma_14</span><span class="op">(</span></span></span>
 <span class="r-in"><span>    df <span class="op">=</span> <span class="va">test_data</span>,</span></span>
 <span class="r-in"><span>    erecord_01_col <span class="op">=</span> <span class="va">erecord_01</span>,</span></span>
+<span class="r-in"><span>    incident_date_col <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>    patient_DOB_col <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>    epatient_15_col <span class="op">=</span> <span class="va">epatient_15</span>,</span></span>
 <span class="r-in"><span>    epatient_16_col <span class="op">=</span> <span class="va">epatient_16</span>,</span></span>
 <span class="r-in"><span>    eresponse_05_col <span class="op">=</span> <span class="va">eresponse_05</span>,</span></span>
@@ -406,7 +424,7 @@ of decimal places.</p></li>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> ── <span style="font-weight: bold;">Calculating Trauma-14</span> ──</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Function completed in <span style="color: #00BB00;">0.49s</span>.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Function completed in <span style="color: #00BB00;">0.64s</span>.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> </span>
 <span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>In `prop.test()`: Chi-squared approximation may be incorrect for any n &lt; 10.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 3 × 8</span></span>

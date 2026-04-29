@@ -32,37 +32,36 @@ respiratory_02_population(
 
 - df:
 
-  A data frame containing incident data with each row representing an
-  observation.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing at least epatient and escene fields
-  as a fact table.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data.frame or tibble containing at least the eresponse fields needed
+  A data.frame or tibble containing at least the eResponse fields needed
   for this measure's calculations.
 
 - vitals_table:
 
-  A data.frame or tibble containing at least the evitals fields needed
-  for this measure's calculations.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - medications_table:
 
-  A data.frame or tibble containing only the emedications fields needed
-  for this measure's calculations.
+  A data.frame or tibble containing at least the eMedications fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - procedures_table:
 
-  A data.frame or tibble containing only the eprocedures fields needed
-  for this measure's calculations.
+  A dataframe or tibble containing at least the eProcedures fields
+  needed.
 
 - erecord_01_col:
 
-  Column name for eRecord.01, used to form a unique patient ID.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -77,27 +76,30 @@ respiratory_02_population(
 
 - epatient_15_col:
 
-  integer Column giving the calculated age value.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column giving the provided age unit value.
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column name for response codes (e.g., incident type).
+  Column that contains eResponse.05 or the response type.
 
 - evitals_12_col:
 
-  Column name for oxygen saturation (SpO2) values.
+  Numeric column containing pulse oximetry values.
 
 - emedications_03_col:
 
-  Column name for medication codes.
+  Column that contains all medication administered to the patient
+  (eMedications.03) values as a single comma-separated list per distinct
+  eRecord.01 ID.
 
 - eprocedures_03_col:
 
-  Column name for procedure codes.
+  Column containing procedure codes with or without procedure names.
 
 ## Value
 

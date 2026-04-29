@@ -32,6 +32,6 @@ Authors:
 
 Other contributors:
 
-- Alyssa Green <awhim@nemsqa.org> \[contributor\]
+- Alyssa Green <agreen@nemsqa.org> \[contributor\]
 
 - Iowa Department of Health and Human Services \[copyright holder\]

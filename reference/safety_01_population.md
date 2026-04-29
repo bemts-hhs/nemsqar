@@ -28,45 +28,51 @@ safety_01_population(
 
 - df:
 
-  A data frame or tibble containing EMS data.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data frame or tibble containing only epatient and escene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data frame or tibble containing only the eresponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - erecord_01_col:
 
-  Column name containing the unique patient record identifier.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
-  Date or POSIXct column indicating the date of the incident.
+  Column that contains the incident date. This defaults to `NULL` as it
+  is optional in case not available due to PII restrictions.
 
 - patient_DOB_col:
 
-  Date or POSIXct column for the patient’s date of birth
+  Column that contains the patient's date of birth. This defaults to
+  `NULL` as it is optional in case not available due to PII
+  restrictions.
 
 - epatient_15_col:
 
-  Column containing age.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column for age units.
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column containing response mode codes (e.g., 911 response codes).
+  Column that contains eResponse.05 or the response type.
 
 - eresponse_24_col:
 
-  Column detailing additional response descriptors as text.
+  Column detailing documentation of response mode techniques used for
+  this EMS response.
 
 ## Value
 

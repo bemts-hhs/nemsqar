@@ -1,7 +1,5 @@
 # Wilson and Clopper-Pearson Confidence Intervals for Binomial Proportions
 
-**\[experimental\]**
-
 Computes confidence intervals for binomial proportions using either the
 Wilson or Clopper-Pearson method. This function supports vectorized
 operations and allows optional correction for continuity. The Wilson

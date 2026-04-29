@@ -43,37 +43,36 @@ ttr_01(
 
 - df:
 
-  A data frame or tibble containing the dataset to analyze. Default is
-  `NULL`.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data frame or tibble containing only epatient and escene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data frame or tibble containing only the eresponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - disposition_table:
 
-  A data frame or tibble containing only the edisposition fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing only the edisposition fields needed
+  for this measure's calculations.
 
 - vitals_table:
 
-  A data frame or tibble containing only the evitals fields needed for
-  this measure's calculations. Default is `NULL`.
+  A dataframe or tibble containing at least the eVitals fields needed.
 
 - arrest_table:
 
-  A data frame or tibble containing only the earrest fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eArrest fields needed
+  for this measure's calculations.
 
 - erecord_01_col:
 
-  A column specifying unique patient records.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -88,79 +87,79 @@ ttr_01(
 
 - epatient_15_col:
 
-  A column indicating the patient’s age in numeric form.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  A column specifying the unit of patient age (e.g., "Years", "Days").
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  A column specifying the type of response (e.g., 911 codes).
+  Column that contains eResponse.05 or the response type.
 
 - transport_disposition_col:
 
-  A column specifying transport disposition for the patient.
+  One or more unquoted column names (such as edisposition.12,
+  edisposition.30) containing transport disposition for an EMS event
+  identifying whether a transport occurred and by which unit.
 
 - earrest_01_col:
 
-  A column containing cardiac arrest data.
+  Column representing whether or not the patient is in arrest.
 
 - evitals_06_col:
 
-  A column containing systolic blood pressure (SBP) data from initial
-  vital signs.
+  Numeric column containing systolic blood pressure values.
 
 - evitals_07_col:
 
-  A column containing diastolic blood pressure (DBP) data from initial
-  vital signs.
+  A column containing the patient's diastolic blood pressure.
 
 - evitals_10_col:
 
-  A column containing heart rate data from initial vital signs.
+  Column name containing the patient's heart rate expressed as a number
+  per minute.
 
 - evitals_12_col:
 
-  A column containing spO2 data from the initial vital signs.
+  Numeric column containing pulse oximetry values.
 
 - evitals_14_col:
 
-  A column containing respiratory rate data from initial vital signs.
+  Column name containing the patient's respiratory rate expressed as a
+  number per minute.
 
 - evitals_23_col:
 
-  A column containing total Glasgow Coma Scale (GCS) scores from initial
-  vital signs.
+  Column for Glasgow Coma Scale (GCS) scores.
 
 - evitals_26_col:
 
-  A column containing alert, verbal, painful, unresponsive (AVPU) vital
-  signs.
+  Column for AVPU alertness levels.
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 
@@ -259,7 +258,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating TTR-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.16s.
+#> ✔ Function completed in 0.18s.
 #> 
 #> # A tibble: 2 × 6
 #>   measure pop    numerator denominator  prop prop_label

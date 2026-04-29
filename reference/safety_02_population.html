@@ -15,7 +15,7 @@ data by age into adult and pediatric populations."><meta property="og:image" con
 
     <a class="navbar-brand me-2" href="../index.html">nemsqar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -36,7 +36,7 @@ data by age into adult and pediatric populations."><meta property="og:image" con
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Safety-02 Populations</h1>
-      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/v1.1.3/R/safety_02_population.R" class="external-link"><code>R/safety_02_population.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/main/R/safety_02_population.R" class="external-link"><code>R/safety_02_population.R</code></a></small>
       <div class="d-none name"><code>safety_02_population.Rd</code></div>
     </div>
 
@@ -63,7 +63,8 @@ data by age into adult and pediatric populations.</p>
 <span>  <span class="va">eresponse_05_col</span>,</span>
 <span>  <span class="va">edisposition_18_col</span>,</span>
 <span>  <span class="va">edisposition_28_col</span>,</span>
-<span>  <span class="va">transport_disposition_cols</span></span>
+<span>  <span class="va">transport_disposition_col</span>,</span>
+<span>  transport_disposition_cols <span class="op">=</span> <span class="fu">lifecycle</span><span class="fu">::</span><span class="fu"><a href="https://lifecycle.r-lib.org/reference/deprecated.html" class="external-link">deprecated</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -72,18 +73,18 @@ data by age into adult and pediatric populations.</p>
 
 
 <dl><dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
-<dd><p>A data frame where each row is an observation, and each column
-represents a feature.</p></dd>
+<dd><p>A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.</p></dd>
 
 
 <dt id="arg-patient-scene-table">patient_scene_table<a class="anchor" aria-label="anchor" href="#arg-patient-scene-table"></a></dt>
-<dd><p>A data.frame or tibble containing only epatient
-and escene fields as a fact table.</p></dd>
+<dd><p>A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.</p></dd>
 
 
 <dt id="arg-response-table">response_table<a class="anchor" aria-label="anchor" href="#arg-response-table"></a></dt>
-<dd><p>A data.frame or tibble containing only the eresponse
-fields needed for this measure's calculations.</p></dd>
+<dd><p>A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.</p></dd>
 
 
 <dt id="arg-disposition-table">disposition_table<a class="anchor" aria-label="anchor" href="#arg-disposition-table"></a></dt>
@@ -109,31 +110,40 @@ restrictions.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_15_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>Column giving the calculated age value.</p></dd>
+<dd><p>Column representing the patient's numeric age agnostic
+of unit.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_16_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>Column giving the provided age unit value.</p></dd>
+<dd><p>Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").</p></dd>
 
 
 <dt id="arg-eresponse-col">eresponse_05_col<a class="anchor" aria-label="anchor" href="#arg-eresponse-col"></a></dt>
-<dd><p>Column giving response codes, identifying 911
-responses.</p></dd>
+<dd><p>Column that contains eResponse.05 or the response
+type.</p></dd>
 
 
 <dt id="arg-edisposition-col">edisposition_18_col<a class="anchor" aria-label="anchor" href="#arg-edisposition-col"></a></dt>
-<dd><p>Column giving transport mode descriptors,
-including possible lights-and-sirens indicators.</p></dd>
+<dd><p>Column giving documentation of transport mode
+techniques for this EMS response.</p></dd>
 
 
 <dt id="arg-edisposition-col">edisposition_28_col<a class="anchor" aria-label="anchor" href="#arg-edisposition-col"></a></dt>
-<dd><p>Column giving patient evaluation and care
-categories for the EMS response.</p></dd>
+<dd><p>Column giving patient disposition for an EMS event
+identifying whether a patient was evaluated and care or services were
+provided.</p></dd>
+
+
+<dt id="arg-transport-disposition-col">transport_disposition_col<a class="anchor" aria-label="anchor" href="#arg-transport-disposition-col"></a></dt>
+<dd><p>One or more unquoted column names (such as
+edisposition.12, edisposition.30) containing transport disposition for an
+EMS event identifying whether a transport occurred and by which unit.</p></dd>
 
 
 <dt id="arg-transport-disposition-cols">transport_disposition_cols<a class="anchor" aria-label="anchor" href="#arg-transport-disposition-cols"></a></dt>
-<dd><p>One or more unquoted column names (such as
-edisposition.12, edisposition.30) containing transport disposition details.</p></dd>
+<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#deprecated" class="external-link"><img src="figures/lifecycle-deprecated.svg" alt="[Deprecated]"></a> Use
+<code>transport_disposition_col</code> instead.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -198,7 +208,7 @@ edisposition.12, edisposition.30) containing transport disposition details.</p><
 <span class="r-in"><span>                        eresponse_05_col <span class="op">=</span> <span class="va">eresponse_05</span>,</span></span>
 <span class="r-in"><span>                        edisposition_18_col <span class="op">=</span> <span class="va">edisposition_18</span>,</span></span>
 <span class="r-in"><span>                        edisposition_28_col <span class="op">=</span> <span class="va">edisposition_28</span>,</span></span>
-<span class="r-in"><span>                        transport_disposition_cols <span class="op">=</span> <span class="va">edisposition_30</span></span></span>
+<span class="r-in"><span>                        transport_disposition_col <span class="op">=</span> <span class="va">edisposition_30</span></span></span>
 <span class="r-in"><span>                        <span class="op">)</span></span></span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 1 of 11 tasks] <span style="color: #00BB00;">●●●●</span><span style="color: #FFFFFF;">──────────────</span>…</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `safety_02_population()`  [Working on 2 of 11 tasks] <span style="color: #00BB00;">●●●●●●</span><span style="color: #FFFFFF;">────────────</span>…</span>

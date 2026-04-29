@@ -17,7 +17,7 @@ stratified by age."><meta property="og:image" content="https://bemts-hhs.github.
 
     <a class="navbar-brand me-2" href="../index.html">nemsqar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.3</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.4</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,7 +38,7 @@ stratified by age."><meta property="og:image" content="https://bemts-hhs.github.
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Respiratory-01 Calculation</h1>
-      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/v1.1.3/R/respiratory_01.R" class="external-link"><code>R/respiratory_01.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/main/R/respiratory_01.R" class="external-link"><code>R/respiratory_01.R</code></a></small>
       <div class="d-none name"><code>respiratory_01.Rd</code></div>
     </div>
 
@@ -82,32 +82,34 @@ stratified by age.</p>
 
 
 <dl><dt id="arg-df">df<a class="anchor" aria-label="anchor" href="#arg-df"></a></dt>
-<dd><p>A data frame containing incident data with each row representing an
-observation.</p></dd>
+<dd><p>A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.</p></dd>
 
 
 <dt id="arg-patient-scene-table">patient_scene_table<a class="anchor" aria-label="anchor" href="#arg-patient-scene-table"></a></dt>
 <dd><p>A data.frame or tibble containing at least
-epatient and escene fields as a fact table.</p></dd>
+ePatient, and eScene as a fact table.</p></dd>
 
 
 <dt id="arg-response-table">response_table<a class="anchor" aria-label="anchor" href="#arg-response-table"></a></dt>
 <dd><p>A data.frame or tibble containing at least the
-eresponse fields needed for this measure's calculations.</p></dd>
+eResponse fields needed for this measure's calculations.</p></dd>
 
 
 <dt id="arg-situation-table">situation_table<a class="anchor" aria-label="anchor" href="#arg-situation-table"></a></dt>
 <dd><p>A data.frame or tibble containing at least the
-esituation fields needed for this measure's calculations.</p></dd>
+eSituation fields needed for this measure's calculations. Default is
+<code>NULL</code>.</p></dd>
 
 
 <dt id="arg-vitals-table">vitals_table<a class="anchor" aria-label="anchor" href="#arg-vitals-table"></a></dt>
-<dd><p>A data.frame or tibble containing at least the evitals
-fields needed for this measure's calculations.</p></dd>
+<dd><p>A dataframe or tibble containing at least the eVitals
+fields needed.</p></dd>
 
 
 <dt id="arg-erecord-col">erecord_01_col<a class="anchor" aria-label="anchor" href="#arg-erecord-col"></a></dt>
-<dd><p>Unique Patient ID</p></dd>
+<dd><p>The column representing the EMS record unique
+identifier.</p></dd>
 
 
 <dt id="arg-incident-date-col">incident_date_col<a class="anchor" aria-label="anchor" href="#arg-incident-date-col"></a></dt>
@@ -123,58 +125,60 @@ restrictions.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_15_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>Column giving the calculated age value.</p></dd>
+<dd><p>Column representing the patient's numeric age agnostic
+of unit.</p></dd>
 
 
 <dt id="arg-epatient-col">epatient_16_col<a class="anchor" aria-label="anchor" href="#arg-epatient-col"></a></dt>
-<dd><p>Column giving the provided age unit value.</p></dd>
+<dd><p>Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").</p></dd>
 
 
 <dt id="arg-eresponse-col">eresponse_05_col<a class="anchor" aria-label="anchor" href="#arg-eresponse-col"></a></dt>
-<dd><p>Column name for 911 response codes (e.g., 2205001,
-2205003, 2205009).</p></dd>
+<dd><p>Column that contains eResponse.05 or the response
+type.</p></dd>
 
 
 <dt id="arg-esituation-col">esituation_11_col<a class="anchor" aria-label="anchor" href="#arg-esituation-col"></a></dt>
-<dd><p>Column name for primary impression codes related to
-respiratory distress.</p></dd>
+<dd><p>Column that contains eSituation.11 provider primary
+impression data.</p></dd>
 
 
 <dt id="arg-esituation-col">esituation_12_col<a class="anchor" aria-label="anchor" href="#arg-esituation-col"></a></dt>
-<dd><p>Column name for secondary impression codes related
-to respiratory distress.</p></dd>
+<dd><p>Column that contains all eSituation.12 values as
+(possible a single comma-separated list), provider secondary impression
+data.</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_12_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name for the first vital sign measurement.</p></dd>
+<dd><p>Numeric column containing pulse oximetry values.</p></dd>
 
 
 <dt id="arg-evitals-col">evitals_14_col<a class="anchor" aria-label="anchor" href="#arg-evitals-col"></a></dt>
-<dd><p>Column name for the second vital sign measurement.</p></dd>
+<dd><p>Column containing data on patient's respiratory rate
+expressed as a number per minute.</p></dd>
 
 
 <dt id="arg-confidence-interval">confidence_interval<a class="anchor" aria-label="anchor" href="#arg-confidence-interval"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a> Logical. If
-<code>TRUE</code>, the function calculates a confidence interval for the proportion
-estimate.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, the function calculates a
+confidence interval for the proportion estimate.</p></dd>
 
 
 <dt id="arg-method">method<a class="anchor" aria-label="anchor" href="#arg-method"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>Character. Specifies the
-method used to calculate confidence intervals. Options are <code>"wilson"</code>
-(Wilson score interval) and <code>"clopper-pearson"</code> (exact binomial interval).
-Partial matching is supported, so <code>"w"</code> and <code>"c"</code> can be used as shorthand.</p></dd>
+<dd><p>Character. Specifies the method used to calculate confidence
+intervals. Options are <code>"wilson"</code> (Wilson score interval) and
+<code>"clopper-pearson"</code> (exact binomial interval). Partial matching is supported,
+so <code>"w"</code> and <code>"c"</code> can be used as shorthand.</p></dd>
 
 
 <dt id="arg-conf-level">conf.level<a class="anchor" aria-label="anchor" href="#arg-conf-level"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>Numeric. The confidence
-level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
-confidence interval). Defaults to 0.95.</p></dd>
+<dd><p>Numeric. The confidence level for the interval, expressed
+as a proportion (e.g., 0.95 for a 95% confidence interval). Defaults to 0.95.</p></dd>
 
 
 <dt id="arg-correct">correct<a class="anchor" aria-label="anchor" href="#arg-correct"></a></dt>
-<dd><p><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="figures/lifecycle-experimental.svg" alt="[Experimental]"></a>Logical. If <code>TRUE</code>,
-applies a continuity correction to the Wilson score interval when <code>method = "wilson"</code>. Defaults to <code>TRUE</code>.</p></dd>
+<dd><p>Logical. If <code>TRUE</code>, applies a continuity correction to the
+Wilson score interval when <code>method = "wilson"</code>. Defaults to <code>TRUE</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -219,6 +223,8 @@ of decimal places.</p></li>
 <span class="r-in"><span><span class="fu">respiratory_01</span><span class="op">(</span></span></span>
 <span class="r-in"><span>  df <span class="op">=</span> <span class="va">test_data</span>,</span></span>
 <span class="r-in"><span>  erecord_01_col <span class="op">=</span> <span class="va">erecord_01</span>,</span></span>
+<span class="r-in"><span>  incident_date_col <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
+<span class="r-in"><span>  patient_DOB_col <span class="op">=</span> <span class="cn">NULL</span>,</span></span>
 <span class="r-in"><span>  epatient_15_col <span class="op">=</span> <span class="va">epatient_15</span>,</span></span>
 <span class="r-in"><span>  epatient_16_col <span class="op">=</span> <span class="va">epatient_16</span>,</span></span>
 <span class="r-in"><span>  eresponse_05_col <span class="op">=</span> <span class="va">eresponse_05</span>,</span></span>
@@ -242,7 +248,6 @@ of decimal places.</p></li>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `respiratory_01_population()`  [Working on 7 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●</span>…</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `respiratory_01_population()`  [Working on 8 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●</span>…</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `respiratory_01_population()`  [Working on 9 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●●</span>…</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> Running `respiratory_01_population()`  [Working on 10 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●</span>…</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `respiratory_01_population()`  [Working on 11 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●</span>…</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `respiratory_01_population()`  [Working on 12 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●</span>…</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> Running `respiratory_01_population()`  [Working on 13 of 13 tasks] <span style="color: #00BB00;">●●●●●●●●●●●●</span>…</span>

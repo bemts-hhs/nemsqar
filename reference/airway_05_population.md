@@ -34,32 +34,31 @@ airway_05_population(
 - df:
 
   A dataframe or tibble contianing EMS data where each row represents an
-  observation and columns represent features. Default is `NULL`.
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing at least epatient, escene, and
-  earrest.01 fields as a fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data.frame or tibble containing at least the eresponse fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - arrest_table:
 
-  A data.frame or tibble containing at least the earrest fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eArrest fields needed
+  for this measure's calculations.
 
 - procedures_table:
 
   A dataframe or tibble containing at least the eProcedures fields
-  needed. Default is `NULL`.
+  needed.
 
 - vitals_table:
 
   A dataframe or tibble containing at least the eVitals fields needed.
-  Default is `NULL`.
 
 - erecord_01_col:
 
@@ -91,7 +90,7 @@ airway_05_population(
 
 - eresponse_05_col:
 
-  Column that contains eResponse.05.
+  Column that contains eResponse.05 or the response type.
 
 - evitals_01_col:
 

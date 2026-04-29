@@ -34,17 +34,18 @@ asthma_01_population(
 
 - df:
 
-  A data.frame or tibble containing EMS data. Default is `NULL`.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing at least ePatient and eScene fields
-  as a fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
   A data.frame or tibble containing at least the eResponse fields needed
-  for this measure's calculations. Default is `NULL`.
+  for this measure's calculations.
 
 - situation_table:
 
@@ -58,8 +59,7 @@ asthma_01_population(
 
 - erecord_01_col:
 
-  The column representing the EMS record unique identifier. Default is
-  `NULL`.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -79,11 +79,11 @@ asthma_01_population(
 - epatient_16_col:
 
   Column representing the patient's age unit ("Years", "Months", "Days",
-  "Hours", or "Minute").
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column that contains eResponse.05.
+  Column that contains eResponse.05 or the response type.
 
 - esituation_11_col:
 
@@ -96,8 +96,9 @@ asthma_01_population(
 
 - emedications_03_col:
 
-  Column that contains all eMedications.03 values as a single
-  comma-separated list.
+  Column that contains all medication administered to the patient
+  (eMedications.03) values as a single comma-separated list per distinct
+  eRecord.01 ID.
 
 ## Value
 

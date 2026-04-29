@@ -39,18 +39,18 @@ pediatrics_03b(
 
 - df:
 
-  A data frame or tibble containing emergency response records. Default
-  is `NULL`.
+  A dataframe or tibble contianing EMS data where each row represents an
+  observation and columns represent features.
 
 - patient_scene_table:
 
-  A data.frame or tibble containing only ePatient and eScene fields as a
-  fact table. Default is `NULL`.
+  A data.frame or tibble containing at least ePatient, and eScene as a
+  fact table.
 
 - response_table:
 
-  A data.frame or tibble containing only the eResponse fields needed for
-  this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eResponse fields needed
+  for this measure's calculations.
 
 - exam_table:
 
@@ -59,12 +59,12 @@ pediatrics_03b(
 
 - medications_table:
 
-  A data.frame or tibble containing only the eMedications fields needed
-  for this measure's calculations. Default is `NULL`.
+  A data.frame or tibble containing at least the eMedications fields
+  needed for this measure's calculations. Default is `NULL`.
 
 - erecord_01_col:
 
-  Column for unique EMS record identifiers.
+  The column representing the EMS record unique identifier.
 
 - incident_date_col:
 
@@ -79,55 +79,57 @@ pediatrics_03b(
 
 - epatient_15_col:
 
-  Column giving the calculated age value.
+  Column representing the patient's numeric age agnostic of unit.
 
 - epatient_16_col:
 
-  Column giving the provided age unit value.
+  Column representing the patient's age unit ("Years", "Months", "Days",
+  "Hours", or "Minutes").
 
 - eresponse_05_col:
 
-  Column containing the EMS response codes.
+  Column that contains eResponse.05 or the response type.
 
 - eexam_01_col:
 
-  Column containing documented weight information.
+  Column containing estimated patient body weight in kilograms.
 
 - eexam_02_col:
 
-  Another column for weight documentation, if applicable.
+  Column containing data on length based tape measure for patients.
 
 - emedications_03_col:
 
-  Column indicating medication administration.
+  Column that contains all medication administered to the patient
+  (eMedications.03) values as a single comma-separated list per distinct
+  eRecord.01 ID.
 
 - emedications_04_col:
 
-  Column listing medications administered.
+  Column indicating route medication was administered to the patient.
 
 - confidence_interval:
 
-  **\[experimental\]** Logical. If `TRUE`, the function calculates a
-  confidence interval for the proportion estimate.
+  Logical. If `TRUE`, the function calculates a confidence interval for
+  the proportion estimate.
 
 - method:
 
-  **\[experimental\]**Character. Specifies the method used to calculate
-  confidence intervals. Options are `"wilson"` (Wilson score interval)
-  and `"clopper-pearson"` (exact binomial interval). Partial matching is
+  Character. Specifies the method used to calculate confidence
+  intervals. Options are `"wilson"` (Wilson score interval) and
+  `"clopper-pearson"` (exact binomial interval). Partial matching is
   supported, so `"w"` and `"c"` can be used as shorthand.
 
 - conf.level:
 
-  **\[experimental\]**Numeric. The confidence level for the interval,
-  expressed as a proportion (e.g., 0.95 for a 95% confidence interval).
-  Defaults to 0.95.
+  Numeric. The confidence level for the interval, expressed as a
+  proportion (e.g., 0.95 for a 95% confidence interval). Defaults to
+  0.95.
 
 - correct:
 
-  **\[experimental\]**Logical. If `TRUE`, applies a continuity
-  correction to the Wilson score interval when `method = "wilson"`.
-  Defaults to `TRUE`.
+  Logical. If `TRUE`, applies a continuity correction to the Wilson
+  score interval when `method = "wilson"`. Defaults to `TRUE`.
 
 - ...:
 
@@ -215,7 +217,7 @@ pediatrics_03b(
 #> ── Calculating Pediatrics-03b ──
 #> 
 #> 
-#> ✔ Function completed in 0.15s.
+#> ✔ Function completed in 0.14s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 1 × 8
