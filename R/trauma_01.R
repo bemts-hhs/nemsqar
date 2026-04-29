@@ -7,54 +7,11 @@
 #' using a numeric scale. The function filters and summarizes the data based on
 #' specified inclusion criteria.
 #'
-#' @param df A data frame or tibble containing EMS records. Default is `NULL`.
-#' @param patient_scene_table A data frame or tibble containing only epatient
-#'   and escene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eresponse
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param situation_table A data.frame or tibble containing only the esituation
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param disposition_table A data.frame or tibble containing only the
-#'   edisposition fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param vitals_table A data.frame or tibble containing only the evitals fields
-#'   needed for this measure's calculations. Default is `NULL`.
-#' @param erecord_01_col Column name representing the EMS record ID.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column name for the patient's age in numeric format.
-#' @param epatient_16_col Column name for the unit of age (e.g., "Years",
-#'   "Months").
-#' @param esituation_02_col Column name indicating if the situation involved an
-#'   injury.
-#' @param eresponse_05_col Column name for the type of EMS response (e.g., 911
-#'   call).
-#' @param evitals_23_col Column name for the Glasgow Coma Scale (GCS) total
-#'   score.
-#' @param evitals_26_col Column name for AVPU (Alert, Voice, Pain, Unresponsive)
-#'   status.
-#' @param evitals_27_col Column name for the pain scale assessment.
-#' @param edisposition_28_col Column name for patient care disposition details.
-#' @param transport_disposition_col Column name for transport disposition
-#'   details.
-#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
-#'   `TRUE`, the function calculates a confidence interval for the proportion
-#'   estimate.
-#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
-#'   method used to calculate confidence intervals. Options are `"wilson"`
-#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
-#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
-#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
-#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
-#'   confidence interval). Defaults to 0.95.
-#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
-#'   applies a continuity correction to the Wilson score interval when `method =
-#'   "wilson"`. Defaults to `TRUE`.
-#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
+#' @inheritParams airway_01_population
+#' @inheritParams hypoglycemia_01_population
+#' @inheritParams safety_02_population
+#' @inheritParams trauma_01_population
+#' @inheritParams airway_01
 #'
 #' @return A data.frame summarizing results for two population groups (All,
 #'   Adults and Peds) with the following columns:
@@ -90,6 +47,8 @@
 #'   trauma_01(
 #'     df = test_data,
 #'     erecord_01_col = erecord_01,
+#'     incident_date_col = NULL,
+#'     patient_DOB_col = NULL,
 #'     epatient_15_col = epatient_15,
 #'     epatient_16_col = epatient_16,
 #'     eresponse_05_col = eresponse_05,

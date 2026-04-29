@@ -6,57 +6,12 @@
 #' on specific criteria in a patient dataset. It produces a subset of the data
 #' with calculated variables for TBI identification.
 #'
-#' @param df A data frame or tibble containing the patient data.
-#' @param patient_scene_table A data frame or tibble containing only epatient
-#'   and escene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eresponse
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param situation_table A data.frame or tibble containing only the esituation
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param disposition_table A data.frame or tibble containing only the
-#'   edisposition fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param vitals_table A data.frame or tibble containing only the evitals fields
-#'   needed for this measure's calculations. Default is `NULL`.
-#' @param erecord_01_col Column name in df with the patient’s unique record ID.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column name in df with the patient’s age value.
-#' @param epatient_16_col Column name in df with the patient’s age unit (e.g.,
-#'   years, months).
-#' @param eresponse_05_col Column name in df with response codes for the type of
-#'   EMS call.
-#' @param esituation_11_col Column name in df with the primary provider
-#'   impression.
-#' @param esituation_12_col Column name in df with the secondary provider
-#'   impression.
-#' @param transport_disposition_col Column name in df with the transport
-#'   disposition.
-#' @param evitals_06_col Column name in df with systolic blood pressure (SBP).
-#' @param evitals_12_col Column name in df with pulse oximetry values.
-#' @param evitals_16_col Column name in df with ETCO2 values.
-#'   values.
-#' @param evitals_23_col Column name in df with Glasgow Coma Scale (GCS) scores.
-#' @param evitals_26_col Column name in df with AVPU (alert, verbal, painful,
-#'   unresponsive) values.
-#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
-#'   `TRUE`, the function calculates a confidence interval for the proportion
-#'   estimate.
-#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
-#'   method used to calculate confidence intervals. Options are `"wilson"`
-#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
-#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
-#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
-#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
-#'   confidence interval). Defaults to 0.95.
-#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
-#'   applies a continuity correction to the Wilson score interval when `method =
-#'   "wilson"`. Defaults to `TRUE`.
-#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
+#' @inheritParams airway_01_population
+#' @inheritParams airway_18_population
+#' @inheritParams hypoglycemia_01_population
+#' @inheritParams safety_02_population
+#' @inheritParams tbi_01_population
+#' @inheritParams airway_01
 #'
 #' @return A data.frame summarizing results for two population groups (All,
 #'   Adults and Peds) with the following columns:
@@ -94,6 +49,8 @@
 #'   tbi_01(
 #'     df = test_data,
 #'     erecord_01_col = erecord_01,
+#'     incident_date_col = NULL,
+#'     patient_DOB_col = NULL,
 #'     epatient_15_col = epatient_15,
 #'     epatient_16_col = epatient_16,
 #'     eresponse_05_col = eresponse_05,

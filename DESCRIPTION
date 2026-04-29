@@ -1,7 +1,7 @@
 Package: nemsqar
 Title: National Emergency Medical Service Quality Alliance Measure
     Calculations
-Version: 1.1.3
+Version: 1.1.4
 Authors@R: c(
     person("Nicolas", "Foss", , "nicolas.foss@hhs.iowa.gov", role = c("aut", "cre")),
     person("Samuel", "Kordik", , "samuel.kordik@utsouthwestern.edu", role = "aut",
@@ -29,12 +29,14 @@ Imports:
     cli,
     dplyr (>= 1.1.4),
     glue,
+    hms,
     lifecycle,
     lubridate (>= 1.9.4),
     rlang,
     stats,
     tibble (>= 3.2.1),
-    tidyselect (>= 1.2.1)
+    tidyselect (>= 1.2.1),
+    utils
 Suggests: 
     testthat (>= 3.0.0),
     tidyr
@@ -43,4 +45,4 @@ Encoding: UTF-8
 LazyData: true
 LazyDataCompression: bzip2
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3

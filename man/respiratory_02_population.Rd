@@ -23,26 +23,27 @@ respiratory_02_population(
 )
 }
 \arguments{
-\item{df}{A data frame containing incident data with each row representing an
-observation.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
 \item{patient_scene_table}{A data.frame or tibble containing at least
-epatient and escene fields as a fact table.}
+ePatient, and eScene as a fact table.}
 
 \item{response_table}{A data.frame or tibble containing at least the
-eresponse fields needed for this measure's calculations.}
+eResponse fields needed for this measure's calculations.}
 
-\item{vitals_table}{A data.frame or tibble containing at least the evitals
-fields needed for this measure's calculations.}
+\item{vitals_table}{A dataframe or tibble containing at least the eVitals
+fields needed.}
 
-\item{medications_table}{A data.frame or tibble containing only the
-emedications fields needed for this measure's calculations.}
+\item{medications_table}{A data.frame or tibble containing at least the
+eMedications fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{procedures_table}{A data.frame or tibble containing only the
-eprocedures fields needed for this measure's calculations.}
+\item{procedures_table}{A dataframe or tibble containing at least the
+eProcedures fields needed.}
 
-\item{erecord_01_col}{Column name for eRecord.01, used to form a unique
-patient ID.}
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -52,17 +53,23 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{integer Column giving the calculated age value.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{Column giving the provided age unit value.}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column name for response codes (e.g., incident type).}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{evitals_12_col}{Column name for oxygen saturation (SpO2) values.}
+\item{evitals_12_col}{Numeric column containing pulse oximetry values.}
 
-\item{emedications_03_col}{Column name for medication codes.}
+\item{emedications_03_col}{Column that contains all medication administered
+to the patient (eMedications.03) values as a single comma-separated list per
+distinct eRecord.01 ID.}
 
-\item{eprocedures_03_col}{Column name for procedure codes.}
+\item{eprocedures_03_col}{Column containing procedure codes with or without
+procedure names.}
 }
 \value{
 A list that contains the following:

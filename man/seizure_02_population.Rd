@@ -22,24 +22,25 @@ seizure_02_population(
 )
 }
 \arguments{
-\item{df}{A data frame where each row is an observation, containing all
-necessary columns for analysis.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient
-and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
-\item{situation_table}{A data.frame or tibble containing only the esituation
-fields needed for this measure's calculations. Default is \code{NULL}.}
-
-\item{medications_table}{A data.frame or tibble containing only the
-emedications fields needed for this measure's calculations. Default is
+\item{situation_table}{A data.frame or tibble containing at least the
+eSituation fields needed for this measure's calculations. Default is
 \code{NULL}.}
 
-\item{erecord_01_col}{The column containing unique record identifiers for
-each encounter.}
+\item{medications_table}{A data.frame or tibble containing at least the
+eMedications fields needed for this measure's calculations. Default is
+\code{NULL}.}
+
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -49,20 +50,25 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{Column name for patient age in numeric form.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{Column name for age unit (e.g., \code{"Years"} or
-\code{"Months"}).}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column name for response codes; "911" call codes are
-filtered.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{esituation_11_col}{Column name for primary impressions.}
+\item{esituation_11_col}{Column that contains eSituation.11 provider primary
+impression data.}
 
-\item{esituation_12_col}{Column name for secondary impressions.}
+\item{esituation_12_col}{Column that contains all eSituation.12 values as
+(possible a single comma-separated list), provider secondary impression
+data.}
 
-\item{emedications_03_col}{Column name for medications administered; ideally
-a list column or string with comma-separated values.}
+\item{emedications_03_col}{Column that contains all medication administered
+to the patient (eMedications.03) values as a single comma-separated list per
+distinct eRecord.01 ID.}
 }
 \value{
 A list that contains the following:

@@ -1,4 +1,8 @@
 utils::globalVariables(c(
+  "procedures_datetime_name",
+  "vitals_datetime_name",
+  "airway_datetime_name",
+  "airway_confirmation_col_name",
   "rr",
   "gcs",
   "dbp",

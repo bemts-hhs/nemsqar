@@ -10,56 +10,10 @@
 #' an EMS response originating from a 911 request in which waveform capnography
 #' is used for tube placement confirmation.
 #'
-#' @param df A data frame or tibble containing the dataset to be processed.
-#'   Default is `NULL`.
-#' @param patient_scene_table A data frame or tibble containing only ePatient
-#'   and eScene fields as a fact table. Default is `NULL`.
-#' @param response_table A data frame or tibble containing only the eResponse
-#'   fields needed for this measure's calculations. Default is `NULL`.
-#' @param procedures_table A data frame or tibble containing only the
-#'   eProcedures fields needed for this measure's calculations. Default is
-#'   `NULL`.
-#' @param airway_table A data frame or tibble containing only the eAirway fields
-#'   needed for this measure's calculations. Default is `NULL`.
-#' @param vitals_table A data frame or tibble containing only the eVitals fields
-#'   needed for this measure's calculations. Default is `NULL`.
-#' @param erecord_01_col Column name containing the unique patient record
-#'   identifier.
-#' @param incident_date_col Column name containing the incident date. Default is
-#'   `NULL`.
-#' @param patient_DOB_col Column name containing the patient's date of birth.
-#'   Default is `NULL`.
-#' @param epatient_15_col Column name for patient information (exact purpose
-#'   unclear).
-#' @param epatient_16_col Column name for patient information (exact purpose
-#'   unclear).
-#' @param eresponse_05_col Column name for emergency response codes.
-#' @param eprocedures_01_col Column name for procedure times or other related
-#'   data.
-#' @param eprocedures_02_col Column name for whether or not the procedure was
-#'   performed prior to EMS care being provided.
-#' @param eprocedures_03_col Column name for procedure codes.
-#' @param eprocedures_06_col Column name for procedure success codes.
-#' @param eairway_02_col Column name for airway procedure data (datetime).
-#'   Default is `NULL`.
-#' @param eairway_04_col Column name for airway procedure data. Default is
-#'   `NULL`.
-#' @param evitals_01_col Column name for vital signs data (datetime).
-#' @param evitals_16_col Column name for additional vital signs data.
-#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
-#'   `TRUE`, the function calculates a confidence interval for the proportion
-#'   estimate.
-#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
-#'   method used to calculate confidence intervals. Options are `"wilson"`
-#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
-#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
-#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
-#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
-#'   confidence interval). Defaults to 0.95.
-#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
-#'   applies a continuity correction to the Wilson score interval when `method =
-#'   "wilson"`. Defaults to `TRUE`.
-#' @param ... optional additional arguments to pass onto `dplyr::summarize`.
+#' @inheritParams airway_01_population
+#' @inheritParams airway_05_population
+#' @inheritParams airway_18_population
+#' @inheritParams airway_01
 #'
 #' @return A data.frame summarizing results for two population groups (Adults
 #'   and Peds) with the following columns:
@@ -197,6 +151,66 @@ airway_18 <- function(
 ) {
   # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
+
+  # Ensure that not all table arguments AND the df argument are fulfilled ----
+  # User must pass either `df` or all table arguments, but not both
+
+  if (
+    any(
+      !is.null(patient_scene_table),
+      !is.null(procedures_table),
+      !is.null(vitals_table),
+      !is.null(airway_table),
+      !is.null(response_table)
+    ) &&
+      !is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn airway_18} requires either a {.cls data.frame} or {.cls tibble} passed to the {.var df} argument, or all table arguments to be fulfilled. Please choose one approach."
+    )
+  }
+
+  # Ensure that df or all table arguments are fulfilled ----
+
+  if (
+    all(
+      is.null(patient_scene_table),
+      is.null(procedures_table),
+      is.null(vitals_table),
+      is.null(airway_table),
+      is.null(response_table)
+    ) &&
+      is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn airway_18} requires either a {.cls data.frame} or {.cls tibble} passed to the {.var df} argument, or all table arguments to be fulfilled. Please choose one approach."
+    )
+  }
+
+  # Ensure all *_col arguments are fulfilled ----
+
+  if (
+    any(
+      missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
+      missing(eresponse_05_col),
+      missing(eprocedures_01_col),
+      missing(eprocedures_02_col),
+      missing(eprocedures_03_col),
+      missing(eprocedures_06_col),
+      missing(eairway_02_col),
+      missing(eairway_04_col),
+      missing(evitals_01_col),
+      missing(evitals_16_col)
+    )
+  ) {
+    cli::cli_abort(
+      "One or more of the *_col arguments is missing. Please ensure you pass an unquoted column to each of the *_col arguments to run {.fn airway_18}."
+    )
+  }
 
   # utilize applicable tables to analyze the data for the measure ----
   if (

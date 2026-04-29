@@ -1,3 +1,24 @@
+# nemsqar 1.1.4
+* Documentation using @inheritParams to help with making functions more
+  maintainable.
+* Update regex within each function so they utilize paste() to make the regex
+  more maintainable.
+* Created `constants.R` to contain all regex for the package as internal to the
+  package. `constants.R` is loaded at package install / load and these regex
+  objects are available to the package for the functions to reference.
+* Put regex (be sensitive to measure-specific regex) into .R/constants.R file to
+  centralize these and functions just reference these objects. Then, we can
+  delete all regex within functions for an even easier time maintaining the
+  package. This addresses issue #22.
+* Update data validation where applicable to use functional validation.
+* Abbreviate the code base by removing separate workflows for the 'df' and
+  'table' data sources. Unify these by always ending up with 'tables' by
+  splitting up a 'df' if supplied, and then only needing to proceed with major
+  data validation and the analysis on objects named like `*_table`. 
+* Replace data validation that involve rlang::as_name(quo) with making this code
+  more readable by creating a separate `*_name` object for applicable columns
+  and then running validation on `object[[name]]`.
+
 # nemsqar 1.1.3
 - Added navigation to all major functions in the package. This was done by
   adding `----` to the end of most comments.

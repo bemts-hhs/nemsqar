@@ -21,38 +21,38 @@ stroke_01_population(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing the dataset. Each row should
-represent a unique patient encounter.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient
-and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
-\item{situation_table}{A data.frame or tibble containing only the esituation
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data.frame or tibble containing at least the
+eSituation fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing only the evitals fields
-needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A dataframe or tibble containing at least the eVitals
+fields needed.}
 
-\item{erecord_01_col}{The column containing unique record identifiers for
-each encounter.}
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
-\item{eresponse_05_col}{The column containing EMS response codes, which
-should include 911 response codes.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{esituation_11_col}{The column containing the primary impression codes
-or descriptions related to the situation.}
+\item{esituation_11_col}{Column that contains eSituation.11 provider primary
+impression data.}
 
-\item{esituation_12_col}{The column containing secondary impression codes or
-descriptions related to the situation.}
+\item{esituation_12_col}{Column that contains all eSituation.12 values as
+(possible a single comma-separated list), provider secondary impression
+data.}
 
-\item{evitals_23_col}{The column containing the Glasgow Coma Scale (GCS)
-score.}
+\item{evitals_23_col}{Column for Glasgow Coma Scale (GCS) scores.}
 
-\item{evitals_26_col}{The column containing the AVPU (alert, verbal, pain,
-unresponsive) scale value.}
+\item{evitals_26_col}{Column for AVPU alertness levels.}
 
 \item{evitals_29_col}{The column containing the stroke scale score achieved
 during assessment.}

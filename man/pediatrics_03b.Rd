@@ -28,23 +28,24 @@ pediatrics_03b(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing emergency response records.
-Default is \code{NULL}.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data.frame or tibble containing only ePatient
-and eScene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data.frame or tibble containing only the eResponse
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
 \item{exam_table}{A data.frame or tibble containing only the eExam fields
 needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{medications_table}{A data.frame or tibble containing only the
+\item{medications_table}{A data.frame or tibble containing at least the
 eMedications fields needed for this measure's calculations. Default is
 \code{NULL}.}
 
-\item{erecord_01_col}{Column for unique EMS record identifiers.}
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -54,35 +55,41 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{Column giving the calculated age value.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{Column giving the provided age unit value.}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column containing the EMS response codes.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{eexam_01_col}{Column containing documented weight information.}
+\item{eexam_01_col}{Column containing estimated patient body weight in
+kilograms.}
 
-\item{eexam_02_col}{Another column for weight documentation, if applicable.}
+\item{eexam_02_col}{Column containing data on length based tape measure for
+patients.}
 
-\item{emedications_03_col}{Column indicating medication administration.}
+\item{emedications_03_col}{Column that contains all medication administered
+to the patient (eMedications.03) values as a single comma-separated list per
+distinct eRecord.01 ID.}
 
-\item{emedications_04_col}{Column listing medications administered.}
+\item{emedications_04_col}{Column indicating route medication was
+administered to the patient.}
 
-\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
-\code{TRUE}, the function calculates a confidence interval for the proportion
-estimate.}
+\item{confidence_interval}{Logical. If \code{TRUE}, the function calculates a
+confidence interval for the proportion estimate.}
 
-\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Character. Specifies the
-method used to calculate confidence intervals. Options are \code{"wilson"}
-(Wilson score interval) and \code{"clopper-pearson"} (exact binomial interval).
-Partial matching is supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
+\item{method}{Character. Specifies the method used to calculate confidence
+intervals. Options are \code{"wilson"} (Wilson score interval) and
+\code{"clopper-pearson"} (exact binomial interval). Partial matching is supported,
+so \code{"w"} and \code{"c"} can be used as shorthand.}
 
-\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Numeric. The confidence
-level for the interval, expressed as a proportion (e.g., 0.95 for a 95\%
-confidence interval). Defaults to 0.95.}
+\item{conf.level}{Numeric. The confidence level for the interval, expressed
+as a proportion (e.g., 0.95 for a 95\% confidence interval). Defaults to 0.95.}
 
-\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Logical. If \code{TRUE},
-applies a continuity correction to the Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+\item{correct}{Logical. If \code{TRUE}, applies a continuity correction to the
+Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
 
 \item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }

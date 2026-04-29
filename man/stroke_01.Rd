@@ -26,38 +26,38 @@ stroke_01(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing the dataset. Each row should
-represent a unique patient encounter.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data frame or tibble containing only epatient
-and escene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data frame or tibble containing only the eresponse
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
-\item{situation_table}{A data.frame or tibble containing only the esituation
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{situation_table}{A data.frame or tibble containing at least the
+eSituation fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing only the evitals fields
-needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A dataframe or tibble containing at least the eVitals
+fields needed.}
 
-\item{erecord_01_col}{The column containing unique record identifiers for
-each encounter.}
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
-\item{eresponse_05_col}{The column containing EMS response codes, which
-should include 911 response codes.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{esituation_11_col}{The column containing the primary impression codes
-or descriptions related to the situation.}
+\item{esituation_11_col}{Column that contains eSituation.11 provider primary
+impression data.}
 
-\item{esituation_12_col}{The column containing secondary impression codes or
-descriptions related to the situation.}
+\item{esituation_12_col}{Column that contains all eSituation.12 values as
+(possible a single comma-separated list), provider secondary impression
+data.}
 
-\item{evitals_23_col}{The column containing the Glasgow Coma Scale (GCS)
-score.}
+\item{evitals_23_col}{Column for Glasgow Coma Scale (GCS) scores.}
 
-\item{evitals_26_col}{The column containing the AVPU (alert, verbal, pain,
-unresponsive) scale value.}
+\item{evitals_26_col}{Column for AVPU alertness levels.}
 
 \item{evitals_29_col}{The column containing the stroke scale score achieved
 during assessment.}
@@ -65,21 +65,19 @@ during assessment.}
 \item{evitals_30_col}{The column containing stroke scale type descriptors
 (e.g., FAST, NIH, etc.).}
 
-\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
-\code{TRUE}, the function calculates a confidence interval for the proportion
-estimate.}
+\item{confidence_interval}{Logical. If \code{TRUE}, the function calculates a
+confidence interval for the proportion estimate.}
 
-\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Character. Specifies the
-method used to calculate confidence intervals. Options are \code{"wilson"}
-(Wilson score interval) and \code{"clopper-pearson"} (exact binomial interval).
-Partial matching is supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
+\item{method}{Character. Specifies the method used to calculate confidence
+intervals. Options are \code{"wilson"} (Wilson score interval) and
+\code{"clopper-pearson"} (exact binomial interval). Partial matching is supported,
+so \code{"w"} and \code{"c"} can be used as shorthand.}
 
-\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Numeric. The confidence
-level for the interval, expressed as a proportion (e.g., 0.95 for a 95\%
-confidence interval). Defaults to 0.95.}
+\item{conf.level}{Numeric. The confidence level for the interval, expressed
+as a proportion (e.g., 0.95 for a 95\% confidence interval). Defaults to 0.95.}
 
-\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Logical. If \code{TRUE},
-applies a continuity correction to the Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+\item{correct}{Logical. If \code{TRUE}, applies a continuity correction to the
+Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
 
 \item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }
@@ -126,6 +124,8 @@ impressions and scales, and aggregates results by unique patient encounters.
   stroke_01(
     df = test_data,
     erecord_01_col = erecord_01,
+    incident_date_col = NULL,
+    patient_DOB_col = NULL,
     eresponse_05_col = eresponse_05,
     esituation_11_col = esituation_11,
     esituation_12_col = esituation_12,

@@ -23,23 +23,24 @@ pediatrics_03b_population(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing emergency response records.
-Default is \code{NULL}.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data.frame or tibble containing only ePatient
-and eScene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data.frame or tibble containing only the eResponse
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
 \item{exam_table}{A data.frame or tibble containing only the eExam fields
 needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{medications_table}{A data.frame or tibble containing only the
+\item{medications_table}{A data.frame or tibble containing at least the
 eMedications fields needed for this measure's calculations. Default is
 \code{NULL}.}
 
-\item{erecord_01_col}{Column for unique EMS record identifiers.}
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -49,19 +50,27 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{Column giving the calculated age value.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{Column giving the provided age unit value.}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column containing the EMS response codes.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{eexam_01_col}{Column containing documented weight information.}
+\item{eexam_01_col}{Column containing estimated patient body weight in
+kilograms.}
 
-\item{eexam_02_col}{Another column for weight documentation, if applicable.}
+\item{eexam_02_col}{Column containing data on length based tape measure for
+patients.}
 
-\item{emedications_03_col}{Column indicating medication administration.}
+\item{emedications_03_col}{Column that contains all medication administered
+to the patient (eMedications.03) values as a single comma-separated list per
+distinct eRecord.01 ID.}
 
-\item{emedications_04_col}{Column listing medications administered.}
+\item{emedications_04_col}{Column indicating route medication was
+administered to the patient.}
 }
 \value{
 A list that contains the following:

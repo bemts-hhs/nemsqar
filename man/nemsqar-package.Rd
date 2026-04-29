@@ -29,7 +29,7 @@ Authors:
 
 Other contributors:
 \itemize{
-  \item Alyssa Green \email{awhim@nemsqa.org} [contributor]
+  \item Alyssa Green \email{agreen@nemsqa.org} [contributor]
   \item Iowa Department of Health and Human Services [copyright holder]
 }
 

@@ -1,7 +1,18 @@
 test_that("basic percentages work", {
-  input <- c(7.5/100, 20/100, 0.3333/1, 100/100, 15.75/100, 0.005/0.1, 150/300)
+  input <- c(
+    7.5 / 100,
+    20 / 100,
+    0.3333 / 1,
+    100 / 100,
+    15.75 / 100,
+    0.005 / 0.1,
+    150 / 300
+  )
   output <- pretty_percent(input, n_decimal = 2)
-  expect_equal(output, c("7.5%", "20%", "33.33%", "100%", "15.75%", "5%", "50%"))
+  expect_equal(
+    output,
+    c("7.5%", "20%", "33.33%", "100%", "15.75%", "5%", "50%")
+  )
 })
 
 test_that("zero values are handled correctly", {
@@ -16,10 +27,12 @@ test_that("negative values are handled correctly", {
   expect_equal(output, c("-5%", "-12.34%", "-100%"))
 })
 
-test_that("large values above 1 are correctly formatted", {
+test_that("large values above 1 correctly throw an error", {
   input <- c(1.25, 2, 10.3456)
-  output <- pretty_percent(input, n_decimal = 1)
-  expect_equal(output, c("125%", "200%", "1034.6%"))
+  testthat::expect_error(
+    pretty_percent(input, n_decimal = 1),
+    regexp = "values must be contained within range.*-1.*1.*Range of this input was"
+  )
 })
 
 test_that("trailing zeros are removed", {
@@ -40,9 +53,15 @@ test_that("n_decimal is respected", {
 })
 
 test_that("invalid inputs throw errors", {
-  expect_error(pretty_percent("a"), "must be numeric")
-  expect_error(pretty_percent(TRUE), "must be numeric")
-  expect_error(pretty_percent(c(0.1, "b")), "must be numeric")
-  expect_error(pretty_percent(0.5, n_decimal = -1), "must be a positive numeric value")
-  expect_error(pretty_percent(0.5, n_decimal = "two"), "must be a positive numeric value")
+  expect_error(pretty_percent("a"), "must be.*numeric")
+  expect_error(pretty_percent(TRUE), "must be.*numeric")
+  expect_error(pretty_percent(c(0.1, "b")), "must be.*numeric")
+  expect_error(
+    pretty_percent(0.5, n_decimal = -1),
+    "values must be greater than or equal to 0"
+  )
+  expect_error(
+    pretty_percent(0.5, n_decimal = "two"),
+    "must be.*numeric"
+  )
 })

@@ -5,60 +5,17 @@
 #' Calculates the proportion of times when the first endotracheal intubation
 #' attempt is successful with no peri-intubation hypoxia or hypotension.
 #'
-#' @param df A dataframe or tibble containing EMS data where each row represents
-#'   an observation and columns represent features.
-#' @param patient_scene_table A data.frame or tibble containing at least
-#'   epatient, escene, and earrest.01 fields as a fact table.
-#' @param response_table A data.frame or tibble containing at least the
-#'   eresponse fields needed for this measure's calculations.
-#' @param arrest_table A data.frame or tibble containing at least the earrest
-#'   fields needed for this measure's calculations.
-#' @param procedures_table A dataframe or tibble containing at least the
-#'   eProcedures fields needed.
-#' @param vitals_table A dataframe or tibble containing at least the eVitals
-#'   fields needed.
-#' @param erecord_01_col The column representing the EMS record unique
-#'   identifier.
-#' @param incident_date_col Column that contains the incident date. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param patient_DOB_col Column that contains the patient's date of birth. This
-#'   defaults to `NULL` as it is optional in case not available due to PII
-#'   restrictions.
-#' @param epatient_15_col Column representing the patient's numeric age agnostic
-#'   of unit.
-#' @param epatient_16_col Column representing the patient's age unit ("Years",
-#'   "Months", "Days", "Hours", or "Minutes").
-#' @param eresponse_05_col Column that contains eResponse.05.
-#' @param earrest_01_col  Column representing whether or not the patient is in
-#'   arrest.
-#' @param evitals_01_col  Date-time or POSIXct column containing vital signs
-#'   date/time
-#' @param evitals_06_col  Numeric column containing systolic blood pressure
-#'   values
-#' @param evitals_12_col  Numeric column containing pulse oximetry values.
-#' @param eprocedures_01_col  Date-time or POSIXct column for procedures
-#' @param eprocedures_02_col Column name for whether or not the procedure was
-#'   performed prior to EMS care being provided.
-#' @param eprocedures_03_col  Column containing procedure codes with or without
-#'   procedure names.
-#' @param eprocedures_05_col  Column containing a count for how many times
-#'   procedure was attempted.
-#' @param eprocedures_06_col  Column indicating whether or not procedure was
-#'   successful.
-#' @param confidence_interval `r lifecycle::badge("experimental")` Logical. If
-#'   `TRUE`, the function calculates a confidence interval for the proportion
-#'   estimate.
-#' @param method `r lifecycle::badge("experimental")`Character. Specifies the
-#'   method used to calculate confidence intervals. Options are `"wilson"`
-#'   (Wilson score interval) and `"clopper-pearson"` (exact binomial interval).
-#'   Partial matching is supported, so `"w"` and `"c"` can be used as shorthand.
-#' @param conf.level `r lifecycle::badge("experimental")`Numeric. The confidence
-#'   level for the interval, expressed as a proportion (e.g., 0.95 for a 95%
-#'   confidence interval). Defaults to 0.95.
-#' @param correct `r lifecycle::badge("experimental")`Logical. If `TRUE`,
-#'   applies a continuity correction to the Wilson score interval when `method =
-#'   "wilson"`. Defaults to `TRUE`.
+#' @inheritParams airway_01_population
+#' @param confidence_interval Logical. If `TRUE`, the function calculates a
+#' confidence interval for the proportion estimate.
+#' @param method Character. Specifies the method used to calculate confidence
+#' intervals. Options are `"wilson"` (Wilson score interval) and
+#' `"clopper-pearson"` (exact binomial interval). Partial matching is supported,
+#' so `"w"` and `"c"` can be used as shorthand.
+#' @param conf.level Numeric. The confidence level for the interval, expressed
+#' as a proportion (e.g., 0.95 for a 95% confidence interval). Defaults to 0.95.
+#' @param correct Logical. If `TRUE`, applies a continuity correction to the
+#' Wilson score interval when `method = "wilson"`. Defaults to `TRUE`.
 #' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
 #' @return A data.frame summarizing results for two population groups (Adults
@@ -198,6 +155,65 @@ airway_01 <- function(
 ) {
   # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
+
+  # Check for tables or DF ----
+
+  if (
+    any(
+      !is.null(patient_scene_table),
+      !is.null(response_table),
+      !is.null(arrest_table),
+      !is.null(procedures_table),
+      !is.null(vitals_table)
+    ) &&
+      !is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn airway_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all four table arguments."
+    )
+  }
+
+  # Ensure that df or all table arguments are fulfilled ----
+
+  if (
+    all(
+      is.null(patient_scene_table),
+      is.null(procedures_table),
+      is.null(vitals_table),
+      is.null(arrest_table),
+      is.null(response_table)
+    ) &&
+      is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn airway_01} requires either a {.cls data.frame} or {.cls tibble} passed to the {.var df} argument, or all table arguments to be fulfilled. Please choose one approach."
+    )
+  }
+
+  # ensure all *_col arguments are fulfilled ----
+  if (
+    any(
+      missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
+      missing(earrest_01_col),
+      missing(eresponse_05_col),
+      missing(evitals_01_col),
+      missing(evitals_06_col),
+      missing(evitals_12_col),
+      missing(eprocedures_01_col),
+      missing(eprocedures_02_col),
+      missing(eprocedures_03_col),
+      missing(eprocedures_05_col),
+      missing(eprocedures_06_col)
+    )
+  ) {
+    cli::cli_abort(
+      "One or more of the *_col arguments is missing.  Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn airway_01}."
+    )
+  }
 
   # utilize applicable tables to analyze the data for the measure ----
   if (

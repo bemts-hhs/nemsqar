@@ -28,26 +28,25 @@ airway_18_population(
 )
 }
 \arguments{
-\item{df}{A data frame or tibble containing the dataset to be processed.
-Default is \code{NULL}.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data frame or tibble containing only ePatient
-and eScene fields as a fact table. Default is \code{NULL}.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{procedures_table}{A data frame or tibble containing only the
-eProcedures fields needed for this measure's calculations. Default is
-\code{NULL}.}
+\item{procedures_table}{A dataframe or tibble containing at least the
+eProcedures fields needed.}
 
-\item{vitals_table}{A data frame or tibble containing only the eVitals fields
-needed for this measure's calculations. Default is \code{NULL}.}
+\item{vitals_table}{A dataframe or tibble containing at least the eVitals
+fields needed.}
 
 \item{airway_table}{A data frame or tibble containing only the eAirway fields
 needed for this measure's calculations. Default is \code{NULL}.}
 
-\item{response_table}{A data frame or tibble containing only the eResponse
-fields needed for this measure's calculations. Default is \code{NULL}.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
-\item{erecord_01_col}{Column name containing the unique patient record
+\item{erecord_01_col}{The column representing the EMS record unique
 identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
@@ -58,33 +57,38 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{Column name for patient information (exact purpose
-unclear).}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{Column name for patient information (exact purpose
-unclear).}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column name for emergency response codes.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{eprocedures_01_col}{Column name for procedure times or other related
-data.}
+\item{eprocedures_01_col}{Date-time or POSIXct column for procedures}
 
 \item{eprocedures_02_col}{Column name for whether or not the procedure was
 performed prior to EMS care being provided.}
 
-\item{eprocedures_03_col}{Column name for procedure codes.}
+\item{eprocedures_03_col}{Column containing procedure codes with or without
+procedure names.}
 
-\item{eprocedures_06_col}{Column name for procedure success codes.}
+\item{eprocedures_06_col}{Column indicating whether or not procedure was
+successful.}
 
-\item{eairway_02_col}{Column name for airway procedure data (datetime).
-Default is \code{NULL}.}
+\item{eairway_02_col}{Column name for date/time airway device placement
+confirmation. Default is \code{NULL}.}
 
-\item{eairway_04_col}{Column name for airway procedure data. Default is
-\code{NULL}.}
+\item{eairway_04_col}{Column name for confirmation of airway device
+placement. Default is \code{NULL}.}
 
-\item{evitals_01_col}{Column name for vital signs data (datetime).}
+\item{evitals_01_col}{Date-time or POSIXct column containing vital signs
+date/time}
 
-\item{evitals_16_col}{Column name for additional vital signs data.}
+\item{evitals_16_col}{Column with numeric value of the patient's exhaled end
+tidal carbon dioxide (ETCO2) level measured as a unit of pressure in
+millimeters of mercury (mmHg), percentage or, kilopascal (kPa).}
 }
 \value{
 A list that contains the following:
@@ -192,7 +196,5 @@ result$filter_process
 
 }
 \author{
-Nicolas Foss, Ed.D., MS
-
 Nicolas Foss, Ed.D., MS, Samuel Kordik, BBA, BS
 }

@@ -34,16 +34,16 @@ airway_01(
 )
 }
 \arguments{
-\item{df}{A dataframe or tibble containing EMS data where each row represents
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
 an observation and columns represent features.}
 
 \item{patient_scene_table}{A data.frame or tibble containing at least
-epatient, escene, and earrest.01 fields as a fact table.}
+ePatient, and eScene as a fact table.}
 
 \item{response_table}{A data.frame or tibble containing at least the
-eresponse fields needed for this measure's calculations.}
+eResponse fields needed for this measure's calculations.}
 
-\item{arrest_table}{A data.frame or tibble containing at least the earrest
+\item{arrest_table}{A data.frame or tibble containing at least the eArrest
 fields needed for this measure's calculations.}
 
 \item{procedures_table}{A dataframe or tibble containing at least the
@@ -72,13 +72,14 @@ of unit.}
 \item{earrest_01_col}{Column representing whether or not the patient is in
 arrest.}
 
-\item{eresponse_05_col}{Column that contains eResponse.05.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
 \item{evitals_01_col}{Date-time or POSIXct column containing vital signs
 date/time}
 
 \item{evitals_06_col}{Numeric column containing systolic blood pressure
-values}
+values.}
 
 \item{evitals_12_col}{Numeric column containing pulse oximetry values.}
 
@@ -96,21 +97,19 @@ procedure was attempted.}
 \item{eprocedures_06_col}{Column indicating whether or not procedure was
 successful.}
 
-\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
-\code{TRUE}, the function calculates a confidence interval for the proportion
-estimate.}
+\item{confidence_interval}{Logical. If \code{TRUE}, the function calculates a
+confidence interval for the proportion estimate.}
 
-\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Character. Specifies the
-method used to calculate confidence intervals. Options are \code{"wilson"}
-(Wilson score interval) and \code{"clopper-pearson"} (exact binomial interval).
-Partial matching is supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
+\item{method}{Character. Specifies the method used to calculate confidence
+intervals. Options are \code{"wilson"} (Wilson score interval) and
+\code{"clopper-pearson"} (exact binomial interval). Partial matching is supported,
+so \code{"w"} and \code{"c"} can be used as shorthand.}
 
-\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Numeric. The confidence
-level for the interval, expressed as a proportion (e.g., 0.95 for a 95\%
-confidence interval). Defaults to 0.95.}
+\item{conf.level}{Numeric. The confidence level for the interval, expressed
+as a proportion (e.g., 0.95 for a 95\% confidence interval). Defaults to 0.95.}
 
-\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Logical. If \code{TRUE},
-applies a continuity correction to the Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+\item{correct}{Logical. If \code{TRUE}, applies a continuity correction to the
+Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
 
 \item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }

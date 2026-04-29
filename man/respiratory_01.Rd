@@ -28,22 +28,24 @@ respiratory_01(
 )
 }
 \arguments{
-\item{df}{A data frame containing incident data with each row representing an
-observation.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
 \item{patient_scene_table}{A data.frame or tibble containing at least
-epatient and escene fields as a fact table.}
+ePatient, and eScene as a fact table.}
 
 \item{response_table}{A data.frame or tibble containing at least the
-eresponse fields needed for this measure's calculations.}
+eResponse fields needed for this measure's calculations.}
 
 \item{situation_table}{A data.frame or tibble containing at least the
-esituation fields needed for this measure's calculations.}
+eSituation fields needed for this measure's calculations. Default is
+\code{NULL}.}
 
-\item{vitals_table}{A data.frame or tibble containing at least the evitals
-fields needed for this measure's calculations.}
+\item{vitals_table}{A dataframe or tibble containing at least the eVitals
+fields needed.}
 
-\item{erecord_01_col}{Unique Patient ID}
+\item{erecord_01_col}{The column representing the EMS record unique
+identifier.}
 
 \item{incident_date_col}{Column that contains the incident date. This
 defaults to \code{NULL} as it is optional in case not available due to PII
@@ -53,38 +55,40 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{Column giving the calculated age value.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{Column giving the provided age unit value.}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column name for 911 response codes (e.g., 2205001,
-2205003, 2205009).}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{esituation_11_col}{Column name for primary impression codes related to
-respiratory distress.}
+\item{esituation_11_col}{Column that contains eSituation.11 provider primary
+impression data.}
 
-\item{esituation_12_col}{Column name for secondary impression codes related
-to respiratory distress.}
+\item{esituation_12_col}{Column that contains all eSituation.12 values as
+(possible a single comma-separated list), provider secondary impression
+data.}
 
-\item{evitals_12_col}{Column name for the first vital sign measurement.}
+\item{evitals_12_col}{Numeric column containing pulse oximetry values.}
 
-\item{evitals_14_col}{Column name for the second vital sign measurement.}
+\item{evitals_14_col}{Column containing data on patient's respiratory rate
+expressed as a number per minute.}
 
-\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
-\code{TRUE}, the function calculates a confidence interval for the proportion
-estimate.}
+\item{confidence_interval}{Logical. If \code{TRUE}, the function calculates a
+confidence interval for the proportion estimate.}
 
-\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Character. Specifies the
-method used to calculate confidence intervals. Options are \code{"wilson"}
-(Wilson score interval) and \code{"clopper-pearson"} (exact binomial interval).
-Partial matching is supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
+\item{method}{Character. Specifies the method used to calculate confidence
+intervals. Options are \code{"wilson"} (Wilson score interval) and
+\code{"clopper-pearson"} (exact binomial interval). Partial matching is supported,
+so \code{"w"} and \code{"c"} can be used as shorthand.}
 
-\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Numeric. The confidence
-level for the interval, expressed as a proportion (e.g., 0.95 for a 95\%
-confidence interval). Defaults to 0.95.}
+\item{conf.level}{Numeric. The confidence level for the interval, expressed
+as a proportion (e.g., 0.95 for a 95\% confidence interval). Defaults to 0.95.}
 
-\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Logical. If \code{TRUE},
-applies a continuity correction to the Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+\item{correct}{Logical. If \code{TRUE}, applies a continuity correction to the
+Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
 
 \item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }
@@ -130,6 +134,8 @@ test_data <- tibble::tibble(
 respiratory_01(
   df = test_data,
   erecord_01_col = erecord_01,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
   epatient_15_col = epatient_15,
   epatient_16_col = epatient_16,
   eresponse_05_col = eresponse_05,

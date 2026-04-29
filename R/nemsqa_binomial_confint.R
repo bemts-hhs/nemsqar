@@ -3,8 +3,6 @@
 #'
 #' @description
 #'
-#' `r lifecycle::badge("experimental")`
-#'
 #' Computes confidence intervals for binomial proportions using either the
 #' Wilson or Clopper-Pearson method. This function supports vectorized
 #' operations and allows optional correction for continuity. The Wilson interval
@@ -83,8 +81,9 @@ nemsqa_binomial_confint <- function(
 
   # If the user passes a tibble or data.frame ----
   if (!is.null(data)) {
-    x <- data |> dplyr::pull({{ x }})
-    n <- data |> dplyr::pull({{ n }})
+    # Validate that columns exist in `data` and can be vectorized
+    x <- validate_data_pull(input = data, col = {{ x }}, type = "error")
+    n <- validate_data_pull(input = data, col = {{ n }}, type = "error")
   }
 
   # Initialize lower and upper CI bounds ----

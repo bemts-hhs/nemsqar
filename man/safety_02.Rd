@@ -17,7 +17,8 @@ safety_02(
   eresponse_05_col,
   edisposition_18_col,
   edisposition_28_col,
-  transport_disposition_cols,
+  transport_disposition_col,
+  transport_disposition_cols = lifecycle::deprecated(),
   confidence_interval = FALSE,
   method = c("wilson", "clopper-pearson"),
   conf.level = 0.95,
@@ -26,14 +27,14 @@ safety_02(
 )
 }
 \arguments{
-\item{df}{A data frame where each row is an observation, and each column
-represents a feature.}
+\item{df}{A dataframe or tibble contianing EMS data where each row represents
+an observation and columns represent features.}
 
-\item{patient_scene_table}{A data.frame or tibble containing only epatient
-and escene fields as a fact table.}
+\item{patient_scene_table}{A data.frame or tibble containing at least
+ePatient, and eScene as a fact table.}
 
-\item{response_table}{A data.frame or tibble containing only the eresponse
-fields needed for this measure's calculations.}
+\item{response_table}{A data.frame or tibble containing at least the
+eResponse fields needed for this measure's calculations.}
 
 \item{disposition_table}{A data.frame or tibble containing only the
 edisposition fields needed for this measure's calculations.}
@@ -49,37 +50,42 @@ restrictions.}
 defaults to \code{NULL} as it is optional in case not available due to PII
 restrictions.}
 
-\item{epatient_15_col}{Column giving the calculated age value.}
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
 
-\item{epatient_16_col}{Column giving the provided age unit value.}
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
-\item{eresponse_05_col}{Column giving response codes, identifying 911
-responses.}
+\item{eresponse_05_col}{Column that contains eResponse.05 or the response
+type.}
 
-\item{edisposition_18_col}{Column giving transport mode descriptors,
-including possible lights-and-sirens indicators.}
+\item{edisposition_18_col}{Column giving documentation of transport mode
+techniques for this EMS response.}
 
-\item{edisposition_28_col}{Column giving patient evaluation and care
-categories for the EMS response.}
+\item{edisposition_28_col}{Column giving patient disposition for an EMS event
+identifying whether a patient was evaluated and care or services were
+provided.}
 
-\item{transport_disposition_cols}{One or more unquoted column names (such as
-edisposition.12, edisposition.30) containing transport disposition details.}
+\item{transport_disposition_col}{One or more unquoted column names (such as
+edisposition.12, edisposition.30) containing transport disposition for an
+EMS event identifying whether a transport occurred and by which unit.}
 
-\item{confidence_interval}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}} Logical. If
-\code{TRUE}, the function calculates a confidence interval for the proportion
-estimate.}
+\item{transport_disposition_cols}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use
+\code{transport_disposition_col} instead.}
 
-\item{method}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Character. Specifies the
-method used to calculate confidence intervals. Options are \code{"wilson"}
-(Wilson score interval) and \code{"clopper-pearson"} (exact binomial interval).
-Partial matching is supported, so \code{"w"} and \code{"c"} can be used as shorthand.}
+\item{confidence_interval}{Logical. If \code{TRUE}, the function calculates a
+confidence interval for the proportion estimate.}
 
-\item{conf.level}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Numeric. The confidence
-level for the interval, expressed as a proportion (e.g., 0.95 for a 95\%
-confidence interval). Defaults to 0.95.}
+\item{method}{Character. Specifies the method used to calculate confidence
+intervals. Options are \code{"wilson"} (Wilson score interval) and
+\code{"clopper-pearson"} (exact binomial interval). Partial matching is supported,
+so \code{"w"} and \code{"c"} can be used as shorthand.}
 
-\item{correct}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#experimental}{\figure{lifecycle-experimental.svg}{options: alt='[Experimental]'}}}{\strong{[Experimental]}}Logical. If \code{TRUE},
-applies a continuity correction to the Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
+\item{conf.level}{Numeric. The confidence level for the interval, expressed
+as a proportion (e.g., 0.95 for a 95\% confidence interval). Defaults to 0.95.}
+
+\item{correct}{Logical. If \code{TRUE}, applies a continuity correction to the
+Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
 
 \item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }
@@ -124,12 +130,14 @@ population count as well.
   safety_02(
     df = test_data,
     erecord_01_col = erecord_01,
+    incident_date_col = NULL,
+    patient_DOB_col = NULL,
     epatient_15_col = epatient_15,
     epatient_16_col = epatient_16,
     eresponse_05_col = eresponse_05,
     edisposition_18_col = edisposition_18,
     edisposition_28_col = edisposition_28,
-    transport_disposition_cols = edisposition_30,
+    transport_disposition_col = edisposition_30,
     confidence_interval = TRUE
   )
 
