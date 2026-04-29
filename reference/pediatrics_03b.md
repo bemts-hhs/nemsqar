@@ -217,7 +217,7 @@ pediatrics_03b(
 #> ── Calculating Pediatrics-03b ──
 #> 
 #> 
-#> ✔ Function completed in 0.14s.
+#> ✔ Function completed in 0.15s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 1 × 8

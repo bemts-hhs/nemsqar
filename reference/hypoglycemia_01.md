@@ -252,7 +252,7 @@ hypoglycemia_01(
 #> ── Calculating Hypoglycemia-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.26s.
+#> ✔ Function completed in 0.24s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 3 × 8
