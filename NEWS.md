@@ -1,3 +1,5 @@
+# nemsqar 1.2.0
+
 # nemsqar 1.1.4
 * Documentation using @inheritParams to help with making functions more
   maintainable.
