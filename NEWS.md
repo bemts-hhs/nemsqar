@@ -3,7 +3,7 @@
   hospital capabilities for performance measurement. This is a breaking change
   but will make the measure more accurate. This change comes as part of the
   NEMSQA Measure Development committee has discussed this action seeing dismal
-  national performance on thi smeasure.
+  national performance on this measure.
 - Added the new function `nemsqar_missing()` to summarize missing data within
   each `*_popoulation()` function and to be included in the `list` object
   returned by the wrapper functions.
