@@ -13,9 +13,17 @@
 #' @inheritParams pediatrics_03b_population
 #' @param eresponse_10_col Column name containing informatin about scene delays,
 #' if any, of the EMS unit associated with the EMS event.
-#' @param edisposition_23_col Column name containing primary hospital capability
-#' associated with the patient's condition for this transport (e.g., Trauma,
-#' STEMI, Peds, etc.).
+#' @param edisposition_02_col Column name containing the code of the destination
+#' the patient was delivered or transferred to.
+#' @param trauma_center_facility_IDs A character vector of trauma center
+#' facility IDs that will allow destination facilities documented in
+#' `edisposition_02_col` to be classified correctly as trauma centers when
+#' applicable.
+#' @param edisposition_23_col `r lifecycle::badge("deprecated")` Use
+#' `edisposition_02_col` instead. You must also pass a character vector of
+#' trauma center facility IDs to `trauma_center_facility_IDs` to ensure that
+#' destination facility IDs passed via `edisposition_02_col` are correctly
+#' identified as trauma centers as applicable.
 #' @param evitals_10_col Column name containing the patient's heart rate
 #' expressed as a number per minute.
 #' @param evitals_14_col Column name containing the patient's respiratory rate
@@ -96,10 +104,16 @@
 #'
 #'   # disposition table
 #'   disposition_table <- tibble::tibble(
-#'     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
-#'     edisposition_23 = c(9908029, 9908027, 9908025, 9908023, 9908021),
-#'     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
-#'   )
+#'   erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+#'   edisposition_02 = as.character(c(
+#'     9908029,
+#'     9908027,
+#'     9908025,
+#'     9908023,
+#'     9876543
+#'   )),
+#'   edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
+#' )
 #'
 #'   # injury table
 #'   injury_table <- tibble::tibble(
@@ -125,41 +139,49 @@
 #'     eprocedures_03 = c(424979004, 427753009, 429705000, 47545007, 243142003)
 #'   )
 #'
-#'   # test the success of the function
-#'   result <- trauma_04_population(patient_scene_table = patient_table,
-#'                         response_table = response_table,
-#'                         situation_table = situation_table,
-#'                         vitals_table = vitals_table,
-#'                         disposition_table = disposition_table,
-#'                       exam_table = exam_table,
-#'                       injury_table = injury_table,
-#'                       procedures_table = procedures_table,
-#'                       erecord_01_col = erecord_01,
-#'                       incident_date_col = incident_date,
-#'                       patient_DOB_col = patient_dob,
-#'                       epatient_15_col = epatient_15,
-#'                       epatient_16_col = epatient_16,
-#'                       eresponse_05_col = eresponse_05,
-#'                       eresponse_10_col = eresponse_10,
-#'                       esituation_02_col = esituation_02,
-#'                       evitals_06_col = evitals_06,
-#'                       evitals_10_col = evitals_10,
-#'                       evitals_12_col = evitals_12,
-#'                       evitals_14_col = evitals_14,
-#'                       evitals_15_col = evitals_15,
-#'                       evitals_21_col = evitals_21,
-#'                       eexam_16_col = eexam_16,
-#'                       eexam_20_col = eexam_20,
-#'                       eexam_23_col = eexam_23,
-#'                       eexam_25_col = eexam_25,
-#'                       edisposition_23_col = edisposition_23,
-#'                       transport_disposition_col = edisposition_30,
-#'                       eprocedures_03_col = eprocedures_03,
-#'                       einjury_01_col = einjury_01,
-#'                       einjury_03_col = einjury_03,
-#'                       einjury_04_col = einjury_04,
-#'                       einjury_09_col = einjury_09
-#'                       )
+#' # test the success of the function
+#' result <- trauma_04_population(
+#'   patient_scene_table = patient_table,
+#'   response_table = response_table,
+#'   situation_table = situation_table,
+#'   vitals_table = vitals_table,
+#'   disposition_table = disposition_table,
+#'   exam_table = exam_table,
+#'   injury_table = injury_table,
+#'   procedures_table = procedures_table,
+#'   erecord_01_col = erecord_01,
+#'   incident_date_col = incident_date,
+#'   patient_DOB_col = patient_dob,
+#'   epatient_15_col = epatient_15,
+#'   epatient_16_col = epatient_16,
+#'   eresponse_05_col = eresponse_05,
+#'   eresponse_10_col = eresponse_10,
+#'   esituation_02_col = esituation_02,
+#'   evitals_06_col = evitals_06,
+#'   evitals_10_col = evitals_10,
+#'   evitals_12_col = evitals_12,
+#'   evitals_14_col = evitals_14,
+#'   evitals_15_col = evitals_15,
+#'   evitals_21_col = evitals_21,
+#'   eexam_16_col = eexam_16,
+#'   eexam_20_col = eexam_20,
+#'   eexam_23_col = eexam_23,
+#'   eexam_25_col = eexam_25,
+#'   edisposition_02_col = edisposition_02,
+#'   trauma_center_facility_IDs = as.character(c(
+#'     9908029,
+#'     9908027,
+#'     9908025,
+#'     9908023,
+#'     9908021
+#'   )),
+#'   transport_disposition_col = edisposition_30,
+#'   eprocedures_03_col = eprocedures_03,
+#'   einjury_01_col = einjury_01,
+#'   einjury_03_col = einjury_03,
+#'   einjury_04_col = einjury_04,
+#'   einjury_09_col = einjury_09
+#' )
 #'
 #' # show the results of filtering at each step
 #' result$filter_process
@@ -187,7 +209,9 @@ trauma_04_population <- function(
   eresponse_05_col,
   eresponse_10_col,
   transport_disposition_col,
-  edisposition_23_col,
+  edisposition_23_col = lifecycle::deprecated(),
+  edisposition_02_col,
+  trauma_center_facility_IDs,
   evitals_06_col,
   evitals_10_col,
   evitals_12_col,
@@ -204,6 +228,16 @@ trauma_04_population <- function(
   einjury_04_col,
   einjury_09_col
 ) {
+  # deprecate the argument `edisposition_23_col`
+  if (!missing(edisposition_23_col)) {
+    lifecycle::deprecate_stop(
+      when = "1.2.0",
+      what = "trauma_04_population(edisposition_23_col)",
+      with = "trauma_04_population(edisposition_02_col)",
+      details = "Along with `trauma_04_population(edisposition_02_col)`, users must pass a character vector of trauma center facility IDs to `trauma_center_facility_IDs` that will allow facility IDs passed via `edisposition_02_col` to be correctly identifed as trauma centers."
+    )
+  }
+
   # ensure that not all table arguments AND the df argument are fulfilled ----
   # user only passes df or all table arguments
   if (
@@ -255,7 +289,7 @@ trauma_04_population <- function(
       missing(eresponse_05_col),
       missing(eresponse_10_col),
       missing(transport_disposition_col),
-      missing(edisposition_23_col),
+      missing(edisposition_02_col),
       missing(evitals_06_col),
       missing(evitals_10_col),
       missing(evitals_12_col),
@@ -277,6 +311,15 @@ trauma_04_population <- function(
       "One or more of the *_col arguments is missing. Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn trauma_04_population}."
     )
   }
+
+  if (missing(trauma_center_facility_IDs)) {
+    cli::cli_abort(
+      "{.var trauma_center_facility_IDs} is missing. Please make sure you pass a {.cls character} vector to {.var trauma_center_facility_IDs} to run {.fn trauma_04_population}."
+    )
+  }
+
+  # validate the trauma center IDs as character or factor
+  validate_character_factor(input = trauma_center_facility_IDs, type = "error")
 
   # options for the progress bar ----
   # a green dot for progress
@@ -329,7 +372,7 @@ trauma_04_population <- function(
     patient_scene_table <- df |>
       dplyr::select(
         -{{ esituation_02_col }},
-        -{{ edisposition_23_col }},
+        -{{ edisposition_02_col }},
         -c({{ transport_disposition_col }}),
         -{{ eresponse_05_col }},
         -{{ eresponse_10_col }},
@@ -385,7 +428,7 @@ trauma_04_population <- function(
     disposition_table <- df |>
       dplyr::select(
         {{ erecord_01_col }},
-        {{ edisposition_23_col }},
+        {{ edisposition_02_col }},
         c({{ transport_disposition_col }})
       ) |>
       dplyr::distinct()
@@ -529,7 +572,7 @@ trauma_04_population <- function(
     disposition_table <- disposition_table |>
       dplyr::select(
         {{ erecord_01_col }},
-        {{ edisposition_23_col }},
+        {{ edisposition_02_col }},
         c({{ transport_disposition_col }})
       ) |>
       dplyr::distinct()
@@ -1193,15 +1236,11 @@ trauma_04_population <- function(
   )
 
   # hospital capability ----
-  hospital_capability_data <- disposition_table |>
-    dplyr::select({{ erecord_01_col }}, {{ edisposition_23_col }}) |>
+  trauma_center_data <- disposition_table |>
+    dplyr::select({{ erecord_01_col }}, {{ edisposition_02_col }}) |>
     dplyr::distinct() |>
     dplyr::filter(
-      grepl(
-        pattern = hospital_capability_values,
-        x = {{ edisposition_23_col }},
-        ignore.case = TRUE
-      )
+      {{ edisposition_02_col }} %in% trauma_center_facility_IDs
     ) |>
     dplyr::distinct({{ erecord_01_col }}) |>
     dplyr::pull({{ erecord_01_col }})
@@ -1241,7 +1280,7 @@ trauma_04_population <- function(
       TRAUMA_TRIAGE_1_2_10 = {{ erecord_01_col }} %in%
         trauma_triage_1_2_data_10,
       RESPIRATORY_RATE_10 = {{ erecord_01_col }} %in% respiratory_rate_data,
-      HOSPITAL_CAPABILITY = {{ erecord_01_col }} %in% hospital_capability_data
+      TRAUMA_CENTER = {{ erecord_01_col }} %in% trauma_center_data
     )
 
   cli::cli_progress_update(
@@ -1497,7 +1536,7 @@ trauma_04_population <- function(
       sum(computing_population$INJURY_CAUSE, na.rm = TRUE),
       sum(computing_population$SCENE_DELAY, na.rm = TRUE),
       sum(computing_population$FALL_HEIGHT, na.rm = TRUE),
-      sum(computing_population$HOSPITAL_CAPABILITY, na.rm = TRUE),
+      sum(computing_population$TRAUMA_CENTER, na.rm = TRUE),
       nrow(pop_65),
       nrow(pop_10_64),
       nrow(pop_10),

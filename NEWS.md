@@ -1,4 +1,22 @@
 # nemsqar 1.2.0
+- Update `trauma_04_population()` to look to the facility ID instead of the
+  hospital capabilities for performance measurement. This is a breaking change
+  but will make the measure more accurate. This change comes as part of the
+  NEMSQA Measure Development committee has discussed this action seeing dismal
+  national performance on thi smeasure.
+- Added the new function `nemsqar_missing()` to summarize missing data within
+  each `*_popoulation()` function and to be included in the `list` object
+  returned by the wrapper functions.
+- Added the first `nemsqar` vignette!
+
+Thanks to [&#x0040;bemts-hhs](https://github.com/bemts-hhs) (maintenance and
+programming in this release),
+[&#x0040;eliza-little](https://github.com/eliza-little) (for submitting issue
+[#4](https://github.com/bemts-hhs/nemsqar/issues/4)), and
+[&#x0040;samuelkordik](https://github.com/samuelkordik) (submitted issue
+[#15](https://github.com/bemts-hhs/nemsqar/issues/15) and reviewed PR
+[#23](https://github.com/bemts-hhs/nemsqar/pull/23)) for all your contributions
+to this CRAN release!
 
 # nemsqar 1.1.4
 * Documentation using @inheritParams to help with making functions more

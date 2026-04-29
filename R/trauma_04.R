@@ -49,7 +49,7 @@
 #'     eexam_20 = c(3520045, 3520043, 3520019, 3520017, 3520017),
 #'     eexam_23 = c(3523011, 3523003, 3523001, 3523011, 3523003),
 #'     eexam_25 = c(3525039, 3525023, 3525005, 3525039, 3525023),
-#'     edisposition_23 = c(9908029, 9908027, 9908025, 9908023, 9908021),
+#'     edisposition_02 = c(9908029, 9908027, 9908025, 9908023, 9876543),
 #'     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007),
 #'     eprocedures_03 = c(424979004, 427753009, 429705000, 47545007, 243142003),
 #'     einjury_01 = c("V20", "V36", "V86", "V39", "V32"),
@@ -60,36 +60,42 @@
 #'
 #'   # Run function with the first and last pain score columns
 #'   # Return 95% confidence intervals using the Wilson method
-#'   trauma_04(
-#'     df = test_data,
-#'     erecord_01_col = erecord_01,
-#'     incident_date_col = NULL,
-#'     patient_DOB_col = NULL,
-#'     epatient_15_col = epatient_15,
-#'     epatient_16_col = epatient_16,
-#'     eresponse_05_col = eresponse_05,
-#'     eresponse_10_col = eresponse_10,
-#'     esituation_02_col = esituation_02,
-#'     evitals_06_col = evitals_06,
-#'     evitals_10_col = evitals_10,
-#'     evitals_12_col = evitals_12,
-#'     evitals_14_col = evitals_14,
-#'     evitals_15_col = evitals_15,
-#'     evitals_21_col = evitals_21,
-#'     eexam_16_col = eexam_16,
-#'     eexam_20_col = eexam_20,
-#'     eexam_23_col = eexam_23,
-#'     eexam_25_col = eexam_25,
-#'     edisposition_23_col = edisposition_23,
-#'     transport_disposition_col = edisposition_30,
-#'     eprocedures_03_col = eprocedures_03,
-#'     einjury_01_col = einjury_01,
-#'     einjury_03_col = einjury_03,
-#'     einjury_04_col = einjury_04,
-#'     einjury_09_col = einjury_09,
-#'     confidence_interval = TRUE
-#'   )
-#'
+#' # test the success of the function
+#' result <- trauma_04_population(
+#'   df = test_data,
+#'   erecord_01_col = erecord_01,
+#'   incident_date_col = NULL,
+#'   patient_DOB_col = NULL,
+#'   epatient_15_col = epatient_15,
+#'   epatient_16_col = epatient_16,
+#'   eresponse_05_col = eresponse_05,
+#'   eresponse_10_col = eresponse_10,
+#'   esituation_02_col = esituation_02,
+#'   evitals_06_col = evitals_06,
+#'   evitals_10_col = evitals_10,
+#'   evitals_12_col = evitals_12,
+#'   evitals_14_col = evitals_14,
+#'   evitals_15_col = evitals_15,
+#'   evitals_21_col = evitals_21,
+#'   eexam_16_col = eexam_16,
+#'   eexam_20_col = eexam_20,
+#'   eexam_23_col = eexam_23,
+#'   eexam_25_col = eexam_25,
+#'   edisposition_02_col = edisposition_02,
+#'   trauma_center_facility_IDs = as.character(c(
+#'     9908029,
+#'     9908027,
+#'     9908025,
+#'     9908023,
+#'     9908021
+#'   )),
+#'   transport_disposition_col = edisposition_30,
+#'   eprocedures_03_col = eprocedures_03,
+#'   einjury_01_col = einjury_01,
+#'   einjury_03_col = einjury_03,
+#'   einjury_04_col = einjury_04,
+#'   einjury_09_col = einjury_09
+#' )
 #'
 #' @author Nicolas Foss, Ed.D., MS
 #'
@@ -114,7 +120,9 @@ trauma_04 <- function(
   eresponse_05_col,
   eresponse_10_col,
   transport_disposition_col,
-  edisposition_23_col,
+  edisposition_23_col = lifecycle::deprecated(),
+  edisposition_02_col,
+  trauma_center_facility_IDs,
   evitals_06_col,
   evitals_10_col,
   evitals_12_col,
@@ -136,10 +144,99 @@ trauma_04 <- function(
   correct = TRUE,
   ...
 ) {
+  # deprecate the argument `edisposition_23_col`
+  if (!missing(edisposition_23_col)) {
+    lifecycle::deprecate_stop(
+      when = "1.2.0",
+      what = "trauma_04(edisposition_23_col)",
+      with = "trauma_04(edisposition_02_col)",
+      details = "Along with `trauma_04(edisposition_02_col)`, users must pass a character vector of trauma center facility IDs to `trauma_center_facility_IDs` that will allow facility IDs passed via `edisposition_02_col` to be correctly identifed as trauma centers."
+    )
+  }
+
   # Set default method and adjustment method ----
   method <- match.arg(method, choices = c("wilson", "clopper-pearson"))
 
-  # Ensure that not all table arguments AND the df argument are fulfilled ----
+  # ensure that not all table arguments AND the df argument are fulfilled ----
+  # user only passes df or all table arguments
+  if (
+    all(
+      !is.null(patient_scene_table),
+      !is.null(response_table),
+      !is.null(situation_table),
+      !is.null(vitals_table),
+      !is.null(procedures_table),
+      !is.null(exam_table),
+      !is.null(injury_table),
+      !is.null(disposition_table)
+    ) &&
+      !is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn trauma_04} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
+    )
+  }
+
+  # ensure that df or all table arguments are fulfilled ----
+  if (
+    all(
+      is.null(patient_scene_table),
+      is.null(response_table),
+      is.null(situation_table),
+      is.null(vitals_table),
+      is.null(procedures_table),
+      is.null(exam_table),
+      is.null(injury_table),
+      is.null(disposition_table)
+    ) &&
+      is.null(df)
+  ) {
+    cli::cli_abort(
+      "{.fn trauma_04} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
+    )
+  }
+
+  # ensure all *_col arguments are fulfilled ----
+  if (
+    any(
+      missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
+      missing(esituation_02_col),
+      missing(eresponse_05_col),
+      missing(eresponse_10_col),
+      missing(transport_disposition_col),
+      missing(edisposition_02_col),
+      missing(evitals_06_col),
+      missing(evitals_10_col),
+      missing(evitals_12_col),
+      missing(evitals_14_col),
+      missing(evitals_15_col),
+      missing(evitals_21_col),
+      missing(eexam_16_col),
+      missing(eexam_20_col),
+      missing(eexam_23_col),
+      missing(eexam_25_col),
+      missing(eprocedures_03_col),
+      missing(einjury_01_col),
+      missing(einjury_03_col),
+      missing(einjury_04_col),
+      missing(einjury_09_col)
+    )
+  ) {
+    cli::cli_abort(
+      "One or more of the *_col arguments is missing. Please make sure you pass an unquoted column to each of the *_col arguments to run {.fn trauma_04}."
+    )
+  }
+
+  if (missing(trauma_center_facility_IDs)) {
+    cli::cli_abort(
+      "{.var trauma_center_facility_IDs} is missing. Please make sure you pass a {.cls character} vector to {.var trauma_center_facility_IDs} to run {.fn trauma_04}."
+    )
+  }
+
   # User must pass either `df` or all table arguments, but not both
   if (
     all(
@@ -181,7 +278,8 @@ trauma_04 <- function(
       eresponse_05_col = {{ eresponse_05_col }},
       eresponse_10_col = {{ eresponse_10_col }},
       transport_disposition_col = {{ transport_disposition_col }},
-      edisposition_23_col = {{ edisposition_23_col }},
+      edisposition_02_col = {{ edisposition_02_col }},
+      trauma_center_facility_IDs = trauma_center_facility_IDs,
       evitals_06_col = {{ evitals_06_col }},
       evitals_10_col = {{ evitals_10_col }},
       evitals_12_col = {{ evitals_12_col }},
@@ -209,7 +307,7 @@ trauma_04 <- function(
       summarize_measure(
         measure_name = "Trauma-04",
         population_name = ">= 65 yrs",
-        numerator_col = HOSPITAL_CAPABILITY,
+        numerator_col = TRAUMA_CENTER,
         confidence_interval = confidence_interval,
         method = method,
         conf.level = conf.level,
@@ -222,7 +320,7 @@ trauma_04 <- function(
       summarize_measure(
         measure_name = "Trauma-04",
         population_name = "10-64 yrs",
-        numerator_col = HOSPITAL_CAPABILITY,
+        numerator_col = TRAUMA_CENTER,
         confidence_interval = confidence_interval,
         method = method,
         conf.level = conf.level,
@@ -235,7 +333,7 @@ trauma_04 <- function(
       summarize_measure(
         measure_name = "Trauma-04",
         population_name = "< 10 yrs",
-        numerator_col = HOSPITAL_CAPABILITY,
+        numerator_col = TRAUMA_CENTER,
         confidence_interval = confidence_interval,
         method = method,
         conf.level = conf.level,
@@ -319,7 +417,8 @@ trauma_04 <- function(
       eresponse_05_col = {{ eresponse_05_col }},
       eresponse_10_col = {{ eresponse_10_col }},
       transport_disposition_col = {{ transport_disposition_col }},
-      edisposition_23_col = {{ edisposition_23_col }},
+      edisposition_02_col = {{ edisposition_02_col }},
+      trauma_center_facility_IDs = trauma_center_facility_IDs,
       evitals_06_col = {{ evitals_06_col }},
       evitals_10_col = {{ evitals_10_col }},
       evitals_12_col = {{ evitals_12_col }},
@@ -347,7 +446,7 @@ trauma_04 <- function(
       summarize_measure(
         measure_name = "Trauma-04",
         population_name = ">= 65 yrs",
-        numerator_col = HOSPITAL_CAPABILITY,
+        numerator_col = TRAUMA_CENTER,
         confidence_interval = confidence_interval,
         method = method,
         conf.level = conf.level,
@@ -360,7 +459,7 @@ trauma_04 <- function(
       summarize_measure(
         measure_name = "Trauma-04",
         population_name = "10-64 yrs",
-        numerator_col = HOSPITAL_CAPABILITY,
+        numerator_col = TRAUMA_CENTER,
         confidence_interval = confidence_interval,
         method = method,
         conf.level = conf.level,
@@ -373,7 +472,7 @@ trauma_04 <- function(
       summarize_measure(
         measure_name = "Trauma-04",
         population_name = "< 10 yrs",
-        numerator_col = HOSPITAL_CAPABILITY,
+        numerator_col = TRAUMA_CENTER,
         confidence_interval = confidence_interval,
         method = method,
         conf.level = conf.level,

@@ -26,7 +26,8 @@ testthat::test_that("trauma_04_population rejects invalid argument combinations"
       eexam_20_col = character(),
       eexam_23_col = character(),
       eexam_25_col = character(),
-      edisposition_23_col = character(),
+      edisposition_02_col = character(),
+      trauma_center_facility_IDs = character(),
       transport_disposition_col = character(),
       eprocedures_03_col = character(),
       einjury_01_col = character(),
@@ -65,7 +66,8 @@ testthat::test_that("trauma_04_population rejects invalid argument combinations"
       eexam_20_col = character(),
       eexam_23_col = character(),
       eexam_25_col = character(),
-      edisposition_23_col = character(),
+      edisposition_02_col = character(),
+      trauma_center_facility_IDs = character(),
       transport_disposition_col = character(),
       eprocedures_03_col = character(),
       einjury_01_col = character(),
@@ -113,7 +115,7 @@ testthat::test_that("trauma_04_population validates date column formats", {
     eexam_20 = character(),
     eexam_23 = character(),
     eexam_25 = character(),
-    edisposition_23 = character(),
+    edisposition_02 = character(),
     transport_disposition = character(),
     eprocedures_03 = character(),
     einjury_01 = character(),
@@ -141,7 +143,8 @@ testthat::test_that("trauma_04_population validates date column formats", {
       eexam_20_col = eexam_20,
       eexam_23_col = eexam_23,
       eexam_25_col = eexam_25,
-      edisposition_23_col = edisposition_23,
+      edisposition_02_col = edisposition_02,
+      trauma_center_facility_IDs = character(),
       transport_disposition_col = edisposition_30,
       eprocedures_03_col = eprocedures_03,
       einjury_01_col = einjury_01,
@@ -179,7 +182,8 @@ testthat::test_that("trauma_04_population validates date column formats", {
       eexam_20_col = character(),
       eexam_23_col = character(),
       eexam_25_col = character(),
-      edisposition_23_col = character(),
+      edisposition_02_col = character(),
+      trauma_center_facility_IDs = character(),
       transport_disposition_col = character(),
       eprocedures_03_col = character(),
       einjury_01_col = character(),
@@ -209,7 +213,13 @@ testthat::test_that("trauma_04_population fails with unknown columns", {
     eexam_20 = c(3520045, 3520043, 3520019, 3520017, 3520017),
     eexam_23 = c(3523011, 3523003, 3523001, 3523011, 3523003),
     eexam_25 = c(3525039, 3525023, 3525005, 3525039, 3525023),
-    edisposition_23 = c(9908029, 9908027, 9908025, 9908023, 9908021),
+    edisposition_02 = as.character(c(
+      9908029,
+      9908027,
+      9908025,
+      9908023,
+      9876543
+    )),
     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007),
     eprocedures_03 = c(424979004, 427753009, 429705000, 47545007, 243142003),
     einjury_01 = c("V20", "V36", "V86", "V39", "V32"),
@@ -217,6 +227,15 @@ testthat::test_that("trauma_04_population fails with unknown columns", {
     einjury_04 = c(2904013, 2904011, 2904009, 2904007, 2904001),
     einjury_09 = c(11, 12, 13, 14, 15)
   )
+
+  # identify trauma center facility IDs
+  trauma_center_IDs <- as.character(c(
+    9908029,
+    9908027,
+    9908025,
+    9908023,
+    9908021
+  ))
 
   testthat::expect_error(
     trauma_04_population(
@@ -239,7 +258,8 @@ testthat::test_that("trauma_04_population fails with unknown columns", {
       eexam_20_col = eexam_20,
       eexam_23_col = eexam_23,
       eexam_25_col = eexam_25,
-      edisposition_23_col = edisposition_23,
+      edisposition_02_col = edisposition_02,
+      trauma_center_facility_IDs = trauma_center_IDs,
       transport_disposition_col = edisposition_30,
       eprocedures_03_col = eprocedures_03,
       einjury_01_col = einjury_01,
@@ -285,7 +305,13 @@ testthat::test_that("trauma_04_population correctly classifies patient age", {
     eexam_20 = c(3520045, 3520043, 3520019, 3520017, 3520017),
     eexam_23 = c(3523011, 3523003, 3523001, 3523011, 3523003),
     eexam_25 = c(3525039, 3525023, 3525005, 3525039, 3525023),
-    edisposition_23 = c(9908029, 9908027, 9908025, 9908023, 9908021),
+    edisposition_02 = as.character(c(
+      9908029,
+      9908027,
+      9908025,
+      9908023,
+      9876543
+    )),
     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007),
     eprocedures_03 = c(424979004, 427753009, 429705000, 47545007, 243142003),
     einjury_01 = c("V20", "V36", "V86", "V39", "V32"),
@@ -293,6 +319,15 @@ testthat::test_that("trauma_04_population correctly classifies patient age", {
     einjury_04 = c(2904013, 2904011, 2904009, 2904007, 2904001),
     einjury_09 = c(11, 12, 13, 14, 15)
   )
+
+  # identify trauma center facility IDs
+  trauma_center_IDs <- as.character(c(
+    9908029,
+    9908027,
+    9908025,
+    9908023,
+    9908021
+  ))
 
   result <- trauma_04_population(
     test_data,
@@ -314,7 +349,8 @@ testthat::test_that("trauma_04_population correctly classifies patient age", {
     eexam_20_col = eexam_20,
     eexam_23_col = eexam_23,
     eexam_25_col = eexam_25,
-    edisposition_23_col = edisposition_23,
+    edisposition_02_col = edisposition_02,
+    trauma_center_facility_IDs = trauma_center_IDs,
     transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03,
     einjury_01_col = einjury_01,
@@ -346,7 +382,8 @@ testthat::test_that("trauma_04_population correctly classifies patient age", {
     eexam_20_col = eexam_20,
     eexam_23_col = eexam_23,
     eexam_25_col = eexam_25,
-    edisposition_23_col = edisposition_23,
+    edisposition_02_col = edisposition_02,
+    trauma_center_facility_IDs = trauma_center_IDs,
     transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03,
     einjury_01_col = einjury_01,
@@ -406,9 +443,24 @@ testthat::test_that("trauma_04_population correctly classifies patient age", {
   # disposition table
   disposition_table <- tibble::tibble(
     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
-    edisposition_23 = c(9908029, 9908027, 9908025, 9908023, 9908021),
+    edisposition_02 = as.character(c(
+      9908029,
+      9908027,
+      9908025,
+      9908023,
+      9876543
+    )),
     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
   )
+
+  # identify trauma center facility IDs
+  trauma_center_IDs <- as.character(c(
+    9908029,
+    9908027,
+    9908025,
+    9908023,
+    9908021
+  ))
 
   # injury table
   injury_table <- tibble::tibble(
@@ -461,7 +513,8 @@ testthat::test_that("trauma_04_population correctly classifies patient age", {
     eexam_20_col = eexam_20,
     eexam_23_col = eexam_23,
     eexam_25_col = eexam_25,
-    edisposition_23_col = edisposition_23,
+    edisposition_02_col = edisposition_02,
+    trauma_center_facility_IDs = trauma_center_IDs,
     transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03,
     einjury_01_col = einjury_01,
@@ -500,7 +553,8 @@ testthat::test_that("trauma_04_population correctly classifies patient age", {
     eexam_20_col = eexam_20,
     eexam_23_col = eexam_23,
     eexam_25_col = eexam_25,
-    edisposition_23_col = edisposition_23,
+    edisposition_02_col = edisposition_02,
+    trauma_center_facility_IDs = trauma_center_IDs,
     transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03,
     einjury_01_col = einjury_01,
@@ -532,7 +586,13 @@ testthat::test_that("trauma_04_population correctly filters 911 calls", {
     eexam_20 = c(3520045, 3520043, 3520019, 3520017, 3520017),
     eexam_23 = c(3523011, 3523003, 3523001, 3523011, 3523003),
     eexam_25 = c(3525039, 3525023, 3525005, 3525039, 3525023),
-    edisposition_23 = c(9908029, 9908027, 9908025, 9908023, 9908021),
+    edisposition_02 = as.character(c(
+      9908029,
+      9908027,
+      9908025,
+      9908023,
+      9876543
+    )),
     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007),
     eprocedures_03 = c(424979004, 427753009, 429705000, 47545007, 243142003),
     einjury_01 = c("V20", "V36", "V86", "V39", "V32"),
@@ -540,6 +600,15 @@ testthat::test_that("trauma_04_population correctly filters 911 calls", {
     einjury_04 = c(2904013, 2904011, 2904009, 2904007, 2904001),
     einjury_09 = c(11, 12, 13, 14, 15)
   )
+
+  # identify trauma center facility IDs
+  trauma_center_IDs <- as.character(c(
+    9908029,
+    9908027,
+    9908025,
+    9908023,
+    9908021
+  ))
 
   result <- trauma_04_population(
     test_data,
@@ -561,7 +630,8 @@ testthat::test_that("trauma_04_population correctly filters 911 calls", {
     eexam_20_col = eexam_20,
     eexam_23_col = eexam_23,
     eexam_25_col = eexam_25,
-    edisposition_23_col = edisposition_23,
+    edisposition_02_col = edisposition_02,
+    trauma_center_facility_IDs = trauma_center_IDs,
     transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03,
     einjury_01_col = einjury_01,
@@ -627,9 +697,24 @@ testthat::test_that("trauma_04_population runs correctly with table inputs", {
   # disposition table
   disposition_table <- tibble::tibble(
     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
-    edisposition_23 = c(9908029, 9908027, 9908025, 9908023, 9908021),
+    edisposition_02 = as.character(c(
+      9908029,
+      9908027,
+      9908025,
+      9908023,
+      9876543
+    )),
     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
   )
+
+  # identify trauma center facility IDs
+  trauma_center_IDs <- as.character(c(
+    9908029,
+    9908027,
+    9908025,
+    9908023,
+    9908021
+  ))
 
   # injury table
   injury_table <- tibble::tibble(
@@ -684,7 +769,8 @@ testthat::test_that("trauma_04_population runs correctly with table inputs", {
     eexam_20_col = eexam_20,
     eexam_23_col = eexam_23,
     eexam_25_col = eexam_25,
-    edisposition_23_col = edisposition_23,
+    edisposition_02_col = edisposition_02,
+    trauma_center_facility_IDs = trauma_center_IDs,
     transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03,
     einjury_01_col = einjury_01,
@@ -723,7 +809,8 @@ testthat::test_that("trauma_04_population runs correctly with table inputs", {
     eexam_20_col = eexam_20,
     eexam_23_col = eexam_23,
     eexam_25_col = eexam_25,
-    edisposition_23_col = edisposition_23,
+    edisposition_02_col = edisposition_02,
+    trauma_center_facility_IDs = trauma_center_IDs,
     transport_disposition_col = edisposition_30,
     eprocedures_03_col = eprocedures_03,
     einjury_01_col = einjury_01,

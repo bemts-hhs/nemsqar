@@ -32,7 +32,7 @@ utils::globalVariables(c(
   "EXTREMITIES",
   "FALL_HEIGHT",
   "GCS",
-  "HOSPITAL_CAPABILITY",
+  "TRAUMA_CENTER",
   "HR_SBP_10_65_PLUS",
   "INJURY",
   "INJURY_CAUSE",
