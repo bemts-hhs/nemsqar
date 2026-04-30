@@ -4,8 +4,8 @@
   but will make the measure more accurate. This change comes as part of the
   NEMSQA Measure Development committee has discussed this action seeing dismal
   national performance on this measure.
-- Added the new function `nemsqar_missing()` to summarize missing data within
-  each `*_popoulation()` function and to be included in the `list` object
+- Added the new function `nemsqa_missing_summary()` to summarize missing data
+  within each `*_popoulation()` function and to be included in the `list` object
   returned by the wrapper functions.
 - Added the first `nemsqar` vignette!
 
