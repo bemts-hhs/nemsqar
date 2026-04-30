@@ -15,6 +15,10 @@
 #'  * unique: Character vector of argument names that appear only in the target
 #'    function.
 #'
+#' @keywords internal
+#'
+#' @noRd
+#'
 #' @author
 #' Nicolas Foss, Ed.D., MS
 #'

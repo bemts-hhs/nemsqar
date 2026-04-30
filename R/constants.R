@@ -38,7 +38,7 @@ procedures_code_airway_01 <- paste(
   "232679009|Nasotracheal intubation",
   "232682004|Nasotracheal fiberoptic intubation",
   "232680007|Nasal intubation awake",
-  "241689008|Intubation, Rapid Sequence Intubation (RSI)",
+  "241689008|Intubation, Rapid Sequence Intubation \\(RSI\\)",
   "304341005|Awake intubation",
   "397892004|Retrograde intubation",
   "429161001|Insertion of endotracheal tube using laryngoscope",
@@ -71,7 +71,7 @@ procedures_code_airway_05 <- paste(
   "232679009|Nasotracheal intubation",
   "232682004|Nasotracheal fiberoptic intubation",
   "232680007|Nasal intubation awake",
-  "241689008|Intubation, Rapid Sequence Intubation (RSI)",
+  "241689008|Intubation, Rapid Sequence Intubation \\(RSI\\)",
   "304341005|Awake intubation",
   "397892004|Retrograde intubation",
   "429161001|Insertion of endotracheal tube using laryngoscope",
@@ -178,7 +178,7 @@ beta_agonist <- paste(
 )
 
 # codes for asthma or acute bronchospasm ----
-asthma_codes <- "(?:J45|J98.01)|asthma|acute bronchospasm"
+asthma_codes <- "(?:J45|J98\\.01)|asthma|acute bronchospasm"
 
 # waveform ETCO2 ----
 waveform_etc02_codes <- "4004019|Waveform ETCO2"
@@ -227,14 +227,14 @@ hypoglycemia_procedure_codes <- paste(
 
 # altered mental status ----
 altered_mental_status <- paste(
-  "R41.82",
+  "R41\\.82",
   "Altered Mental Status, unspecified",
   sep = "|"
 )
 
 # diabetes impression codes ----
 diabetes_codes <- paste(
-  "(?:E13.64|E16.2)",
+  "(?:E13\\.64|E16\\.2)",
   "Other specified diabetes mellitus with hypoglycemia",
   "Hypoglycemia, unspecified",
   sep = "|"
@@ -254,23 +254,23 @@ non_weight_based_meds <- paste(
 resp_codes <- paste(
   "(?:",
   paste(
-    "I50.9",
+    "I50\\.9",
     "J00",
     "J05",
-    "J18.9",
-    "J20.9",
-    "J44.1",
-    "J45.901",
+    "J18\\.9",
+    "J20\\.9",
+    "J44\\.1",
+    "J45\\.901",
     "J80",
     "J81",
-    "J93.9",
+    "J93\\.9",
     "J96",
-    "J98.01",
-    "J98.9",
+    "J98\\.01",
+    "J98\\.9",
     "R05",
     "R06",
-    "R09.2",
-    "T17.9",
+    "R09\\.2",
+    "T17\\.9",
     sep = "|"
   ),
   ")",
@@ -462,7 +462,7 @@ stroke_scale_values <- paste(
 
 # primary and secondary provider impression values ----
 syncope_pattern <- paste(
-  "(?:R(?:55|40.4))",
+  "(?:R(?:55|40\\.4))",
   "Syncope and collapse",
   "Transient alteration of awareness",
   sep = "|"
@@ -593,7 +593,7 @@ trauma_triage_1_2_values_65 <- paste(
   "2903011|Paralysis",
   "3903013|Pelvic fractures",
   "2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee",
-  "2903017|Respiratory Rate <10 or >29 breaths per minute (<20 in infants aged <1) or need for ventilatory support",
+  "2903017|Respiratory Rate <10 or >29 breaths per minute \\(<20 in infants aged <1\\) or need for ventilatory support",
   "3903021|Two or more proximal long-bone fractures",
   sep = "|"
 )
@@ -607,7 +607,7 @@ trauma_triage_1_2_values_10_64 <- paste(
   "2903011|Paralysis",
   "3903013|Pelvic fractures",
   "2903015|All Penetrating injuries to head, neck, torso, and extremities proximal to elbow or knee",
-  "2903017|Respiratory Rate <10 or >29 breaths per minute (<20 in infants aged <1) or need for ventilatory support",
+  "2903017|Respiratory Rate <10 or >29 breaths per minute \\(<20 in infants aged <1\\) or need for ventilatory support",
   "3903021|Two or more proximal long-bone fractures",
   "2903019|Systolic Blood Pressure <90 mmHg",
   sep = "|"
@@ -662,7 +662,7 @@ trauma_triage_3_4_values <- paste(
   "2904007|Crash Death in Same Passenger Compartment",
   "2904009|Crash Ejection (partial or complete) from automobile",
   "2904011|Crash Intrusion, Including roof: > 12 in\\. occupant site; > 18 in\\. any site",
-  "2904013|Crash Vehicle Telemetry Data (AACN) Consistent with High Risk of Injury",
+  "2904013|Crash Vehicle Telemetry Data \\(AACN\\) Consistent with High Risk of Injury",
   sep = "|"
 )
 
@@ -723,7 +723,7 @@ trauma_alert_values_65 <- paste(
 # trauma alert values ages 10-64 ----
 trauma_alert_values_10_64 <- paste(
   "4224003|Yes-Adult Trauma",
-  "4224017|Yes-Trauma (General)",
+  "4224017|Yes-Trauma \\(General\\)",
   "4224011|Yes-Pediatric Trauma",
   sep = "|"
 )
