@@ -409,4 +409,5 @@ testthat::test_that("trauma_08_population runs correctly with table inputs", {
 
   testthat::expect_equal(nrow(result$filter_process), 8)
   testthat::expect_true(is.list(result))
+  testthat::expect_true(is.data.frame(result$missingness))
 })
