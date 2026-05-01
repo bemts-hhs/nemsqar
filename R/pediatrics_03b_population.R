@@ -26,6 +26,7 @@
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
 #' * a tibble for the total dataset with computations
+#' * a tibble with a summary of missingness for each column in each table
 #'
 #' @examples
 #'
@@ -336,6 +337,18 @@ pediatrics_03b_population <- function(
     )
   }
 
+  ###___________________________________________________________________________
+  # Estimate missingness in each table for included columns in the measure
+  ###___________________________________________________________________________
+
+  # utilize the internal `nemsqa_missing_summary` to estimate missingness
+  missings <- nemsqa_missing_summary(
+    patient_scene_table,
+    response_table,
+    exam_table,
+    medications_table
+  )
+
   progress_bar_population
 
   cli::cli_progress_update(
@@ -605,7 +618,8 @@ pediatrics_03b_population <- function(
   pediatrics.03b.population <- list(
     filter_process = filter_counts,
     initial_population = initial_population,
-    computing_population = computing_population
+    computing_population = computing_population,
+    missingness = missings
   )
 
   # get the summary of results, already filtered down to the target age group for the measure ----
