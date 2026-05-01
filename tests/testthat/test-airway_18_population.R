@@ -567,7 +567,8 @@ testthat::test_that("Test for correct input handling (table method)", {
         "adults",
         "peds",
         "initial_population",
-        "computing_population"
+        "computing_population",
+        "missingness"
       )
   ))
 })
@@ -840,4 +841,5 @@ testthat::test_that("denominator data is correctly extracted", {
   filters <- result$filter_process
 
   testthat::expect_equal(nrow(filters), 12)
+  testthat::expect_true(!is.logical(result$missingness))
 })
