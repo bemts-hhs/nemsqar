@@ -354,7 +354,7 @@ asthma_01_population <- function(
   }
 
   ###___________________________________________________________________________
-  # Estimate missingness in each table for included columns in the measure
+  # Estimate missingness in each table for included columns in the measure ----
   ###___________________________________________________________________________
 
   # utilize the internal `nemsqa_missing_summary` to estimate missingness
