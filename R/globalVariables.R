@@ -1,4 +1,10 @@
 utils::globalVariables(c(
+  "data_source",
+  "column",
+  "n_missing",
+  "n",
+  "prop_missing",
+  "prop_missing_label",
   "procedures_datetime_name",
   "vitals_datetime_name",
   "airway_datetime_name",
