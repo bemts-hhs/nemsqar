@@ -53,6 +53,7 @@
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
 #' * a tibble for the total dataset with computations
+#' * a tibble with a summary of missingness for each column in each table
 #'
 #' @examples
 #'
