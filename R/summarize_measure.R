@@ -47,6 +47,10 @@
 #'
 #' @author Samuel Kordik, BBA, BS
 #'
+#' @keywords internal
+#'
+#' @noRd
+#'
 summarize_measure <- function(
   data,
   measure_name,

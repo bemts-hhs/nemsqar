@@ -13,6 +13,8 @@
   `compare_formals()`. 
 - Removed documentation for the `validate_*()` family of functions and use
   keyword internal in their documentation. 
+- `results_summarize()` and `summarize_measure()` no longer have external facing
+  documentation and are internal. 
 
 Thanks to [&#x0040;bemts-hhs](https://github.com/bemts-hhs) (maintenance and
 programming in this release),

@@ -57,6 +57,10 @@
 #'
 #' @author Samuel Kordik, BBA, BS
 #'
+#' @keywords internal
+#'
+#' @noRd
+#'
 results_summarize <- function(
   total_population = NULL,
   adult_population = NULL,

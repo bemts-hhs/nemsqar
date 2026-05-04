@@ -9,12 +9,16 @@ vignette: >
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
+  eval = TRUE,
+  echo = TRUE,
+  warning = FALSE,
+  message = FALSE,
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-```{r setup}
+```{r setup, echo=FALSE, message=FALSE, results="hide"}
 library(nemsqar)
 ```
 
@@ -54,11 +58,12 @@ The `{nemsqar}` package includes several example datasets that mirror the Nation
 
 To load any example dataset, use the `data()` function. The naming pattern `nemsqar_*_table` identifies each table by its content type (for example, scene, patient, procedures, vitals, medications). To acquire the data needed to run performance estimates for Asthma-01, for example, it is necessary to have:
 
-```{r asthma_01_tables, echo=TRUE, eval=TRUE, results="hide"}
+```{r asthma_01_tables, results="hide"}
 data("nemsqar_patient_scene_table")
 data("nemsqar_response_table")
 data("nemsqar_situation_table")
 data("nemsqar_medications_table")
+data("nemsqar_vitals_table")
 ```
 
 After loading, each object will appear in your R environment as a standard data frame.
@@ -68,24 +73,163 @@ After loading, each object will appear in your R environment as a standard data 
 Because R is new for many users, it is important to confirm that each dataset loaded correctly and contains the variables expected by the measure calculation functions. A few simple commands help verify structure:
 
 ### Review the structure of a loaded dataset
-```{r}
+```{r glimpse_patient_scene_table}
 # An easy to read quick look at the data using the `glimpse()` function from the famous `dplyr` package
 dplyr::glimpse(nemsqar_patient_scene_table)
 ```
 
 ### Take a look at the first few rows of the dataset itself
-```{r head_patient_scene_table, eval=TRUE, echo=TRUE}
+```{r head_patient_scene_table}
 # An abbreviated look at the actual data tables
 head(nemsqar_patient_scene_table, n = 10)
 ```
 
 These functions show variable names, data types, and the first few rows of the table. This step is critical, because each measure expects specific fields, and incorrect data types (for example, character instead of numeric) will cause functions to fail.
 
-## Understanding Required Inputs
-Each NEMSQA measure uses a defined set of input tables. `nemsqar` was designed to accept one single data source (via argument `df`) in case a user has their data structured in this way. Generally, though, this is not recommended. It is best practice to store your data in different tables according to the NEMSIS structure such as having 1:1 e*Patient* and *eScene* data in one table, *eResponse* data in a separate table, *eSituation* data in another, and so on. Although the EMS domain concepts may already be familiar, the R functions (and NEMSQA) require them to be organized in a consistent format. For example:
+### Data types
 
-* **Asthma‑01** uses patient, scene, response, situation, and medication tables.
-* **Respiratory‑01** uses patient, scene, response, situation, and vitals tables.
+Going forward, as these datasets were designed for this package, we will assume the data types of the columns are ready for us. However, in the wild, you will need to check the data types of your columns to ensure they meet `nemsqar` data validation requirements. If you do not, you will inevitably run into some friction by the way of error messages as `nemsqar` will validate your data.
+
+### Dealing with problematic column names
+
+Data coming out of EMS registries often have column names that are difficult to use when programming in R. Here, we will deal with this problem directly.
+
+```{r clean_column_names, echo=TRUE, eval=TRUE}
+# Define a custom cleaning function we can reuse
+mr_clean_cols <- function(data) {
+  # Clean column names using regex
+  clean <- data |>
+    dplyr::rename_with(
+      .cols = tidyselect::everything(),
+      ~ gsub(pattern = "\\.|\\(|-|\\s", replacement = "_", x = .)
+    ) |>
+    dplyr::rename_with(
+      .cols = tidyselect::everything(),
+      ~ gsub(pattern = "_+", replacement = "_", x = .)
+    ) |>
+    dplyr::rename_with(
+      .cols = tidyselect::everything(),
+      ~ gsub(pattern = "\\)", replacement = "", x = .)
+    )
+
+  # return cleaned columns
+  return(clean)
+}
+
+# Clean column names using base functions and `dplyr`
+
+# patient data
+nemsqar_patient_scene_data <- nemsqar_patient_scene_table |>
+  mr_clean_cols()
+
+# response data
+nemsqar_response_data <- nemsqar_response_table |>
+  mr_clean_cols()
+
+# situation data
+nemsqar_situation_data <- nemsqar_situation_table |>
+  mr_clean_cols()
+
+# medications data
+nemsqar_medications_data <- nemsqar_medications_table |>
+  mr_clean_cols()
+
+# vitals data
+nemsqar_vitals_data <- nemsqar_vitals_table |>
+  mr_clean_cols()
+
+# `glimpse()` the cleaned columns of one dataset
+dplyr::glimpse(nemsqar_patient_scene_data)
+```
+
+Now, special characters and whitespace are either removed or replaced with `_` so R can more easily recognize the column names, and we can avoid annoying conventions to find column names. We will need to do this again later so 
+
+## Understanding Required Inputs
+Each NEMSQA measure uses a defined set of input tables. `nemsqar` was designed to accept one single data source (via argument `df`) in case a user has their data structured in this way. Generally, though, this is not recommended. Instead, use the `*_table` arguments, where `*` is the name of a table, like `patient_scene_table`. It is best practice to store your data in different tables according to the NEMSIS structure such as having 1:1 *ePatient* and *eScene* data in one table, *eResponse* data in a separate table, *eSituation* data in another, and so on (i.e. via a Star Schema format). Although the EMS domain concepts may already be familiar, the R functions (and NEMSQA) require them to be organized in a consistent format. For example:
+
+* **Asthma‑01** uses patient, response, situation, and medication tables.
+* **Respiratory‑01** uses patient, response, situation, and vitals tables.
 * **Safety‑01** uses patient and response tables.
 
 The following sections demonstrate how to supply these inputs to `nemsqar` and how to run your first measure.
+
+# Running the NEMSQA Measures Using `nemsqar`
+
+With the required input tables loaded for *Asthma-01*, you are ready to calculate your first NEMSQA measure. Each measure in `nemsqar` is computed by a dedicated function. The applicable functions accept individual NEMSIS‑structured tables as arguments and return a standardized results dataset. 
+
+## `nemsqar` workhorse functions
+Each measure has two workhorse functions that do the heavy lifting for you. These functions follow a `name_##()` format. For example, *Asthma-01* is calculated by the `asthma_01()` function. In reality, `asthma_01()` is a wrapper function, as it calls another function `asthma_01_population()` which gathers the data and filters it down to the correct NEMSQA population for the measure. Then, `asthma_01()` calls a few internal helpers to calculate performance on the measure. Each NEMSQA measure has corresponding wrapper and population functions.
+
+As an example, the code below demonstrates how to run **Asthma‑01** using the example data loaded in earlier sections. Remember, we loaded and inspected our data before. We use column names from each applicable table to fulfill each argument for fields required to calculate the given NEMSQA measure. 
+
+```{r run_asthma_01, results="show"}
+# Run `asthma_01` for a whole dataset, no grouping
+asthma_01_all <- asthma_01(
+  patient_scene_table = nemsqar_patient_scene_data,
+  response_table = nemsqar_response_data,
+  situation_table = nemsqar_situation_data,
+  medications_table = nemsqar_medications_data,
+  erecord_01_col = Incident_Patient_Care_Report_Number_PCR_eRecord_01,
+  incident_date_col = Incident_Date,
+  patient_DOB_col = Patient_Date_Of_Birth_ePatient_17,
+  epatient_15_col = Patient_Age_ePatient_15,
+  epatient_16_col = Patient_Age_Units_ePatient_16,
+  eresponse_05_col = Response_Type_Of_Service_Requested_With_Code_eResponse_05,
+  esituation_11_col = Situation_Provider_Primary_Impression_Code_And_Description_eSituation_11,
+  esituation_12_col = Situation_Provider_Secondary_Impression_Description_And_Code_eSituation_12,
+  emedications_03_col = Patient_Medication_Given_or_Administered_Description_And_RXCUI_Codes_List_eMedications_03,
+  confidence_interval = T,
+  method = "clopper-pearson",
+  conf.level = 0.95
+)
+
+# print the results
+asthma_01_all
+```
+
+Clearly, the ambulance service above needs to put a PI project into action right away! Asthmatic patients are not being taken care of appropriately. We may be curious to know how this service performs with specific types of patients.
+
+```{r run_asthma_01_age, results="show"}
+# Run `asthma_01` for a whole dataset, group by age units
+asthma_01_age <- asthma_01(
+  patient_scene_table = nemsqar_patient_scene_data,
+  response_table = nemsqar_response_data,
+  situation_table = nemsqar_situation_data,
+  medications_table = nemsqar_medications_data,
+  erecord_01_col = Incident_Patient_Care_Report_Number_PCR_eRecord_01,
+  incident_date_col = Incident_Date,
+  patient_DOB_col = Patient_Date_Of_Birth_ePatient_17,
+  epatient_15_col = Patient_Age_ePatient_15,
+  epatient_16_col = Patient_Age_Units_ePatient_16,
+  eresponse_05_col = Response_Type_Of_Service_Requested_With_Code_eResponse_05,
+  esituation_11_col = Situation_Provider_Primary_Impression_Code_And_Description_eSituation_11,
+  esituation_12_col = Situation_Provider_Secondary_Impression_Description_And_Code_eSituation_12,
+  emedications_03_col = Patient_Medication_Given_or_Administered_Description_And_RXCUI_Codes_List_eMedications_03,
+  confidence_interval = TRUE,
+  method = "clopper-pearson",
+  conf.level = 0.95,
+  .by = Patient_Age_Units_ePatient_16
+)
+
+# print the results
+asthma_01_age
+```
+
+# Common Pitfalls for New R Users
+Users who are new to R often encounter a few predictable issues when preparing data for measure calculation. The most common are listed below:
+
+
+## Incorrect variable types
+Many NEMSQA logic components require numeric fields. If values are read as character strings, the measure will fail. Use functions to manipulate data so it is in the correct format, as needed.
+
+
+## Unintended name changes
+Columns must match expected NEMSIS fields exactly. You can name your columns whatever you want, but the data from **eResponse.05** must go in the `eresponse_05_col` argument of any function to work. It is the nature of the data, not naming conventions, that will break your function calls in `nemsqar`.
+
+
+## Missing required tables
+Each measure requires a specific set of inputs. If one is missing, the function will return an error.
+
+
+## Duplicated records
+Measures assume that each patient or encounter corresponds to a single row in the input tables that are expected to be 1:1. Duplicate records can cause unexpected inclusion or exclusion, although `nemsqar` does try to help users with this out of the box. Always check your data and be aware of any Cartesian product that may be introduced unknowingly due to database issues or joins. 
