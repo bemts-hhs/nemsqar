@@ -9,7 +9,8 @@
   returned by the wrapper functions.
 - Added the first `nemsqar` vignette!
 - Added tests for `validate_set()`, `validate_numeric()` tests were improved,
-  `validate_names()` 
+  `validate_names()`, added tests for `validate_length()` and
+  `compare_formals()`. 
 - Removed documentation for the `validate_*()` family of functions and use
   keyword internal in their documentation. 
 
