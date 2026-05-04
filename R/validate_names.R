@@ -17,6 +17,9 @@
 #' @author
 #' Nicolas Foss, Ed.D., MS
 #'
+#' @keywords internal
+#' @noRd
+#'
 validate_names <- function(
   input,
   check_names,

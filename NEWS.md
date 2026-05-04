@@ -8,6 +8,10 @@
   within each `*_popoulation()` function and to be included in the `list` object
   returned by the wrapper functions.
 - Added the first `nemsqar` vignette!
+- Added tests for `validate_set()`, `validate_numeric()` tests were improved,
+  `validate_names()` 
+- Removed documentation for the `validate_*()` family of functions and use
+  keyword internal in their documentation. 
 
 Thanks to [&#x0040;bemts-hhs](https://github.com/bemts-hhs) (maintenance and
 programming in this release),

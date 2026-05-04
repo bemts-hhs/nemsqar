@@ -19,6 +19,9 @@
 #' @author
 #' Nicolas Foss, Ed.D., MS
 #'
+#' @keywords internal
+#' @noRd
+#'
 validate_class <- function(
   input,
   class_type = c(

@@ -18,6 +18,9 @@
 #' @author
 #' Nicolas Foss, Ed.D., MS
 #'
+#' @keywords internal
+#' @noRd
+#'
 validate_length <- function(
   input,
   exact_length = NULL,

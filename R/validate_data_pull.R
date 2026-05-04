@@ -26,6 +26,9 @@
 #' @author
 #' Nicolas Foss, Ed.D., MS
 #'
+#' @keywords internal
+#' @noRd
+#'
 validate_data_pull <- function(
   input,
   type = c("error", "warning", "message"),

@@ -19,6 +19,9 @@
 #' @author
 #' Nicolas Foss, Ed.D., MS
 #'
+#' @keywords internal
+#' @noRd
+#'
 validate_data_structure <- function(
   input,
   structure_type = c(

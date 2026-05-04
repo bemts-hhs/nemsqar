@@ -14,6 +14,9 @@
 #' @author
 #' Nicolas Foss, Ed.D., MS
 #'
+#' @keywords internal
+#' @noRd
+#'
 validate_complete <- function(
   input,
   type = c("error", "warning", "message"),
