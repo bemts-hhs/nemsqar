@@ -305,7 +305,7 @@ populations_asthma_01$filter_process
 
 ### Using filter_process from the population functions
 
-Given that this vignette uses synthetic data, the counts may not reflect realistic populations. However, the workflow remains the same when working with real EMS data. The values in filter_process represent distinct record counts at each stage (using dplyr::distinct() internally). Reviewing these counts, along with the missingness tibble returned by the population function, can help diagnose data quality issues and better understand the composition of the population being evaluated.
+Given that this vignette uses synthetic data, the counts may not reflect realistic populations. However, the workflow remains the same when working with real EMS data. The values in filter_process represent distinct record counts at each stage (using `dplyr::distinct()` internally). Reviewing these counts, along with the missingness tibble returned by the population function, can help diagnose data quality issues and better understand the composition of the population being evaluated.
 
 
 # Common Pitfalls for New R Users
