@@ -143,9 +143,9 @@ access.
   Compass legacy/candidate measures to the National EMS Quality Alliance
   Measure Set.
 
-# Thanks!
+## Code of Conduct
 
-A big loud thanks to Sheree Murphy from NEMSQA, Peter Geissert from
-Oregon EMS & Trauma Systems, Jeffrey Jarvis medical director for the
-Metropolitan Area EMS Authority (Fort Worth, Texas), and Marshall
-Washick (Washington D.C. Fire) for all their input and consultation!
+Please note that the nemsqar project is released with a [Contributor
+Code of
+Conduct](https://bemts-hhs.github.io/nemsqar/CODE_OF_CONDUCT.html). By
+contributing to this project, you agree to abide by its terms.

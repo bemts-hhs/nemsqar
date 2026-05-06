@@ -23,6 +23,7 @@ knitr::opts_chunk$set(
 ![CRAN monthly downloads](https://cranlogs.r-pkg.org/badges/last-month/nemsqar)
 ![CRAN weekly downloads](https://cranlogs.r-pkg.org/badges/last-week/nemsqar)
 [![Codecov test coverage](https://codecov.io/gh/bemts-hhs/nemsqar/graph/badge.svg)](https://app.codecov.io/gh/bemts-hhs/nemsqar?branch=main)
+[![Codecov test coverage](https://codecov.io/gh/bemts-hhs/nemsqar/graph/badge.svg)](https://app.codecov.io/gh/bemts-hhs/nemsqar)
 <!-- badges: end -->
 
 `nemsqar` is an R package designed to automate the calculation of EMS quality metrics as defined by the National EMS Quality Alliance (NEMSQA). With a focus on enhancing EMS service performance through reliable, evidence-based quality measures, `nemsqar` aims to streamline metric calculation for healthcare providers, EMS agencies, and researchers dedicated to improving patient outcomes.
@@ -67,15 +68,33 @@ The National EMS Quality Alliance (NEMSQA) Measure Set includes a comprehensive 
 * Slated for future development: 🔧
 
 ```{r seqic-table, echo = FALSE, message = FALSE}
-
 # Define the checkmark symbol programmatically
-checkmark <- intToUtf8(0x2714)  # Unicode for heavy check mark
+checkmark <- intToUtf8(0x2714) # Unicode for heavy check mark
 
 ems_table <- tibble::tibble(
-  `Measure ID` = c("Airway-01", "Airway-05", "Airway-18", "Asthma-01", "Hypoglycemia-01",
-                   "Respiratory-01", "Respiratory-02", "Pediatrics-03b", "Safety-01", "Safety-02",
-                   "Safety-04", "Seizure-02", "Stroke-01", "Syncope-01", "TBI-01", "Trauma-01",
-                   "Trauma-03", "Trauma-04", "Trauma-08", "Trauma-14", "TTR-01"),
+  `Measure ID` = c(
+    "Airway-01",
+    "Airway-05",
+    "Airway-18",
+    "Asthma-01",
+    "Hypoglycemia-01",
+    "Respiratory-01",
+    "Respiratory-02",
+    "Pediatrics-03b",
+    "Safety-01",
+    "Safety-02",
+    "Safety-04",
+    "Seizure-02",
+    "Stroke-01",
+    "Syncope-01",
+    "TBI-01",
+    "Trauma-01",
+    "Trauma-03",
+    "Trauma-04",
+    "Trauma-08",
+    "Trauma-14",
+    "TTR-01"
+  ),
   Description = c(
     "Percentage of EMS responses from a 911 request with successful advanced airway placement on first attempt without hypotension or hypoxia in peri-intubation period.",
     "Percentage of intubation procedures from a 911 request in which adequate patient oxygen levels were achieved prior to intubation.",
@@ -99,24 +118,56 @@ ems_table <- tibble::tibble(
     "Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert.",
     "Percentage of EMS responses from a 911 request for non-transported patients with documented vital signs."
   ),
-  Type = c("Outcome", "Process", "Process", "Process", "Process", "Process", "Process", "Process",
-           "Process", "Process", "Process", "Process", "Process", "Process", "Process", "Process",
-           "Outcome", "Process", "Process", "Process", "Process"),
-  `National Quality Strategy Domain` = c("Clinical Process – Effectiveness", "Patient Safety",
-                                         "Clinical Process – Effectiveness", "Clinical Process – Effectiveness",
-                                         "Clinical Process – Effectiveness", "Clinical Process – Effectiveness",
-                                         "Clinical Process – Effectiveness", "Patient Safety",
-                                         "Patient Safety", "Patient Safety", "Patient Safety",
-                                         "Clinical Process – Effectiveness", "Clinical Process – Effectiveness",
-                                         "Clinical Process – Effectiveness", "Clinical Process – Effectiveness",
-                                         "Patient Experience", "Patient Experience",
-                                         "Clinical Process – Effectiveness", "Clinical Process – Effectiveness",
-                                         "Clinical Process – Effectiveness", "Clinical Process – Effectiveness"),
+  Type = c(
+    "Outcome",
+    "Process",
+    "Process",
+    "Process",
+    "Process",
+    "Process",
+    "Process",
+    "Process",
+    "Process",
+    "Process",
+    "Process",
+    "Process",
+    "Process",
+    "Process",
+    "Process",
+    "Process",
+    "Outcome",
+    "Process",
+    "Process",
+    "Process",
+    "Process"
+  ),
+  `National Quality Strategy Domain` = c(
+    "Clinical Process – Effectiveness",
+    "Patient Safety",
+    "Clinical Process – Effectiveness",
+    "Clinical Process – Effectiveness",
+    "Clinical Process – Effectiveness",
+    "Clinical Process – Effectiveness",
+    "Clinical Process – Effectiveness",
+    "Patient Safety",
+    "Patient Safety",
+    "Patient Safety",
+    "Patient Safety",
+    "Clinical Process – Effectiveness",
+    "Clinical Process – Effectiveness",
+    "Clinical Process – Effectiveness",
+    "Clinical Process – Effectiveness",
+    "Patient Experience",
+    "Patient Experience",
+    "Clinical Process – Effectiveness",
+    "Clinical Process – Effectiveness",
+    "Clinical Process – Effectiveness",
+    "Clinical Process – Effectiveness"
+  ),
   `Developed in Package?` = rep(checkmark, 21)
 )
 
 knitr::kable(ems_table)
-
 ```
 
 # Resources
@@ -129,6 +180,6 @@ Interested persons may reference the following links and resources via NEMSQA's 
 * [NEMSQA Measure Technical Release Notes_2021](https://www.nemsqa.org/assets/docs/NEMSQA-Measure-Technical-Release-Notes_2021.pdf): A reference table that documents changes made to the NEMSQA measures during the 2021 annual review.
 * [Fact Sheet](https://www.nemsqa.org/assets/docs/Fact-Sheet-NEMSQA.pdf): An info page explaining why agencies and systems should migrate from EMS Compass legacy/candidate measures to the National EMS Quality Alliance Measure Set.
 
-# Thanks!
+## Code of Conduct
 
-A big loud thanks to Sheree Murphy from NEMSQA, Peter Geissert from Oregon EMS & Trauma Systems, Jeffrey Jarvis medical director for the Metropolitan Area EMS Authority (Fort Worth, Texas), and Marshall Washick (Washington D.C. Fire) for all their input and consultation!
+Please note that the nemsqar project is released with a [Contributor Code of Conduct](https://bemts-hhs.github.io/nemsqar/CODE_OF_CONDUCT.html). By contributing to this project, you agree to abide by its terms.

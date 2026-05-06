@@ -16,6 +16,12 @@
   keyword internal in their documentation. 
 - `results_summarize()` and `summarize_measure()` no longer have external facing
   documentation and are internal. 
+- Added a contributor's code of conduct.
+- Removed some language giving thanks to early contributors from the README file
+  and placed that in the initial release of `nemsqar`.
+- Implemented `usethis::use_tidy_*` package helpers to clean up various parts of
+  the package such as workflows and using `Air` as the code formatter
+  throughout. 
 
 Thanks to [&#x0040;bemts-hhs](https://github.com/bemts-hhs) (maintenance and
 programming in this release),
@@ -124,3 +130,7 @@ which was corrected to be `"All initial population successful intubation with no
 
 #### Utility Functions  
 - `results_summarize()`, `summarize_measure()`
+
+## Thanks!
+
+A big loud thanks to Sheree Murphy from NEMSQA, Peter Geissert from Oregon EMS & Trauma Systems, Jeffrey Jarvis medical director for the Metropolitan Area EMS Authority (Fort Worth, Texas), and Marshall Washick (Washington D.C. Fire) for all their input and consultation!

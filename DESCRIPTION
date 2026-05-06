@@ -27,14 +27,14 @@ Depends:
     R (>= 4.1)
 Imports: 
     cli,
-    dplyr (>= 1.1.4),
+    dplyr (>= 1.2.1),
     glue,
-    hms,
+    hms (>= 1.1.4),
     lifecycle,
-    lubridate (>= 1.9.4),
+    lubridate (>= 1.9.5),
     rlang,
     stats,
-    tibble (>= 3.2.1),
+    tibble (>= 3.3.1),
     tidyselect (>= 1.2.1),
     utils
 Suggests: 
@@ -42,10 +42,11 @@ Suggests:
     rmarkdown,
     testthat (>= 3.0.0),
     tidyr
+VignetteBuilder: 
+    knitr
 Config/testthat/edition: 3
 Encoding: UTF-8
 LazyData: true
 LazyDataCompression: bzip2
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
-VignetteBuilder: knitr
