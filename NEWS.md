@@ -6,7 +6,7 @@
   national performance on this measure.
 - Added the new function `nemsqa_missing_summary()` to summarize missing data
   within each `*_popoulation()` function and to be included in the `list` object
-  returned by the wrapper functions.
+  returned by the same functions.
 - Added the first `nemsqar` vignette! Please use `vignette(topic = "nemsqar",
   package = "nemsqar")` to check it out.
 - Added tests for `validate_set()`, `validate_numeric()` tests were improved,
