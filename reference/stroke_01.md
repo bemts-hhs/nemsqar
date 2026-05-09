@@ -149,6 +149,7 @@ Nicolas Foss, Ed.D., MS
 ## Examples
 
 ``` r
+
 # Synthetic test data
   test_data <- tibble::tibble(
     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
@@ -201,7 +202,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating Stroke-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.16s.
+#> ✔ Function completed in 0.22s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 1 × 8

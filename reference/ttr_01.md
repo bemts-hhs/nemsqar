@@ -195,6 +195,7 @@ Nicolas Foss, Ed.D., MS
 ## Examples
 
 ``` r
+
 # Synthetic test data
   test_data <- tibble::tibble(
     erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
@@ -258,7 +259,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating TTR-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.17s.
+#> ✔ Function completed in 0.43s.
 #> 
 #> # A tibble: 2 × 6
 #>   measure pop    numerator denominator  prop prop_label

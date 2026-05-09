@@ -1,5 +1,43 @@
 # Changelog
 
+## nemsqar 1.2.0
+
+- Update
+  [`trauma_04_population()`](https://bemts-hhs.github.io/nemsqar/reference/trauma_04_population.md)
+  to look to the facility ID instead of the hospital capabilities for
+  performance measurement. This is a breaking change but will make the
+  measure more accurate. This change comes as part of the NEMSQA Measure
+  Development committee has discussed this action seeing dismal national
+  performance on this measure.
+- Added the new function `nemsqa_missing_summary()` to summarize missing
+  data within each `*_popoulation()` function and to be included in the
+  `list` object returned by the same functions.
+- Added the first `nemsqar` vignette! Please use
+  [`vignette(topic = "nemsqar", package = "nemsqar")`](https://bemts-hhs.github.io/nemsqar/articles/nemsqar.md)
+  to check it out.
+- Added tests for `validate_set()`, `validate_numeric()` tests were
+  improved, `validate_names()`, added tests for `validate_length()` and
+  `compare_formals()`.
+- Removed documentation for the `validate_*()` family of functions and
+  use keyword internal in their documentation.
+- `results_summarize()` and `summarize_measure()` no longer have
+  external facing documentation and are internal.
+- Added a contributor’s code of conduct.
+- Removed some language giving thanks to early contributors from the
+  README file and placed that in the initial release of `nemsqar`.
+- Implemented `usethis::use_tidy_*` package helpers to clean up various
+  parts of the package such as workflows and using `Air` as the code
+  formatter throughout.
+
+Thanks to [@bemts-hhs](https://github.com/bemts-hhs) (maintenance and
+programming in this release),
+[@eliza-little](https://github.com/eliza-little) (for submitting issue
+[\#4](https://github.com/bemts-hhs/nemsqar/issues/4)), and
+[@samuelkordik](https://github.com/samuelkordik) (submitted issue
+[\#15](https://github.com/bemts-hhs/nemsqar/issues/15) and reviewed PR
+[\#23](https://github.com/bemts-hhs/nemsqar/pull/23)) for all your
+contributions to this CRAN release!
+
 ## nemsqar 1.1.4
 
 - Documentation using [@inheritParams](https://github.com/inheritParams)
@@ -95,20 +133,14 @@ CRAN release: 2025-03-13
     to support optional confidence interval calculation.
   - Maintained full backward compatibility with **nemsqar 1.0.0** by
     setting `confidence_interval = FALSE` as the default behavior.
-- **Dynamic
-  [`results_summarize()`](https://bemts-hhs.github.io/nemsqar/reference/results_summarize.md)**:
-  Enhanced
-  [`results_summarize()`](https://bemts-hhs.github.io/nemsqar/reference/results_summarize.md)
-  to dynamically calculate only the specified groups, utilizing the
+- **Dynamic `results_summarize()`**: Enhanced `results_summarize()` to
+  dynamically calculate only the specified groups, utilizing the
   previously unused `population_labels` object. This reduces unnecessary
   calculations and streamlines function performance.  
 - **Improved Documentation**:
-  - Updated and expanded the documentation for
-    [`results_summarize()`](https://bemts-hhs.github.io/nemsqar/reference/results_summarize.md)
-    and
-    [`summarize_measure()`](https://bemts-hhs.github.io/nemsqar/reference/summarize_measure.md),
-    offering clearer usage instructions and examples to enhance the user
-    experience.
+  - Updated and expanded the documentation for `results_summarize()` and
+    `summarize_measure()`, offering clearer usage instructions and
+    examples to enhance the user experience.
   - Refined the documentation for multiple other functions, improving
     clarity and usability.
 
@@ -191,5 +223,11 @@ CRAN release: 2025-03-05
 
 ##### Utility Functions
 
-- [`results_summarize()`](https://bemts-hhs.github.io/nemsqar/reference/results_summarize.md),
-  [`summarize_measure()`](https://bemts-hhs.github.io/nemsqar/reference/summarize_measure.md)
+- `results_summarize()`, `summarize_measure()`
+
+### Thanks!
+
+A big loud thanks to Sheree Murphy from NEMSQA, Peter Geissert from
+Oregon EMS & Trauma Systems, Jeffrey Jarvis medical director for the
+Metropolitan Area EMS Authority (Fort Worth, Texas), and Marshall
+Washick (Washington D.C. Fire) for all their input and consultation!

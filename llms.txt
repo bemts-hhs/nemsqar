@@ -12,6 +12,7 @@ researchers dedicated to improving patient outcomes.
 You can install the development version of `nemsqar` with:
 
 ``` r
+
 # install.packages("remotes")
 remotes::install_github("bemts-hhs/nemsqar")
 ```
@@ -20,6 +21,7 @@ Additionally, you may install the current version of `nemsqar` on CRAN
 via:
 
 ``` r
+
 install.packages("nemsqar")
 ```
 
@@ -72,29 +74,29 @@ after creating a user profile.
 - Developed and in package: ✔️
 - Slated for future development: 🔧
 
-| Measure ID      | Description                                                                                                                                                         | Type    | National Quality Strategy Domain | Developed in Package? |
-|:----------------|:--------------------------------------------------------------------------------------------------------------------------------------------------------------------|:--------|:---------------------------------|:----------------------|
-| Airway-01       | Percentage of EMS responses from a 911 request with successful advanced airway placement on first attempt without hypotension or hypoxia in peri-intubation period. | Outcome | Clinical Process – Effectiveness | ✔                     |
-| Airway-05       | Percentage of intubation procedures from a 911 request in which adequate patient oxygen levels were achieved prior to intubation.                                   | Process | Patient Safety                   | ✔                     |
-| Airway-18       | Percentage of successful advanced airway procedures from a 911 request in which waveform capnography is used for confirmation and monitoring.                       | Process | Clinical Process – Effectiveness | ✔                     |
-| Asthma-01       | Percentage of EMS responses from a 911 request for asthma patients receiving an aerosolized beta agonist.                                                           | Process | Clinical Process – Effectiveness | ✔                     |
-| Hypoglycemia-01 | Percentage of EMS responses from a 911 request for symptomatic hypoglycemia patients who receive treatment to correct hypoglycemia.                                 | Process | Clinical Process – Effectiveness | ✔                     |
-| Respiratory-01  | Percentage of EMS responses from a 911 request for respiratory distress patients with a respiratory assessment.                                                     | Process | Clinical Process – Effectiveness | ✔                     |
-| Respiratory-02  | Percentage of EMS responses from a 911 request for patients with hypoxia receiving oxygen.                                                                          | Process | Clinical Process – Effectiveness | ✔                     |
-| Pediatrics-03b  | Percentage of EMS responses from a 911 request for patients \<18 years receiving a weight-based medication with documented weight in kg or length-based estimate.   | Process | Patient Safety                   | ✔                     |
-| Safety-01       | Percentage of EMS responses from a 911 request without lights and sirens.                                                                                           | Process | Patient Safety                   | ✔                     |
-| Safety-02       | Percentage of EMS transports from a 911 request without lights and sirens during patient transport.                                                                 | Process | Patient Safety                   | ✔                     |
-| Safety-04       | Percentage of EMS transports from a 911 or interfacility request for patients \<8 years transported with a pediatric restraint device.                              | Process | Patient Safety                   | ✔                     |
-| Seizure-02      | Percentage of EMS responses from a 911 request for patients with status epilepticus who received benzodiazepine.                                                    | Process | Clinical Process – Effectiveness | ✔                     |
-| Stroke-01       | Percentage of EMS responses from a 911 request for suspected stroke patients who had a stroke assessment.                                                           | Process | Clinical Process – Effectiveness | ✔                     |
-| Syncope-01      | Percentage of EMS responses from a 911 request for syncope patients with a 12-lead (or greater) ECG performed.                                                      | Process | Clinical Process – Effectiveness | ✔                     |
-| TBI-01          | Percentage of EMS transports from a 911 request for suspected TBI patients with documented oxygen level, ETCO2, and systolic BP.                                    | Process | Clinical Process – Effectiveness | ✔                     |
-| Trauma-01       | Percentage of EMS responses from a 911 request for injury patients assessed for pain.                                                                               | Process | Patient Experience               | ✔                     |
-| Trauma-03       | Percentage of EMS transports from a 911 request for patients whose pain score decreased during EMS encounter.                                                       | Outcome | Patient Experience               | ✔                     |
-| Trauma-04       | Percentage of EMS responses from a 911 request for patients meeting CDC trauma criteria transported to a trauma center.                                             | Process | Clinical Process – Effectiveness | ✔                     |
-| Trauma-08       | Percentage of EMS transports from a 911 request for trauma patients with documented GCS, systolic BP, and respiratory rate.                                         | Process | Clinical Process – Effectiveness | ✔                     |
-| Trauma-14       | Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert.                        | Process | Clinical Process – Effectiveness | ✔                     |
-| TTR-01          | Percentage of EMS responses from a 911 request for non-transported patients with documented vital signs.                                                            | Process | Clinical Process – Effectiveness | ✔                     |
+| Measure ID | Description | Type | National Quality Strategy Domain | Developed in Package? |
+|:---|:---|:---|:---|:---|
+| Airway-01 | Percentage of EMS responses from a 911 request with successful advanced airway placement on first attempt without hypotension or hypoxia in peri-intubation period. | Outcome | Clinical Process – Effectiveness | ✔ |
+| Airway-05 | Percentage of intubation procedures from a 911 request in which adequate patient oxygen levels were achieved prior to intubation. | Process | Patient Safety | ✔ |
+| Airway-18 | Percentage of successful advanced airway procedures from a 911 request in which waveform capnography is used for confirmation and monitoring. | Process | Clinical Process – Effectiveness | ✔ |
+| Asthma-01 | Percentage of EMS responses from a 911 request for asthma patients receiving an aerosolized beta agonist. | Process | Clinical Process – Effectiveness | ✔ |
+| Hypoglycemia-01 | Percentage of EMS responses from a 911 request for symptomatic hypoglycemia patients who receive treatment to correct hypoglycemia. | Process | Clinical Process – Effectiveness | ✔ |
+| Respiratory-01 | Percentage of EMS responses from a 911 request for respiratory distress patients with a respiratory assessment. | Process | Clinical Process – Effectiveness | ✔ |
+| Respiratory-02 | Percentage of EMS responses from a 911 request for patients with hypoxia receiving oxygen. | Process | Clinical Process – Effectiveness | ✔ |
+| Pediatrics-03b | Percentage of EMS responses from a 911 request for patients \<18 years receiving a weight-based medication with documented weight in kg or length-based estimate. | Process | Patient Safety | ✔ |
+| Safety-01 | Percentage of EMS responses from a 911 request without lights and sirens. | Process | Patient Safety | ✔ |
+| Safety-02 | Percentage of EMS transports from a 911 request without lights and sirens during patient transport. | Process | Patient Safety | ✔ |
+| Safety-04 | Percentage of EMS transports from a 911 or interfacility request for patients \<8 years transported with a pediatric restraint device. | Process | Patient Safety | ✔ |
+| Seizure-02 | Percentage of EMS responses from a 911 request for patients with status epilepticus who received benzodiazepine. | Process | Clinical Process – Effectiveness | ✔ |
+| Stroke-01 | Percentage of EMS responses from a 911 request for suspected stroke patients who had a stroke assessment. | Process | Clinical Process – Effectiveness | ✔ |
+| Syncope-01 | Percentage of EMS responses from a 911 request for syncope patients with a 12-lead (or greater) ECG performed. | Process | Clinical Process – Effectiveness | ✔ |
+| TBI-01 | Percentage of EMS transports from a 911 request for suspected TBI patients with documented oxygen level, ETCO2, and systolic BP. | Process | Clinical Process – Effectiveness | ✔ |
+| Trauma-01 | Percentage of EMS responses from a 911 request for injury patients assessed for pain. | Process | Patient Experience | ✔ |
+| Trauma-03 | Percentage of EMS transports from a 911 request for patients whose pain score decreased during EMS encounter. | Outcome | Patient Experience | ✔ |
+| Trauma-04 | Percentage of EMS responses from a 911 request for patients meeting CDC trauma criteria transported to a trauma center. | Process | Clinical Process – Effectiveness | ✔ |
+| Trauma-08 | Percentage of EMS transports from a 911 request for trauma patients with documented GCS, systolic BP, and respiratory rate. | Process | Clinical Process – Effectiveness | ✔ |
+| Trauma-14 | Percentage of EMS transports from a 911 request for patients meeting Step 1 or Step 2 field triage criteria with a pre-arrival trauma alert. | Process | Clinical Process – Effectiveness | ✔ |
+| TTR-01 | Percentage of EMS responses from a 911 request for non-transported patients with documented vital signs. | Process | Clinical Process – Effectiveness | ✔ |
 
 # Resources
 
@@ -124,12 +126,12 @@ access.
   Compass legacy/candidate measures to the National EMS Quality Alliance
   Measure Set.
 
-# Thanks!
+## Code of Conduct
 
-A big loud thanks to Sheree Murphy from NEMSQA, Peter Geissert from
-Oregon EMS & Trauma Systems, Jeffrey Jarvis medical director for the
-Metropolitan Area EMS Authority (Fort Worth, Texas), and Marshall
-Washick (Washington D.C. Fire) for all their input and consultation!
+Please note that the nemsqar project is released with a [Contributor
+Code of
+Conduct](https://bemts-hhs.github.io/nemsqar/CODE_OF_CONDUCT.html). By
+contributing to this project, you agree to abide by its terms.
 
 # Package index
 
@@ -151,8 +153,6 @@ Washick (Washington D.C. Fire) for all their input and consultation!
   : Asthma-01 Calculation
 - [`asthma_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/asthma_01_population.md)
   : Asthma-01 Populations
-- [`compare_formals()`](https://bemts-hhs.github.io/nemsqar/reference/compare_formals.md)
-  : Compare formals across functions
 - [`hypoglycemia_01()`](https://bemts-hhs.github.io/nemsqar/reference/hypoglycemia_01.md)
   : Hypoglycemia-01
 - [`hypoglycemia_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/hypoglycemia_01_population.md)
@@ -207,8 +207,6 @@ Washick (Washington D.C. Fire) for all their input and consultation!
   : Respiratory-02 Calculation
 - [`respiratory_02_population()`](https://bemts-hhs.github.io/nemsqar/reference/respiratory_02_population.md)
   : Respiratory-02 Populations
-- [`results_summarize()`](https://bemts-hhs.github.io/nemsqar/reference/results_summarize.md)
-  : Tabulate Measure Results
 - [`safety_01()`](https://bemts-hhs.github.io/nemsqar/reference/safety_01.md)
   : Safety-01 Calculation
 - [`safety_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/safety_01_population.md)
@@ -229,8 +227,6 @@ Washick (Washington D.C. Fire) for all their input and consultation!
   : Stroke-01 Calculation
 - [`stroke_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/stroke_01_population.md)
   : Stroke-01 Populations
-- [`summarize_measure()`](https://bemts-hhs.github.io/nemsqar/reference/summarize_measure.md)
-  : Summarize Measure
 - [`syncope_01()`](https://bemts-hhs.github.io/nemsqar/reference/syncope_01.md)
   : Syncope-01 Calculation
 - [`syncope_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/syncope_01_population.md)
@@ -263,26 +259,10 @@ Washick (Washington D.C. Fire) for all their input and consultation!
   : TTR-01 Calculation
 - [`ttr_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/ttr_01_population.md)
   : TTR-01 Populations
-- [`validate_character_factor()`](https://bemts-hhs.github.io/nemsqar/reference/validate_character_factor.md)
-  : Validate a Character or Factor Input
-- [`validate_choice()`](https://bemts-hhs.github.io/nemsqar/reference/validate_choice.md)
-  : Validate Choice
-- [`validate_class()`](https://bemts-hhs.github.io/nemsqar/reference/validate_class.md)
-  : Validate Class
-- [`validate_complete()`](https://bemts-hhs.github.io/nemsqar/reference/validate_complete.md)
-  : Validate Complete Input
-- [`validate_data_pull()`](https://bemts-hhs.github.io/nemsqar/reference/validate_data_pull.md)
-  : Validate Data Extraction
-- [`validate_data_structure()`](https://bemts-hhs.github.io/nemsqar/reference/validate_data_structure.md)
-  : Validate Data Structure
-- [`validate_error_type()`](https://bemts-hhs.github.io/nemsqar/reference/validate_error_type.md)
-  : Validate Error Type
-- [`validate_length()`](https://bemts-hhs.github.io/nemsqar/reference/validate_length.md)
-  : Validate Length of an Input
-- [`validate_names()`](https://bemts-hhs.github.io/nemsqar/reference/validate_names.md)
-  : Validate Column Names
-- [`validate_numeric()`](https://bemts-hhs.github.io/nemsqar/reference/validate_numeric.md)
-  : Validate Numeric Input
-- [`validate_set()`](https://bemts-hhs.github.io/nemsqar/reference/validate_set.md)
-  : Validate Set Equality
 
+# Articles
+
+### All vignettes
+
+- [Getting Started with
+  nemsqar](https://bemts-hhs.github.io/nemsqar/articles/nemsqar.md):

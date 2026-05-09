@@ -188,6 +188,7 @@ Nicolas Foss, Ed.D., MS
 ## Examples
 
 ``` r
+
 # Synthetic test data
 test_data <- tibble::tibble(
   erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
@@ -252,7 +253,7 @@ hypoglycemia_01(
 #> ── Calculating Hypoglycemia-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.24s.
+#> ✔ Function completed in 0.31s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 3 × 8

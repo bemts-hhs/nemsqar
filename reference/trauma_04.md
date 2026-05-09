@@ -29,7 +29,9 @@ trauma_04(
   eresponse_05_col,
   eresponse_10_col,
   transport_disposition_col,
-  edisposition_23_col,
+  edisposition_23_col = lifecycle::deprecated(),
+  edisposition_02_col,
+  trauma_center_facility_IDs,
   evitals_06_col,
   evitals_10_col,
   evitals_12_col,
@@ -144,9 +146,22 @@ trauma_04(
 
 - edisposition_23_col:
 
-  Column name containing primary hospital capability associated with the
-  patient's condition for this transport (e.g., Trauma, STEMI, Peds,
-  etc.).
+  **\[deprecated\]** Use `edisposition_02_col` instead. You must also
+  pass a character vector of trauma center facility IDs to
+  `trauma_center_facility_IDs` to ensure that destination facility IDs
+  passed via `edisposition_02_col` are correctly identified as trauma
+  centers as applicable.
+
+- edisposition_02_col:
+
+  Column name containing the code of the destination the patient was
+  delivered or transferred to.
+
+- trauma_center_facility_IDs:
+
+  A character vector of trauma center facility IDs that will allow
+  destination facilities documented in `edisposition_02_col` to be
+  classified correctly as trauma centers when applicable.
 
 - evitals_06_col:
 
@@ -296,7 +311,7 @@ Nicolas Foss, Ed.D., MS
     eexam_20 = c(3520045, 3520043, 3520019, 3520017, 3520017),
     eexam_23 = c(3523011, 3523003, 3523001, 3523011, 3523003),
     eexam_25 = c(3525039, 3525023, 3525005, 3525039, 3525023),
-    edisposition_23 = c(9908029, 9908027, 9908025, 9908023, 9908021),
+    edisposition_02 = c(9908029, 9908027, 9908025, 9908023, 9876543),
     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007),
     eprocedures_03 = c(424979004, 427753009, 429705000, 47545007, 243142003),
     einjury_01 = c("V20", "V36", "V86", "V39", "V32"),
@@ -307,40 +322,42 @@ Nicolas Foss, Ed.D., MS
 
   # Run function with the first and last pain score columns
   # Return 95% confidence intervals using the Wilson method
-  trauma_04(
-    df = test_data,
-    erecord_01_col = erecord_01,
-    incident_date_col = NULL,
-    patient_DOB_col = NULL,
-    epatient_15_col = epatient_15,
-    epatient_16_col = epatient_16,
-    eresponse_05_col = eresponse_05,
-    eresponse_10_col = eresponse_10,
-    esituation_02_col = esituation_02,
-    evitals_06_col = evitals_06,
-    evitals_10_col = evitals_10,
-    evitals_12_col = evitals_12,
-    evitals_14_col = evitals_14,
-    evitals_15_col = evitals_15,
-    evitals_21_col = evitals_21,
-    eexam_16_col = eexam_16,
-    eexam_20_col = eexam_20,
-    eexam_23_col = eexam_23,
-    eexam_25_col = eexam_25,
-    edisposition_23_col = edisposition_23,
-    transport_disposition_col = edisposition_30,
-    eprocedures_03_col = eprocedures_03,
-    einjury_01_col = einjury_01,
-    einjury_03_col = einjury_03,
-    einjury_04_col = einjury_04,
-    einjury_09_col = einjury_09,
-    confidence_interval = TRUE
-  )
-#> 
-#> ── Trauma-04 ───────────────────────────────────────────────────────────────────
-#> 
-#> ── Gathering Records for Trauma-04 ──
-#> 
+# test the success of the function
+result <- trauma_04_population(
+  df = test_data,
+  erecord_01_col = erecord_01,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col = epatient_15,
+  epatient_16_col = epatient_16,
+  eresponse_05_col = eresponse_05,
+  eresponse_10_col = eresponse_10,
+  esituation_02_col = esituation_02,
+  evitals_06_col = evitals_06,
+  evitals_10_col = evitals_10,
+  evitals_12_col = evitals_12,
+  evitals_14_col = evitals_14,
+  evitals_15_col = evitals_15,
+  evitals_21_col = evitals_21,
+  eexam_16_col = eexam_16,
+  eexam_20_col = eexam_20,
+  eexam_23_col = eexam_23,
+  eexam_25_col = eexam_25,
+  edisposition_02_col = edisposition_02,
+  trauma_center_facility_IDs = as.character(c(
+    9908029,
+    9908027,
+    9908025,
+    9908023,
+    9908021
+  )),
+  transport_disposition_col = edisposition_30,
+  eprocedures_03_col = eprocedures_03,
+  einjury_01_col = einjury_01,
+  einjury_03_col = einjury_03,
+  einjury_04_col = einjury_04,
+  einjury_09_col = einjury_09
+)
 #> Running `trauma_04_population()`  [Working on 1 of 31 tasks] ●●────────────────…
 #> Running `trauma_04_population()`  [Working on 2 of 31 tasks] ●●●───────────────…
 #> Running `trauma_04_population()`  [Working on 3 of 31 tasks] ●●●●──────────────…
@@ -373,19 +390,4 @@ Nicolas Foss, Ed.D., MS
 #> Running `trauma_04_population()`  [Working on 30 of 31 tasks] ●●●●●●●●●●●●●●●●●…
 #> Running `trauma_04_population()`  [Working on 31 of 31 tasks] ●●●●●●●●●●●●●●●●●…
 #> 
-#> 
-#> 
-#> ── Calculating Trauma-04 ──
-#> 
-#> 
-#> ✔ Function completed in 0.48s.
-#> 
-#> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
-#> # A tibble: 3 × 8
-#>   measure   pop       numerator denominator  prop prop_label lower_ci upper_ci
-#>   <chr>     <chr>         <int>       <int> <dbl> <chr>         <dbl>    <dbl>
-#> 1 Trauma-04 >= 65 yrs         0           0   NaN NA          NaN          NaN
-#> 2 Trauma-04 10-64 yrs         3           3     1 100%          0.310        1
-#> 3 Trauma-04 < 10 yrs          2           2     1 100%          0.198        1
-
 ```

@@ -25,7 +25,9 @@ trauma_04_population(
   eresponse_05_col,
   eresponse_10_col,
   transport_disposition_col,
-  edisposition_23_col,
+  edisposition_23_col = lifecycle::deprecated(),
+  edisposition_02_col,
+  trauma_center_facility_IDs,
   evitals_06_col,
   evitals_10_col,
   evitals_12_col,
@@ -135,9 +137,22 @@ trauma_04_population(
 
 - edisposition_23_col:
 
-  Column name containing primary hospital capability associated with the
-  patient's condition for this transport (e.g., Trauma, STEMI, Peds,
-  etc.).
+  **\[deprecated\]** Use `edisposition_02_col` instead. You must also
+  pass a character vector of trauma center facility IDs to
+  `trauma_center_facility_IDs` to ensure that destination facility IDs
+  passed via `edisposition_02_col` are correctly identified as trauma
+  centers as applicable.
+
+- edisposition_02_col:
+
+  Column name containing the code of the destination the patient was
+  delivered or transferred to.
+
+- trauma_center_facility_IDs:
+
+  A character vector of trauma center facility IDs that will allow
+  destination facilities documented in `edisposition_02_col` to be
+  classified correctly as trauma centers when applicable.
 
 - evitals_06_col:
 
@@ -224,6 +239,8 @@ A list that contains the following:
 
 - a tibble for the total dataset with computations
 
+- a tibble with a summary of missingness for each column in each table
+
 ## Author
 
 Nicolas Foss, Ed.D., MS
@@ -231,6 +248,7 @@ Nicolas Foss, Ed.D., MS
 ## Examples
 
 ``` r
+
 # create tables to test correct functioning
 
   # patient table
@@ -279,10 +297,16 @@ Nicolas Foss, Ed.D., MS
 
   # disposition table
   disposition_table <- tibble::tibble(
-    erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
-    edisposition_23 = c(9908029, 9908027, 9908025, 9908023, 9908021),
-    edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
-  )
+  erecord_01 = c("R1", "R2", "R3", "R4", "R5"),
+  edisposition_02 = as.character(c(
+    9908029,
+    9908027,
+    9908025,
+    9908023,
+    9876543
+  )),
+  edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007)
+)
 
   # injury table
   injury_table <- tibble::tibble(
@@ -308,41 +332,49 @@ Nicolas Foss, Ed.D., MS
     eprocedures_03 = c(424979004, 427753009, 429705000, 47545007, 243142003)
   )
 
-  # test the success of the function
-  result <- trauma_04_population(patient_scene_table = patient_table,
-                        response_table = response_table,
-                        situation_table = situation_table,
-                        vitals_table = vitals_table,
-                        disposition_table = disposition_table,
-                      exam_table = exam_table,
-                      injury_table = injury_table,
-                      procedures_table = procedures_table,
-                      erecord_01_col = erecord_01,
-                      incident_date_col = incident_date,
-                      patient_DOB_col = patient_dob,
-                      epatient_15_col = epatient_15,
-                      epatient_16_col = epatient_16,
-                      eresponse_05_col = eresponse_05,
-                      eresponse_10_col = eresponse_10,
-                      esituation_02_col = esituation_02,
-                      evitals_06_col = evitals_06,
-                      evitals_10_col = evitals_10,
-                      evitals_12_col = evitals_12,
-                      evitals_14_col = evitals_14,
-                      evitals_15_col = evitals_15,
-                      evitals_21_col = evitals_21,
-                      eexam_16_col = eexam_16,
-                      eexam_20_col = eexam_20,
-                      eexam_23_col = eexam_23,
-                      eexam_25_col = eexam_25,
-                      edisposition_23_col = edisposition_23,
-                      transport_disposition_col = edisposition_30,
-                      eprocedures_03_col = eprocedures_03,
-                      einjury_01_col = einjury_01,
-                      einjury_03_col = einjury_03,
-                      einjury_04_col = einjury_04,
-                      einjury_09_col = einjury_09
-                      )
+# test the success of the function
+result <- trauma_04_population(
+  patient_scene_table = patient_table,
+  response_table = response_table,
+  situation_table = situation_table,
+  vitals_table = vitals_table,
+  disposition_table = disposition_table,
+  exam_table = exam_table,
+  injury_table = injury_table,
+  procedures_table = procedures_table,
+  erecord_01_col = erecord_01,
+  incident_date_col = incident_date,
+  patient_DOB_col = patient_dob,
+  epatient_15_col = epatient_15,
+  epatient_16_col = epatient_16,
+  eresponse_05_col = eresponse_05,
+  eresponse_10_col = eresponse_10,
+  esituation_02_col = esituation_02,
+  evitals_06_col = evitals_06,
+  evitals_10_col = evitals_10,
+  evitals_12_col = evitals_12,
+  evitals_14_col = evitals_14,
+  evitals_15_col = evitals_15,
+  evitals_21_col = evitals_21,
+  eexam_16_col = eexam_16,
+  eexam_20_col = eexam_20,
+  eexam_23_col = eexam_23,
+  eexam_25_col = eexam_25,
+  edisposition_02_col = edisposition_02,
+  trauma_center_facility_IDs = as.character(c(
+    9908029,
+    9908027,
+    9908025,
+    9908023,
+    9908021
+  )),
+  transport_disposition_col = edisposition_30,
+  eprocedures_03_col = eprocedures_03,
+  einjury_01_col = einjury_01,
+  einjury_03_col = einjury_03,
+  einjury_04_col = einjury_04,
+  einjury_09_col = einjury_09
+)
 #> Running `trauma_04_population()`  [Working on 1 of 31 tasks] ●●────────────────…
 #> Running `trauma_04_population()`  [Working on 2 of 31 tasks] ●●●───────────────…
 #> Running `trauma_04_population()`  [Working on 3 of 31 tasks] ●●●●──────────────…

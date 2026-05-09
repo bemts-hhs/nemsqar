@@ -18,8 +18,6 @@
   : Asthma-01 Calculation
 - [`asthma_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/asthma_01_population.md)
   : Asthma-01 Populations
-- [`compare_formals()`](https://bemts-hhs.github.io/nemsqar/reference/compare_formals.md)
-  : Compare formals across functions
 - [`hypoglycemia_01()`](https://bemts-hhs.github.io/nemsqar/reference/hypoglycemia_01.md)
   : Hypoglycemia-01
 - [`hypoglycemia_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/hypoglycemia_01_population.md)
@@ -74,8 +72,6 @@
   : Respiratory-02 Calculation
 - [`respiratory_02_population()`](https://bemts-hhs.github.io/nemsqar/reference/respiratory_02_population.md)
   : Respiratory-02 Populations
-- [`results_summarize()`](https://bemts-hhs.github.io/nemsqar/reference/results_summarize.md)
-  : Tabulate Measure Results
 - [`safety_01()`](https://bemts-hhs.github.io/nemsqar/reference/safety_01.md)
   : Safety-01 Calculation
 - [`safety_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/safety_01_population.md)
@@ -96,8 +92,6 @@
   : Stroke-01 Calculation
 - [`stroke_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/stroke_01_population.md)
   : Stroke-01 Populations
-- [`summarize_measure()`](https://bemts-hhs.github.io/nemsqar/reference/summarize_measure.md)
-  : Summarize Measure
 - [`syncope_01()`](https://bemts-hhs.github.io/nemsqar/reference/syncope_01.md)
   : Syncope-01 Calculation
 - [`syncope_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/syncope_01_population.md)
@@ -130,25 +124,3 @@
   : TTR-01 Calculation
 - [`ttr_01_population()`](https://bemts-hhs.github.io/nemsqar/reference/ttr_01_population.md)
   : TTR-01 Populations
-- [`validate_character_factor()`](https://bemts-hhs.github.io/nemsqar/reference/validate_character_factor.md)
-  : Validate a Character or Factor Input
-- [`validate_choice()`](https://bemts-hhs.github.io/nemsqar/reference/validate_choice.md)
-  : Validate Choice
-- [`validate_class()`](https://bemts-hhs.github.io/nemsqar/reference/validate_class.md)
-  : Validate Class
-- [`validate_complete()`](https://bemts-hhs.github.io/nemsqar/reference/validate_complete.md)
-  : Validate Complete Input
-- [`validate_data_pull()`](https://bemts-hhs.github.io/nemsqar/reference/validate_data_pull.md)
-  : Validate Data Extraction
-- [`validate_data_structure()`](https://bemts-hhs.github.io/nemsqar/reference/validate_data_structure.md)
-  : Validate Data Structure
-- [`validate_error_type()`](https://bemts-hhs.github.io/nemsqar/reference/validate_error_type.md)
-  : Validate Error Type
-- [`validate_length()`](https://bemts-hhs.github.io/nemsqar/reference/validate_length.md)
-  : Validate Length of an Input
-- [`validate_names()`](https://bemts-hhs.github.io/nemsqar/reference/validate_names.md)
-  : Validate Column Names
-- [`validate_numeric()`](https://bemts-hhs.github.io/nemsqar/reference/validate_numeric.md)
-  : Validate Numeric Input
-- [`validate_set()`](https://bemts-hhs.github.io/nemsqar/reference/validate_set.md)
-  : Validate Set Equality

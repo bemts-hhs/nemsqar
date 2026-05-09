@@ -1,8 +1,9 @@
-pandoc: 3.1.11
+pandoc: 3.8.3
 pkgdown: 2.2.0
 pkgdown_sha: ~
-articles: {}
-last_built: 2026-04-29T16:32Z
+articles:
+  nemsqar: nemsqar.html
+last_built: 2026-05-09T14:51Z
 urls:
   reference: https://bemts-hhs.github.io/nemsqar/reference
   article: https://bemts-hhs.github.io/nemsqar/articles

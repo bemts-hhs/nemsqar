@@ -120,6 +120,8 @@ A list that contains the following:
 
 - a tibble for the total dataset with computations
 
+- a tibble with a summary of missingness for each column in each table
+
 ## Author
 
 Nicolas Foss, Ed.D., MS
@@ -127,6 +129,7 @@ Nicolas Foss, Ed.D., MS
 ## Examples
 
 ``` r
+
 # create tables to test correct functioning
 
   # patient table

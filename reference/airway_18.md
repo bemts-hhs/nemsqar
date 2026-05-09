@@ -194,6 +194,7 @@ Nicolas Foss, Ed.D., MS, Samuel Kordik, BBA, BS
 ## Examples
 
 ``` r
+
 # If you are sourcing your data from a SQL database connection
 # or if you have your data in several different tables,
 # you can pass table inputs versus a single data.frame or tibble
@@ -305,7 +306,7 @@ airway_18(df = NULL,
 #> ── Calculating Airway-18 ──
 #> 
 #> 
-#> ✔ Function completed in 0.22s.
+#> ✔ Function completed in 0.3s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 2 × 8

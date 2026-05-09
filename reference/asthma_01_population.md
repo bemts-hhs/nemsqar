@@ -112,6 +112,8 @@ A list that contains the following:
 
 - a tibble for the total dataset with computations
 
+- a tibble with a summary of missingness for each column in each table
+
 ## Author
 
 Nicolas Foss, Ed.D., MS
@@ -119,6 +121,7 @@ Nicolas Foss, Ed.D., MS
 ## Examples
 
 ``` r
+
 # If you are sourcing your data from a SQL database connection
 # or if you have your data in several different tables,
 # you can pass table inputs versus a single data.frame or tibble
