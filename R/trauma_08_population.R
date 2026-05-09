@@ -22,6 +22,7 @@
 #' * a tibble for each population of interest
 #' * a tibble for the initial population
 #' * a tibble for the total dataset with computations
+#' * a tibble with a summary of missingness for each column in each table
 #'
 #' @examples
 #'
@@ -380,6 +381,19 @@ trauma_08_population <- function(
     )
   }
 
+  ###___________________________________________________________________________
+  # Estimate missingness in each table for included columns in the measure ----
+  ###___________________________________________________________________________
+
+  # utilize the internal `nemsqa_missing_summary` to estimate missingness
+  missings <- nemsqa_missing_summary(
+    patient_scene_table,
+    response_table,
+    situation_table,
+    disposition_table,
+    vitals_table
+  )
+
   ###_____________________________________________________________________________
   # fact table ----
   # the user should ensure that variables beyond those supplied for calculations
@@ -675,7 +689,8 @@ trauma_08_population <- function(
     adults = adult_pop,
     peds = peds_pop,
     initial_population = initial_population,
-    computing_population = computing_population
+    computing_population = computing_population,
+    missingness = missings
   )
 
   cli::cli_progress_done(id = progress_bar_population)

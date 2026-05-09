@@ -25,6 +25,10 @@
 #'
 #' @author
 #' Nicolas Foss, Ed.D., MS
+#'
+#' @keywords internal
+#' @noRd
+#'
 validate_numeric <- function(
   input,
   min = NULL,

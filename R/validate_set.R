@@ -14,6 +14,9 @@
 #' @author
 #' Nicolas Foss, Ed.D., MS
 #'
+#' @keywords internal
+#' @noRd
+#'
 validate_set <- function(
   input,
   valid_set,

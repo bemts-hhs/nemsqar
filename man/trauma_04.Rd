@@ -23,7 +23,9 @@ trauma_04(
   eresponse_05_col,
   eresponse_10_col,
   transport_disposition_col,
-  edisposition_23_col,
+  edisposition_23_col = lifecycle::deprecated(),
+  edisposition_02_col,
+  trauma_center_facility_IDs,
   evitals_06_col,
   evitals_10_col,
   evitals_12_col,
@@ -105,9 +107,19 @@ if any, of the EMS unit associated with the EMS event.}
 edisposition.12, edisposition.30) containing transport disposition for an
 EMS event identifying whether a transport occurred and by which unit.}
 
-\item{edisposition_23_col}{Column name containing primary hospital capability
-associated with the patient's condition for this transport (e.g., Trauma,
-STEMI, Peds, etc.).}
+\item{edisposition_23_col}{\ifelse{html}{\href{https://lifecycle.r-lib.org/articles/stages.html#deprecated}{\figure{lifecycle-deprecated.svg}{options: alt='[Deprecated]'}}}{\strong{[Deprecated]}} Use
+\code{edisposition_02_col} instead. You must also pass a character vector of
+trauma center facility IDs to \code{trauma_center_facility_IDs} to ensure that
+destination facility IDs passed via \code{edisposition_02_col} are correctly
+identified as trauma centers as applicable.}
+
+\item{edisposition_02_col}{Column name containing the code of the destination
+the patient was delivered or transferred to.}
+
+\item{trauma_center_facility_IDs}{A character vector of trauma center
+facility IDs that will allow destination facilities documented in
+\code{edisposition_02_col} to be classified correctly as trauma centers when
+applicable.}
 
 \item{evitals_06_col}{Numeric column containing systolic blood pressure
 values.}
@@ -213,7 +225,7 @@ trauma center levels 1-5 in the hospital capability documentation.
     eexam_20 = c(3520045, 3520043, 3520019, 3520017, 3520017),
     eexam_23 = c(3523011, 3523003, 3523001, 3523011, 3523003),
     eexam_25 = c(3525039, 3525023, 3525005, 3525039, 3525023),
-    edisposition_23 = c(9908029, 9908027, 9908025, 9908023, 9908021),
+    edisposition_02 = c(9908029, 9908027, 9908025, 9908023, 9876543),
     edisposition_30 = c(4230001, 4230003, 4230001, 4230007, 4230007),
     eprocedures_03 = c(424979004, 427753009, 429705000, 47545007, 243142003),
     einjury_01 = c("V20", "V36", "V86", "V39", "V32"),
@@ -224,36 +236,42 @@ trauma center levels 1-5 in the hospital capability documentation.
 
   # Run function with the first and last pain score columns
   # Return 95\% confidence intervals using the Wilson method
-  trauma_04(
-    df = test_data,
-    erecord_01_col = erecord_01,
-    incident_date_col = NULL,
-    patient_DOB_col = NULL,
-    epatient_15_col = epatient_15,
-    epatient_16_col = epatient_16,
-    eresponse_05_col = eresponse_05,
-    eresponse_10_col = eresponse_10,
-    esituation_02_col = esituation_02,
-    evitals_06_col = evitals_06,
-    evitals_10_col = evitals_10,
-    evitals_12_col = evitals_12,
-    evitals_14_col = evitals_14,
-    evitals_15_col = evitals_15,
-    evitals_21_col = evitals_21,
-    eexam_16_col = eexam_16,
-    eexam_20_col = eexam_20,
-    eexam_23_col = eexam_23,
-    eexam_25_col = eexam_25,
-    edisposition_23_col = edisposition_23,
-    transport_disposition_col = edisposition_30,
-    eprocedures_03_col = eprocedures_03,
-    einjury_01_col = einjury_01,
-    einjury_03_col = einjury_03,
-    einjury_04_col = einjury_04,
-    einjury_09_col = einjury_09,
-    confidence_interval = TRUE
-  )
-
+# test the success of the function
+result <- trauma_04_population(
+  df = test_data,
+  erecord_01_col = erecord_01,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col = epatient_15,
+  epatient_16_col = epatient_16,
+  eresponse_05_col = eresponse_05,
+  eresponse_10_col = eresponse_10,
+  esituation_02_col = esituation_02,
+  evitals_06_col = evitals_06,
+  evitals_10_col = evitals_10,
+  evitals_12_col = evitals_12,
+  evitals_14_col = evitals_14,
+  evitals_15_col = evitals_15,
+  evitals_21_col = evitals_21,
+  eexam_16_col = eexam_16,
+  eexam_20_col = eexam_20,
+  eexam_23_col = eexam_23,
+  eexam_25_col = eexam_25,
+  edisposition_02_col = edisposition_02,
+  trauma_center_facility_IDs = as.character(c(
+    9908029,
+    9908027,
+    9908025,
+    9908023,
+    9908021
+  )),
+  transport_disposition_col = edisposition_30,
+  eprocedures_03_col = eprocedures_03,
+  einjury_01_col = einjury_01,
+  einjury_03_col = einjury_03,
+  einjury_04_col = einjury_04,
+  einjury_09_col = einjury_09
+)
 
 }
 \author{

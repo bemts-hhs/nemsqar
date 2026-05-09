@@ -211,4 +211,5 @@ testthat::test_that("safety_01_population runs correctly with table inputs", {
 
   testthat::expect_equal(nrow(result$filter_process), 6)
   testthat::expect_true(is.list(result))
+  testthat::expect_true(is.data.frame(result$missingness))
 })

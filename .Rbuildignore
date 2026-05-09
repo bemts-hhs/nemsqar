@@ -12,3 +12,8 @@
 ^README\.Rmd$
 ^revdep$
 ^CRAN-SUBMISSION$
+^doc$
+^Meta$
+^CODE_OF_CONDUCT\.md$
+^[.]?air[.]toml$
+^\.vscode$

@@ -78,6 +78,7 @@ A list that contains the following:
 \item a tibble for each population of interest
 \item a tibble for the initial population
 \item a tibble for the total dataset with computations
+\item a tibble with a summary of missingness for each column in each table
 }
 }
 \description{

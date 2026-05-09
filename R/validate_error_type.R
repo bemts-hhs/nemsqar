@@ -10,6 +10,9 @@
 #'
 #' @return NULL. The function is used for its side effects.
 #'
+#' @keywords internal
+#' @noRd
+#'
 validate_error_type <- function(
   input,
   message,

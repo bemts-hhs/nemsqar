@@ -2,9 +2,10 @@
 
 0 errors | 0 warnings | 1 note
 
-* This is a patch release. 
-* No breaking changes.
-* Patch addresses the following:
+* checking for future file timestamps ... NOTE
+  unable to verify current time
 
-- Fixed broken URLs in the documentation for `nemsqa_binomial_confint()`.
-
+* This is a minor release. 
+* Breaking changes in `trauma_04` related functions. This function will now
+  operate differently after National EMS Quality Alliance decided to redefine
+  the quality measure.
