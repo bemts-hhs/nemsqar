@@ -1,5 +1,7 @@
 # Changelog
 
+## nemsqar (development version)
+
 ## nemsqar 1.2.0
 
 - Update
