@@ -211,7 +211,7 @@ asthma_01(
 #> ── Calculating Asthma-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.31s.
+#> ✔ Function completed in 0.29s.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 3 × 8
