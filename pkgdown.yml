@@ -3,7 +3,7 @@ pkgdown: 2.2.0
 pkgdown_sha: ~
 articles:
   nemsqar: nemsqar.html
-last_built: 2026-05-09T14:51Z
+last_built: 2026-05-12T13:31Z
 urls:
   reference: https://bemts-hhs.github.io/nemsqar/reference
   article: https://bemts-hhs.github.io/nemsqar/articles
