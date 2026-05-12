@@ -146,6 +146,80 @@ types. When working with real EMS data, you must verify these types
 manually. This ensures that the data satisfy validation requirements and
 prevents errors during measure calculation.
 
+In practice, EMS data commonly include issues such as:
+
+- Dates stored as character strings  
+- Numeric values stored as text (for example, `"5"` instead of `5`)  
+- Empty strings used in place of `NA`  
+- Mixed formats within the same column
+
+Below are examples of how to identify and correct these issues before
+running any `nemsqar` measure.
+
+##### Example: Converting character dates to proper date formats
+
+``` r
+
+# Example: incident dates stored as character values
+example_data <- data.frame(
+  Incident_Date = c("2023-01-10", "01/12/2023", "20230114"),
+  stringsAsFactors = FALSE
+)
+
+# Convert using lubridate (recommended)
+example_data$Incident_Date <- lubridate::parse_date_time(
+  example_data$Incident_Date,
+  orders = c("ymd", "mdy", "Ymd")
+)
+```
+
+##### Example: Converting numbers stored as character strings
+
+``` r
+
+numeric_example <- data.frame(
+  # note that 45 here has whitespace surrounding the value
+  Patient_Age_raw = c("34", "18", "07", " 45 ")
+)
+
+# Trim whitespace and convert to numeric
+numeric_example$Patient_Age <- as.numeric(trimws(
+  numeric_example$Patient_Age_raw
+))
+```
+
+##### Example: Replacing empty strings with NA
+
+``` r
+
+missing_example <- data.frame(
+  eSituation_11 = c("", "R41.82", "", "T14.90")
+)
+
+# Replace empty strings with NA
+missing_example$eSituation_11 <- dplyr::na_if(missing_example$eSituation_11, "")
+
+missing_example
+```
+
+##### Why these steps matter
+
+Date fields are used for patient age computation and for time‑based
+denominators. If these values are stored as character strings or in
+inconsistent formats, the measure logic will not execute correctly.
+
+Numeric fields such as age, blood pressure, respiratory rate, or dosage
+must be numeric to satisfy validation checks and ensure appropriate
+comparisons.
+
+Empty strings cause false exclusions during population filtering,
+especially when `nemsqar` logic expects missing values to be formally
+represented as NA.
+
+Ensuring correct data types prior to running any nemsqar function
+improves reproducibility, reduces debugging time, and allows the measure
+logic to operate as intended.
+
 #### Dealing with problematic column names
 
 If your datasets already have clean names, you may skip this step.

@@ -27,6 +27,8 @@ Useful links:
 
 Authors:
 
+- Nicolas Foss <nicolas.foss@hhs.iowa.gov>
+
 - Samuel Kordik <samuel.kordik@utsouthwestern.edu>
   ([ORCID](https://orcid.org/0000-0003-4230-1154))
 

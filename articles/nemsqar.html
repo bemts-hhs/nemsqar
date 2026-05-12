@@ -211,6 +211,78 @@ instead of numeric) will cause measure functions to fail.</p>
 appropriate data types. When working with real EMS data, you must verify
 these types manually. This ensures that the data satisfy validation
 requirements and prevents errors during measure calculation.</p>
+<p>In practice, EMS data commonly include issues such as:</p>
+<ul>
+<li>Dates stored as character strings<br>
+</li>
+<li>Numeric values stored as text (for example, <code>"5"</code> instead
+of <code>5</code>)<br>
+</li>
+<li>Empty strings used in place of <code>NA</code><br>
+</li>
+<li>Mixed formats within the same column</li>
+</ul>
+<p>Below are examples of how to identify and correct these issues before
+running any <code>nemsqar</code> measure.</p>
+<div class="section level5">
+<h5 id="example-converting-character-dates-to-proper-date-formats">Example: Converting character dates to proper date formats<a class="anchor" aria-label="anchor" href="#example-converting-character-dates-to-proper-date-formats"></a>
+</h5>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Example: incident dates stored as character values</span></span>
+<span><span class="va">example_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  Incident_Date <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"2023-01-10"</span>, <span class="st">"01/12/2023"</span>, <span class="st">"20230114"</span><span class="op">)</span>,</span>
+<span>  stringsAsFactors <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Convert using lubridate (recommended)</span></span>
+<span><span class="va">example_data</span><span class="op">$</span><span class="va">Incident_Date</span> <span class="op">&lt;-</span> <span class="fu">lubridate</span><span class="fu">::</span><span class="fu"><a href="https://lubridate.tidyverse.org/reference/parse_date_time.html" class="external-link">parse_date_time</a></span><span class="op">(</span></span>
+<span>  <span class="va">example_data</span><span class="op">$</span><span class="va">Incident_Date</span>,</span>
+<span>  orders <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"ymd"</span>, <span class="st">"mdy"</span>, <span class="st">"Ymd"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level5">
+<h5 id="example-converting-numbers-stored-as-character-strings">Example: Converting numbers stored as character strings<a class="anchor" aria-label="anchor" href="#example-converting-numbers-stored-as-character-strings"></a>
+</h5>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">numeric_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  <span class="co"># note that 45 here has whitespace surrounding the value</span></span>
+<span>  Patient_Age_raw <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"34"</span>, <span class="st">"18"</span>, <span class="st">"07"</span>, <span class="st">" 45 "</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Trim whitespace and convert to numeric</span></span>
+<span><span class="va">numeric_example</span><span class="op">$</span><span class="va">Patient_Age</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/trimws.html" class="external-link">trimws</a></span><span class="op">(</span></span>
+<span>  <span class="va">numeric_example</span><span class="op">$</span><span class="va">Patient_Age_raw</span></span>
+<span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level5">
+<h5 id="example-replacing-empty-strings-with-na">Example: Replacing empty strings with NA<a class="anchor" aria-label="anchor" href="#example-replacing-empty-strings-with-na"></a>
+</h5>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">missing_example</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span>
+<span>  eSituation_11 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">""</span>, <span class="st">"R41.82"</span>, <span class="st">""</span>, <span class="st">"T14.90"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Replace empty strings with NA</span></span>
+<span><span class="va">missing_example</span><span class="op">$</span><span class="va">eSituation_11</span> <span class="op">&lt;-</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/na_if.html" class="external-link">na_if</a></span><span class="op">(</span><span class="va">missing_example</span><span class="op">$</span><span class="va">eSituation_11</span>, <span class="st">""</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">missing_example</span></span></code></pre></div>
+</div>
+<div class="section level5">
+<h5 id="why-these-steps-matter">Why these steps matter<a class="anchor" aria-label="anchor" href="#why-these-steps-matter"></a>
+</h5>
+<p>Date fields are used for patient age computation and for time‑based
+denominators. If these values are stored as character strings or in
+inconsistent formats, the measure logic will not execute correctly.</p>
+<p>Numeric fields such as age, blood pressure, respiratory rate, or
+dosage must be numeric to satisfy validation checks and ensure
+appropriate comparisons.</p>
+<p>Empty strings cause false exclusions during population filtering,
+especially when <code>nemsqar</code> logic expects missing values to be
+formally represented as NA.</p>
+<p>Ensuring correct data types prior to running any nemsqar function
+improves reproducibility, reduces debugging time, and allows the measure
+logic to operate as intended.</p>
+</div>
 </div>
 <div class="section level4">
 <h4 id="dealing-with-problematic-column-names">Dealing with problematic column names<a class="anchor" aria-label="anchor" href="#dealing-with-problematic-column-names"></a>
@@ -223,7 +295,7 @@ difficult. To avoid these issues, it is helpful to standardize column
 names before running any measures.</p>
 <p>Below is a simple reusable function to clean column names by
 replacing spaces and special characters with underscores.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Define a reusable column-cleaning function</span></span>
 <span><span class="va">clean_cols</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="va">data</span> <span class="op">|&gt;</span></span>
@@ -355,7 +427,7 @@ administered)</li>
 </ul>
 <p>These mappings ensure that each argument references the correct
 NEMSIS data element when running the measure.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run Asthma‑01 without grouping</span></span>
 <span><span class="va">asthma_01_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/asthma_01.html">asthma_01</a></span><span class="op">(</span></span>
 <span>  patient_scene_table <span class="op">=</span> <span class="va">nemsqar_patient_scene_data</span>,</span>
@@ -403,7 +475,7 @@ groups, service types, or impressions. Grouping is implemented using the
 <p>The example below shows how to run <strong>Asthma‑01</strong> grouped
 by age units. All required tables and column mappings remain the same;
 the only additional argument is <code>.by</code>.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run `asthma_01` for a whole dataset, group by age units.</span></span>
 <span><span class="co"># All core inputs remain the same. Only the .by argument is added.</span></span>
 <span><span class="va">asthma_01_age</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/asthma_01.html">asthma_01</a></span><span class="op">(</span></span>
@@ -495,7 +567,7 @@ population of interest by applying all NEMSQA inclusion and exclusion
 criteria. The function uses the same required tables and column mappings
 as <code><a href="../reference/asthma_01.html">asthma_01()</a></code>, but it does not calculate performance
 estimates and does not use confidence interval or grouping arguments</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Run `asthma_01_population` for a whole dataset</span></span>
 <span><span class="co"># The code is virtually the same as `asthma_01()`, but we do not use the</span></span>
 <span><span class="co"># confidence interval arguments, nor the tidy dot `...` arguments for grouping</span></span>
@@ -541,7 +613,7 @@ exclusion step defined by NEMSQA.</p>
 <div class="section level5">
 <h5 id="asthma-01-summary-of-attributes-of-the-target-population">Asthma-01 summary of attributes of the target population<a class="anchor" aria-label="anchor" href="#asthma-01-summary-of-attributes-of-the-target-population"></a>
 </h5>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Display counts for each filtering step</span></span>
 <span><span class="va">populations_asthma_01</span><span class="op">$</span><span class="va">filter_process</span></span>
 <span><span class="co">#&gt; <span style="color: #949494;"># A tibble: 7 × 2</span></span></span>
