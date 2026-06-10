@@ -40,6 +40,7 @@ Imports:
 Suggests: 
     knitr,
     rmarkdown,
+    spelling,
     testthat (>= 3.0.0),
     tidyr
 VignetteBuilder: 
@@ -50,3 +51,4 @@ LazyData: true
 LazyDataCompression: bzip2
 Roxygen: list(markdown = TRUE)
 Config/roxygen2/version: 8.0.0
+Language: en-US
