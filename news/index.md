@@ -4,6 +4,8 @@
 
 ## nemsqar 1.2.0
 
+CRAN release: 2026-05-12
+
 - Update
   [`trauma_04_population()`](https://bemts-hhs.github.io/nemsqar/reference/trauma_04_population.md)
   to look to the facility ID instead of the hospital capabilities for
