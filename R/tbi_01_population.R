@@ -530,8 +530,8 @@ tbi_01_population <- function(
     dplyr::summarize(
       sbp = max(!is.na({{ evitals_06_col }})),
       sp02 = max(!is.na({{ evitals_12_col }})),
-      etc02 = max(!is.na({{ evitals_16_col }})),
-      vitals = max(sbp & sp02 & etc02, na.rm = TRUE),
+      etco2 = max(!is.na({{ evitals_16_col }})),
+      vitals = max(sbp & sp02 & etco2, na.rm = TRUE),
       .by = {{ erecord_01_col }}
     ) |>
     dplyr::filter(vitals == 1) |>
@@ -691,7 +691,7 @@ tbi_01_population <- function(
       "GCS < 15",
       "AVPU is verbal, painful, or unresponsive",
       "Transports",
-      "Oxygen level, ETC02, SBP are documented",
+      "Oxygen level, ETCO2, SBP are documented",
       "Adults denominator",
       "Peds denominator",
       "Initial population",
