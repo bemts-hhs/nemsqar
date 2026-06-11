@@ -1,4 +1,4 @@
-# nemsqar (development version)
+# nemsqar 1.2.1
 
 # nemsqar 1.2.0
 - Update `trauma_04_population()` to look to the facility ID instead of the
