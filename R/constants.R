@@ -181,7 +181,7 @@ beta_agonist <- paste(
 asthma_codes <- "(?:J45|J98\\.01)|asthma|acute bronchospasm"
 
 # waveform ETCO2 ----
-waveform_etc02_codes <- "4004019|Waveform ETCO2"
+waveform_etco2_codes <- "4004019|Waveform ETCO2"
 
 # get codes as a regex to filter primary/secondary impression fields ----
 hypoglycemia_treatment_codes <- paste(

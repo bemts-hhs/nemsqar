@@ -148,21 +148,23 @@ stroke_01 <- function(
     cli::cli_text("\n")
 
     # Calculate and display the runtime ----
-    end_time <- Sys.time()
-    run_time_secs <- difftime(end_time, start_time, units = "secs")
-    run_time_secs <- as.numeric(run_time_secs)
 
-    if (run_time_secs >= 60) {
-      run_time <- round(run_time_secs / 60, 2) # Convert to minutes and round
-      cli::cli_alert_success(
-        "Function completed in {cli::col_green(paste0(run_time, 'm'))}."
-      )
-    } else {
-      run_time <- round(run_time_secs, 2) # Keep in seconds and round
-      cli::cli_alert_success(
-        "Function completed in {cli::col_green(paste0(run_time, 's'))}."
-      )
-    }
+    # end time
+    end_time <- Sys.time()
+
+    # raw runtime from difftime()
+    runtime_raw <- difftime(end_time, start_time, units = "auto")
+
+    # rounded numeric value from difftime()
+    runtime <- runtime_raw |> as.numeric() |> round(digits = 5) # large `digits` number to avoid bad rounding
+
+    # runtime unit from attr()
+    runtime_unit <- attr(x = runtime_raw, which = "units") # <- will return "secs", "mins", "hours", etc.
+
+    # issue a dynamic message to the console
+    cli::cli_alert_success(
+      "Function completed in {cli::col_green(paste(runtime, runtime_unit))}."
+    )
 
     # create a separator ----
     cli::cli_text("\n")
@@ -237,21 +239,23 @@ stroke_01 <- function(
     cli::cli_text("\n")
 
     # Calculate and display the runtime ----
-    end_time <- Sys.time()
-    run_time_secs <- difftime(end_time, start_time, units = "secs")
-    run_time_secs <- as.numeric(run_time_secs)
 
-    if (run_time_secs >= 60) {
-      run_time <- round(run_time_secs / 60, 2) # Convert to minutes and round
-      cli::cli_alert_success(
-        "Function completed in {cli::col_green(paste0(run_time, 'm'))}."
-      )
-    } else {
-      run_time <- round(run_time_secs, 2) # Keep in seconds and round
-      cli::cli_alert_success(
-        "Function completed in {cli::col_green(paste0(run_time, 's'))}."
-      )
-    }
+    # end time
+    end_time <- Sys.time()
+
+    # raw runtime from difftime()
+    runtime_raw <- difftime(end_time, start_time, units = "auto")
+
+    # rounded numeric value from difftime()
+    runtime <- runtime_raw |> as.numeric() |> round(digits = 5) # large `digits` number to avoid bad rounding
+
+    # runtime unit from attr()
+    runtime_unit <- attr(x = runtime_raw, which = "units") # <- will return "secs", "mins", "hours", etc.
+
+    # issue a dynamic message to the console
+    cli::cli_alert_success(
+      "Function completed in {cli::col_green(paste(runtime, runtime_unit))}."
+    )
 
     # create a separator ----
     cli::cli_text("\n")

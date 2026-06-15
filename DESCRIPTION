@@ -1,7 +1,7 @@
 Package: nemsqar
 Title: National Emergency Medical Service Quality Alliance Measure
     Calculations
-Version: 1.2.0.9000
+Version: 1.2.1
 Authors@R: c(
     person("Nicolas", "Foss", , "nicolas.foss@hhs.iowa.gov", role = c("aut", "cre")),
     person("Samuel", "Kordik", , "samuel.kordik@utsouthwestern.edu", role = "aut",
@@ -26,13 +26,13 @@ BugReports: https://github.com/bemts-hhs/nemsqar/issues
 Depends:
     R (>= 4.1)
 Imports: 
-    cli,
+    cli (>= 3.6.6),
     dplyr (>= 1.2.1),
-    glue,
+    glue (>= 1.8.1),
     hms (>= 1.1.4),
-    lifecycle,
+    lifecycle (>= 1.0.5),
     lubridate (>= 1.9.5),
-    rlang,
+    rlang (>= 1.2.0),
     stats,
     tibble (>= 3.3.1),
     tidyselect (>= 1.2.1),
@@ -50,5 +50,5 @@ Encoding: UTF-8
 LazyData: true
 LazyDataCompression: bzip2
 Roxygen: list(markdown = TRUE)
-Config/roxygen2/version: 8.0.0
 Language: en-US
+Config/roxygen2/version: 8.0.0

@@ -776,8 +776,8 @@ airway_18_population <- function(
       {{ erecord_01_col }} %in% procedures_ID
     )
 
-  # get total waveform ETC02 measurements >= 5 ----
-  waveform_etc02 <- vitals_table_filter |>
+  # get total waveform ETCO2 measurements >= 5 ----
+  waveform_etco2 <- vitals_table_filter |>
     dplyr::filter({{ evitals_16_col }} >= 5) |>
     nrow()
 
@@ -799,11 +799,11 @@ airway_18_population <- function(
         {{ erecord_01_col }} %in% procedures_ID
       )
 
-    # total cases where waveform ETC02 airway confirmation ----
+    # total cases where waveform ETCO2 airway confirmation ----
     # is documented
-    airway_etc02_confirmations <- airway_table_filter |>
+    airway_etco2_confirmations <- airway_table_filter |>
       dplyr::filter(grepl(
-        pattern = waveform_etc02_codes,
+        pattern = waveform_etco2_codes,
         x = {{ eairway_04_col }},
         ignore.case = TRUE
       )) |>
@@ -829,30 +829,30 @@ airway_18_population <- function(
           by = dplyr::join_by({{ erecord_01_col }})
         ) |>
         dplyr::mutate(
-          waveform_etc02_used = grepl(
-            pattern = waveform_etc02_codes,
+          waveform_etco2_used = grepl(
+            pattern = waveform_etco2_codes,
             x = {{ eairway_04_col }},
             ignore.case = TRUE
           ),
           airway_after_procedure = {{ eairway_02_col }} >=
             {{ eprocedures_01_col }},
           airway_after_procedure_waveform = airway_after_procedure &
-            waveform_etc02_used,
+            waveform_etco2_used,
           vitals_after_procedure = ({{ evitals_01_col }} >=
             {{ eprocedures_01_col }}),
-          waveform_etc02_5 = {{ evitals_16_col }} >= 5,
+          waveform_etco2_5 = {{ evitals_16_col }} >= 5,
           vitals_after_procedure_waveform = vitals_after_procedure &
-            waveform_etc02_5
+            waveform_etco2_5
         ) |>
         dplyr::summarize(
-          waveform_etc02_used = max(waveform_etc02_used, na.rm = TRUE),
+          waveform_etco2_used = max(waveform_etco2_used, na.rm = TRUE),
           airway_after_procedure = max(airway_after_procedure, na.rm = TRUE),
           airway_after_procedure_waveform = max(
             airway_after_procedure_waveform,
             na.rm = TRUE
           ),
           vitals_after_procedure = max(vitals_after_procedure, na.rm = TRUE),
-          waveform_etc02_5 = max(waveform_etc02_5, na.rm = TRUE),
+          waveform_etco2_5 = max(waveform_etco2_5, na.rm = TRUE),
           vitals_after_procedure_waveform = max(
             vitals_after_procedure_waveform,
             na.rm = TRUE
@@ -904,9 +904,9 @@ airway_18_population <- function(
         dplyr::mutate(
           vitals_after_procedure = ({{ evitals_01_col }} >=
             {{ eprocedures_01_col }}),
-          waveform_etc02_5 = {{ evitals_16_col }} >= 5,
+          waveform_etco2_5 = {{ evitals_16_col }} >= 5,
           vitals_after_procedure_waveform = vitals_after_procedure &
-            waveform_etc02_5
+            waveform_etco2_5
         ) |>
         dplyr::summarize(
           vitals_after_procedure_waveform = max(
@@ -1055,7 +1055,7 @@ airway_18_population <- function(
             procedures_ordered$not_performed_prior,
           na.rm = TRUE
         ),
-        airway_etc02_confirmations,
+        airway_etco2_confirmations,
         sum(
           computing_population_dev$airway_after_procedure_waveform,
           na.rm = TRUE
@@ -1064,7 +1064,7 @@ airway_18_population <- function(
           computing_population_dev$vitals_after_procedure_waveform,
           na.rm = TRUE
         ),
-        waveform_etc02,
+        waveform_etco2,
         sum(initial_population$NUMERATOR, na.rm = TRUE),
         nrow(adult_pop),
         nrow(peds_pop),
@@ -1109,7 +1109,7 @@ airway_18_population <- function(
           computing_population_dev$vitals_after_procedure_waveform,
           na.rm = TRUE
         ),
-        waveform_etc02,
+        waveform_etco2,
         sum(initial_population$NUMERATOR, na.rm = TRUE),
         nrow(adult_pop),
         nrow(peds_pop),
