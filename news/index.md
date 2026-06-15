@@ -1,6 +1,25 @@
 # Changelog
 
-## nemsqar (development version)
+## nemsqar 1.2.1
+
+- Updated the way runtime is reported within the wrapper functions (e.g.
+  [`nemsqar::airway_01()`](https://bemts-hhs.github.io/nemsqar/reference/airway_01.md)).
+  This update makes the assignment of the unit of time dynamic using
+  `difftime(units = "auto")`. We get the numeric runtime of the wrapper
+  functions via passing
+  [`difftime()`](https://rdrr.io/r/base/difftime.html) to
+  [`as.numeric()`](https://rdrr.io/r/base/numeric.html). We then extract
+  the dynamic unit of time from
+  [`difftime()`](https://rdrr.io/r/base/difftime.html) via passing the
+  raw [`difftime()`](https://rdrr.io/r/base/difftime.html) output to
+  `attr(which = "units")`. No problems with the previous approach were
+  documented, but this dynamic approach makes will avoid any downstream
+  issues.
+- Resolved a typo within some functions, `globalVariables.R`, and
+  `constants.R` related to the spelling of ETCO2. In some cases, ETCO2
+  showed up like “etc02” in different cases (i.e. all caps, all
+  lowercase). In each instance of the typo replaced the “0” with “o”
+  (case-sensitive).
 
 ## nemsqar 1.2.0
 

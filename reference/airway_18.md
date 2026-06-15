@@ -306,7 +306,7 @@ airway_18(df = NULL,
 #> ── Calculating Airway-18 ──
 #> 
 #> 
-#> ✔ Function completed in 0.25s.
+#> ✔ Function completed in 0.2355 secs.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 2 × 8

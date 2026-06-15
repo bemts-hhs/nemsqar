@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">nemsqar</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.1</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,8 +33,10 @@
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="development version" id="nemsqar-development-version">nemsqar (development version)<a class="anchor" aria-label="anchor" href="#nemsqar-development-version"></a></h2>
-</div>
+<h2 class="pkg-version" data-toc-text="1.2.1" id="nemsqar-121">nemsqar 1.2.1<a class="anchor" aria-label="anchor" href="#nemsqar-121"></a></h2>
+<ul><li>Updated the way runtime is reported within the wrapper functions (e.g. <code><a href="../reference/airway_01.html">nemsqar::airway_01()</a></code>). This update makes the assignment of the unit of time dynamic using <code>difftime(units = "auto")</code>. We get the numeric runtime of the wrapper functions via passing <code><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime()</a></code> to <code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric()</a></code>. We then extract the dynamic unit of time from <code><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime()</a></code> via passing the raw <code><a href="https://rdrr.io/r/base/difftime.html" class="external-link">difftime()</a></code> output to <code>attr(which = "units")</code>. No problems with the previous approach were documented, but this dynamic approach makes will avoid any downstream issues.</li>
+<li>Resolved a typo within some functions, <code>globalVariables.R</code>, and <code>constants.R</code> related to the spelling of ETCO2. In some cases, ETCO2 showed up like “etc02” in different cases (i.e. all caps, all lowercase). In each instance of the typo replaced the “0” with “o” (case-sensitive).</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.0" id="nemsqar-120">nemsqar 1.2.0<a class="anchor" aria-label="anchor" href="#nemsqar-120"></a></h2><p class="text-muted">CRAN release: 2026-05-12</p>
 <ul><li>Update <code><a href="../reference/trauma_04_population.html">trauma_04_population()</a></code> to look to the facility ID instead of the hospital capabilities for performance measurement. This is a breaking change but will make the measure more accurate. This change comes as part of the NEMSQA Measure Development committee has discussed this action seeing dismal national performance on this measure.</li>

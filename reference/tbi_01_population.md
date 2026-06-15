@@ -246,7 +246,7 @@ result$filter_process
 #>  3 GCS < 15                                     5
 #>  4 AVPU is verbal, painful, or unresponsive     5
 #>  5 Transports                                   5
-#>  6 Oxygen level, ETC02, SBP are documented      5
+#>  6 Oxygen level, ETCO2, SBP are documented      5
 #>  7 Adults denominator                           2
 #>  8 Peds denominator                             3
 #>  9 Initial population                           5
