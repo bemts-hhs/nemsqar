@@ -259,7 +259,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating TTR-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.20433 secs.
+#> ✔ Function completed in 0.19577 secs.
 #> 
 #> # A tibble: 2 × 6
 #>   measure pop    numerator denominator  prop prop_label

@@ -202,7 +202,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating Stroke-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.21014 secs.
+#> ✔ Function completed in 0.20012 secs.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 1 × 8
