@@ -236,7 +236,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating Trauma-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.24658 secs.
+#> ✔ Function completed in 0.245 secs.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 3 × 8

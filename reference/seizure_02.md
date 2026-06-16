@@ -207,7 +207,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating Seizure-02 ──
 #> 
 #> 
-#> ✔ Function completed in 0.20091 secs.
+#> ✔ Function completed in 0.231 secs.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 3 × 8

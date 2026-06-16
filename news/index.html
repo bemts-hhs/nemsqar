@@ -35,7 +35,7 @@
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.1" id="nemsqar-121">nemsqar 1.2.1<a class="anchor" aria-label="anchor" href="#nemsqar-121"></a></h2>
 <ul><li>Updated how wrapper functions report runtime (e.g., <code><a href="../reference/airway_01.html">airway_01()</a></code>). Runtime is now calculated using <code>difftime(units = "auto")</code>, converting the result with <code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric()</a></code> and extracting the dynamic time unit via <code>attr(which = "units")</code>. This makes the time unit automatic and avoids potential downstream issues.<br></li>
-<li>Corrected a typo involving ETCO2 across several functions, globalVariables.R, and constants.R, where it appeared as “etc02” in various cases. All instances were fixed by replacing the zero with the letter “o” (case‑sensitive).</li>
+<li>Corrected a typo involving ETCO2 across several functions, <code>globalVariables.R</code>, and <code>constants.R</code>, where it appeared as “etc02” in various cases. All instances were fixed by replacing the zero with the letter “o” (case‑sensitive).</li>
 </ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.0" id="nemsqar-120">nemsqar 1.2.0<a class="anchor" aria-label="anchor" href="#nemsqar-120"></a></h2><p class="text-muted">CRAN release: 2026-05-12</p>
