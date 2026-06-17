@@ -222,7 +222,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating Syncope-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.17697 secs.
+#> ✔ Function completed in 0.18084 secs.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 2 × 8

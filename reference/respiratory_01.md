@@ -214,7 +214,7 @@ respiratory_01(
 #> ── Calculating Respiratory-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.22542 secs.
+#> ✔ Function completed in 0.22239 secs.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 3 × 8

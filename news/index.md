@@ -1,5 +1,7 @@
 # Changelog
 
+## nemsqar (development version)
+
 ## nemsqar 1.2.1
 
 CRAN release: 2026-06-16
