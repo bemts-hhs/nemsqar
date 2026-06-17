@@ -2,6 +2,8 @@
 
 ## nemsqar 1.2.1
 
+CRAN release: 2026-06-16
+
 - Updated how wrapper functions report runtime (e.g.,
   [`airway_01()`](https://bemts-hhs.github.io/nemsqar/reference/airway_01.md)).
   Runtime is now calculated using `difftime(units = "auto")`, converting

@@ -249,7 +249,7 @@ Nicolas Foss, Ed.D., MS
 #> ── Calculating TBI-01 ──
 #> 
 #> 
-#> ✔ Function completed in 0.20929 secs.
+#> ✔ Function completed in 0.22461 secs.
 #> 
 #> Warning: In `prop.test()`: Chi-squared approximation may be incorrect for any n < 10.
 #> # A tibble: 2 × 8

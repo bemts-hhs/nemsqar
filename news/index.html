@@ -29,11 +29,11 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/bemts-hhs/nemsqar/blob/v1.2.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="1.2.1" id="nemsqar-121">nemsqar 1.2.1<a class="anchor" aria-label="anchor" href="#nemsqar-121"></a></h2>
+<h2 class="pkg-version" data-toc-text="1.2.1" id="nemsqar-121">nemsqar 1.2.1<a class="anchor" aria-label="anchor" href="#nemsqar-121"></a></h2><p class="text-muted">CRAN release: 2026-06-16</p>
 <ul><li>Updated how wrapper functions report runtime (e.g., <code><a href="../reference/airway_01.html">airway_01()</a></code>). Runtime is now calculated using <code>difftime(units = "auto")</code>, converting the result with <code><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric()</a></code> and extracting the dynamic time unit via <code>attr(which = "units")</code>. This makes the time unit automatic and avoids potential downstream issues.<br></li>
 <li>Corrected a typo involving ETCO2 across several functions, <code>globalVariables.R</code>, and <code>constants.R</code>, where it appeared as “etc02” in various cases. All instances were fixed by replacing the zero with the letter “o” (case‑sensitive).</li>
 </ul></div>
