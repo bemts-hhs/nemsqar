@@ -1,3 +1,5 @@
+# nemsqar (development version)
+
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is
   now calculated using `difftime(units = "auto")`, converting the result with
