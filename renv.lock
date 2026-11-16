@@ -1,6 +1,6 @@
 {
   "R": {
-    "Version": "4.6.0",
+    "Version": "4.6.2",
     "Repositories": [
       {
         "Name": "CRAN",
@@ -496,7 +496,7 @@
     },
     "renv": {
       "Package": "renv",
-      "Version": "1.2.3",
+      "Version": "1.3.1",
       "Source": "Repository",
       "Type": "Package",
       "Title": "Project Environments",
@@ -525,6 +525,7 @@
         "modules",
         "packrat",
         "pak",
+        "pkgload",
         "R6",
         "remotes",
         "reticulate",
@@ -538,12 +539,12 @@
         "webfakes"
       ],
       "Encoding": "UTF-8",
-      "RoxygenNote": "7.3.3",
       "VignetteBuilder": "knitr",
       "Config/Needs/website": "tidyverse/tidytemplate",
       "Config/testthat/edition": "3",
       "Config/testthat/parallel": "true",
       "Config/testthat/start-first": "bioconductor,python,install,restore,snapshot,retrieve,remotes",
+      "Config/roxygen2/version": "8.0.0",
       "NeedsCompilation": "no",
       "Author": "Kevin Ushey [aut, cre] (ORCID: <https://orcid.org/0000-0003-2880-7407>), Hadley Wickham [aut] (ORCID: <https://orcid.org/0000-0003-4757-117X>), Posit Software, PBC [cph, fnd]",
       "Maintainer": "Kevin Ushey <kevin@rstudio.com>",
@@ -551,14 +552,14 @@
     },
     "rlang": {
       "Package": "rlang",
-      "Version": "1.2.0",
+      "Version": "1.3.0",
       "Source": "Repository",
       "Title": "Functions for Base Types and Core R and 'Tidyverse' Features",
+      "Authors@R": "c( person(\"Lionel\", \"Henry\", , \"lionel@posit.co\", role = c(\"aut\", \"cre\")), person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\"), person(\"mikefc\", , , \"mikefc@coolbutuseless.com\", role = \"cph\", comment = \"Hash implementation based on Mike's xxhashlite\"), person(\"Yann\", \"Collet\", role = \"cph\", comment = \"Author of the embedded xxHash library\"), person(\"Posit, PBC\", role = c(\"cph\", \"fnd\")) )",
       "Description": "A toolbox for working with base types, core R features like the condition system, and core 'Tidyverse' features like tidy evaluation.",
-      "Authors@R": "c( person(\"Lionel\", \"Henry\", ,\"lionel@posit.co\", c(\"aut\", \"cre\")), person(\"Hadley\", \"Wickham\", ,\"hadley@posit.co\", \"aut\"), person(given = \"mikefc\", email = \"mikefc@coolbutuseless.com\", role = \"cph\", comment = \"Hash implementation based on Mike's xxhashlite\"), person(given = \"Yann\", family = \"Collet\", role = \"cph\", comment = \"Author of the embedded xxHash library\"), person(given = \"Posit, PBC\", role = c(\"cph\", \"fnd\")) )",
       "License": "MIT + file LICENSE",
-      "ByteCompile": "true",
-      "Biarch": "true",
+      "URL": "https://rlang.r-lib.org, https://github.com/r-lib/rlang",
+      "BugReports": "https://github.com/r-lib/rlang/issues",
       "Depends": [
         "R (>= 4.0.0)"
       ],
@@ -588,13 +589,14 @@
       "Enhances": [
         "winch"
       ],
-      "Encoding": "UTF-8",
-      "RoxygenNote": "7.3.3",
-      "URL": "https://rlang.r-lib.org, https://github.com/r-lib/rlang",
-      "BugReports": "https://github.com/r-lib/rlang/issues",
+      "Biarch": "true",
+      "ByteCompile": "true",
       "Config/build/compilation-database": "true",
-      "Config/testthat/edition": "3",
       "Config/Needs/website": "dplyr, tidyverse/tidytemplate",
+      "Config/roxygen2/version": "8.0.0",
+      "Config/testthat/edition": "3",
+      "Config/testthat/parallel": "true",
+      "Encoding": "UTF-8",
       "NeedsCompilation": "yes",
       "Author": "Lionel Henry [aut, cre], Hadley Wickham [aut], mikefc [cph] (Hash implementation based on Mike's xxhashlite), Yann Collet [cph] (Author of the embedded xxHash library), Posit, PBC [cph, fnd]",
       "Maintainer": "Lionel Henry <lionel@posit.co>",
@@ -819,7 +821,7 @@
     },
     "withr": {
       "Package": "withr",
-      "Version": "3.0.2",
+      "Version": "3.0.3",
       "Source": "Repository",
       "Title": "Run Code 'With' Temporarily Modified Global State",
       "Authors@R": "c( person(\"Jim\", \"Hester\", role = \"aut\"), person(\"Lionel\", \"Henry\", , \"lionel@posit.co\", role = c(\"aut\", \"cre\")), person(\"Kirill\", \"Müller\", , \"krlmlr+r@mailbox.org\", role = \"aut\"), person(\"Kevin\", \"Ushey\", , \"kevinushey@gmail.com\", role = \"aut\"), person(\"Hadley\", \"Wickham\", , \"hadley@posit.co\", role = \"aut\"), person(\"Winston\", \"Chang\", role = \"aut\"), person(\"Jennifer\", \"Bryan\", role = \"ctb\"), person(\"Richard\", \"Cotton\", role = \"ctb\"), person(\"Posit Software, PBC\", role = c(\"cph\", \"fnd\")) )",

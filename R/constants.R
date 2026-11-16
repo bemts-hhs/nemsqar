@@ -734,6 +734,9 @@ cardiac_arrest_response_prior <- "3001003|Yes, Prior to Any EMS Arrival"
 # type of scene delay values ----
 scene_delay_values <- "2210011|Extrication"
 
+# patient contact values ----
+patient_treated <- "patient treated|4212027|4212029|4212031|4212033|4212035|4212037|it4212\\.142"
+
 # answer yes! ----
 yes_code <- "9923003|Yes"
 

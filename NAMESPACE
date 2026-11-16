@@ -47,6 +47,8 @@ export(ttr_01_population)
 import(rlang)
 importFrom(glue,glue)
 importFrom(lifecycle,deprecated)
-importFrom(stats,binom.test)
-importFrom(stats,prop.test)
+importFrom(stats,
+  binom.test,
+  prop.test
+)
 importFrom(utils,head)
