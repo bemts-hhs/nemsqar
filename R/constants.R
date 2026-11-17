@@ -734,8 +734,27 @@ cardiac_arrest_response_prior <- "3001003|Yes, Prior to Any EMS Arrival"
 # type of scene delay values ----
 scene_delay_values <- "2210011|Extrication"
 
-# patient contact values ----
-patient_treated <- "patient treated|4212027|4212029|4212031|4212033|4212035|4212037|it4212\\.142"
+# patient contact values for data-01 and data-02 ----
+patient_treated <- paste0(
+  patient_care,
+  "|patient treated|4212027|4212029|4212031|4212033|4212035|4212037|it4212\\.142"
+)
+
+# validity score range labels raw for data-01 ----
+validity_labels_raw <- paste0(
+  seq(0, 0.9, by = 0.1),
+  "-",
+  seq(0.1, 1, by = 0.1)
+)
+
+# validity score range labels percent for data-01 ----
+validity_labels_pct <-
+  paste0(
+    seq(0, 90, by = 10),
+    "%-",
+    seq(10, 100, by = 10),
+    "%"
+  )
 
 # answer yes! ----
 yes_code <- "9923003|Yes"

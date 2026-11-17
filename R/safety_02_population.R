@@ -462,7 +462,7 @@ safety_02_population <- function(
     force = TRUE
   )
 
-  #patient evaluated and care provided ----
+  # patient evaluated and care provided ----
   patient_eval_care_data <- disposition_table |>
     dplyr::select({{ erecord_01_col }}, {{ edisposition_28_col }}) |>
     dplyr::distinct() |>
