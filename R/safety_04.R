@@ -13,8 +13,8 @@
 #' @inheritParams safety_04_population
 #' @inheritParams airway_01
 #'
-#' @return A data.frame summarizing results for two population groups (All,
-#'   Adults and Peds) with the following columns:
+#' @return A data.frame summarizing results for one population group (Peds) with
+#'   the following columns:
 #' - `pop`: Population type (All, Adults, and Peds).
 #' - `numerator`: Count of incidents meeting the measure.
 #' - `denominator`: Total count of included incidents.

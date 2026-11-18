@@ -11,6 +11,10 @@ stroke_01_population(
   situation_table = NULL,
   vitals_table = NULL,
   erecord_01_col,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col,
+  epatient_16_col,
   eresponse_05_col,
   esituation_11_col,
   esituation_12_col,
@@ -39,6 +43,20 @@ fields needed.}
 
 \item{erecord_01_col}{The column representing the EMS record unique
 identifier.}
+
+\item{incident_date_col}{Column that contains the incident date. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
+
+\item{patient_DOB_col}{Column that contains the patient's date of birth. This
+defaults to \code{NULL} as it is optional in case not available due to PII
+restrictions.}
+
+\item{epatient_15_col}{Column representing the patient's numeric age agnostic
+of unit.}
+
+\item{epatient_16_col}{Column representing the patient's age unit ("Years",
+"Months", "Days", "Hours", or "Minutes").}
 
 \item{eresponse_05_col}{Column that contains eResponse.05 or the response
 type.}

@@ -1,4 +1,44 @@
-# nemsqar (development version)
+# nemsqar 1.3.0
+
+## Upgrades to Existing Functionality
+
+- `stroke_01_population()` now returns adult, pediatric, and initial
+  population datasets consistent with other population-generating functions in
+  `nemsqar`. This is a breaking change because existing scripts that assume
+  only an initial population object is returned may require modification.
+
+- `stroke_01()` now reports results for adult, pediatric, and overall
+  populations consistent with other wrapper functions in `nemsqar`. This is a
+  breaking change because existing scripts that assume only overall results are
+  returned may require modification due to additional rows in the output.
+
+- Quality-of-life improvements to `airway_01()`, `airway_05()`,
+  `airway_18()`, `ttr_01()`, `trauma_14()`, `trauma_08()`, `trauma_04()`, and
+  `syncope_01()` now report results for adults, pediatrics, and the overall
+  denominator population as defined by the corresponding NEMSQA measure. These
+  are breaking changes because existing scripts that assume only adult and
+  pediatric results are returned may require modification due to additional
+  rows in the output.
+
+## Documentation
+
+- Corrected multiple comments in wrapper functions that incorrectly described
+  the number of population groups analyzed. In several cases, comments
+  referenced two groups despite results being calculated and displayed for
+  three populations.
+
+## New Functions
+
+- Added `data_01_population()` and `data_01()` for analysis of EMS registry
+  record validity scores.
+
+- Added `data_02_population()` and `data_02()` for analysis of EMS registry
+  data-entry timeliness.
+
+- `data_01()` and `data_02()` are not official NEMSQA measures. They were
+  developed to support EMS data quality assessment and quality improvement
+  initiatives related to data validity, completeness, and timeliness within EMS
+  registries.
 
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is

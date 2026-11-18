@@ -109,7 +109,7 @@ Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
 \item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }
 \value{
-A data.frame summarizing results for two population groups (All,
+A data.frame summarizing results for three population groups (All,
 Adults and Peds) with the following columns:
 \itemize{
 \item \code{pop}: Population type (All, Adults, and Peds).

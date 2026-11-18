@@ -16,7 +16,7 @@
 #' @inheritParams trauma_08_population
 #' @inheritParams airway_01
 #'
-#' @return A data.frame summarizing results for two population groups (All,
+#' @return A data.frame summarizing results for three population groups (All,
 #'   Adults and Peds) with the following columns:
 #' - `pop`: Population type (All, Adults, and Peds).
 #' - `numerator`: Count of incidents meeting the measure.
@@ -143,7 +143,7 @@ trauma_08 <- function(
 
     # summarize ----
     trauma.08 <- results_summarize(
-      total_population = NULL,
+      total_population = trauma_08_populations$initial_population,
       adult_population = trauma_08_populations$adults,
       peds_population = trauma_08_populations$peds,
       population_names = c("adults", "peds"),
@@ -238,7 +238,7 @@ trauma_08 <- function(
 
     # summarize ----
     trauma.08 <- results_summarize(
-      total_population = NULL,
+      total_population = trauma_08_populations$initial_population,
       adult_population = trauma_08_populations$adults,
       peds_population = trauma_08_populations$peds,
       population_names = c("adults", "peds"),

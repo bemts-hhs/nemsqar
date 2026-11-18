@@ -13,7 +13,7 @@
 #' @inheritParams syncope_01_population
 #' @inheritParams airway_01
 #'
-#' @return A data.frame summarizing results for two population groups (All,
+#' @return A data.frame summarizing results for three population groups (All,
 #'   Adults and Peds) with the following columns:
 #' - `pop`: Population type (All, Adults, and Peds).
 #' - `numerator`: Count of incidents meeting the measure.
@@ -137,11 +137,11 @@ syncope_01 <- function(
 
     # summarize ----
     syncope.01 <- results_summarize(
-      total_population = NULL,
+      total_population = syncope_01_populations$initial_population,
       adult_population = syncope_01_populations$adults,
       peds_population = syncope_01_populations$peds,
       measure_name = "Syncope-01",
-      population_names = c("adults", "peds"),
+      population_names = c("all", "adults", "peds"),
       numerator_col = ECG_PERFORMED,
       confidence_interval = confidence_interval,
       method = method,
@@ -231,11 +231,11 @@ syncope_01 <- function(
 
     # summarize ----
     syncope.01 <- results_summarize(
-      total_population = NULL,
+      total_population = syncope_01_populations$initial_population,
       adult_population = syncope_01_populations$adults,
       peds_population = syncope_01_populations$peds,
       measure_name = "Syncope-01",
-      population_names = c("adults", "peds"),
+      population_names = c("all", "adults", "peds"),
       numerator_col = ECG_PERFORMED,
       confidence_interval = confidence_interval,
       method = method,

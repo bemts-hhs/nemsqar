@@ -10,7 +10,7 @@
 #' @inheritParams airway_01_population
 #' @inheritParams airway_01
 #'
-#' @return A data.frame summarizing results for two population groups (Adults
+#' @return A data.frame summarizing results for three population groups (Adults
 #'   and Peds) with the following columns:
 #' - `pop`: Population type (Adults and Peds).
 #' - `numerator`: Count of incidents meeting the measure.
@@ -248,11 +248,11 @@ airway_05 <- function(
 
     # summary ----
     airway.05 <- results_summarize(
-      total_population = NULL,
+      total_population = airway_05_populations$initial_population,
       adult_population = airway_05_populations$adults,
       peds_population = airway_05_populations$peds,
       measure_name = "Airway-05",
-      population_names = c("adults", "peds"),
+      population_names = c("all", "adults", "peds"),
       numerator_col = numerator,
       confidence_interval = confidence_interval,
       method = method,
@@ -348,10 +348,11 @@ airway_05 <- function(
 
     # summary ----
     airway.05 <- results_summarize(
+      total_population = airway_05_populations$initial_population,
       adult_population = airway_05_populations$adults,
       peds_population = airway_05_populations$peds,
       measure_name = "Airway-05",
-      population_names = c("adults", "peds"),
+      population_names = c("all", "adults", "peds"),
       numerator_col = numerator,
       confidence_interval = confidence_interval,
       method = method,

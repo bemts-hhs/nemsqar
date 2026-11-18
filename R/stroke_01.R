@@ -13,7 +13,7 @@
 #' @inheritParams airway_01
 #' @inheritParams stroke_01_population
 #'
-#' @return A data.frame summarizing results for two population groups (All,
+#' @return A data.frame summarizing results for three population groups (All,
 #'   Adults and Peds) with the following columns:
 #' - `pop`: Population type (All, Adults, and Peds).
 #' - `numerator`: Count of incidents meeting the measure.
@@ -132,10 +132,10 @@ stroke_01 <- function(
     # summarize ----
     stroke.01 <- results_summarize(
       total_population = stroke_01_populations$initial_population,
-      adult_population = NULL,
-      peds_population = NULL,
+      adult_population = stroke_01_populations$adults,
+      peds_population = stroke_01_populations$peds,
       measure_name = "Stroke-01",
-      population_names = "all",
+      population_names = c("all", "adults", "peds"),
       numerator_col = STROKE_SCALE,
       confidence_interval = confidence_interval,
       method = method,
@@ -223,10 +223,10 @@ stroke_01 <- function(
     # summarize ----
     stroke.01 <- results_summarize(
       total_population = stroke_01_populations$initial_population,
-      adult_population = NULL,
-      peds_population = NULL,
+      adult_population = stroke_01_populations$adults,
+      peds_population = stroke_01_populations$peds,
       measure_name = "Stroke-01",
-      population_names = "all",
+      population_names = c("all", "adults", "peds"),
       numerator_col = STROKE_SCALE,
       confidence_interval = confidence_interval,
       method = method,

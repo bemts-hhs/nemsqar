@@ -13,7 +13,7 @@
 #' @inheritParams pediatrics_03b_population
 #' @inheritParams airway_01
 #'
-#' @return A data.frame summarizing results for two population groups (Peds)
+#' @return A data.frame summarizing results for one population group (Peds)
 #'   with the following columns:
 #' - `pop`: Population type (Peds).
 #' - `numerator`: Count of incidents meeting the measure.

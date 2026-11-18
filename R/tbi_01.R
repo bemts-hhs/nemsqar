@@ -13,7 +13,7 @@
 #' @inheritParams tbi_01_population
 #' @inheritParams airway_01
 #'
-#' @return A data.frame summarizing results for two population groups (All,
+#' @return A data.frame summarizing results for three population groups (All,
 #'   Adults and Peds) with the following columns:
 #' - `pop`: Population type (All, Adults, and Peds).
 #' - `numerator`: Count of incidents meeting the measure.
@@ -152,10 +152,10 @@ tbi_01 <- function(
 
     # summarize ----
     tbi.01 <- results_summarize(
-      total_population = NULL,
+      total_population = tbi_01_populations$initial_population,
       adult_population = tbi_01_populations$adults,
       peds_population = tbi_01_populations$peds,
-      population_names = c("adults", "peds"),
+      population_names = c("all", "adults", "peds"),
       measure_name = "TBI-01",
       numerator_col = VITALS_CHECK,
       confidence_interval = confidence_interval,
@@ -247,10 +247,10 @@ tbi_01 <- function(
 
     # summarize ----
     tbi.01 <- results_summarize(
-      total_population = NULL,
+      total_population = tbi_01_populations$initial_population,
       adult_population = tbi_01_populations$adults,
       peds_population = tbi_01_populations$peds,
-      population_names = c("adults", "peds"),
+      population_names = c("all", "adults", "peds"),
       measure_name = "TBI-01",
       numerator_col = VITALS_CHECK,
       confidence_interval = confidence_interval,

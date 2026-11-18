@@ -18,7 +18,7 @@
 #' Wilson score interval when `method = "wilson"`. Defaults to `TRUE`.
 #' @param ... optional additional arguments to pass onto `dplyr::summarize`.
 #'
-#' @return A data.frame summarizing results for two population groups (Adults
+#' @return A data.frame summarizing results for three population groups (Adults
 #'   and Peds) with the following columns:
 #' - `pop`: Population type (Adults and Peds).
 #' - `numerator`: Count of incidents meeting the measure.
@@ -272,11 +272,11 @@ airway_01 <- function(
 
     # summary ----
     airway.01 <- results_summarize(
-      total_population = NULL,
+      total_population = airway_01_population$initial_population,
       adult_population = airway_01_population$adults,
       peds_population = airway_01_population$peds,
       measure_name = "Airway-01",
-      population_names = c("adults", "peds"),
+      population_names = c("all", "adults", "peds"),
       numerator_col = numerator_1,
       confidence_interval = confidence_interval,
       method = method,
@@ -375,10 +375,11 @@ airway_01 <- function(
 
     # summary ----
     airway.01 <- results_summarize(
+      total_population = airway_01_population$initial_population,
       adult_population = airway_01_population$adults,
       peds_population = airway_01_population$peds,
       measure_name = "Airway-01",
-      population_names = c("adults", "peds"),
+      population_names = c("all", "adults", "peds"),
       numerator_col = numerator_1,
       confidence_interval = confidence_interval,
       method = method,

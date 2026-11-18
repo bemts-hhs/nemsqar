@@ -184,10 +184,10 @@ Wilson score interval when \code{method = "wilson"}. Defaults to \code{TRUE}.}
 \item{...}{optional additional arguments to pass onto \code{dplyr::summarize}.}
 }
 \value{
-A data.frame summarizing results for two population groups (All,
-Adults and Peds) with the following columns:
+A data.frame summarizing results for four population groups (All,
+< 10 yrs, 10-64 yrs and >= 65 yrs) with the following columns:
 \itemize{
-\item \code{pop}: Population type (All, Adults, and Peds).
+\item \code{pop}: Population type (All, < 10 yrs, 10-64 yrs and >= 65 yrs).
 \item \code{numerator}: Count of incidents meeting the measure.
 \item \code{denominator}: Total count of included incidents.
 \item \code{prop}: Proportion of incidents meeting the measure.

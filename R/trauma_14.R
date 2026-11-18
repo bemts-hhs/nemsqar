@@ -18,9 +18,9 @@
 #' @inheritParams trauma_14_population
 #' @inheritParams airway_01
 #'
-#' @return A data.frame summarizing results for two population groups (All,
-#'   Adults and Peds) with the following columns:
-#' - `pop`: Population type (All, Adults, and Peds).
+#' @return A data.frame summarizing results for four population groups (All,
+#'   < 10 yrs, 10-64 yrs and >= 65 yrs) with the following columns:
+#' - `pop`: Population type (All, < 10 yrs, 10-64 yrs and >= 65 yrs).
 #' - `numerator`: Count of incidents meeting the measure.
 #' - `denominator`: Total count of included incidents.
 #' - `prop`: Proportion of incidents meeting the measure.
@@ -206,6 +206,19 @@ trauma_14 <- function(
     # header for calculations ----
     cli::cli_h2("Calculating Trauma-14")
 
+    # all populations ----
+    population_all <- trauma_14_populations$initial_population |>
+      summarize_measure(
+        measure_name = "Trauma-14",
+        population_name = "All",
+        numerator_col = TRAUMA_ALERT_65,
+        confidence_interval = confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
+        ...
+      )
+
     # 65+ population ----
     population_65 <- trauma_14_populations$population_65 |>
       summarize_measure(
@@ -247,6 +260,7 @@ trauma_14 <- function(
 
     # summary ----
     trauma.14 <- dplyr::bind_rows(
+      population_all,
       population_65,
       population_10_64,
       population_10
@@ -347,6 +361,19 @@ trauma_14 <- function(
     # header for calculations ----
     cli::cli_h2("Calculating Trauma-14")
 
+    # all populations ----
+    population_all <- trauma_14_populations$initial_population |>
+      summarize_measure(
+        measure_name = "Trauma-14",
+        population_name = "All",
+        numerator_col = TRAUMA_ALERT_65,
+        confidence_interval = confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
+        ...
+      )
+
     # 65+ population
     population_65 <- trauma_14_populations$population_65 |>
       summarize_measure(
@@ -388,6 +415,7 @@ trauma_14 <- function(
 
     # summary ----
     trauma.14 <- dplyr::bind_rows(
+      population_all,
       population_65,
       population_10_64,
       population_10

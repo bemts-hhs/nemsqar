@@ -100,6 +100,10 @@ stroke_01_population <- function(
   situation_table = NULL,
   vitals_table = NULL,
   erecord_01_col,
+  incident_date_col = NULL,
+  patient_DOB_col = NULL,
+  epatient_15_col,
+  epatient_16_col,
   eresponse_05_col,
   esituation_11_col,
   esituation_12_col,
@@ -146,6 +150,10 @@ stroke_01_population <- function(
   if (
     any(
       missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
       missing(eresponse_05_col),
       missing(esituation_11_col),
       missing(esituation_12_col),
@@ -311,6 +319,38 @@ stroke_01_population <- function(
       dplyr::distinct()
   }
 
+  # Validate date columns if provided ----
+  if (
+    all(
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    )
+  ) {
+    # Use quasiquotation on the date variables to check format ----
+    incident_date <- rlang::enquo(incident_date_col)
+    patient_dob <- rlang::enquo(patient_DOB_col)
+
+    # Convert quosures to names and check the column classes ----
+    incident_date_name <- rlang::as_name(incident_date)
+    patient_dob_name <- rlang::as_name(patient_dob)
+
+    validate_class(
+      input = patient_scene_table[[incident_date_name]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "incident_date_col"
+    )
+
+    validate_class(
+      input = patient_scene_table[[patient_dob_name]],
+      class_type = c("date", "date-time"),
+      logic = "or",
+      type = "error",
+      var_name = "patient_DOB_col"
+    )
+  }
+
   ###___________________________________________________________________________
   # Estimate missingness in each table for included columns in the measure ----
   ###___________________________________________________________________________
@@ -323,12 +363,6 @@ stroke_01_population <- function(
     vitals_table
   )
 
-  ###_____________________________________________________________________________
-  # fact table ----
-  # the user should ensure that variables beyond those supplied for calculations
-  # are distinct (i.e. one value or cell per patient)
-  ###_____________________________________________________________________________
-
   # progress update, these will be repeated throughout the script ----
   cli::cli_progress_update(
     set = 1,
@@ -336,8 +370,84 @@ stroke_01_population <- function(
     force = TRUE
   )
 
-  final_data <- patient_scene_table |>
-    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+  ###_____________________________________________________________________________
+  # fact table ----
+  # the user should ensure that variables beyond those supplied for calculations
+  # are distinct (i.e. one value or cell per patient)
+  ###_____________________________________________________________________________
+
+  if (
+    all(
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    )
+  ) {
+    final_data <- patient_scene_table |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
+      dplyr::mutate(
+        patient_age_in_years_col = as.numeric(difftime(
+          time1 = {{ incident_date_col }},
+          time2 = {{ patient_DOB_col }},
+          units = "days"
+        )) /
+          365,
+
+        # system age checks ----
+        system_age_adult = {{ epatient_15_col }} >= 18 &
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor1 = {{ epatient_15_col }} < 18 &
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor2 = !is.na({{ epatient_15_col }}) &
+          grepl(
+            pattern = minor_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor = system_age_minor1 | system_age_minor2,
+
+        # calculated age checks ----
+        calc_age_adult = patient_age_in_years_col >= 18,
+        calc_age_minor = patient_age_in_years_col < 18
+      )
+  } else if (
+    all(
+      is.null(incident_date_col),
+      is.null(patient_DOB_col)
+    )
+  ) {
+    final_data <- patient_scene_table |>
+      dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
+      dplyr::mutate(
+        # system age checks ----
+        system_age_adult = {{ epatient_15_col }} >= 18 &
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor1 = {{ epatient_15_col }} < 18 &
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor2 = !is.na({{ epatient_15_col }}) &
+          grepl(
+            pattern = minor_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
+        system_age_minor = system_age_minor1 | system_age_minor2
+      )
+  }
 
   ###_____________________________________________________________________________
   ### dimension tables ----
@@ -511,10 +621,58 @@ stroke_01_population <- function(
       NOT_GCS_AVPU
     )
 
-  # Initial population only ----
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
 
+  # Adult and Pediatric Populations ----
+
+  if (
+    # use the system generated and calculated ages ----
+
+    all(
+      !rlang::quo_is_null(rlang::enquo(incident_date_col)),
+      !rlang::quo_is_null(rlang::enquo(patient_DOB_col))
+    )
+  ) {
+    # filter adult ----
+    adult_pop <- initial_population |>
+      dplyr::filter(system_age_adult | calc_age_adult)
+
+    cli::cli_progress_update(
+      set = 11,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # filter peds ----
+    peds_pop <- initial_population |>
+      dplyr::filter(system_age_minor | calc_age_minor)
+  } else if (
+    all(
+      is.null(incident_date_col),
+      is.null(patient_DOB_col)
+    )
+  ) {
+    # filter adult ----
+    adult_pop <- initial_population |>
+      dplyr::filter(system_age_adult)
+
+    cli::cli_progress_update(
+      set = 11,
+      id = progress_bar_population,
+      force = TRUE
+    )
+
+    # filter peds ----
+    peds_pop <- initial_population |>
+      dplyr::filter(system_age_minor)
+  }
+
+  # summarize ----
+
+  # progress update, these will be repeated throughout the script ----
   cli::cli_progress_update(
-    set = 10,
+    set = 12,
     id = progress_bar_population,
     force = TRUE
   )
@@ -527,6 +685,8 @@ stroke_01_population <- function(
       "GCUS <= 9",
       "AVPU = Unresponsive",
       "Non-Null Stroke Scale Score or Type",
+      "Adults denominator",
+      "Peds denominator",
       "Initial population",
       "Total dataset"
     ),
@@ -536,6 +696,8 @@ stroke_01_population <- function(
       sum(computing_population$GCS, na.rm = TRUE),
       sum(computing_population$AVPU, na.rm = TRUE),
       sum(computing_population$STROKE_SCALE, na.rm = TRUE),
+      nrow(adult_pop),
+      nrow(peds_pop),
       nrow(initial_population),
       nrow(computing_population)
     )
@@ -544,7 +706,7 @@ stroke_01_population <- function(
   # get the populations of interest ----
 
   cli::cli_progress_update(
-    set = 11,
+    set = 13,
     id = progress_bar_population,
     force = TRUE
   )
@@ -552,6 +714,8 @@ stroke_01_population <- function(
   # gather data into a list for multi-use output ----
   stroke.01.population <- list(
     filter_process = filter_counts,
+    adults = adult_pop,
+    peds = peds_pop,
     initial_population = initial_population,
     computing_population = computing_population,
     missingness = missings
