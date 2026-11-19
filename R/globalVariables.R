@@ -225,5 +225,8 @@ utils::globalVariables(c(
   "sbp",
   "sp02",
   "vitals",
-  "numerator_sbp_age"
+  "numerator_sbp_age",
+  "results_validity_summarize",
+  "VALIDITY_SCORE_RANGE_FORMAT",
+  "validity_band_breaks"
 ))

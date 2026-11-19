@@ -740,6 +740,9 @@ patient_treated <- paste0(
   "|patient treated|4212027|4212029|4212031|4212033|4212035|4212037|it4212\\.142"
 )
 
+# validity score range breaks ----
+validity_band_breaks <- seq(0, 1, by = 0.1)
+
 # validity score range labels raw for data-01 ----
 validity_labels_raw <- paste0(
   seq(0, 0.9, by = 0.1),
