@@ -876,6 +876,7 @@ hypoglycemia_01_population <- function(
     filter = c(
       "Diabetes/Hypoglycemia and Verbal, Painful, Unresponsive or GCS < 15",
       "Altered mental status and low blood glucose",
+      "Corrective treatment for hypoglycemia",
       "911 calls",
       "Adults denominator",
       "Peds denominator",
@@ -892,6 +893,7 @@ hypoglycemia_01_population <- function(
         computing_population$ALTERED & computing_population$BLOOD_GLUCOSE,
         na.rm = TRUE
       ),
+      sum(TREATMENT, na.rm = TRUE),
       sum(computing_population$CALL_911, na.rm = TRUE),
       nrow(adult_pop),
       nrow(peds_pop),
