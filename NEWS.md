@@ -1,6 +1,6 @@
 # nemsqar 1.3.0
 
-## Upgrades to Existing Functionality
+## Features
 
 - `stroke_01_population()` now returns adult, pediatric, and initial
   population datasets consistent with other population-generating functions in
@@ -20,15 +20,6 @@
   pediatric results are returned may require modification due to additional
   rows in the output.
 
-## Documentation
-
-- Corrected multiple comments in wrapper functions that incorrectly described
-  the number of population groups analyzed. In several cases, comments
-  referenced two groups despite results being calculated and displayed for
-  three populations.
-
-## New Functions
-
 - Added `data_01_population()` and `data_01()` for analysis of EMS registry
   record validity scores.
 
@@ -39,6 +30,13 @@
   developed to support EMS data quality assessment and quality improvement
   initiatives related to data validity, completeness, and timeliness within EMS
   registries.
+
+## Documentation
+
+- Corrected multiple comments in wrapper functions that incorrectly described
+  the number of population groups analyzed. In several cases, comments
+  referenced two groups despite results being calculated and displayed for
+  three populations.
 
 ## Bug fixes
 
