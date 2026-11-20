@@ -336,7 +336,11 @@ safety_01_population <- function(
       dplyr::mutate(
         # system age check ----
         system_age_adult = {{ epatient_15_col }} >= 18 &
-          {{ epatient_16_col }} == "Years",
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
         system_age_minor1 = ({{ epatient_15_col }} >= 2 &
           {{ epatient_15_col }} < 18) &
           grepl(
