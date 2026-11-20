@@ -77,6 +77,8 @@
 #'                               situation_table = situation_table,
 #'                               vitals_table = vitals_table,
 #'                               erecord_01_col = erecord_01,
+#'                               incident_date_col = incident_date,
+#'                               patient_DOB_col = patient_dob,
 #'                               eresponse_05_col = eresponse_05,
 #'                               esituation_11_col = esituation_11,
 #'                               esituation_12_col = esituation_12,
@@ -183,7 +185,7 @@ stroke_01_population <- function(
   # initiate the progress bar process ----
   progress_bar_population <- cli::cli_progress_bar(
     "Running `stroke_01_population()`",
-    total = 11,
+    total = 13,
     type = "tasks",
     clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
@@ -210,7 +212,7 @@ stroke_01_population <- function(
     )
 
     # make tables from df ----
-    # patient
+    # patient ----
     patient_scene_table <- df |>
       dplyr::select(
         -{{ esituation_11_col }},
@@ -289,7 +291,7 @@ stroke_01_population <- function(
     )
 
     # get distinct tables when passed to table arguments ----
-    # patient
+    # patient ----
     patient_scene_table <- patient_scene_table |>
       dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
@@ -603,7 +605,7 @@ stroke_01_population <- function(
       CALL_911 = {{ erecord_01_col }} %in% call_911_data,
       GCS = {{ erecord_01_col }} %in% GCS_data,
       AVPU = {{ erecord_01_col }} %in% AVPU_data,
-      NOT_GCS_AVPU = !GCS | !AVPU,
+      NOT_GCS_AVPU = !(GCS | AVPU),
       STROKE_SCALE1 = {{ erecord_01_col }} %in% stroke_scale_data1,
       STROKE_SCALE2 = {{ erecord_01_col }} %in% stroke_scale_data2,
       STROKE_SCALE = STROKE_SCALE1 | STROKE_SCALE2

@@ -272,7 +272,7 @@ airway_01 <- function(
 
     # summary ----
     airway.01 <- results_summarize(
-      total_population = airway_01_population$initial_population,
+      total_population = airway_01_population$total_population,
       adult_population = airway_01_population$adults,
       peds_population = airway_01_population$peds,
       measure_name = "Airway-01",
@@ -375,7 +375,7 @@ airway_01 <- function(
 
     # summary ----
     airway.01 <- results_summarize(
-      total_population = airway_01_population$initial_population,
+      total_population = airway_01_population$total_population,
       adult_population = airway_01_population$adults,
       peds_population = airway_01_population$peds,
       measure_name = "Airway-01",

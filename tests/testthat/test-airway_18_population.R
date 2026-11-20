@@ -564,6 +564,7 @@ testthat::test_that("Test for correct input handling (table method)", {
     names(result) %in%
       c(
         "filter_process",
+        "all",
         "adults",
         "peds",
         "initial_population",

@@ -40,6 +40,16 @@
   initiatives related to data validity, completeness, and timeliness within EMS
   registries.
 
+## Bug fixes
+
+- `stroke_01_population()` incorrectly applied exclusion criteria for cases
+  where GCS <= 9 or AVPU = "Unresponsive" patient records need to be excluded.
+  It was using a logic like `!GCS | !AVPU` instead  of `!(GCS | AVPU)` (`!GCS &
+  !AVPU` would work just as well). This logic creates a variable `NOT_GCS_AVPU`
+  which is a logical flag that is used to filter out those records to create the
+  `initial_population` object for  `stroke_01()` to use.
+  `stroke_01_population()` now uses `!(GCS | AVPU)`.  
+
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is
   now calculated using `difftime(units = "auto")`, converting the result with

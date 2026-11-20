@@ -171,7 +171,7 @@ testthat::test_that("airway_01 calculates values correctly for different age gro
   )
 
   testthat::expect_s3_class(result, "data.frame")
-  testthat::expect_true(all(result$pop %in% c("Adults", "Peds"))) # Check expected population groups
+  testthat::expect_true(all(result$pop %in% c("All", "Adults", "Peds"))) # Check expected population groups
 })
 
 testthat::test_that("airway_01 correctly processes complete fact tables", {

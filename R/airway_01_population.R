@@ -247,7 +247,7 @@ airway_01_population <- function(
   # initiate the progress bar process ----
   progress_bar_population <- cli::cli_progress_bar(
     "Running `airway_01_population()`",
-    total = 19,
+    total = 20,
     type = "tasks",
     clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
@@ -1037,6 +1037,30 @@ airway_01_population <- function(
 
   cli::cli_progress_update(set = 16, id = progress_bar_population, force = TRUE)
 
+  # get the total population ----
+  total_population <- initial_population |>
+    dplyr::filter(
+      not_performed_prior,
+      non_missing_procedure_time,
+      exclude_pta_ca,
+      exclude_newborns
+    ) |>
+
+    # get the first procedure ----
+    # some patients have the same time on more than one procedure's data
+    dplyr::filter(
+      {{ eprocedures_01_col }} == min({{ eprocedures_01_col }}, na.rm = TRUE),
+      .by = {{ erecord_01_col }}
+    ) |>
+
+    # upon investigation, once you get the earliest airway time, the ----
+    # performance on all procedures with that time will be the same
+    # so to get the correct count of first airways, we run dplyr::distinct
+    # down to the erecord.01 level
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+
+  cli::cli_progress_update(set = 17, id = progress_bar_population, force = TRUE)
+
   # get the adult population ----
   adult_pop <- initial_population |>
     dplyr::filter(
@@ -1059,7 +1083,7 @@ airway_01_population <- function(
     # down to the erecord.01 level
     dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
-  cli::cli_progress_update(set = 17, id = progress_bar_population, force = TRUE)
+  cli::cli_progress_update(set = 18, id = progress_bar_population, force = TRUE)
 
   # get the peds population ----
   peds_pop <- initial_population |>
@@ -1084,7 +1108,7 @@ airway_01_population <- function(
     # down to the erecord.01 level
     dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
-  cli::cli_progress_update(set = 18, id = progress_bar_population, force = TRUE)
+  cli::cli_progress_update(set = 19, id = progress_bar_population, force = TRUE)
 
   # get total number of procedures examined ----
   n_procedures <- procedures_ordered |>
@@ -1165,11 +1189,13 @@ airway_01_population <- function(
     )
   )
 
-  cli::cli_progress_update(set = 19, id = progress_bar_population, force = TRUE)
+  cli::cli_progress_update(set = 20, id = progress_bar_population, force = TRUE)
 
   # Get populations ----
   airway.01.population <- list(
     filter_process = filter_counts,
+
+    total_population = total_population,
 
     adults = adult_pop,
 

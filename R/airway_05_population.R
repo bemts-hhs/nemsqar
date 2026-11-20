@@ -777,11 +777,21 @@ airway_05_population <- function(
 
   cli::cli_progress_update(set = 12, id = progress_bar_population, force = TRUE)
 
+  # get the total population ----
+  total_population <- initial_population |>
+    dplyr::filter(
+      not_performed_prior,
+      exclude_pta_ca,
+      exclude_newborns
+    )
+
+  cli::cli_progress_update(set = 13, id = progress_bar_population, force = TRUE)
+
   # get the adult population ----
   adult_pop <- initial_population |>
     dplyr::filter(adult_population, not_performed_prior, exclude_pta_ca)
 
-  cli::cli_progress_update(set = 13, id = progress_bar_population, force = TRUE)
+  cli::cli_progress_update(set = 14, id = progress_bar_population, force = TRUE)
 
   # get the peds population ----
   peds_pop <- initial_population |>
@@ -792,7 +802,7 @@ airway_05_population <- function(
       exclude_newborns
     )
 
-  cli::cli_progress_update(set = 14, id = progress_bar_population, force = TRUE)
+  cli::cli_progress_update(set = 15, id = progress_bar_population, force = TRUE)
 
   # get total number of procedures examined ----
   n_procedures <- procedures_ordered |>
@@ -833,11 +843,13 @@ airway_05_population <- function(
     )
   )
 
-  cli::cli_progress_update(set = 15, id = progress_bar_population, force = TRUE)
+  cli::cli_progress_update(set = 16, id = progress_bar_population, force = TRUE)
 
   # Get populations ----
   airway.05.population <- list(
     filter_process = filter_counts,
+
+    total_population = total_population,
 
     adults = adult_pop,
 

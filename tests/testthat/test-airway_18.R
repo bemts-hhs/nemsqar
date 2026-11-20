@@ -87,7 +87,7 @@ testthat::test_that("airway_18 returns expected structure with df argument", {
   )
 
   testthat::expect_s3_class(result, "tbl_df")
-  testthat::expect_equal(nrow(result), 2)
+  testthat::expect_equal(nrow(result), 3)
   testthat::expect_true("Airway-18" %in% result$measure)
 
   result <- suppressWarnings(airway_18(
@@ -281,7 +281,7 @@ testthat::test_that("airway_18 returns expected structure with table args", {
   )
 
   testthat::expect_s3_class(result, "tbl_df")
-  testthat::expect_equal(nrow(result), 2)
+  testthat::expect_equal(nrow(result), 3)
   testthat::expect_true(length(names(result)) == 6)
 })
 

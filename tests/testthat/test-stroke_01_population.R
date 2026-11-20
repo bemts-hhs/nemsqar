@@ -25,6 +25,10 @@ testthat::test_that("stroke_01_population rejects invalid argument combinations"
       situation_table = tibble::tibble(),
       vitals_table = tibble::tibble(),
       erecord_01_col = character(),
+      incident_date_col = date(),
+      patient_DOB_col = date(),
+      epatient_15_col = numeric(),
+      epatient_16_col = character(),
       eresponse_05_col = character(),
       esituation_11_col = character(),
       esituation_12_col = character(),
@@ -71,6 +75,10 @@ testthat::test_that("stroke_01_population fails with unknown columns", {
     stroke_01_population(
       df,
       erecord_01_col = erecord_01,
+      incident_date_col = NULL,
+      patient_DOB_col = NULL,
+      epatient_15_col = epatient_15,
+      epatient_16_col = epatient_16,
       eresponse_05_col = character(),
       esituation_11_col = "dummy",
       esituation_12_col = "dummy",
@@ -101,6 +109,10 @@ testthat::test_that("stroke_01_population correctly classifies patient age", {
   result <- stroke_01_population(
     df,
     erecord_01_col = erecord_01,
+    incident_date_col = NULL,
+    patient_DOB_col = NULL,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
     eresponse_05_col = eresponse_05,
     esituation_11_col = esituation_11,
     esituation_12_col = esituation_12,
@@ -131,6 +143,10 @@ testthat::test_that("stroke_01_population correctly filters 911 calls", {
   result <- stroke_01_population(
     df,
     erecord_01_col = erecord_01,
+    incident_date_col = NULL,
+    patient_DOB_col = NULL,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
     eresponse_05_col = eresponse_05,
     esituation_11_col = esituation_11,
     esituation_12_col = esituation_12,
@@ -144,7 +160,7 @@ testthat::test_that("stroke_01_population correctly filters 911 calls", {
     dplyr::filter(filter == "911 calls") |>
     dplyr::pull(count)
 
-  testthat::expect_equal(nrow(result$filter_process), 7)
+  testthat::expect_equal(nrow(result$filter_process), 9)
   testthat::expect_equal(emergency_calls, 5)
 })
 
@@ -197,6 +213,10 @@ testthat::test_that("stroke_01_population runs correctly with table inputs", {
     situation_table = situation_table,
     vitals_table = vitals_table,
     erecord_01_col = erecord_01,
+    incident_date_col = incident_date,
+    patient_DOB_col = patient_dob,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
     eresponse_05_col = eresponse_05,
     esituation_11_col = esituation_11,
     esituation_12_col = esituation_12,
@@ -206,7 +226,7 @@ testthat::test_that("stroke_01_population runs correctly with table inputs", {
     evitals_30_col = evitals_30
   )
 
-  testthat::expect_equal(nrow(result$filter_process), 7)
+  testthat::expect_equal(nrow(result$filter_process), 9)
   testthat::expect_true(is.list(result))
   testthat::expect_true(is.data.frame(result$missingness))
 })

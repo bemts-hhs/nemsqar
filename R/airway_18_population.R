@@ -216,7 +216,7 @@ airway_18_population <- function(
   # Initialize the progress bar ----
   progress_bar_population <- cli::cli_progress_bar(
     "Running `airway_18_population()`",
-    total = 13,
+    total = 14,
     type = "tasks",
     clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
@@ -451,9 +451,11 @@ airway_18_population <- function(
       dplyr::distinct()
 
     if (
-      all(is.na(procedures_table[[rlang::as_name(rlang::enquo(
-        eprocedures_03_col
-      ))]]))
+      all(
+        is.na(
+          procedures_table[[rlang::as_name(rlang::enquo(eprocedures_03_col))]]
+        )
+      )
     ) {
       cli::cli_warn(
         "eprocedures_03_col is entirely missing. Returning an empty result."
@@ -972,9 +974,23 @@ airway_18_population <- function(
       call_911
     )
 
+  cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
+
+  # All Populations ----
+  total_population <- initial_population |>
+    dplyr::filter(
+      not_performed_prior,
+      non_missing_procedure_time
+    ) |>
+    dplyr::filter(
+      {{ eprocedures_01_col }} == max({{ eprocedures_01_col }}, na.rm = TRUE),
+      .by = {{ erecord_01_col }}
+    ) |>
+    dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
+
   # Adult and Pediatric Populations ----
 
-  cli::cli_progress_update(set = 10, id = progress_bar_population, force = TRUE)
+  cli::cli_progress_update(set = 11, id = progress_bar_population, force = TRUE)
 
   # filter adult ----
   adult_pop <- initial_population |>
@@ -989,7 +1005,7 @@ airway_18_population <- function(
     ) |>
     dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
-  cli::cli_progress_update(set = 11, id = progress_bar_population, force = TRUE)
+  cli::cli_progress_update(set = 12, id = progress_bar_population, force = TRUE)
 
   # filter peds ----
   peds_pop <- initial_population |>
@@ -1006,7 +1022,7 @@ airway_18_population <- function(
 
   # summarize ----
 
-  cli::cli_progress_update(set = 12, id = progress_bar_population, force = TRUE)
+  cli::cli_progress_update(set = 13, id = progress_bar_population, force = TRUE)
 
   # get total number of procedures examined ----
   n_procedures <- procedures_ordered |>
@@ -1120,11 +1136,12 @@ airway_18_population <- function(
 
   # get the populations of interest ----
 
-  cli::cli_progress_update(set = 13, id = progress_bar_population, force = TRUE)
+  cli::cli_progress_update(set = 14, id = progress_bar_population, force = TRUE)
 
   # gather data into a list for multi-use output ----
   airway.18.population <- list(
     filter_process = filter_counts,
+    total_population = total_population,
     adults = adult_pop,
     peds = peds_pop,
     initial_population = initial_population,

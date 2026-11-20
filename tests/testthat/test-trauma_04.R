@@ -192,10 +192,10 @@ testthat::test_that("trauma_04 produces expected results", {
   ))
 
   # Check calculations
-  testthat::expect_equal(sum(result$numerator), 4)
-  testthat::expect_equal(sum(result$denominator), 5)
+  testthat::expect_equal(sum(result$numerator), 8)
+  testthat::expect_equal(sum(result$denominator), 10)
   testthat::expect_equal(result$prop[result$pop == "10-64 yrs"], 2 / 3)
-  testthat::expect_equal(nrow(result), 3)
+  testthat::expect_equal(nrow(result), 4)
 
   # create tables to test correct functioning
   patient_table <- tibble::tibble(
@@ -327,10 +327,10 @@ testthat::test_that("trauma_04 produces expected results", {
   )
 
   # Check calculations
-  testthat::expect_equal(sum(result$numerator), 4)
-  testthat::expect_equal(sum(result$denominator), 5)
+  testthat::expect_equal(sum(result$numerator), 8)
+  testthat::expect_equal(sum(result$denominator), 10)
   testthat::expect_equal(result$prop[result$pop == "10-64 yrs"], 0.5)
-  testthat::expect_equal(nrow(result), 3)
+  testthat::expect_equal(nrow(result), 4)
 })
 
 testthat::test_that("trauma_04 handles missing data correctly", {
