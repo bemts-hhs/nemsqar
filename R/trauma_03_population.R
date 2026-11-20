@@ -254,9 +254,7 @@ trauma_03_population <- function(
         -{{ evitals_01_col }},
         -{{ evitals_27_col }},
         -{{ evitals_27_initial_col }},
-        -{{ evitals_27_last_col }},
-        -{{ edisposition_28_col }},
-        -c({{ transport_disposition_col }})
+        -{{ evitals_27_last_col }}
       ) |>
       dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
 
@@ -627,24 +625,32 @@ trauma_03_population <- function(
         {{ evitals_01_col }}
       ) |>
       dplyr::distinct() |>
-      dplyr::group_by({{ erecord_01_col }}) |>
-      dplyr::mutate(
+      dplyr::arrange(
+        {{ erecord_01_col }},
+        {{ evitals_01_col }}
+      ) |>
+      dplyr::summarize(
+        # Initial and last pain scales ----
+        initial_pain_scale = dplyr::first(
+          {{ evitals_27_initial_col }},
+          na_rm = TRUE
+        ),
+        last_pain_scale = dplyr::last(
+          {{ evitals_27_last_col }},
+          na_rm = TRUE
+        ),
+
         # Initial and last pain scale times ----
         initial_pain_scale_time = dplyr::first(
           {{ evitals_01_col }},
           na_rm = TRUE
         ),
-        last_pain_scale_time = dplyr::last({{ evitals_01_col }}, na_rm = TRUE)
-      ) |>
-      dplyr::ungroup() |>
-      dplyr::select(
-        {{ erecord_01_col }},
-        initial_pain_scale_time,
-        {{ evitals_27_initial_col }},
-        last_pain_scale_time,
-        {{ evitals_27_last_col }}
-      ) |>
-      dplyr::distinct()
+        last_pain_scale_time = dplyr::last(
+          {{ evitals_01_col }},
+          na_rm = TRUE
+        ),
+        .by = {{ erecord_01_col }}
+      )
 
     cli::cli_progress_update(
       set = 7,
@@ -655,7 +661,7 @@ trauma_03_population <- function(
     # pain scale > 0 and corresponding vitals time not missing ----
     pain_scale_time_data <- vitals_table_mutate |>
       dplyr::filter(
-        {{ evitals_27_initial_col }} > 0,
+        initial_pain_scale > 0,
         !is.na(initial_pain_scale_time)
       ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
@@ -675,7 +681,7 @@ trauma_03_population <- function(
           ~ !is.na(.)
         ) &
 
-          ({{ evitals_27_last_col }} < {{ evitals_27_initial_col }})
+          (last_pain_scale < initial_pain_scale)
       ) |>
       dplyr::distinct({{ erecord_01_col }}) |>
       dplyr::pull({{ erecord_01_col }})
@@ -694,17 +700,18 @@ trauma_03_population <- function(
         {{ evitals_01_col }}
       ) |>
       dplyr::distinct() |>
-      dplyr::group_by({{ erecord_01_col }}) |>
-      dplyr::mutate(
+      dplyr::arrange(
+        {{ erecord_01_col }},
+        {{ evitals_01_col }}
+      ) |>
+      dplyr::summarize(
         # Initial and last pain scales ----
         initial_pain_scale = dplyr::first(
           {{ evitals_27_col }},
-          order_by = {{ evitals_01_col }},
           na_rm = TRUE
         ),
         last_pain_scale = dplyr::last(
           {{ evitals_27_col }},
-          order_by = {{ evitals_01_col }},
           na_rm = TRUE
         ),
 
@@ -713,17 +720,12 @@ trauma_03_population <- function(
           {{ evitals_01_col }},
           na_rm = TRUE
         ),
-        last_pain_scale_time = dplyr::last({{ evitals_01_col }}, na_rm = TRUE)
-      ) |>
-      dplyr::ungroup() |>
-      dplyr::select(
-        {{ erecord_01_col }},
-        initial_pain_scale_time,
-        initial_pain_scale,
-        last_pain_scale_time,
-        last_pain_scale
-      ) |>
-      dplyr::distinct()
+        last_pain_scale_time = dplyr::last(
+          {{ evitals_01_col }},
+          na_rm = TRUE
+        ),
+        .by = c({{ erecord_01_col }})
+      )
 
     # pain scale > 0 and corresponding vitals time not missing ----
     pain_scale_time_data <- vitals_table_mutate |>

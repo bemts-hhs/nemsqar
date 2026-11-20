@@ -38,7 +38,15 @@
   procedures, and `respiratory_02_population()` now summarizes oxygen
   administration delivered either as a medication or oxygen therapy procedure,
   improving alignment between filter_process output and measure numerator
-  definitions.  
+  definitions.
+
+- Improved performance in `trauma_03_population()` by refactoring first/last
+  pain score determination to use encounter-level summarization rather than
+  grouped row-wise mutation. The function now derives initial and final pain
+  scores and corresponding assessment times using a sorted `dplyr::summarize()`
+  workflow, substantially reducing row expansion and memory utilization while
+  preserving identical numerators, denominators, and calculated performance
+  results. 
 
 ## Documentation
 
