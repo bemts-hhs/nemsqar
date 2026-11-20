@@ -774,3 +774,5 @@ hour_values <- "hours|2516003"
 minute_values <- "minutes|2516005"
 
 month_values <- "months|2516007"
+
+days_hours_minutes <- paste0(day_values, "|", hour_values, "|", minute_values)

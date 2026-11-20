@@ -460,7 +460,7 @@ safety_04_population <- function(
           365,
 
         # system age check ----
-        system_age_minor1 = {{ epatient_15_col }} <= 8 &
+        system_age_minor1 = {{ epatient_15_col }} < 8 &
           grepl(
             pattern = year_values,
             x = {{ epatient_16_col }},
@@ -474,7 +474,7 @@ safety_04_population <- function(
           ),
         system_age_minor3 = {{ epatient_15_col }} <= 120 &
           grepl(
-            pattern = minor_values,
+            pattern = days_hours_minutes,
             x = {{ epatient_16_col }},
             ignore.case = TRUE
           ),
@@ -483,7 +483,7 @@ safety_04_population <- function(
           system_age_minor3,
 
         # calculated age check ----
-        calc_age_minor = patient_age_in_years <= 8
+        calc_age_minor = patient_age_in_years < 8
       )
   } else if (
     all(
@@ -495,7 +495,7 @@ safety_04_population <- function(
       dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE) |>
       dplyr::mutate(
         # system age check ----
-        system_age_minor1 = {{ epatient_15_col }} <= 8 &
+        system_age_minor1 = {{ epatient_15_col }} < 8 &
           grepl(
             pattern = year_values,
             x = {{ epatient_16_col }},
@@ -509,7 +509,7 @@ safety_04_population <- function(
           ),
         system_age_minor3 = {{ epatient_15_col }} <= 120 &
           grepl(
-            pattern = minor_values,
+            pattern = days_hours_minutes,
             x = {{ epatient_16_col }},
             ignore.case = TRUE
           ),

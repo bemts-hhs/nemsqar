@@ -83,7 +83,18 @@
   exclude valid adult records when age units were recorded using alternative
   capitalization. Adult age classification now consistently uses the same
   case-insensitive age-unit matching logic applied throughout the function and
-  throughout `nemsqar`.  
+  throughout `nemsqar`. This is not expected to result in material changes to
+  outputs as the equality used was `epatient_16 == "Years"`, which is what most
+  EMS registries will use as it is the NEMSIS standard.
+
+- Fixed pediatric age classification in `safety_04_population()` to align with
+  the published Safety-04 denominator specification. Patients exactly 8 years of
+  age are no longer included in the denominator, and age-unit classification for
+  patients measured in days, hours, and minutes now uses the new
+  days_hours_minutes regular expression defined in `constants.R`, improving
+  adherence to the measure definition for patients less than 8 years of age.
+  This is a breaking change but the impact is expected to be quite small as it
+  only affects edge cases. 
 
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is

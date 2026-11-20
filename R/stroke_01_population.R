@@ -684,7 +684,7 @@ stroke_01_population <- function(
     filter = c(
       "911 calls",
       "Stroke cases",
-      "GCUS <= 9",
+      "GCS <= 9",
       "AVPU = Unresponsive",
       "Non-Null Stroke Scale Score or Type",
       "Adults denominator",
