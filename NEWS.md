@@ -76,6 +76,15 @@
   changes in results, but will be a breaking changes as results will be
   different as compared to previous versions.
 
+- Fixed a denominator age-classification inconsistency in
+  `safety_01_population()`. Previously, when `incident_date_col` and
+  `patient_DOB_col` were not provided, adult age classification used a
+  case-sensitive equality check on `epatient_16_col`, which could incorrectly
+  exclude valid adult records when age units were recorded using alternative
+  capitalization. Adult age classification now consistently uses the same
+  case-insensitive age-unit matching logic applied throughout the function and
+  throughout `nemsqar`.  
+
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is
   now calculated using `difftime(units = "auto")`, converting the result with
