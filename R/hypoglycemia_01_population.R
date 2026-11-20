@@ -893,7 +893,7 @@ hypoglycemia_01_population <- function(
         computing_population$ALTERED & computing_population$BLOOD_GLUCOSE,
         na.rm = TRUE
       ),
-      sum(TREATMENT, na.rm = TRUE),
+      sum(computing_population$TREATMENT, na.rm = TRUE),
       sum(computing_population$CALL_911, na.rm = TRUE),
       nrow(adult_pop),
       nrow(peds_pop),

@@ -269,7 +269,7 @@ testthat::test_that("hypoglycemia_01_population correctly filters 911 calls", {
     dplyr::filter(filter == "911 calls") |>
     dplyr::pull(count)
 
-  testthat::expect_equal(nrow(result$filter_process), 7)
+  testthat::expect_equal(nrow(result$filter_process), 8)
   testthat::expect_equal(emergency_calls, 3)
 })
 
@@ -347,7 +347,7 @@ testthat::test_that("hypoglycemia_01_population runs correctly with table inputs
     eprocedures_03_col = eprocedures_03
   )
 
-  testthat::expect_equal(nrow(result$filter_process), 7)
+  testthat::expect_equal(nrow(result$filter_process), 8)
   testthat::expect_true(is.list(result))
   testthat::expect_true(is.data.frame(result$missingness))
 })
