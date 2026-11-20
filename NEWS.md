@@ -100,6 +100,13 @@
   `filter_process` summary reported `GCUS <= 9`; the label now correctly reports
   `GCS <= 9`.  
 
+- Fixed argument validation in `syncope_01_population()` to properly require
+  age-related column arguments used for denominator stratification. Previously,
+  `epatient_15_col`, `epatient_16_col`, `incident_date_col`, and
+  `patient_DOB_col` were not consistently checked during argument validation.
+  The function now correctly validates all required age and date inputs before
+  population construction. 
+
 
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is

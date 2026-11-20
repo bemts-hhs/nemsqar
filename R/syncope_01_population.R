@@ -153,6 +153,10 @@ syncope_01_population <- function(
   if (
     any(
       missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
       missing(eresponse_05_col),
       missing(esituation_09_col),
       missing(esituation_10_col),
