@@ -96,6 +96,11 @@
   This is a breaking change but the impact is expected to be quite small as it
   only affects edge cases. 
 
+- Corrected a labeling error in `stroke_01_population()` where the
+  `filter_process` summary reported `GCUS <= 9`; the label now correctly reports
+  `GCS <= 9`.  
+
+
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is
   now calculated using `difftime(units = "auto")`, converting the result with
