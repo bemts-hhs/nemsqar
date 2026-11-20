@@ -303,19 +303,6 @@ trauma_04 <- function(
     # header for calculations ----
     cli::cli_h2("Calculating Trauma-04")
 
-    # all populations ----
-    population_all <- trauma_04_populations$initial_population |>
-      summarize_measure(
-        measure_name = "Trauma-04",
-        population_name = "All",
-        numerator_col = TRAUMA_CENTER,
-        confidence_interval = confidence_interval,
-        method = method,
-        conf.level = conf.level,
-        correct = correct,
-        ...
-      )
-
     # 65+ population ----
     population_65 <- trauma_04_populations$population_65 |>
       summarize_measure(
@@ -347,6 +334,19 @@ trauma_04 <- function(
       summarize_measure(
         measure_name = "Trauma-04",
         population_name = "< 10 yrs",
+        numerator_col = TRAUMA_CENTER,
+        confidence_interval = confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
+        ...
+      )
+
+    # all populations ----
+    population_all <- trauma_04_populations$total_population |>
+      summarize_measure(
+        measure_name = "Trauma-04",
+        population_name = "All",
         numerator_col = TRAUMA_CENTER,
         confidence_interval = confidence_interval,
         method = method,
@@ -459,19 +459,6 @@ trauma_04 <- function(
     # header for calculations ----
     cli::cli_h2("Calculating Trauma-04")
 
-    # all populations ----
-    population_all <- trauma_04_populations$initial_population |>
-      summarize_measure(
-        measure_name = "Trauma-04",
-        population_name = "All",
-        numerator_col = TRAUMA_CENTER,
-        confidence_interval = confidence_interval,
-        method = method,
-        conf.level = conf.level,
-        correct = correct,
-        ...
-      )
-
     # 65+ population ----
     population_65 <- trauma_04_populations$population_65 |>
       summarize_measure(
@@ -503,6 +490,19 @@ trauma_04 <- function(
       summarize_measure(
         measure_name = "Trauma-04",
         population_name = "< 10 yrs",
+        numerator_col = TRAUMA_CENTER,
+        confidence_interval = confidence_interval,
+        method = method,
+        conf.level = conf.level,
+        correct = correct,
+        ...
+      )
+
+    # all populations ----
+    population_all <- trauma_04_populations$total_population |>
+      summarize_measure(
+        measure_name = "Trauma-04",
+        population_name = "All",
         numerator_col = TRAUMA_CENTER,
         confidence_interval = confidence_interval,
         method = method,

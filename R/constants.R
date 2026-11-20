@@ -498,7 +498,6 @@ tbi_injuries <- paste(
 possible_injury <- "Yes|9922005"
 
 # GCS motor values ----
-#' @keywords internal
 GCS_motor_values <- paste(
   "no motor response",
   "extension to pain",

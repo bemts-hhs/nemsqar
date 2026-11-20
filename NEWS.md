@@ -125,6 +125,11 @@
   case-insensitive matching rather than relying on a static "Years" comparison,
   improving consistency with age logic used throughout `nemsqar`. 
 
+- In `trauma_04_population()`, the pediatric (`< 10 years`) systolic blood
+  pressure field triage criterion is now correctly evaluated as 
+  `SBP >= (70 + (Age × 2))`, consistent with the published Trauma-04
+  specification.  
+
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is
   now calculated using `difftime(units = "auto")`, converting the result with
