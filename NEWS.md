@@ -107,6 +107,15 @@
   The function now correctly validates all required age and date inputs before
   population construction. 
 
+- Fixed argument validation in `tbi_01_population()` to properly require age-
+  and date-related column arguments used in denominator stratification.
+  Previously, `epatient_15_col`, `epatient_16_col`, `incident_date_col`, and
+  `patient_DOB_col` were not consistently validated before age-group
+  calculations were performed. The function now validates all required age and
+  date inputs prior to population construction. Adult age classification was
+  also updated to use the package-wide `year_values` regular expression with
+  case-insensitive matching rather than relying on a static "Years" comparison,
+  improving consistency with age logic used throughout `nemsqar`. 
 
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is

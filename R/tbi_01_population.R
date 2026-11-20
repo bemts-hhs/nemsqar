@@ -163,6 +163,10 @@ tbi_01_population <- function(
   if (
     any(
       missing(erecord_01_col),
+      missing(incident_date_col),
+      missing(patient_DOB_col),
+      missing(epatient_15_col),
+      missing(epatient_16_col),
       missing(eresponse_05_col),
       missing(esituation_11_col),
       missing(esituation_12_col),
@@ -434,9 +438,17 @@ tbi_01_population <- function(
 
         # system age check ----
         system_age_adult = {{ epatient_15_col }} >= 18 &
-          {{ epatient_16_col }} == "Years",
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
         system_age_minor1 = {{ epatient_15_col }} < 18 &
-          {{ epatient_16_col }} == "Years",
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
         system_age_minor2 = {{ epatient_15_col }} <= 120 &
           grepl(
             pattern = minor_values,
@@ -460,9 +472,17 @@ tbi_01_population <- function(
       dplyr::mutate(
         # system age check ----
         system_age_adult = {{ epatient_15_col }} >= 18 &
-          {{ epatient_16_col }} == "Years",
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
         system_age_minor1 = {{ epatient_15_col }} < 18 &
-          {{ epatient_16_col }} == "Years",
+          grepl(
+            pattern = year_values,
+            x = {{ epatient_16_col }},
+            ignore.case = TRUE
+          ),
         system_age_minor2 = {{ epatient_15_col }} <= 120 &
           grepl(
             pattern = minor_values,
