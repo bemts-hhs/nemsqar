@@ -685,6 +685,7 @@ respiratory_02_population <- function(
     filter = c(
       "Oxygen given as med",
       "Oxygen therapy procedure",
+      "Oxygen administered via medication or oxygen therapy procedure",
       "Pulse oximetry < 90",
       "911 calls",
       "Adults denominator",
@@ -695,6 +696,7 @@ respiratory_02_population <- function(
     count = c(
       sum(computing_population$OXYGEN1, na.rm = TRUE),
       sum(computing_population$OXYGEN2, na.rm = TRUE),
+      sum(computing_population$OXYGEN, na.rm = TRUE),
       sum(computing_population$PULSE_OXIMETRY, na.rm = TRUE),
       sum(computing_population$CALL_911, na.rm = TRUE),
       nrow(adult_pop),

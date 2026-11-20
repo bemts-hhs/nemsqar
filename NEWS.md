@@ -31,6 +31,15 @@
   initiatives related to data validity, completeness, and timeliness within EMS
   registries.
 
+- Updated `filter_process` output in `hypoglycemia_01_population()` and
+  `respiratory_02_population()` to report the combined numerator pathways used
+  by the respective measures. `hypoglycemia_01_population()` now summarizes
+  hypoglycemia treatment delivered either through qualifying medications or
+  procedures, and `respiratory_02_population()` now summarizes oxygen
+  administration delivered either as a medication or oxygen therapy procedure,
+  improving alignment between filter_process output and measure numerator
+  definitions.  
+
 ## Documentation
 
 - Corrected multiple comments in wrapper functions that incorrectly described
@@ -56,6 +65,16 @@
   system-defined ages from the `epatient_15` and `epatient_16` arguments.
   Previously, `asthma_01_population()` included all patients age < 18 yrs in the
   pediatric population without excluding patients age < 2 yrs.
+
+- Fixed a denominator filtering error in `hypoglycemia_01_population()`.
+  Previously, the 911 response criterion (eResponse.05) was only applied to
+  records meeting the altered mental status and low blood glucose inclusion
+  pathway due to logical operator precedence. The denominator now correctly
+  requires a qualifying 911 response for records meeting either the
+  diabetes/hypoglycemia with altered mental status pathway or the altered mental
+  status with low blood glucose pathway. This is not expected to cause dramatic
+  changes in results, but will be a breaking changes as results will be
+  different as compared to previous versions.
 
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is
