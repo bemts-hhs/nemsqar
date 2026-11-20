@@ -800,9 +800,9 @@ hypoglycemia_01_population <- function(
     dplyr::filter(
       (DIABETES & (GCS | AVPU)) |
 
-        (ALTERED & BLOOD_GLUCOSE) &
+        (ALTERED & BLOOD_GLUCOSE),
 
-          CALL_911,
+      CALL_911,
 
       system_age_minor3
     )
