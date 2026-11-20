@@ -415,7 +415,8 @@ asthma_01_population <- function(
 
         # calculated age check ----
         calc_age_adult = patient_age_in_years_col >= 18,
-        calc_age_minor = patient_age_in_years_col < 18
+        calc_age_minor = patient_age_in_years_col >= 2 &
+          patient_age_in_years_col < 18
       ) |>
       dplyr::distinct({{ erecord_01_col }}, .keep_all = TRUE)
   } else if (

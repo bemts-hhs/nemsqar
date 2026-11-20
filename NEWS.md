@@ -42,11 +42,20 @@
 
 - `stroke_01_population()` incorrectly applied exclusion criteria for cases
   where GCS <= 9 or AVPU = "Unresponsive" patient records need to be excluded.
-  It was using a logic like `!GCS | !AVPU` instead  of `!(GCS | AVPU)` (`!GCS &
+  It was using logic like `!GCS | !AVPU` instead  of `!(GCS | AVPU)` (`!GCS &
   !AVPU` would work just as well). This logic creates a variable `NOT_GCS_AVPU`
   which is a logical flag that is used to filter out those records to create the
   `initial_population` object for  `stroke_01()` to use.
-  `stroke_01_population()` now uses `!(GCS | AVPU)`.  
+  `stroke_01_population()` now uses `!(GCS | AVPU)`. This is a breaking change
+  given that it will slightly decrease the total number of records analyzed in
+  any given run of `stroke_01_population()` or `stroke_01()`, but performance is
+  expected to remain similar.
+
+- `asthma_01_population()` now correctly filters the pediatric population down
+  to ages >= 2 years and age < 18 years when using calculated ages or
+  system-defined ages from the `epatient_15` and `epatient_16` arguments.
+  Previously, `asthma_01_population()` included all patients age < 18 yrs in the
+  pediatric population without excluding patients age < 2 yrs.
 
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is
