@@ -122,10 +122,10 @@ testthat::test_that("trauma_14 produces expected results", {
   testthat::expect_true(all(c("measure", "pop", "numerator", "denominator", "prop", "prop_label") %in% names(result)))
 
   # Check calculations
-  testthat::expect_equal(sum(result$numerator), 5)
-  testthat::expect_equal(sum(result$denominator), 5)
+  testthat::expect_equal(sum(result$numerator), 10)
+  testthat::expect_equal(sum(result$denominator), 10)
   testthat::expect_equal(result$prop[result$pop == "10-64 yrs"], 1)
-  testthat::expect_equal(nrow(result), 3)
+  testthat::expect_equal(nrow(result), 4)
 
   # create tables to test correct functioning
   patient_table <- tibble::tibble(
@@ -233,10 +233,10 @@ testthat::test_that("trauma_14 produces expected results", {
   )
 
   # Check calculations
-  testthat::expect_equal(sum(result$numerator), 5)
-  testthat::expect_equal(sum(result$denominator),5)
+  testthat::expect_equal(sum(result$numerator), 10)
+  testthat::expect_equal(sum(result$denominator),10)
   testthat::expect_equal(result$prop[result$pop == "10-64 yrs"], 1)
-  testthat::expect_equal(nrow(result), 3)
+  testthat::expect_equal(nrow(result), 4)
 
 })
 

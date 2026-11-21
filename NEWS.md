@@ -128,7 +128,16 @@
 - In `trauma_04_population()`, the pediatric (`< 10 years`) systolic blood
   pressure field triage criterion is now correctly evaluated as 
   `SBP >= (70 + (Age × 2))`, consistent with the published Trauma-04
-  specification.  
+  specification. 
+
+- Fixed pediatric field triage logic in `trauma_14_population()` to correctly
+  evaluate age-adjusted systolic blood pressure criteria for patients younger
+  than 10 years of age. The pediatric SBP threshold now uses `SBP >= (70 + (Age
+  × 2))`, aligning the implementation with the published Trauma-14
+  specification. In addition, an explicit total_population object was added by
+  combining the mutually exclusive age-stratified denominator populations
+  (`<10`, `10–64`, and `65+` years), enabling calculation of all-age Trauma-14
+  results while preserving the existing age-specific denominator logic. 
 
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is

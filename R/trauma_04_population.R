@@ -1524,7 +1524,7 @@ trauma_04_population <- function(
       "Pulse oximetry < 90",
       "SBP < 110",
       "Respiratory rate < 10 or > 29 ages < 10 yrs",
-      "SBP >= (Pt. Age * 2) + 70) ages < 10 yrs",
+      "SBP >= (Pt. Age * 2) + 70)) ages < 10 yrs",
       "Heart rate greater than SBP ages >= 10 yrs",
       "Met trauma triage criteria 1-2 ages 65+ yrs",
       "Met trauma triage criteria 1-2 ages 10-64 yrs",

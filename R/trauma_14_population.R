@@ -267,7 +267,7 @@ trauma_14_population <- function(
   # initiate the progress bar process ----
   progress_bar_population <- cli::cli_progress_bar(
     "Running `trauma_14_population()`",
-    total = 33,
+    total = 34,
     type = "tasks",
     clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
@@ -1141,7 +1141,7 @@ trauma_14_population <- function(
         by = rlang::as_name(rlang::enquo(erecord_01_col))
       ) |>
       dplyr::mutate(
-        SBP_10 = ({{ evitals_06_col }} + ({{ epatient_15_col }} * 2)) >= 70
+        SBP_10 = {{ evitals_06_col }} >= (70 + ({{ epatient_15_col }} * 2))
       ) |>
       dplyr::filter(SBP_10) |>
       dplyr::distinct({{ erecord_01_col }}) |>
@@ -1171,7 +1171,7 @@ trauma_14_population <- function(
         by = rlang::as_name(rlang::enquo(erecord_01_col))
       ) |>
       dplyr::mutate(
-        SBP_10 = ({{ evitals_06_col }} + ({{ epatient_15_col }} * 2)) >= 70
+        SBP_10 = {{ evitals_06_col }} >= (70 + ({{ epatient_15_col }} * 2))
       ) |>
       dplyr::filter(SBP_10) |>
       dplyr::distinct({{ erecord_01_col }}) |>
@@ -1445,10 +1445,24 @@ trauma_14_population <- function(
       )
   }
 
-  # summarize
   # progress update, these will be repeated throughout the script ----
   cli::cli_progress_update(
     set = 32,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
+  # total population with all age groups together ----
+  total_population <- dplyr::bind_rows(
+    pop_10,
+    pop_10_64,
+    pop_65
+  )
+
+  # summarize
+  # progress update, these will be repeated throughout the script ----
+  cli::cli_progress_update(
+    set = 33,
     id = progress_bar_population,
     force = TRUE
   )
@@ -1467,7 +1481,7 @@ trauma_14_population <- function(
       "Pulse oximetry < 90",
       "SBP < 110",
       "Respiratory rate < 10 or > 29 ages < 10 yrs",
-      "(SBP + (Pt. Age * 2)) >= 70 ages < 10 yrs",
+      "SBP >= (Pt. Age * 2) + 70)) ages < 10 yrs",
       "Heart rate greater than SBP ages >= 10 yrs",
       "Met trauma triage criteria 1-2 ages 65+ yrs",
       "Met trauma triage criteria 1-2 ages 10-64 yrs",
@@ -1522,7 +1536,7 @@ trauma_14_population <- function(
   )
 
   cli::cli_progress_update(
-    set = 33,
+    set = 34,
     id = progress_bar_population,
     force = TRUE
   )
@@ -1533,6 +1547,7 @@ trauma_14_population <- function(
     population_65 = pop_65,
     population_10_64 = pop_10_64,
     population_10 = pop_10,
+    total_population = total_population,
     initial_population = initial_population,
     computing_population = computing_population,
     missingness = missings
