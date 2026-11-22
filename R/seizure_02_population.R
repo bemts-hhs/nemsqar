@@ -19,7 +19,7 @@
 #' * a tibble for the initial population
 #' * a tibble for the total dataset with computations
 #' * a tibble with a summary of missingness for each column in each table
-#' 
+#'
 #' @details
 #'
 #' Adult and pediatric populations are determined using NEMSIS patient age
@@ -164,9 +164,24 @@ seizure_02_population <- function(
     )
   }
 
+  # Preserve the user's existing cli progress bar style ----
+  # Many *_population() functions temporarily modify the global
+  # `cli.progress_bar_style` option to display custom progress bars.
+  # Store the current value so it can be restored when the function exits,
+  # regardless of whether execution completes successfully or errors.
+  old_pb_style <- getOption("cli.progress_bar_style")
+
+  # Restore the user's original progress bar style on function exit ----
+  # This prevents package functions from permanently modifying global
+  # session options and avoids unintended side effects elsewhere in R.
+  on.exit(
+    options(cli.progress_bar_style = old_pb_style),
+    add = TRUE
+  )
+
   # options for the progress bar ----
   # a green dot for progress
-  # a white line for note done yet
+  # a white line for tasks not yet complete
   options(cli.progress_bar_style = "dot")
 
   options(

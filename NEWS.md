@@ -150,6 +150,11 @@
   documentation of SBP, DBP, heart rate, pulse oximetry, respiratory rate, and
   either GCS or AVPU.
 
+- All `*_population()` functions now save and restore the user's
+  `cli.progress_bar_style` option after execution. This prevents package
+  functions from leaving persistent changes to global session options and
+  improves package hygiene when using custom progress bars.
+
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is
   now calculated using `difftime(units = "auto")`, converting the result with
