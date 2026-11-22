@@ -48,6 +48,13 @@
   preserving identical numerators, denominators, and calculated performance
   results. 
 
+- Updated all `*_population()` functions to pass `calls = 2` to internal
+  validation helpers (e.g., `validate_data_pull()`, `validate_numeric()`,
+  `validate_class()`, and related validators). This change ensures that
+  warnings, messages, and errors correctly reference the user-facing
+  population function that triggered the validation rather than an internal
+  helper function, resulting in more accurate and informative diagnostics.
+
 ## Documentation
 
 - Corrected multiple comments in wrapper functions that incorrectly described
