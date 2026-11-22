@@ -316,7 +316,8 @@ trauma_14_population <- function(
       input = df,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       logic = "or",
-      type = "error"
+      type = "error",
+      calls = 2
     )
 
     # make tables from df ----
@@ -432,56 +433,64 @@ trauma_14_population <- function(
       input = patient_scene_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = response_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = situation_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = vitals_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = exam_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = procedures_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = injury_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = disposition_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     # patient ----

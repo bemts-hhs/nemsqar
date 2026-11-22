@@ -299,7 +299,8 @@ airway_01_population <- function(
       input = df,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     # make tables from df ----
@@ -378,35 +379,40 @@ airway_01_population <- function(
       input = patient_scene_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = procedures_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = vitals_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = response_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = arrest_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     # get distinct tables when passed to table arguments ----
@@ -478,7 +484,8 @@ airway_01_population <- function(
       class_type = c("date", "date-time"),
       logic = "or",
       type = "error",
-      var_name = "incident_date_col"
+      var_name = "incident_date_col",
+      calls = 2
     )
 
     validate_class(
@@ -486,7 +493,8 @@ airway_01_population <- function(
       class_type = c("date", "date-time"),
       logic = "or",
       type = "error",
-      var_name = "patient_DOB_col"
+      var_name = "patient_DOB_col",
+      calls = 2
     )
   }
 
@@ -517,7 +525,8 @@ airway_01_population <- function(
     class_type = c("date", "date-time"),
     logic = "or",
     type = "error",
-    var_name = "evitals_01_col"
+    var_name = "evitals_01_col",
+    calls = 2
   )
 
   validate_class(
@@ -525,7 +534,8 @@ airway_01_population <- function(
     class_type = c("date", "date-time"),
     logic = "or",
     type = "error",
-    var_name = "eprocedures_01_col"
+    var_name = "eprocedures_01_col",
+    calls = 2
   )
 
   cli::cli_progress_update(set = 2, id = progress_bar_population, force = TRUE)

@@ -233,7 +233,8 @@ syncope_01_population <- function(
       input = df,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       logic = "or",
-      type = "error"
+      type = "error",
+      calls = 2
     )
 
     # make tables from df ----
@@ -288,28 +289,32 @@ syncope_01_population <- function(
       input = patient_scene_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = response_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = situation_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = vitals_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     # get distinct tables when passed to table arguments ----
@@ -362,7 +367,8 @@ syncope_01_population <- function(
       class_type = c("date", "date-time"),
       logic = "or",
       type = "error",
-      var_name = "incident_date_col"
+      var_name = "incident_date_col",
+      calls = 2
     )
 
     validate_class(
@@ -370,7 +376,8 @@ syncope_01_population <- function(
       class_type = c("date", "date-time"),
       logic = "or",
       type = "error",
-      var_name = "patient_DOB_col"
+      var_name = "patient_DOB_col",
+      calls = 2
     )
   }
 

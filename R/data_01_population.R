@@ -305,7 +305,7 @@ data_01_population <- function(
     type = "error",
     col = {{ validity_score_col }},
     var_name = "validity_score_col",
-    calls = 5
+    calls = 2
   )
 
   ### validate validity data scale
@@ -318,7 +318,7 @@ data_01_population <- function(
     finite = FALSE,
     type = "error",
     var_name = "validity_score_col",
-    calls = 5
+    calls = 2
   )
 
   # progress update, these will be repeated throughout the script ----

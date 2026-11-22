@@ -327,7 +327,11 @@ trauma_04_population <- function(
   }
 
   # validate the trauma center IDs as character or factor ----
-  validate_character_factor(input = trauma_center_facility_IDs, type = "error")
+  validate_character_factor(
+    input = trauma_center_facility_IDs,
+    type = "error",
+    calls = 2
+  )
 
   # Preserve the user's existing cli progress bar style ----
   # Many *_population() functions temporarily modify the global
@@ -387,7 +391,8 @@ trauma_04_population <- function(
       input = df,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       logic = "or",
-      type = "error"
+      type = "error",
+      calls = 2
     )
 
     # make tables from df ----
@@ -504,56 +509,64 @@ trauma_04_population <- function(
       input = patient_scene_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = response_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = situation_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = vitals_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = exam_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = procedures_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = injury_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     validate_data_structure(
       input = disposition_table,
       structure_type = c("data.frame", "tbl", "tbl_df"),
       type = "error",
-      logic = "or"
+      logic = "or",
+      calls = 2
     )
 
     # get distinct tables when passed to table arguments ----
@@ -651,7 +664,8 @@ trauma_04_population <- function(
       class_type = c("date", "date-time"),
       logic = "or",
       type = "error",
-      var_name = "incident_date_col"
+      var_name = "incident_date_col",
+      calls = 2
     )
 
     validate_class(
@@ -659,7 +673,8 @@ trauma_04_population <- function(
       class_type = c("date", "date-time"),
       logic = "or",
       type = "error",
-      var_name = "patient_DOB_col"
+      var_name = "patient_DOB_col",
+      calls = 2
     )
   }
 
