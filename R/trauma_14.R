@@ -207,7 +207,7 @@ trauma_14 <- function(
     cli::cli_h2("Calculating Trauma-14")
 
     # all populations ----
-    population_all <- trauma_14_populations$initial_population |>
+    population_all <- trauma_14_populations$total_population |>
       summarize_measure(
         measure_name = "Trauma-14",
         population_name = "All",
@@ -362,7 +362,7 @@ trauma_14 <- function(
     cli::cli_h2("Calculating Trauma-14")
 
     # all populations ----
-    population_all <- trauma_14_populations$initial_population |>
+    population_all <- trauma_14_populations$total_population |>
       summarize_measure(
         measure_name = "Trauma-14",
         population_name = "All",

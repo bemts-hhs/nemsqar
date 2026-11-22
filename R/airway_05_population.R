@@ -194,7 +194,7 @@ airway_05_population <- function(
   # initiate the progress bar process ----
   progress_bar_population <- cli::cli_progress_bar(
     "Running `airway_05_population()`",
-    total = 15,
+    total = 16,
     type = "tasks",
     clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"

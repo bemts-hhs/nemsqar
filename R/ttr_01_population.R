@@ -203,7 +203,7 @@ ttr_01_population <- function(
   # initiate the progress bar process ----
   progress_bar_population <- cli::cli_progress_bar(
     "Running `ttr_01_population()`",
-    total = 13,
+    total = 11,
     type = "tasks",
     clear = FALSE,
     format = "{cli::pb_name} [Working on {cli::pb_current} of {cli::pb_total} tasks] {cli::pb_bar} | {cli::col_blue('Progress')}: {cli::pb_percent} | {cli::col_blue('Runtime')}: [{cli::pb_elapsed}]"
@@ -601,7 +601,7 @@ ttr_01_population <- function(
       sp02 = max(!is.na({{ evitals_12_col }})),
       rr = max(!is.na({{ evitals_14_col }})),
       gcs = max(!is.na({{ evitals_23_col }})),
-      avpu = max(!is.na({{ evitals_23_col }})),
+      avpu = max(!is.na({{ evitals_26_col }})),
       vitals = max(sbp & dbp & hr & sp02 & rr & (gcs | avpu), na.rm = TRUE),
       .by = {{ erecord_01_col }}
     ) |>
@@ -640,6 +640,18 @@ ttr_01_population <- function(
     force = TRUE
   )
 
+  # get the total population for the measure ----
+  total_population <- initial_population |>
+    dplyr::filter(
+      NOT_CARDIAC_ARREST
+    )
+
+  cli::cli_progress_update(
+    set = 8,
+    id = progress_bar_population,
+    force = TRUE
+  )
+
   # Adult and Pediatric Populations ----
 
   if (
@@ -657,7 +669,7 @@ ttr_01_population <- function(
       )
 
     cli::cli_progress_update(
-      set = 8,
+      set = 9,
       id = progress_bar_population,
       force = TRUE
     )
@@ -684,7 +696,7 @@ ttr_01_population <- function(
       )
 
     cli::cli_progress_update(
-      set = 8,
+      set = 9,
       id = progress_bar_population,
       force = TRUE
     )
@@ -701,7 +713,7 @@ ttr_01_population <- function(
   # summarize ----
 
   cli::cli_progress_update(
-    set = 9,
+    set = 10,
     id = progress_bar_population,
     force = TRUE
   )
@@ -733,7 +745,7 @@ ttr_01_population <- function(
   # get the populations of interest ----
 
   cli::cli_progress_update(
-    set = 10,
+    set = 11,
     id = progress_bar_population,
     force = TRUE
   )
@@ -743,6 +755,7 @@ ttr_01_population <- function(
     filter_process = filter_counts,
     adults = adult_pop,
     peds = peds_pop,
+    total_population = total_population,
     initial_population = initial_population,
     computing_population = computing_population,
     missingness = missings

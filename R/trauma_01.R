@@ -245,7 +245,7 @@ trauma_01 <- function(
       population_names = c("all", "adults", "peds"),
       measure_name = "Trauma-01",
       numerator_col = PAIN_SCALE,
-      confidence_interval,
+      confidence_interval = confidence_interval,
       method = method,
       conf.level = conf.level,
       correct = correct,

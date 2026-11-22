@@ -162,10 +162,10 @@ ttr_01 <- function(
 
     # summarize ----
     ttr.01 <- results_summarize(
-      total_population = ttr_01_populations$initial_population,
+      total_population = ttr_01_populations$total_population,
       adult_population = ttr_01_populations$adults,
       peds_population = ttr_01_populations$peds,
-      population_names = c("adults", "peds"),
+      population_names = c("all", "adults", "peds"),
       measure_name = "TTR-01",
       numerator_col = VITALS,
       confidence_interval = confidence_interval,
@@ -259,10 +259,10 @@ ttr_01 <- function(
 
     # summarize ----
     ttr.01 <- results_summarize(
-      total_population = NULL,
+      total_population = ttr_01_populations$total_population,
       adult_population = ttr_01_populations$adults,
       peds_population = ttr_01_populations$peds,
-      population_names = c("adults", "peds"),
+      population_names = c("all", "adults", "peds"),
       measure_name = "TTR-01",
       numerator_col = VITALS,
       confidence_interval = confidence_interval,
