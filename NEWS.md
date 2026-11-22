@@ -139,6 +139,14 @@
   (`<10`, `10–64`, and `65+` years), enabling calculation of all-age Trauma-14
   results while preserving the existing age-specific denominator logic. 
 
+- Fixed numerator eligibility logic in `ttr_01_population()` by correcting AVPU
+  documentation detection to use `evitals_26_col` (AVPU) rather than
+  `evitals_23_col` (GCS). Previously, the numerator check effectively evaluated
+  GCS documentation twice and did not independently assess AVPU documentation.
+  The update aligns the implementation with the TTR-01 specification requiring
+  documentation of SBP, DBP, heart rate, pulse oximetry, respiratory rate, and
+  either GCS or AVPU.
+
 # nemsqar 1.2.1
 - Updated how wrapper functions report runtime (e.g., `airway_01()`). Runtime is
   now calculated using `difftime(units = "auto")`, converting the result with

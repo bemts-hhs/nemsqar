@@ -25,6 +25,13 @@
 #' * a tibble for the total dataset with computations
 #' * a tibble with a summary of missingness for each column in each table
 #'
+#' @details
+#'
+#' Adult and pediatric populations are determined using NEMSIS patient age
+#' fields. When both `incident_date_col` and `patient_DOB_col` are supplied,
+#' calculated age is used in conjunction with reported age variables to improve
+#' population classification.
+#'
 #' @examples
 #'
 #' # create tables to test correct functioning

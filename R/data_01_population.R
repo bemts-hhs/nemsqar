@@ -10,9 +10,11 @@
 #' Data-01 evaluates EMS registry data validity using pre-calculated record
 #' validity scores supplied by the EMS software vendor or registry. Validity
 #' scores must be numeric values bounded to the interval `[0, 1]`, where
-#' larger values indicate greater record validity. Users with validity scores
-#' reported as percentages (e.g., `[0, 100]`) should convert scores to
-#' proportions prior to using this function.
+#' larger values indicate greater conformance with registry-defined data quality
+#' expectations, such as completeness, valid values, formatting requirements,
+#' and other validation rules. Users with validity scores reported as
+#' percentages (e.g., `[0, 100]`) should convert scores to proportions prior to
+#' using this function.
 #'
 #' The function supports two data input workflows:
 #'
@@ -38,14 +40,12 @@
 #' @param validity_score_col Numeric validity score variable bounded to
 #'   `[0, 1]`.
 #'
-#' @return A named list containing:
-#'
-#' - `filter_process`: Counts of records retained at major filtering steps.
-#' - `adults`: Adult analysis population.
-#' - `peds`: Pediatric analysis population.
-#' - `initial_population`: Overall denominator population.
-#' - `computing_population`: Population prior to denominator filtering.
-#' - `missingness`: Missingness summary for measure variables.
+#' @return A list that contains the following:
+#' * a tibble with counts for each filtering step,
+#' * a tibble for each population of interest
+#' * a tibble for the initial population
+#' * a tibble for the total dataset with computations
+#' * a tibble with a summary of missingness for each column in each table
 #'
 #' Additional variables are created in the returned populations including:
 #'
@@ -58,8 +58,8 @@
 #'
 #' Adult and pediatric populations are determined using NEMSIS patient age
 #' fields. When both `incident_date_col` and `patient_DOB_col` are supplied,
-#' age calculations derived from event dates are incorporated into population
-#' assignment.
+#' calculated age is used in conjunction with reported age variables to improve
+#' population classification.
 #'
 #' Validity score ranges are categorized into predefined intervals used
 #' throughout the Data-01 validity score reporting framework.
