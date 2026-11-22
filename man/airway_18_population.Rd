@@ -104,6 +104,12 @@ A list that contains the following:
 This function processes and analyzes the dataset to generate the populations
 of interest needed to perform calculations to obtain performance data.
 }
+\details{
+Adult and pediatric populations are determined using NEMSIS patient age
+fields. When both \code{incident_date_col} and \code{patient_DOB_col} are supplied,
+calculated age is used in conjunction with reported age variables to improve
+population classification.
+}
 \examples{
 
 # If you are sourcing your data from a SQL database connection

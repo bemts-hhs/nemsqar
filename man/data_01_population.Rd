@@ -58,14 +58,13 @@ contact encounters.}
 \verb{[0, 1]}.}
 }
 \value{
-A named list containing:
+A list that contains the following:
 \itemize{
-\item \code{filter_process}: Counts of records retained at major filtering steps.
-\item \code{adults}: Adult analysis population.
-\item \code{peds}: Pediatric analysis population.
-\item \code{initial_population}: Overall denominator population.
-\item \code{computing_population}: Population prior to denominator filtering.
-\item \code{missingness}: Missingness summary for measure variables.
+\item a tibble with counts for each filtering step,
+\item a tibble for each population of interest
+\item a tibble for the initial population
+\item a tibble for the total dataset with computations
+\item a tibble with a summary of missingness for each column in each table
 }
 
 Additional variables are created in the returned populations including:
@@ -85,9 +84,11 @@ validity score analyses.
 Data-01 evaluates EMS registry data validity using pre-calculated record
 validity scores supplied by the EMS software vendor or registry. Validity
 scores must be numeric values bounded to the interval \verb{[0, 1]}, where
-larger values indicate greater record validity. Users with validity scores
-reported as percentages (e.g., \verb{[0, 100]}) should convert scores to
-proportions prior to using this function.
+larger values indicate greater conformance with registry-defined data quality
+expectations, such as completeness, valid values, formatting requirements,
+and other validation rules. Users with validity scores reported as
+percentages (e.g., \verb{[0, 100]}) should convert scores to proportions prior to
+using this function.
 
 The function supports two data input workflows:
 \itemize{
@@ -105,8 +106,8 @@ calculated ages are utilized to derive adult and pediatric populations.
 \details{
 Adult and pediatric populations are determined using NEMSIS patient age
 fields. When both \code{incident_date_col} and \code{patient_DOB_col} are supplied,
-age calculations derived from event dates are incorporated into population
-assignment.
+calculated age is used in conjunction with reported age variables to improve
+population classification.
 
 Validity score ranges are categorized into predefined intervals used
 throughout the Data-01 validity score reporting framework.

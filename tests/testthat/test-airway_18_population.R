@@ -567,6 +567,7 @@ testthat::test_that("Test for correct input handling (table method)", {
         "all",
         "adults",
         "peds",
+        "total_population",
         "initial_population",
         "computing_population",
         "missingness"

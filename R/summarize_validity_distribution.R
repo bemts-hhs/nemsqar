@@ -130,7 +130,7 @@ summarize_validity_distribution <- function(
         n_validity_complete = sum(!is.na({{ validity_score_col }})),
         n_validity_miss = sum(is.na({{ validity_score_col }})),
         n_obs = dplyr::n(),
-        .by = group_vars
+        .by = dplyr::all_of(group_vars)
       )
   }
 

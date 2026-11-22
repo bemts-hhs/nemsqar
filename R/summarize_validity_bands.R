@@ -124,7 +124,10 @@ summarize_validity_bands <- function(
   if (!is.null(group_vars)) {
     # get total records by group for (optional) requested subgroup analysis ----
     denominators <- data |>
-      dplyr::summarize(denominator = dplyr::n(), .by = group_vars)
+      dplyr::summarize(
+        denominator = dplyr::n(),
+        .by = dplyr::all_of(group_vars)
+      )
 
     # perform calculations ----
     out[["stratified"]] <- data |>
@@ -132,7 +135,7 @@ summarize_validity_bands <- function(
         measure = measure_name,
         pop = population_name,
         numerator = dplyr::n(),
-        .by = c(group_vars, {{ validity_score_col }})
+        .by = c(dplyr::all_of(group_vars), {{ validity_score_col }})
       ) |>
       dplyr::left_join(denominators, by = group_vars) |>
       dplyr::arrange({{ validity_score_col }}) |>

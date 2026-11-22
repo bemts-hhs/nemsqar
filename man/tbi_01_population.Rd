@@ -106,6 +106,12 @@ This function screens for potential traumatic brain injury (TBI) cases based
 on specific criteria in a patient dataset. It produces a subset of the data
 with calculated variables for TBI identification.
 }
+\details{
+Adult and pediatric populations are determined using NEMSIS patient age
+fields. When both \code{incident_date_col} and \code{patient_DOB_col} are supplied,
+calculated age is used in conjunction with reported age variables to improve
+population classification.
+}
 \examples{
 # create tables to test correct functioning
 

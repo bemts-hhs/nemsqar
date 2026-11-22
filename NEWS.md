@@ -55,6 +55,9 @@
   referenced two groups despite results being calculated and displayed for
   three populations.
 
+- Added clarification to each `*_population()` function about how adult and
+  pediatric populations are identified within each function.
+
 ## Bug fixes
 
 - `stroke_01_population()` incorrectly applied exclusion criteria for cases

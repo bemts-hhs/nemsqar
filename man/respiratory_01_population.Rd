@@ -88,6 +88,12 @@ and initial populations. This function uses specific data columns for 911
 response codes, primary and secondary impressions, and vital signs to filter
 a dataset down to the populations of interest.
 }
+\details{
+Adult and pediatric populations are determined using NEMSIS patient age
+fields. When both \code{incident_date_col} and \code{patient_DOB_col} are supplied,
+calculated age is used in conjunction with reported age variables to improve
+population classification.
+}
 \examples{
 # create tables to test correct functioning
 

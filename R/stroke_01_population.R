@@ -23,7 +23,7 @@
 #' * a tibble for the initial population
 #' * a tibble for the total dataset with computations
 #' * a tibble with a summary of missingness for each column in each table
-#' 
+#'
 #' @details
 #'
 #' Adult and pediatric populations are determined using NEMSIS patient age
@@ -86,6 +86,8 @@
 #'                               erecord_01_col = erecord_01,
 #'                               incident_date_col = incident_date,
 #'                               patient_DOB_col = patient_dob,
+#'                               epatient_15_col = epatient_15,
+#'                               epatient_16_col = epatient_16,
 #'                               eresponse_05_col = eresponse_05,
 #'                               esituation_11_col = esituation_11,
 #'                               esituation_12_col = esituation_12,

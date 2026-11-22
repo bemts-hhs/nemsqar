@@ -89,6 +89,12 @@ dataset, specifically focusing on cases where 911 was called for respiratory
 distress, and certain medications were administered. This function segments
 the data by age into adult and pediatric populations.
 }
+\details{
+Adult and pediatric populations are determined using NEMSIS patient age
+fields. When both \code{incident_date_col} and \code{patient_DOB_col} are supplied,
+calculated age is used in conjunction with reported age variables to improve
+population classification.
+}
 \examples{
 
 # create tables to test correct functioning

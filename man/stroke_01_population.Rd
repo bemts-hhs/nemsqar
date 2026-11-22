@@ -96,6 +96,12 @@ Identifies key categories related to stroke-related incidents in an EMS
 dataset, specifically focusing on cases where 911 was called for stroke, and
 a stroke scale was administered. .
 }
+\details{
+Adult and pediatric populations are determined using NEMSIS patient age
+fields. When both \code{incident_date_col} and \code{patient_DOB_col} are supplied,
+calculated age is used in conjunction with reported age variables to improve
+population classification.
+}
 \examples{
 
 # create tables to test correct functioning
@@ -151,6 +157,8 @@ a stroke scale was administered. .
                               erecord_01_col = erecord_01,
                               incident_date_col = incident_date,
                               patient_DOB_col = patient_dob,
+                              epatient_15_col = epatient_15,
+                              epatient_16_col = epatient_16,
                               eresponse_05_col = eresponse_05,
                               esituation_11_col = esituation_11,
                               esituation_12_col = esituation_12,
