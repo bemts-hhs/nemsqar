@@ -137,12 +137,12 @@ results_validity_summarize <- function(
     counts_overall$adults <- adults$counts$overall
 
     ## optionally collect grouped data on the distribution ----
-    if (length(group_vars) > 0) {
+    if (!is.null(group_vars)) {
       distribution_stratified$adults <- adults$distribution$stratified
     }
 
     ## optionally collect grouped data on the counts ----
-    if (length(group_vars) > 0) {
+    if (!is.null(group_vars)) {
       counts_stratified$adults <- adults$counts$stratified
     }
   }
@@ -177,12 +177,12 @@ results_validity_summarize <- function(
     counts_overall$peds <- peds$counts$overall
 
     ## optionally collect grouped data on the distribution ----
-    if (length(group_vars) > 0) {
+    if (!is.null(group_vars)) {
       distribution_stratified$peds <- peds$distribution$stratified
     }
 
     ## optionally collect grouped data on the counts ----
-    if (length(group_vars) > 0) {
+    if (!is.null(group_vars)) {
       counts_stratified$peds <- peds$counts$stratified
     }
   }
@@ -217,12 +217,12 @@ results_validity_summarize <- function(
     counts_overall$all <- all$counts$overall
 
     ## optionally collect grouped data on the distribution ----
-    if (length(group_vars) > 0) {
+    if (!is.null(group_vars)) {
       distribution_stratified$all <- all$distribution$stratified
     }
 
     ## optionally collect grouped data on the counts ----
-    if (length(group_vars) > 0) {
+    if (!is.null(group_vars)) {
       counts_stratified$all <- all$counts$stratified
     }
   }
@@ -232,7 +232,7 @@ results_validity_summarize <- function(
     overall = dplyr::bind_rows(distribution_overall)
   )
 
-  if (length(group_vars) > 0) {
+  if (!is.null(group_vars)) {
     results_list$distribution$stratified <-
       dplyr::bind_rows(distribution_stratified)
   }
@@ -242,7 +242,7 @@ results_validity_summarize <- function(
     overall = dplyr::bind_rows(counts_overall)
   )
 
-  if (length(group_vars) > 0) {
+  if (!is.null(group_vars)) {
     results_list$counts$stratified <-
       dplyr::bind_rows(counts_stratified)
   }

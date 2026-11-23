@@ -1,4 +1,7 @@
 utils::globalVariables(c(
+  "RECORD_COMPLETION_HOURS",
+  "RECORD_COMPLETION_DAYS",
+  "RECORD_COMPLETION_DAYS_LABEL",
   "data_source",
   "column",
   "n_missing",

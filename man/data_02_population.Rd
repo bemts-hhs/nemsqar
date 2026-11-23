@@ -9,14 +9,15 @@ data_02_population(
   patient_scene_table = NULL,
   audit_table = NULL,
   disposition_table = NULL,
+  times_table = NULL,
   erecord_01_col,
   incident_date_col = NULL,
   patient_DOB_col = NULL,
   epatient_15_col,
   epatient_16_col,
   patient_care_col,
-  incident_created_col,
-  etimes_13_col
+  time_available_to_document_col,
+  time_documentation_occurred_col
 )
 }
 \arguments{
@@ -34,6 +35,15 @@ System (NEMSIS) data standard.}
 
 \item{disposition_table}{A data.frame or tibble containing only the
 edisposition fields needed for this measure's calculations.}
+
+\item{times_table}{A data.frame or tibble containing event date-time
+variables used to evaluate documentation timeliness. These variables may
+include NEMSIS time elements (e.g., unit back in service date/time) or
+registry-, vendor-, or agency-specific timestamps related to record
+creation, modification, submission, approval, or other documentation
+workflow events. The contents of this table may not correspond entirely
+to elements defined within the National EMS Information System (NEMSIS)
+data standard.}
 
 \item{erecord_01_col}{The column representing the EMS record unique
 identifier.}
@@ -54,6 +64,18 @@ of unit.}
 
 \item{patient_care_col}{Disposition variable used to identify patient
 contact encounters.}
+
+\item{time_available_to_document_col}{Date-time variable representing
+the point at which patient care documentation could reasonably begin.
+Examples may include unit back in service time, back at home location time,
+ems call completed time, and others.}
+
+\item{time_documentation_occurred_col}{Date-time variable representing
+when patient care documentation was completed or first entered into the
+EMS software, registry, or other documentation system. This variable is
+typically vendor- or registry-specific and may not correspond to a NEMSIS
+data element. Examples include incident created time, incident completed
+time, and others.}
 }
 \value{
 A list that contains the following:
@@ -66,27 +88,33 @@ A list that contains the following:
 }
 
 Additional variables are created in the returned populations including:
+\itemize{
+\item \code{PATIENT_CARE}
+\item \code{RECORD_COMPLETION_HOURS}
+\item \code{RECORD_COMPLETION_DAYS}
+\item \code{RECORD_COMPLETION_DAYS_RANGE}
+\item \code{RECORD_COMPLETION_DAYS_LABEL}
+\item \code{DOCUMENTATION_OCCURRED_BEFORE_AVAILABLE}
+}
 }
 \description{
-Creates the analysis populations for the Data-01 validity score measure.
-The function prepares a computing population, overall denominator
+Creates the analysis populations for the Data-02 documentation timeliness
+measure. The function prepares a computing population, overall denominator
 population, adult population, and pediatric population for subsequent
-validity score analyses.
+documentation timeliness analyses.
 
-Data-01 evaluates EMS registry data validity using pre-calculated record
-validity scores supplied by the EMS software vendor or registry. Validity
-scores must be numeric values bounded to the interval \verb{[0, 1]}, where
-larger values indicate greater conformance with registry-defined data quality
-expectations, such as completeness, valid values, formatting requirements,
-and other validation rules. Users with validity scores reported as
-percentages (e.g., \verb{[0, 100]}) should convert scores to proportions prior to
-using this function.
+Data-02 evaluates the timeliness of EMS patient care documentation using
+user-defined date-time variables that represent when documentation could
+reasonably begin and when documentation occurred. Elapsed documentation
+time is calculated in hours and days and categorized into predefined
+reporting intervals.
 
 The function supports two data input workflows:
 \itemize{
 \item A single analytic dataset supplied through \code{df}.
-\item Separate patient, audit, and disposition tables supplied through
-\code{patient_scene_table}, \code{audit_table}, and \code{disposition_table}.
+\item Separate patient, audit, disposition, and times tables supplied through
+\code{patient_scene_table}, \code{audit_table}, \code{disposition_table}, and
+\code{times_table}.
 }
 
 Records are restricted to patients with documented patient evaluation,
@@ -95,11 +123,30 @@ refusal, death, or treatment dispositions indicating patient contact.
 When incident and date-of-birth variables are supplied, both reported and
 calculated ages are utilized to derive adult and pediatric populations.
 }
+\details{
+Adult and pediatric populations are determined using NEMSIS patient age
+fields. When both \code{incident_date_col} and \code{patient_DOB_col} are supplied,
+calculated age is used in conjunction with reported age variables to improve
+population classification.
+
+Documentation timeliness is calculated as the elapsed time between
+\code{time_available_to_document_col} and
+\code{time_documentation_occurred_col}. Elapsed time is reported in both hours
+and days and categorized into predefined documentation timeliness bands.
+
+A chronology flag (\code{DOCUMENTATION_OCCURRED_BEFORE_AVAILABLE}) is created
+when documentation occurs before the documentation-available timestamp.
+Such records are retained because they may reflect registry workflows,
+CAD-generated records, automated record creation processes, or agency-
+specific documentation practices.
+}
 \examples{
 
-# Synthetic Data-01 example
+# Synthetic Data-02 example
 test_data <- tibble::tibble(
   erecord_01 = paste0("R", 1:10),
+
+  # Incident and demographic variables
   incident_date = as.Date("2024-01-01"),
   patient_dob = as.Date(c(
     "1980-01-01", "1975-01-01", "1990-01-01", "1985-01-01",
@@ -107,12 +154,60 @@ test_data <- tibble::tibble(
     "2018-01-01", "2016-01-01"
   )),
   epatient_15 = c(44, 49, 34, 39, 54, 9, 12, 14, 6, 8),
-  epatient_16 = rep("Years", 10)
+  epatient_16 = rep("Years", 10),
+
+  # Patient contact disposition
+  patient_disposition = rep(
+    "Patient Treated, Transported by this EMS Unit (4212033)",
+    10
+  ),
+
+  # Time documentation became available
+  unit_back_in_service = as.POSIXct(
+    "2024-01-01 08:00:00",
+    tz = "UTC"
+  ) + c(
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0
+  ) * 86400,
+
+  # Time documentation occurred
+  incident_created = as.POSIXct(
+    c(
+      "2024-01-01 11:00:00",  # 3 hours
+      "2024-01-01 18:00:00",  # 10 hours
+      "2024-01-02 04:00:00",  # 20 hours
+      "2024-01-02 12:00:00",  # 28 hours
+      "2024-01-03 12:00:00",  # 52 hours
+      "2024-01-05 12:00:00",  # 4 days
+      "2024-01-10 12:00:00",  # 9 days
+      "2024-01-20 12:00:00",  # 19 days
+      "2024-02-15 12:00:00",  # 45 days
+      "2024-04-15 12:00:00"   # >60 days
+    ),
+    tz = "UTC"
   )
 )
 
 # Create the Data-02 populations
 data_02_population(
+  df = test_data,
+  erecord_01_col = erecord_01,
+  incident_date_col = incident_date,
+  patient_DOB_col = patient_dob,
+  epatient_15_col = epatient_15,
+  epatient_16_col = epatient_16,
+  patient_care_col = patient_disposition,
+  time_available_to_document_col = unit_back_in_service,
+  time_documentation_occurred_col = incident_created
 )
 
 }

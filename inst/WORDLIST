@@ -6,6 +6,7 @@ Biometrika
 CMD
 Clopper
 Codecov
+DBP
 ETCO
 GCS
 Geissert
@@ -24,6 +25,7 @@ Peds
 README
 ROSC
 RXCUI
+SBP
 TBI
 TTR
 Tibbles
@@ -74,6 +76,7 @@ pseudocode
 responders
 rlang
 simulataneously
+summarization
 tibble
 tibbles
 wilson

@@ -102,7 +102,7 @@ Distribution summaries include:
 \item Number of observations.
 \item Number of missing validity scores.
 \item Minimum, maximum, mean, and standard deviation.
-\item 25th percentile, median, 75th percentile, and 90th percentile.
+\item Percentiles: 25, median, 75, and 90.
 }
 
 Count summaries include:

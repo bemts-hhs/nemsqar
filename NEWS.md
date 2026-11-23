@@ -50,7 +50,7 @@
 
 - Updated all `*_population()` functions to pass `calls = 2` to internal
   validation helpers (e.g., `validate_data_pull()`, `validate_numeric()`,
-  `validate_class()`, and related validators). This change ensures that
+  `validate_class()`, and related validate functions). This change ensures that
   warnings, messages, and errors correctly reference the user-facing
   population function that triggered the validation rather than an internal
   helper function, resulting in more accurate and informative diagnostics.
@@ -142,12 +142,13 @@
 
 - Fixed pediatric field triage logic in `trauma_14_population()` to correctly
   evaluate age-adjusted systolic blood pressure criteria for patients younger
-  than 10 years of age. The pediatric SBP threshold now uses `SBP >= (70 + (Age
-  × 2))`, aligning the implementation with the published Trauma-14
-  specification. In addition, an explicit total_population object was added by
-  combining the mutually exclusive age-stratified denominator populations
-  (`<10`, `10–64`, and `65+` years), enabling calculation of all-age Trauma-14
-  results while preserving the existing age-specific denominator logic. 
+  than 10 years of age. The pediatric SBP threshold now uses 
+  `SBP >= (70 + (Age × 2))`, aligning the implementation with the published
+  Trauma-14 specification. In addition, an explicit total_population object was
+  added by combining the mutually exclusive age-stratified denominator
+  populations (`<10`, `10–64`, and `65+` years), enabling calculation of all-age
+  Trauma-14 results while preserving the existing age-specific denominator
+  logic. 
 
 - Fixed numerator eligibility logic in `ttr_01_population()` by correcting AVPU
   documentation detection to use `evitals_26_col` (AVPU) rather than
@@ -168,6 +169,7 @@
   `as.numeric()` and extracting the dynamic time unit via 
   `attr(which = "units")`. This makes the time unit automatic and avoids
   potential downstream issues.  
+
 - Corrected a typo involving ETCO2 across several functions, `globalVariables.R`,
   and `constants.R`, where it appeared as “etc02” in various cases. All instances
   were fixed by replacing the zero with the letter “o” (case‑sensitive). 

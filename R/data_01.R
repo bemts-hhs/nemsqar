@@ -45,7 +45,7 @@
 #' - Number of observations.
 #' - Number of missing validity scores.
 #' - Minimum, maximum, mean, and standard deviation.
-#' - 25th percentile, median, 75th percentile, and 90th percentile.
+#' - Percentiles: 25, median, 75, and 90.
 #'
 #' Count summaries include:
 #'
@@ -143,7 +143,7 @@ data_01 <- function(
       !is.null(df)
   ) {
     cli::cli_abort(
-      "{.fn data_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
+      "{.fn data_01} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
     )
   }
 
@@ -260,10 +260,28 @@ data_01 <- function(
 
     # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
+
+    ## check for small n in the overall object ----
+    small_n_overall <- any(
+      data.01$counts$overall$denominator < 10,
+      na.rm = TRUE
+    )
+
+    ## initialize small_n_stratified in case group_vars is null ----
+    small_n_stratified <- FALSE
+
+    ## optionally check for small n in the stratified object ----
+    if (!is.null(group_vars)) {
+      small_n_stratified <- any(
+        data.01$counts$stratified$denominator < 10,
+        na.rm = TRUE
+      )
+    }
+
     if (
-      any(data.01$denominator < 10) &&
+      confidence_interval &&
         method == "wilson" &&
-        confidence_interval
+        (small_n_overall || small_n_stratified)
     ) {
       cli::cli_warn(
         "In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10."
@@ -351,10 +369,28 @@ data_01 <- function(
 
     # when confidence interval is "wilson", check for n < 10 ----
     # to warn about incorrect Chi-squared approximation
+
+    ## check for small n in the overall object ----
+    small_n_overall <- any(
+      data.01$counts$overall$denominator < 10,
+      na.rm = TRUE
+    )
+
+    ## initialize small_n_stratified in case group_vars is null ----
+    small_n_stratified <- FALSE
+
+    ## optionally check for small n in the stratified object ----
+    if (!is.null(group_vars)) {
+      small_n_stratified <- any(
+        data.01$counts$stratified$denominator < 10,
+        na.rm = TRUE
+      )
+    }
+
     if (
-      any(data.01$denominator < 10) &&
+      confidence_interval &&
         method == "wilson" &&
-        confidence_interval
+        (small_n_overall || small_n_stratified)
     ) {
       cli::cli_warn(
         "In {.fn prop.test}: Chi-squared approximation may be incorrect for any n < 10."

@@ -103,7 +103,6 @@
 #'
 #' @export
 #'
-# define the function ----
 data_01_population <- function(
   df = NULL,
   patient_scene_table = NULL,
@@ -128,7 +127,7 @@ data_01_population <- function(
       !is.null(df)
   ) {
     cli::cli_abort(
-      "{.fn data_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
+      "{.fn data_01_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all table arguments."
     )
   }
 

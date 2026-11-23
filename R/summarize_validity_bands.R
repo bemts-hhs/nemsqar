@@ -63,7 +63,7 @@
 #'     subgroup.
 #'   - `prop`: Proportion of records in the validity score range.
 #'   - `prop_label`: Formatted percentage representation of `prop`.
-#'   - `lower_ci`, `upper_ci`: Confidence interval bounds when
+#'   - `lower_ci`, `upper_ci`: Optional confidence interval bounds.
 #'
 #' @author Nicolas Foss, Ed.D., MS
 #'

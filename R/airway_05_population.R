@@ -143,7 +143,7 @@ airway_05_population <- function(
       !is.null(df)
   ) {
     cli::cli_abort(
-      "{.fn airway_05_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all four of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all four table arguments."
+      "{.fn airway_05_population} will only work by passing a {.cls data.frame} or {.cls tibble} to the {.var df} argument, or by fulfilling all of the table arguments.  Please choose to either pass an object of class {.cls data.frame} or {.cls tibble} to the {.var df} argument, or fulfill all of the table arguments."
     )
   }
 

@@ -758,6 +758,50 @@ validity_labels_pct <-
     "%"
   )
 
+# time band breaks for data-02 ----
+
+time_band_breaks <- c(
+  0,
+  0.25,
+  0.50,
+  1,
+  2,
+  3,
+  7,
+  14,
+  30,
+  60,
+  Inf
+)
+
+# time band labels with raw values for data-02 ----
+time_band_labels_raw <- c(
+  "0-0.25",
+  "0.25-0.50",
+  "0.50-1",
+  "1-2",
+  "2-3",
+  "3-7",
+  "7-14",
+  "14-30",
+  "30-60",
+  "60+"
+)
+
+# clean time band labels for data-02 ----
+time_band_labels <- c(
+  "<6 Hours",
+  "6-12 Hours",
+  "12-24 Hours",
+  "1-2 Days",
+  "2-3 Days",
+  "3-7 Days",
+  "1-2 Weeks",
+  "2-4 Weeks",
+  "1-2 Months",
+  ">60 Days"
+)
+
 # answer yes! ----
 yes_code <- "9923003|Yes"
 
