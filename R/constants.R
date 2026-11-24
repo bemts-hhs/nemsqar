@@ -791,7 +791,7 @@ time_band_labels_raw <- c(
 
 # clean time band labels for data-02 ----
 time_band_labels <- c(
-  "Record Created Prior to Documentation Availability",
+  "Negative Elapsed Documentation Time",
   "<6 Hours",
   "6-12 Hours",
   "12-24 Hours",
