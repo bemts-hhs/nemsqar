@@ -759,8 +759,8 @@ validity_labels_pct <-
   )
 
 # time band breaks for data-02 ----
-
 time_band_breaks <- c(
+  -Inf,
   0,
   0.25,
   0.50,
@@ -776,6 +776,7 @@ time_band_breaks <- c(
 
 # time band labels with raw values for data-02 ----
 time_band_labels_raw <- c(
+  "<0",
   "0-0.25",
   "0.25-0.50",
   "0.50-1",
@@ -788,8 +789,10 @@ time_band_labels_raw <- c(
   "60+"
 )
 
+
 # clean time band labels for data-02 ----
 time_band_labels <- c(
+  "Record Created Prior to Documentation Availability",
   "<6 Hours",
   "6-12 Hours",
   "12-24 Hours",

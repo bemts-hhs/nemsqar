@@ -136,7 +136,7 @@ testthat::test_that("all populations are represented", {
 # Confidence intervals ------------------------------------------------------
 
 testthat::test_that("confidence intervals are added when requested", {
-  results <- nemsqar::data_01(
+  results <- suppressWarnings(nemsqar::data_01(
     df = test_data_01,
     erecord_01_col = erecord_01,
     incident_date_col = incident_date,
@@ -146,7 +146,7 @@ testthat::test_that("confidence intervals are added when requested", {
     patient_care_col = patient_disposition,
     validity_score_col = incident_validity_score,
     confidence_interval = TRUE
-  )
+  ))
 
   testthat::expect_true(
     "lower_ci" %in%
@@ -158,6 +158,20 @@ testthat::test_that("confidence intervals are added when requested", {
       names(results$counts$overall)
   )
 })
+
+testthat::expect_warning(
+  object = nemsqar::data_01(
+    df = test_data_01,
+    erecord_01_col = erecord_01,
+    incident_date_col = incident_date,
+    patient_DOB_col = patient_dob,
+    epatient_15_col = epatient_15,
+    epatient_16_col = epatient_16,
+    patient_care_col = patient_disposition,
+    validity_score_col = incident_validity_score,
+    confidence_interval = TRUE
+  )
+)
 
 # Stratified analysis -------------------------------------------------------
 
