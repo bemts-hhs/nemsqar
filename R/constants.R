@@ -789,7 +789,6 @@ time_band_labels_raw <- c(
   "60+"
 )
 
-
 # clean time band labels for data-02 ----
 time_band_labels <- c(
   "Record Created Prior to Documentation Availability",

@@ -1,42 +1,43 @@
 # Platform
 
-|field    |value                                                                                                                                                                                       |
-|:--------|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-|version  |R version 4.5.1 (2025-06-13 ucrt)                                                                                                                                                           |
-|os       |Windows 10 x64 (build 19045)                                                                                                                                                                |
-|system   |x86_64, mingw32                                                                                                                                                                             |
-|ui       |RStudio                                                                                                                                                                                     |
-|language |(EN)                                                                                                                                                                                        |
-|collate  |English_United States.utf8                                                                                                                                                                  |
-|ctype    |English_United States.utf8                                                                                                                                                                  |
-|tz       |America/Chicago                                                                                                                                                                             |
-|date     |2025-07-16                                                                                                                                                                                  |
-|rstudio  |2025.05.0+496 Mariposa Orchid (desktop)                                                                                                                                                     |
-|pandoc   |3.4 @ C:/Program Files/RStudio/resources/app/bin/quarto/bin/tools/ (via rmarkdown)                                                                                                          |
-|quarto   |ERROR: Unknown command "TMPDIR=C:/Users/nfoss0/AppData/Local/Temp/Rtmp6ntvOk/file3c847015a27". Did you mean command "install"? @ C:\PROGRA~1\RStudio\RESOUR~1\app\bin\quarto\bin\quarto.exe |
+|field    |value                                                                 |
+|:--------|:---------------------------------------------------------------------|
+|version  |R version 4.6.2 (2026-10-29 ucrt)                                     |
+|os       |Windows 11 x64 (build 26300)                                          |
+|system   |x86_64, mingw32                                                       |
+|ui       |Positron                                                              |
+|language |(EN)                                                                  |
+|collate  |English_United States.utf8                                            |
+|ctype    |English_United States.utf8                                            |
+|tz       |America/Chicago                                                       |
+|date     |2026-11-24                                                            |
+|pandoc   |NA                                                                    |
+|quarto   |1.11.9 @ C:\Users\nfoss0\AppData\Local\Programs\Quarto\bin\quarto.exe |
 
 # Dependencies
 
-|package    |old |new    |Δ  |
-|:----------|:---|:------|:--|
-|cli        |NA  |3.6.5  |*  |
-|cpp11      |NA  |0.5.2  |*  |
-|dplyr      |NA  |1.1.4  |*  |
-|generics   |NA  |0.1.4  |*  |
-|glue       |NA  |1.8.0  |*  |
-|lifecycle  |NA  |1.0.4  |*  |
-|lubridate  |NA  |1.9.4  |*  |
-|magrittr   |NA  |2.0.3  |*  |
-|pillar     |NA  |1.11.0 |*  |
-|pkgconfig  |NA  |2.0.3  |*  |
-|R6         |NA  |2.6.1  |*  |
-|rlang      |NA  |1.1.6  |*  |
-|tibble     |NA  |3.3.0  |*  |
-|tidyselect |NA  |1.2.1  |*  |
-|timechange |NA  |0.3.0  |*  |
-|utf8       |NA  |1.2.6  |*  |
-|vctrs      |NA  |0.6.5  |*  |
-|withr      |NA  |3.0.2  |*  |
+|package    |old    |new    |Δ  |
+|:----------|:------|:------|:--|
+|nemsqar    |1.2.1  |1.3.0  |*  |
+|cli        |3.6.6  |3.6.6  |   |
+|cpp11      |0.5.5  |0.5.5  |   |
+|dplyr      |1.2.1  |1.2.1  |   |
+|generics   |0.1.4  |0.1.4  |   |
+|glue       |1.8.1  |1.8.1  |   |
+|hms        |1.1.4  |1.1.4  |   |
+|lifecycle  |1.0.5  |1.0.5  |   |
+|lubridate  |1.9.5  |1.9.5  |   |
+|magrittr   |2.0.5  |2.0.5  |   |
+|pillar     |1.11.1 |1.11.1 |   |
+|pkgconfig  |2.0.3  |2.0.3  |   |
+|R6         |2.6.1  |2.6.1  |   |
+|rlang      |1.3.0  |1.3.0  |   |
+|tibble     |3.3.1  |3.3.1  |   |
+|tidyselect |1.2.1  |1.2.1  |   |
+|timechange |0.4.0  |0.4.0  |   |
+|utf8       |1.2.6  |1.2.6  |   |
+|vctrs      |0.7.3  |0.7.3  |   |
+|withr      |3.0.3  |3.0.3  |   |
 
 # Revdeps
 
