@@ -37,11 +37,17 @@
 #'   - `n_time_complete`: Number of non-missing documentation times.
 #'   - `n_time_miss`: Number of missing documentation times.
 #'   - `min`: Minimum documentation time.
-#'   - `q25`: 25th percentile.
+#'   - `q10`: 10th percentile of documentation time.
+#'   - `q25`: 25th percentile of documentation time.
 #'   - `median`: Median documentation time.
-#'   - `q75`: 75th percentile.
-#'   - `p90`: 90th percentile.
+#'   - `q75`: 75th percentile of documentation time.
+#'   - `q90`: 90th percentile of documentation time.
 #'   - `max`: Maximum documentation time.
+#'   - `IQR`: Interquartile range (`q75 - q25`), a robust measure of
+#'     variability describing the spread of the middle 50% of observations.
+#'   - `mad`: Median absolute deviation, a robust measure of variability around
+#'     the median that is less sensitive to extreme values than the standard
+#'     deviation.
 #'   - `mean`: Mean documentation time.
 #'   - `sd`: Standard deviation of documentation times.
 #'
@@ -71,6 +77,11 @@ summarize_time_distribution <- function(
       measure = measure_name,
       pop = population_name,
       min = min({{ documentation_time_hours }}, na.rm = TRUE),
+      q10 = stats::quantile(
+        {{ documentation_time_hours }},
+        probs = 0.10,
+        na.rm = TRUE
+      ),
       q25 = stats::quantile(
         {{ documentation_time_hours }},
         probs = 0.25,
@@ -85,12 +96,14 @@ summarize_time_distribution <- function(
         probs = 0.75,
         na.rm = TRUE
       ),
-      p90 = stats::quantile(
+      q90 = stats::quantile(
         {{ documentation_time_hours }},
         probs = 0.90,
         na.rm = TRUE
       ),
       max = max({{ documentation_time_hours }}, na.rm = TRUE),
+      iqr = stats::IQR({{ documentation_time_hours }}, na.rm = TRUE),
+      mad = stats::mad({{ documentation_time_hours }}, na.rm = TRUE),
       mean = mean({{ documentation_time_hours }}, na.rm = TRUE),
       sd = stats::sd({{ documentation_time_hours }}, na.rm = TRUE),
       n_time_complete = sum(!is.na({{ documentation_time_hours }})),
@@ -105,6 +118,11 @@ summarize_time_distribution <- function(
       measure = measure_name,
       pop = population_name,
       min = min({{ documentation_time_days }}, na.rm = TRUE),
+      q10 = stats::quantile(
+        {{ documentation_time_days }},
+        probs = 0.10,
+        na.rm = TRUE
+      ),
       q25 = stats::quantile(
         {{ documentation_time_days }},
         probs = 0.25,
@@ -119,12 +137,14 @@ summarize_time_distribution <- function(
         probs = 0.75,
         na.rm = TRUE
       ),
-      p90 = stats::quantile(
+      q90 = stats::quantile(
         {{ documentation_time_days }},
         probs = 0.90,
         na.rm = TRUE
       ),
       max = max({{ documentation_time_days }}, na.rm = TRUE),
+      iqr = stats::IQR({{ documentation_time_days }}, na.rm = TRUE),
+      mad = stats::mad({{ documentation_time_days }}, na.rm = TRUE),
       mean = mean({{ documentation_time_days }}, na.rm = TRUE),
       sd = stats::sd({{ documentation_time_days }}, na.rm = TRUE),
       n_time_complete = sum(!is.na({{ documentation_time_days }})),
@@ -147,6 +167,11 @@ summarize_time_distribution <- function(
         measure = measure_name,
         pop = population_name,
         min = min({{ documentation_time_hours }}, na.rm = TRUE),
+        q10 = stats::quantile(
+          {{ documentation_time_hours }},
+          probs = 0.10,
+          na.rm = TRUE
+        ),
         q25 = stats::quantile(
           {{ documentation_time_hours }},
           probs = 0.25,
@@ -161,12 +186,14 @@ summarize_time_distribution <- function(
           probs = 0.75,
           na.rm = TRUE
         ),
-        p90 = stats::quantile(
+        q90 = stats::quantile(
           {{ documentation_time_hours }},
           probs = 0.90,
           na.rm = TRUE
         ),
         max = max({{ documentation_time_hours }}, na.rm = TRUE),
+        iqr = stats::IQR({{ documentation_time_hours }}, na.rm = TRUE),
+        mad = stats::mad({{ documentation_time_hours }}, na.rm = TRUE),
         mean = mean({{ documentation_time_hours }}, na.rm = TRUE),
         sd = stats::sd({{ documentation_time_hours }}, na.rm = TRUE),
         n_time_complete = sum(!is.na({{ documentation_time_hours }})),
@@ -182,6 +209,11 @@ summarize_time_distribution <- function(
         measure = measure_name,
         pop = population_name,
         min = min({{ documentation_time_days }}, na.rm = TRUE),
+        q10 = stats::quantile(
+          {{ documentation_time_days }},
+          probs = 0.10,
+          na.rm = TRUE
+        ),
         q25 = stats::quantile(
           {{ documentation_time_days }},
           probs = 0.25,
@@ -196,12 +228,14 @@ summarize_time_distribution <- function(
           probs = 0.75,
           na.rm = TRUE
         ),
-        p90 = stats::quantile(
+        q90 = stats::quantile(
           {{ documentation_time_days }},
           probs = 0.90,
           na.rm = TRUE
         ),
         max = max({{ documentation_time_days }}, na.rm = TRUE),
+        iqr = stats::IQR({{ documentation_time_days }}, na.rm = TRUE),
+        mad = stats::mad({{ documentation_time_days }}, na.rm = TRUE),
         mean = mean({{ documentation_time_days }}, na.rm = TRUE),
         sd = stats::sd({{ documentation_time_days }}, na.rm = TRUE),
         n_time_complete = sum(!is.na({{ documentation_time_days }})),
